@@ -14,3 +14,15 @@ java:
     SPRING_DATASOURCE_URL: jdbc:postgresql://em-hrs-postgres-db-{{ .Values.global.environment }}.postgres.database
     .azure.com:5432/emhrs?ssl=disable
     SPRING_DATASOURCE_USERNAME: emhrs@em-hrs-postgres-db-{{ .Values.global.environment }}
+
+    # Document Storage
+    STORAGE_CONTAINER_DOCUMENT_CONTAINER_NAME: dm-store-docstore-{{ .Values.global.environment }}
+
+blobstorage:
+  resourceGroup: em-hrs-aks
+  teamName: "EM"
+  location: uksouth
+  setup:
+    containers:
+      - em-hrs
+  enabled: false

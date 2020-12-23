@@ -1,5 +1,5 @@
 ---
-version: '2.1'
+version: '3'
 
 services:
   em-hrs-db:
@@ -11,3 +11,15 @@ services:
       - POSTGRES_PASSWORD=emhrs
     ports:
       - 5432:5432
+
+  azure-storage-emulator-azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - 10000:10000
+    command: "azurite-blob --blobHost 0.0.0.0 --loose"
+    volumes:
+      - em-hrs-docker-azure-blob-data:/opt/azurite/folder
+
+volumes:
+  pacts:
+  em-hrs-docker-azure-blob-data:

@@ -38,3 +38,13 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/emhrs}
     username: ${SPRING_DATASOURCE_USERNAME:emhrs}
     password: ${SPRING_DATASOURCE_PASSWORD:emhrs}
+
+azure:
+  app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
+  application-insights:
+    instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:d04b52b1-20e5-473a-8ac4-3f6859ea113c}
+  storage:
+    connection-string: ${STORAGEACCOUNT_PRIMARY_CONNECTION_STRING:DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1}
+    blob-container-reference: ${STORAGE_CONTAINER_DOCUMENT_CONTAINER_NAME:emhrstestcontainer}
+    enabled: true
+    metadata-blob-container-reference: ${STORAGE_CONTAINER_METADATA_CONTAINER_NAME:emhrsmetadata}
