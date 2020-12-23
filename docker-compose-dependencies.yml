@@ -1,0 +1,13 @@
+---
+version: '2.1'
+
+services:
+  em-hrs-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=emhrs
+      - POSTGRES_USER=emhrs
+      - POSTGRES_PASSWORD=emhrs
+    ports:
+      - 5432:5432

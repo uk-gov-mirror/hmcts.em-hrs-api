@@ -1,6 +1,16 @@
 java:
+  postgresql:
+    postgresqlUsername: emhrs
+    postgresqlPassword: emhrs
+    nameOverride: em-hrs-db
+    service:
+      port: 5432
   applicationPort: 8080
   image: 'hmctspublic.azurecr.io/em/hrs:latest'
   ingressHost: em-hrs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: em
   environment:
+    # db
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-hrs-postgres-db-{{ .Values.global.environment }}.postgres.database
+    .azure.com:5432/emhrs?ssl=disable
+    SPRING_DATASOURCE_USERNAME: emhrs@em-hrs-postgres-db-{{ .Values.global.environment }}

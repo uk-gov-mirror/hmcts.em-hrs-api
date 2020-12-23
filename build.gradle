@@ -112,8 +112,8 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 sonarqube {
   properties {
-    property "sonar.projectName", "Reform :: spring-boot-template"
-    property "sonar.projectKey", "uk.gov.hmcts.reform:spring-boot-template"
+    property "sonar.projectName", "EM :: em-hrs-api"
+    property "sonar.projectKey", "uk.gov.hmcts.reform.em.hrs:em-hrs-api"
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
   }
 }
@@ -202,11 +202,11 @@ dependencies {
   smokeTestImplementation sourceSets.main.runtimeClasspath
 }
 
-mainClassName = 'uk.gov.hmcts.reform.demo.Application'
+mainClassName = 'uk.gov.hmcts.reform.em.hrs.Application'
 
 bootJar {
   getArchiveFileName().set(provider {
-    'spring-boot-template.jar'
+    'em-hrs-api.jar'
   })
 
   manifest {

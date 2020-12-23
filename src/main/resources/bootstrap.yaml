@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    propertiesvolume:
+      enabled: true
+      prefixed: false
+      paths: /mnt/secrets/em-hrs
+      aliases:
+        microservicekey-em-hrs-api: S2S_KEY
+        AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
+        emhrs-POSTGRES-PASS: SPRING_DATASOURCE_PASSWORD
