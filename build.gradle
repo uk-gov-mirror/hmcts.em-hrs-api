@@ -133,7 +133,7 @@ dependencyUpdates {
 
 // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
 dependencyCheck {
-  suppressionFile = 'config/owasp/dependency-check-suppressions.xml'
+  suppressionFile = 'config/owasp/suppressions.xml'
 }
 
 dependencyManagement {
