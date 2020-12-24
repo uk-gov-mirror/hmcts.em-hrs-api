@@ -8,3 +8,4 @@ spring:
         microservicekey-em-hrs-api: S2S_KEY
         AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
         emhrs-POSTGRES-PASS: SPRING_DATASOURCE_PASSWORD
+        notification-api-key: NOTIFICATION_API_KEY

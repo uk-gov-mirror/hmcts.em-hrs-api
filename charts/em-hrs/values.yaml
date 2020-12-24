@@ -18,6 +18,8 @@ java:
     # Document Storage
     STORAGE_CONTAINER_DOCUMENT_CONTAINER_NAME: dm-store-docstore-{{ .Values.global.environment }}
 
+    IDAM_API_BASE_URI: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+
 blobstorage:
   resourceGroup: em-hrs-aks
   teamName: "EM"
