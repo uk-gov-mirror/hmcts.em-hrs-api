@@ -41,3 +41,9 @@ module "db" {
   common_tags        = var.common_tags
   subscription       = var.subscription
 }
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
+  name         = "${local.app_full_name}-POSTGRES-PASS"
+  value        = module.db.postgresql_password
+  key_vault_id = module.key-vault.key_vault_id
+}
