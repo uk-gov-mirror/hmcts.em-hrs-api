@@ -101,7 +101,7 @@ pmd {
 }
 
 jacocoTestReport {
-  executionData(test, integration)
+  executionData(test)
   reports {
     xml.enabled = true
     csv.enabled = true
@@ -117,8 +117,7 @@ def coverageExclusionList = [
 
 sonarqube {
   properties {
-    property "sonar.projectName", "EM :: em-hrs-api"
-    property "sonar.projectKey", "uk.gov.hmcts.reform.em.hrs:em-hrs-api"
+    property "sonar.projectName", "em-hrs-api"
     property "sonar.exclusions", coverageExclusionList.join(", ")
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
   }
