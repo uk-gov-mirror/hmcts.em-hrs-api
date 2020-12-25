@@ -119,7 +119,7 @@ sonarqube {
   properties {
     property "sonar.projectName", "em-hrs-api"
     property "sonar.exclusions", coverageExclusionList.join(", ")
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+    property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
   }
 }
 
