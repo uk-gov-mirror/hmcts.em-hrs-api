@@ -21,3 +21,11 @@ variable "jenkins_AAD_objectId" {
 variable "common_tags" {
   type = "map"
 }
+
+variable "postgresql_user" {
+  default = "emhrs"
+}
+
+variable "database_name" {
+  default = "emhrs"
+}
