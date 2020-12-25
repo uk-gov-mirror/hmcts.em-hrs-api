@@ -13,7 +13,7 @@ java:
     em-hrs:
       resourceGroup: em-hrs
       secrets:
-        - em-hrs-POSTGRES-PASS
+        - hrs-POSTGRES-PASS
   environment:
     # db
     SPRING_DATASOURCE_URL: jdbc:postgresql://em-hrs-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/emhrs?ssl=disable
