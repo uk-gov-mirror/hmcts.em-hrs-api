@@ -71,3 +71,9 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   value        = module.db.postgresql_database
   key_vault_id = module.key-vault.key_vault_id
 }
+
+resource "azurerm_key_vault_secret" "OLD-POSTGRES-PASS" {
+  name         = "${local.app_full_name}-POSTGRES-PASS"
+  value        = module.db.postgresql_password
+  key_vault_id = module.key-vault.key_vault_id
+}
