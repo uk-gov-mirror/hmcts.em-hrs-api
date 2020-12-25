@@ -101,26 +101,26 @@ pmd {
 }
 
 jacocoTestReport {
-  executionData(test, integration)
+  executionData(test)
   reports {
     xml.enabled = true
     csv.enabled = false
-    xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
-
-project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/*'
 ]
 
+project.tasks['sonarqube'].dependsOn jacocoTestReport
+
 sonarqube {
   properties {
-    property "sonar.projectName", "EM :: em-hrs-api"
+    property "sonar.projectName", "Reform :: em-hrs-api"
     property "sonar.projectKey", "uk.gov.hmcts.reform.em.hrs:em-hrs-api"
     property "sonar.exclusions", coverageExclusionList.join(", ")
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
   }
 }
 
