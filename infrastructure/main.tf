@@ -8,10 +8,9 @@ locals {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.product}-${var.component}-${var.env}"
-  location = "${var.location}"
-
-  tags = "${var.common_tags}"
+  name     = "${local.app_full_name}-${var.env}"
+  location = var.location
+  tags     = var.common_tags
 }
 
 module "key-vault" {
