@@ -113,6 +113,8 @@ def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/*'
 ]
 
+project.tasks['sonarqube'].dependsOn jacocoTestReport
+
 sonarqube {
   properties {
     property "sonar.projectName", "em-hrs-api"
