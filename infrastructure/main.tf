@@ -106,3 +106,32 @@ module "storage_account" {
   destroy_me   = var.destroy_me
 }
 
+resource "azurerm_key_vault_secret" "storage_account_id" {
+  name         = "storage-account-id"
+  value        = module.storage_account.storageaccount_id
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "storage_account_primary_access_key" {
+  name         = "storage-account-primary-access-key"
+  value        = module.storage_account.storageaccount_primary_access_key
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "storage_account_secondary_access_key" {
+  name         = "storage-account-secondary-access-key"
+  value        = "module.storage_account.storageaccount_secondary_access_key
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "storage_account_primary_connection_string" {
+  name         = "storage-account-primary-connection-string"
+  value        = module.storage_account.storageaccount_primary_connection_string
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "storage_account_secondary_connection_string" {
+  name         = "storage-account-secondary-connection-string"
+  value        = module.storage_account.storageaccount_secondary_connection_string
+  key_vault_id = module.key-vault.key_vault_id
+}
