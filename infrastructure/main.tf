@@ -4,7 +4,13 @@ provider "azurerm" {
 
 locals {
   app_full_name = "${var.product}-${var.component}"
-
+  tags = "${merge(
+      var.common_tags,
+      map(
+        "Team Contact", var.team_contact,
+        "Destroy Me", var.destroy_me
+      )
+    )}"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -22,7 +28,7 @@ module "key-vault" {
   resource_group_name        = azurerm_resource_group.rg.name
   product_group_object_id    = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
   common_tags                = var.common_tags
-  managed_identity_object_id = "${data.azurerm_user_assigned_identity.em-shared-identity.principal_id}"
+  managed_identity_object_id = data.azurerm_user_assigned_identity.em-shared-identity.principal_id
 }
 
 data "azurerm_user_assigned_identity" "em-shared-identity" {
@@ -77,3 +83,26 @@ resource "azurerm_key_vault_secret" "OLD-POSTGRES-PASS" {
   value        = module.db.postgresql_password
   key_vault_id = module.key-vault.key_vault_id
 }
+
+
+module "storage_account" {
+  source                    = "git@github.com:hmcts/cnp-module-storage-account?ref=master"
+  env                       = var.env
+  storage_account_name      = "emhrs${var.env}"
+  resource_group_name       = azurerm_resource_group.rg.name
+  location                  = var.location
+  account_kind              = "StorageV2"
+  account_tier              = "Standard"
+  account_replication_type  = "LRS"
+  access_tier               = "Hot"
+
+  enable_https_traffic_only = true
+
+  default_action = "Allow"
+
+  // Tags
+  common_tags  = local.tags
+  team_contact = var.team_contact
+  destroy_me   = var.destroy_me
+}
+
