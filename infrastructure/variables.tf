@@ -29,3 +29,11 @@ variable "postgresql_user" {
 variable "database_name" {
   default = "emhrs"
 }
+
+variable "team_contact" {
+  default = "#em-dev-chat"
+}
+
+variable "destroy_me" {
+  default = "No"
+}
