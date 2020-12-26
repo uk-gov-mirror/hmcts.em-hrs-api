@@ -106,6 +106,3 @@ module "storage_account" {
   destroy_me   = var.destroy_me
 }
 
-output "em_hrs_storage_account_name" {
-  value = module.storage_account.storage_account_name
-}
