@@ -120,7 +120,7 @@ resource "azurerm_key_vault_secret" "storage_account_primary_access_key" {
 
 resource "azurerm_key_vault_secret" "storage_account_secondary_access_key" {
   name         = "storage-account-secondary-access-key"
-  value        = "module.storage_account.storageaccount_secondary_access_key
+  value        = module.storage_account.storageaccount_secondary_access_key
   key_vault_id = module.key-vault.key_vault_id
 }
 
