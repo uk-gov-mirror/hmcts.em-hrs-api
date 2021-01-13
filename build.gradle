@@ -96,7 +96,7 @@ checkstyle {
 }
 
 pmd {
-  toolVersion = "6.18.0"
+  toolVersion = "6.30.0"
   ignoreFailures = true
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
@@ -148,9 +148,9 @@ dependencyCheck {
 
 dependencyManagement {
   dependencies {
-    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.67'
-    // CVE-2018-10237 - Unbounded memory allocation
-    dependencySet(group: 'com.google.guava', version: '30.0-jre') {
+    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.68'
+    // CVE-2018-10237 - Unbounded memory allocation (this relates to guava versions 11.0 through 24.1.1.1 as per https://nvd.nist.gov/vuln/detail/CVE-2018-10237
+    dependencySet(group: 'com.google.guava', version: '30.1-jre') {
       entry 'guava'
     }
   }
@@ -189,7 +189,7 @@ dependencies {
   compile "org.liquibase:liquibase-core"
   compile("org.postgresql:postgresql:42.2.13")
   compile group:'org.hibernate', name: 'hibernate-core', version: '5.4.25.Final'
-  
+
   liquibaseRuntime "org.liquibase:liquibase-core:4.0.0"
   liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.0.0"
   liquibaseRuntime sourceSets.main.compileClasspath
@@ -197,7 +197,7 @@ dependencies {
   liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:2.1.2"
   liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
   liquibaseRuntime "com.h2database:h2"
-  
+
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
@@ -213,7 +213,7 @@ dependencies {
 
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.0'
-  
+
   compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.40'
   compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.40'
 
