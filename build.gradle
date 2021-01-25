@@ -115,7 +115,10 @@ jacocoTestReport {
 }
 
 def coverageExclusionList = [
-  '**uk/gov/hmcts/reform/em/hrs/em/domain'
+  '**uk/gov/hmcts/reform/em/hrs/*',
+  '**uk/gov/hmcts/reform/em/hrs/config/**',
+  '**uk/gov/hmcts/reform/em/hrs/service/**',
+  '**uk/gov/hmcts/reform/em/hrs/domain/*',
 ]
 
 project.tasks['sonarqube'].dependsOn jacocoTestReport
