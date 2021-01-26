@@ -1,0 +1,43 @@
+checkstyle {
+  maxWarnings = 10
+  toolVersion = '8.29'
+  getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
+}
+
+pmd {
+  toolVersion = "6.30.0"
+  ignoreFailures = true
+  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
+  reportsDir = file("$project.buildDir/reports/pmd")
+  // https://github.com/pmd/pmd/issues/876
+  ruleSets = []
+  ruleSetFiles = files("config/pmd/ruleset.xml")
+}
+
+jacocoTestReport {
+  executionData(test)
+  reports {
+    xml.enabled = true
+    csv.enabled = false
+    xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+  }
+}
+
+def coverageExclusionList = [
+  '**uk/gov/hmcts/reform/em/hrs/*',
+  '**uk/gov/hmcts/reform/em/hrs/config/**',
+  '**uk/gov/hmcts/reform/em/hrs/service/**',
+  '**uk/gov/hmcts/reform/em/hrs/domain/*',
+]
+
+project.tasks['sonarqube'].dependsOn jacocoTestReport
+
+sonarqube {
+  properties {
+    property "sonar.projectName", "Reform :: em-hrs-api"
+    property "sonar.projectKey", "uk.gov.hmcts.reform.em.hrs:em-hrs-api"
+    property "sonar.exclusions", coverageExclusionList.join(", ")
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+  }
+}
+

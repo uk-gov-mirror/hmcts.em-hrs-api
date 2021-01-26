@@ -1,0 +1,34 @@
+// before committing a change, make sure task still works
+dependencyUpdates {
+  def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { qualifier -> version.toUpperCase().contains(qualifier) }
+    def regex = /^[0-9,.v-]+$/
+    return !stableKeyword && !(version ==~ regex)
+  }
+  rejectVersionIf { selection -> // <---- notice how the closure argument is named
+    return isNonStable(selection.candidate.version) && !isNonStable(selection.currentVersion)
+  }
+}
+
+// https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
+dependencyCheck {
+  suppressionFile = 'config/owasp/suppressions.xml'
+}
+
+dependencyManagement {
+  dependencies {
+    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.68'
+    // CVE-2018-10237 - Unbounded memory allocation
+    dependencySet(group: 'com.google.guava', version: '30.1-jre') {
+      entry 'guava'
+    }
+  }
+}
+
+repositories {
+  mavenLocal()
+  jcenter()
+  mavenCentral()
+}
+
+
