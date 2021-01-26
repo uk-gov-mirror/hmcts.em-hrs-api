@@ -57,7 +57,7 @@ dependencies {
   compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.40'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
-  compile group:'org.hibernate', name: 'hibernate-core', version: '5.4.25.Final'
+  compile group:'org.hibernate', name: 'hibernate-core', version: '5.4.27.Final'
   compile("org.postgresql:postgresql:42.2.13")
   compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestImplementation sourceSets.main.runtimeClasspath
