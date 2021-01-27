@@ -31,10 +31,3 @@ s2s:
     url: ${S2S_BASE_URI:http://localhost:4502}
     secret: ${FUNCTIONAL_TEST_CLIENT_S2S_TOKEN:AAAAAAAAAAAAAAAA}
     serviceName: ${S2S_SERVICE_NAME:em_gw}
-
-document_management:
-  url: ${DM_STORE_APP_URL:http://localhost:4603}
-
-annotation:
-  api:
-    url: ${EM_ANNO_APP_URL:http://localhost:4623}

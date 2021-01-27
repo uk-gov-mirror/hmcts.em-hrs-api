@@ -1,0 +1,18 @@
+def coverageExclusionList = [
+  '**uk/gov/hmcts/reform/em/hrs/*',
+  '**uk/gov/hmcts/reform/em/hrs/config/**',
+  '**uk/gov/hmcts/reform/em/hrs/service/**',
+  '**uk/gov/hmcts/reform/em/hrs/domain/*',
+]
+
+project.tasks['sonarqube'].dependsOn jacocoTestReport
+
+sonarqube {
+  properties {
+    property "sonar.projectName", "Reform :: em-hrs-api"
+    property "sonar.projectKey", "uk.gov.hmcts.reform.em.hrs:em-hrs-api"
+    property "sonar.exclusions", coverageExclusionList.join(", ")
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+  }
+}
+

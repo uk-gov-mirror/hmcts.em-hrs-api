@@ -30,11 +30,13 @@ apply from: 'build-source-sets.gradle'
 apply from: 'build-tasks.gradle'
 apply from: 'build-dependency-management.gradle'
 apply from: 'build-code-checks.gradle'
-apply from: 'build-liquibase.gradle'
-apply from: 'build-dependencies.gradle'
+apply from: 'build-dependencies-core.gradle'
+apply from: 'build-dependencies-testing.gradle'
+apply from: 'build-dependencies-database.gradle'
 
 test {
   failFast = true
+
 }
 
 bootJar {
