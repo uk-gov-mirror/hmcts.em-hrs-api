@@ -11,8 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {TestUtil.class})
 @TestPropertySource(value = "classpath:application.yml")
@@ -31,13 +30,13 @@ public class SmokeTest {
         SerenityRest.useRelaxedHTTPSValidation();
 
         String response =
-                SerenityRest
-                        .given()
-                        .baseUri(testUtil.getTestUrl())
-                        .when()
-                        .get("/")
-                        .then()
-                        .statusCode(200).extract().body().asString();
+            SerenityRest
+                .given()
+                .baseUri(testUtil.getTestUrl())
+                .when()
+                .get("/")
+                .then()
+                .statusCode(200).extract().body().asString();
 
 
         assertEquals(MESSAGE, response);

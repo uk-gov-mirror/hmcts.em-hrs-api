@@ -17,8 +17,8 @@ dependencyCheck {
 
 dependencyManagement {
   dependencies {
-    // Guava CVE-2018-10237 - Unbounded memory allocation
     dependencySet(group: 'com.google.guava', version: '30.1-jre') {
+      // Guava CVE-2018-10237 - Unbounded memory allocation
       entry 'guava'
     }
   }
