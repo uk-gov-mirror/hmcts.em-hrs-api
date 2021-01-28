@@ -25,9 +25,10 @@ build-integration-test:
 build-test:
 	./gradlew test -i
 
+#Note this fails if there is already a container.
 sonarqube-run-local-sonarqube-server:
 	docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
 
-#
+# New containers will require logging in, and changing password to a temporary password, and back to admin
 sonarqube-run-tests:
 	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="admin" -i
