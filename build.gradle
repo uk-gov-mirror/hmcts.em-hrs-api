@@ -20,10 +20,11 @@ group = 'uk.gov.hmcts.reform.em.hrs'
 version = '0.0.1'
 mainClassName = 'uk.gov.hmcts.reform.em.hrs.Application'
 
-configurations {
-  aatCompile.extendsFrom(testCompile)
-  aatRuntime.extendsFrom(testRuntime)
-}
+// to remove if build passes
+//configurations {
+//  aatCompile.extendsFrom(testCompile)
+//  aatRuntime.extendsFrom(testRuntime)
+//}
 
 
 apply from: 'build-source-sets.gradle'
