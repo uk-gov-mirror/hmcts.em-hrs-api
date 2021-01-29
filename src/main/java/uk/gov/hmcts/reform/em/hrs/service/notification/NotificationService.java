@@ -67,14 +67,16 @@ public class NotificationService {
                 .get()
                 .build();
 
-        final Response response = http.newCall(request).execute();
+         try (final Response response = http.newCall(request).execute()) {
+             if (response.isSuccessful()) {
+                 JsonNode userDetails = jsonMapper.readValue(response.body().byteStream(), JsonNode.class);
+                 return userDetails.get("email").asText();
+             } else {
+                 throw new DocumentProcessingException(response.body().string());
+             }
 
-        if (response.isSuccessful()) {
-            JsonNode userDetails = jsonMapper.readValue(response.body().byteStream(), JsonNode.class);
-            return userDetails.get("email").asText();
-        } else {
-            throw new DocumentProcessingException(response.body().string());
-        }
+         }
+
 
     }
 }

@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestUtil {
 
-
-
     @Value("${test.url}")
     private String testUrl;
 

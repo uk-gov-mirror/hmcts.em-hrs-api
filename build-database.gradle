@@ -1,3 +1,5 @@
+
+
 //loading properties file.
 Properties liquibaseProps = new Properties()
 liquibaseProps.load(new FileInputStream("src/main/resources/liquibase.properties"))

@@ -20,21 +20,25 @@ group = 'uk.gov.hmcts.reform.em.hrs'
 version = '0.0.1'
 mainClassName = 'uk.gov.hmcts.reform.em.hrs.Application'
 
-configurations {
-  aatCompile.extendsFrom(testCompile)
-  aatRuntime.extendsFrom(testRuntime)
-}
+// to remove if build passes
+//configurations {
+//  aatCompile.extendsFrom(testCompile)
+//  aatRuntime.extendsFrom(testRuntime)
+//}
 
 
 apply from: 'build-source-sets.gradle'
 apply from: 'build-tasks.gradle'
 apply from: 'build-dependency-management.gradle'
 apply from: 'build-code-checks.gradle'
-apply from: 'build-liquibase.gradle'
-apply from: 'build-dependencies.gradle'
+apply from: 'build-code-coverage.gradle'
+apply from: 'build-dependencies-core.gradle'
+apply from: 'build-dependencies-testing.gradle'
+apply from: 'build-dependencies-database.gradle'
 
 test {
   failFast = true
+
 }
 
 bootJar {
