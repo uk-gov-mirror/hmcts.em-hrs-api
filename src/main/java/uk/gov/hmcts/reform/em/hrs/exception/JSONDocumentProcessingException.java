@@ -1,12 +1,12 @@
-package uk.gov.hmcts.reform.em.hrs.service;
+package uk.gov.hmcts.reform.em.hrs.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class DocumentProcessingException extends Exception {
+public class JSONDocumentProcessingException extends Exception {
 
-    public DocumentProcessingException(String message) {
+    public JSONDocumentProcessingException(String message) {
         super(message);
     }
 

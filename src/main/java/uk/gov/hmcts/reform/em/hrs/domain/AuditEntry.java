@@ -12,6 +12,8 @@ import java.util.UUID;
 
 
 @Entity
+@Getter
+@Setter
 @DiscriminatorColumn(name = "type")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class AuditEntry {
@@ -19,22 +21,14 @@ public abstract class AuditEntry {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Getter
-    @Setter
     private UUID id;
 
-    @Getter
-    @Setter
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuditActions action;
 
-    @Getter
-    @Setter
     private String username;
 
-    @Getter
-    @Setter
     @NotNull
     private String serviceName;
 

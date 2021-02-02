@@ -26,6 +26,7 @@ dependencyManagement {
 }
 
 repositories {
+  maven { url "https://dl.bintray.com/hmcts/hmcts-maven" } //TODO confirm this should be the primary maven repo (it is in dm store and em stictching)
   mavenLocal()
   jcenter()
   mavenCentral()

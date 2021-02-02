@@ -9,7 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import uk.gov.hmcts.reform.em.hrs.security.domain.CreatorAware;
+//import uk.gov.hmcts.reform.em.hrs.security.domain.CreatorAware;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -20,29 +20,26 @@ import java.util.UUID;
 
 @Entity
 @Builder
+@Getter
+@Setter
 @EntityListeners(AuditingEntityListener.class)
-public class Folder implements CreatorAware {
+ public class Folder {
+//public class Folder implements CreatorAware { //TODO unsure if this is useful in future
 
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Getter
-    @Setter
     private UUID id;
 
     @Getter @Setter private String name;
 
     @OneToMany(mappedBy = "folder")
-    @OrderColumn(name = "ds_idx")
-    @Getter @Setter private List<StoredDocument> storedDocuments;
+//    @OrderColumn(name = "ds_idx") //TODO verify if having a sort index makes sense, case ref + segment probs better
+    private List<HearingRecording> hearingRecordings;
 
-    @Getter
-    @Setter
     @CreatedBy
     private String createdBy;
 
-    @Getter
-    @Setter
     @LastModifiedBy
     private String lastModifiedBy;
 
@@ -56,11 +53,11 @@ public class Folder implements CreatorAware {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOn;
 
-    public Folder(UUID id, String name, List<StoredDocument> storedDocuments, String createdBy,
+    public Folder(UUID id, String name, List<HearingRecording> hearingRecordings, String createdBy,
                   String lastModifiedBy, Date modifiedOn, Date createdOn) {
         this.id = id;
         this.name = name;
-        this.storedDocuments = storedDocuments;
+        this.hearingRecordings = hearingRecordings;
         this.createdBy = createdBy;
         this.lastModifiedBy = lastModifiedBy;
         setModifiedOn(modifiedOn);
@@ -68,7 +65,7 @@ public class Folder implements CreatorAware {
     }
 
     public Folder() {
-        storedDocuments = new ArrayList<>();
+        hearingRecordings = new ArrayList<>();
     }
 
     public Date getModifiedOn() {

@@ -8,11 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 @Entity
-@DiscriminatorValue(value = "document_content_version")
-public class DocumentContentVersionAuditEntry extends StoredDocumentAuditEntry {
+@DiscriminatorValue(value = "hearing_recording")
+public class HearingRecordingAuditEntry extends AuditEntry {
 
     @Getter @Setter
     @ManyToOne
-    private DocumentContentVersion documentContentVersion;
+    private HearingRecording hearingRecording;
 
 }

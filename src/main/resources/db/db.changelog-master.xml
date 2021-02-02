@@ -1,5 +1,154 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-
-
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet author="paul (generated)" id="1612293805357-1">
+        <createTable tableName="folder">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="folderPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_on" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_on" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612293805357-2">
+        <createTable tableName="hearing_recording">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="hearing_recordingPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_by_service" type="VARCHAR(255)"/>
+            <column name="created_on" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="deleted" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hard_deleted" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by_service" type="VARCHAR(255)"/>
+            <column name="modified_on" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="ttl" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="folder_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612293805357-3">
+        <createTable tableName="hearing_recording_metadata">
+            <column name="hearing_recording_metadata_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="value" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612293805357-4">
+        <addColumn tableName="audit_entry">
+            <column name="hearing_recording_id" type="uuid"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612293805357-5">
+        <addForeignKeyConstraint baseColumnNames="hearing_recording_metadata_id" baseTableName="hearing_recording_metadata" constraintName="FK43w518f0nih5s1nhufcidmr6m" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="hearing_recording" validate="true"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612293805357-6">
+        <addForeignKeyConstraint baseColumnNames="folder_id" baseTableName="hearing_recording" constraintName="FK7pidb4lyq06pv6h7lf4r03r7o" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="folder" validate="true"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612293805357-7">
+        <addForeignKeyConstraint baseColumnNames="hearing_recording_id" baseTableName="audit_entry" constraintName="FKqtlr65hik6rxjqlcsao05pbai" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="hearing_recording" validate="true"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-1">
+        <addColumn tableName="hearing_recording">
+            <column name="blob_uuid" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-2">
+        <addColumn tableName="hearing_recording">
+            <column name="case_reference" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-3">
+        <addColumn tableName="hearing_recording">
+            <column name="ccd_attachment_id" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-4">
+        <addColumn tableName="hearing_recording">
+            <column name="ccd_id" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-5">
+        <addColumn tableName="hearing_recording">
+            <column name="file_extension" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-6">
+        <addColumn tableName="hearing_recording">
+            <column name="file_md5_checksum" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-7">
+        <addColumn tableName="hearing_recording">
+            <column name="file_name" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-8">
+        <addColumn tableName="hearing_recording">
+            <column name="file_size_mb" type="numeric(19, 2)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-9">
+        <addColumn tableName="hearing_recording">
+            <column name="hearing_location_reference" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-10">
+        <addColumn tableName="hearing_recording">
+            <column name="hearing_source" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-11">
+        <addColumn tableName="hearing_recording">
+            <column name="ingestion_file_source_uri" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-12">
+        <addColumn tableName="hearing_recording">
+            <column name="ingestion_retry_count" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-13">
+        <addColumn tableName="hearing_recording">
+            <column name="ingestion_status" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-14">
+        <addColumn tableName="hearing_recording">
+            <column name="jurisdiction_code" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-15">
+        <addColumn tableName="hearing_recording">
+            <column name="recording_length_mins" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-16">
+        <addColumn tableName="hearing_recording">
+            <column name="recording_segment" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612297663152-17">
+        <addColumn tableName="hearing_recording">
+            <column name="service_code" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612298350924-1">
+        <addColumn tableName="hearing_recording">
+            <column name="file_md5checksum" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1612298350924-2">
+        <dropColumn columnName="file_md5_checksum" tableName="hearing_recording"/>
+    </changeSet>
 </databaseChangeLog>

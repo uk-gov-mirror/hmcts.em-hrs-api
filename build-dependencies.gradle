@@ -43,9 +43,10 @@ dependencies {
     "org.springframework.boot:spring-boot-starter-jdbc",
     "org.springframework.boot:spring-boot-starter-validation",
     "org.springframework.boot:spring-boot-starter-web",
+    "org.springframework.boot:spring-boot-starter-security",
   )
 
-
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   compile "com.squareup.okhttp3:okhttp:4.9.0"
   compile "org.liquibase:liquibase-core"
@@ -59,7 +60,7 @@ dependencies {
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
   compile group:'org.hibernate', name: 'hibernate-core', version: '5.4.27.Final'
   compile("org.postgresql:postgresql:42.2.13")
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+//  compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestImplementation sourceSets.main.runtimeClasspath
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
@@ -71,6 +72,19 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
+
+
+  compile (group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4') {
+    exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
+  }
+  compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.logging
+  compile ("uk.gov.hmcts.reform:properties-volume-spring-boot-starter:0.1.0"){
+    exclude group: 'org.springframework.cloud' , module : 'spring-cloud-context'
+    exclude group: 'org.springframework.boot' , module: 'spring-boot-starter-web'
+  }
+
+
+
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
   liquibaseRuntime "com.h2database:h2"
