@@ -13,7 +13,18 @@ pass:emhrs
 jdbc_url: jdbc:postgresql://localhost:5432/emhrs
 
 
+#Idea Setup
 
+Increase import star to 200 to avoid conflicts with checkstyle
+https://intellij-support.jetbrains.com/hc/en-us/community/posts/206203659-Turn-off-Wildcard-imports-
+
+Auto import of non ambiguous imports
+https://mkyong.com/intellij/eclipse-ctrl-shift-o-in-intellij-idea/#:~:text=In%20Eclipse%2C%20you%20press%20CTRL,imports%2C%20never%20imports%20any%20package.
+
+Import the checkstyle code scheme into the java code settings
+
+Reverse the import layout settings / modify until the checkstyle passes
+Uncheck "Comment at first column"
 
 The Below is taken from the spring boot template readme (https://github.com/hmcts/spring-boot-template/):
 

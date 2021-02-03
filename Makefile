@@ -46,3 +46,15 @@ report-integration-tests:
 
 report-code-tests:
 	xdg-open build/reports/tests/test/index.html
+
+report-code-pmd-main:
+	xdg-open build/reports/pmd/main.html
+
+report-code-pmd-test:
+	xdg-open build/reports/pmd/test.html
+
+report-code-pmd-integration-test:
+	xdg-open build/reports/pmd/integrationTest.html
+
+report-code-pmd-smoke-test:
+	xdg-open build/reports/pmd/test.html

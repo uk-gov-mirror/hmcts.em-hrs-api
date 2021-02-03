@@ -10,10 +10,26 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-
-import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 
 @Entity
 @Builder
@@ -60,14 +76,15 @@ public class HearingRecording {
     private Set<HearingRecordingAuditEntry> auditEntries;
 
 
-//    @ElementCollection
-//    @CollectionTable(name = "hearing_recording_roles", joinColumns = @JoinColumn(name = "hearing_recording_roles_id"))
-//    private Set<String> roles;
+    //@ElementCollection
+    //@CollectionTable(name = "hearing_recording_roles", joinColumns = @JoinColumn(name = "hearing_recording_roles_id"))
+    //private Set<String> roles;
 
     @ElementCollection
     @MapKeyColumn(name = "name")
     @Column(name = "value")
-    @CollectionTable(name = "hearing_recording_metadata", joinColumns = @JoinColumn(name = "hearing_recording_metadata_id"))
+    @CollectionTable(name = "hearing_recording_metadata",
+        joinColumns = @JoinColumn(name = "hearing_recording_metadata_id"))
     private Map<String, String> metadata;
 
 
@@ -83,7 +100,7 @@ public class HearingRecording {
     private String ingestionFileSourceUri;
     private String ingestionStatus;
 
-//    @NotNull
+    //    @NotNull
     private Integer ingestionRetryCount;
 
     private String caseReference;
@@ -95,18 +112,21 @@ public class HearingRecording {
     private Integer recordingSegment;
 
     private Integer ccdId; //TODO check if Integer big enough / if should be a string....
-    private Integer ccdAttachmentId; ; //TODO check if Integer big enough / if should be a string....
+    private Integer ccdAttachmentId; //TODO check if Integer big enough / if should be a string....
 
 
-
-
-    public HearingRecording(UUID id, String createdBy, String createdByService, String lastModifiedBy, String lastModifiedByService,
+    public HearingRecording(UUID id, String createdBy, String createdByService, String lastModifiedBy,
+                            String lastModifiedByService,
                             Date modifiedOn, Date createdOn,
                             boolean deleted, boolean hardDeleted, Folder folder,
                             Set<HearingRecordingAuditEntry> auditEntries,
                             //Set<String> roles,
-                            Map<String, String> metadata, Date ttl, String blob_uuid, String fileName, String fileExtension, String fileMd5Checksum, BigDecimal file_size_mb,
-                            String ingestionFileSourceUri, String ingestion_status, Integer ingestionRetryCount, String caseReference, String hearingLocationReference, String hearingSource, String jurisdictionCode, String serviceCode, Integer recordingLengthMins, Integer recordingSegment, Integer ccdId, Integer ccdAttachmentId) {
+                            Map<String, String> metadata, Date ttl, String blobUuid, String fileName,
+                            String fileExtension, String fileMd5Checksum, BigDecimal fileSizeMb,
+                            String ingestionFileSourceUri, String ingestionStatus, Integer ingestionRetryCount,
+                            String caseReference, String hearingLocationReference, String hearingSource,
+                            String jurisdictionCode, String serviceCode, Integer recordingLengthMins,
+                            Integer recordingSegment, Integer ccdId, Integer ccdAttachmentId) {
         setId(id);
         setCreatedBy(createdBy);
         setCreatedByService(createdByService);
@@ -119,21 +139,21 @@ public class HearingRecording {
         setFolder(folder);
 
         setAuditEntries(auditEntries);
-//        setRoles(roles);
+        //setRoles(roles);
         setMetadata(metadata);
         setTtl(ttl);
 
-        setBlobUuid(blob_uuid);
+        setBlobUuid(blobUuid);
         setFileName(fileName);
 
         setFileExtension(fileExtension);
         setFileMd5Checksum(fileMd5Checksum);
-        setFileSizeMb(file_size_mb);
+        setFileSizeMb(fileSizeMb);
 
         setIngestionFileSourceUri(ingestionFileSourceUri);
-        setIngestionStatus(ingestion_status);
+        setIngestionStatus(ingestionStatus);
 
-//    @NotNull
+        //@NotNull
         setIngestionRetryCount(ingestionRetryCount);
 
         setCaseReference(caseReference);
@@ -145,12 +165,9 @@ public class HearingRecording {
         setRecordingLengthMins(recordingLengthMins);
         setRecordingSegment(recordingSegment);
 
-        setCcdId(ccdId); ;
+        setCcdId(ccdId);
+        ;
         setCcdAttachmentId(ccdAttachmentId);
-
-
-
-
 
 
     }

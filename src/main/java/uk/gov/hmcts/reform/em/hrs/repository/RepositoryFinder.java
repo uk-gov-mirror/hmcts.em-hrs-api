@@ -7,8 +7,8 @@ import org.springframework.data.repository.support.Repositories;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.hrs.exception.RepositoryCouldNotBeFoundException;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import javax.validation.constraints.NotNull;
 
 @Component
 public class RepositoryFinder {
@@ -20,7 +20,8 @@ public class RepositoryFinder {
         try {
             return this.find(Class.forName(domainClassName));
         } catch (ClassNotFoundException e) {
-            throw new RepositoryCouldNotBeFoundException("Could not find a Repository for Domain class: " + domainClassName);
+            throw new RepositoryCouldNotBeFoundException(
+                "Could not find a Repository for Domain class: " + domainClassName);
         }
     }
 
@@ -28,7 +29,7 @@ public class RepositoryFinder {
     public CrudRepository<Object, Serializable> find(@NotNull Class<?> domainClass) {
         Repositories repositories = new Repositories(listableBeanFactory);
         return repositories.getRepositoryFor(domainClass)
-            .map(r -> (CrudRepository<Object, Serializable>)r)
+            .map(r -> (CrudRepository<Object, Serializable>) r)
             .orElse(null);
     }
 

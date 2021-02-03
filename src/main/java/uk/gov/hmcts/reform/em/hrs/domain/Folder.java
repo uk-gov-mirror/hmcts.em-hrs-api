@@ -9,13 +9,18 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-//import uk.gov.hmcts.reform.em.hrs.security.domain.CreatorAware;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 
 @Entity
@@ -23,18 +28,20 @@ import java.util.UUID;
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
- public class Folder {
-//public class Folder implements CreatorAware { //TODO unsure if this is useful in future
+public class Folder {
+    //public class Folder implements CreatorAware { //TODO unsure if this is useful in future
 
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
-    @Getter @Setter private String name;
+    @Getter
+    @Setter
+    private String name;
 
     @OneToMany(mappedBy = "folder")
-//    @OrderColumn(name = "ds_idx") //TODO verify if having a sort index makes sense, case ref + segment probs better
+    //@OrderColumn(name = "ds_idx") //TODO verify if having a sort index makes sense, case ref + segment probs better
     private List<HearingRecording> hearingRecordings;
 
     @CreatedBy

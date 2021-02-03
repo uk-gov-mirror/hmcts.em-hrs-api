@@ -1,23 +1,23 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import lombok.NonNull;
-import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.repository.FolderRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
 
+import java.util.Optional;
+import java.util.UUID;
 
-import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.stream.Collectors;
+//import java.util.*;
+//import javax.transaction.Transactional;
+//import javax.validation.constraints.NotNull;
+//import java.io.IOException;
+//import java.io.UncheckedIOException;
+//import java.sql.SQLException;
+//import java.util.stream.Collectors;
+//import lombok.NonNull;
+//import org.hibernate.HibernateException;
 
 @Service
 public class HearingRecordingService {
@@ -38,11 +38,11 @@ public class HearingRecordingService {
     @Autowired
     private SecurityUtilService securityUtilService;
 
-//    @Autowired
-//    private BlobStorageWriteService blobStorageWriteService;
-//
-//    @Autowired
-//    private BlobStorageDeleteService blobStorageDeleteService;
+    //@Autowired
+    //private BlobStorageWriteService blobStorageWriteService;
+    //
+    //@Autowired
+    //private BlobStorageDeleteService blobStorageDeleteService;
 
     public Optional<HearingRecording> findOne(UUID id) {
         Optional<HearingRecording> storedDocument = storedDocumentRepository.findById(id);
@@ -65,7 +65,6 @@ public class HearingRecordingService {
     }
 
 
-
 //Note this work crosses over heavily with    https://tools.hmcts.net/jira/browse/EM-3385 so will be completed as part of that
 //
 //    public void saveItemsToBucket(Folder folder, List<MultipartFile> files) {
@@ -79,7 +78,7 @@ public class HearingRecordingService {
 //                                                                                             file,
 //                                                                                             userId,
 //                                                                                             azureStorageConfiguration
-//                                                                                                 .isPostgresBlobStorageEnabled());
+//                                                                                     .isPostgresBlobStorageEnabled());
 //            storedDocument.getDocumentContentVersions().add(documentContentVersion);
 //
 //            save(storedDocument);
@@ -113,7 +112,7 @@ public class HearingRecordingService {
 //                                                                                       file,
 //                                                                                       userId,
 //                                                                                       azureStorageConfiguration
-//                                                                                           .isPostgresBlobStorageEnabled());
+//                                                                                   .isPostgresBlobStorageEnabled());
 //            document.getDocumentContentVersions().add(documentContentVersion);
 //            save(document);
 //            storeInAzureBlobStorage(document, documentContentVersion, file);
@@ -141,7 +140,7 @@ public class HearingRecordingService {
 //                                                                                   file,
 //                                                                                   securityUtilService.getUserId(),
 //                                                                                   azureStorageConfiguration
-//                                                                                       .isPostgresBlobStorageEnabled());
+//                                                                                 .isPostgresBlobStorageEnabled());
 //        storedDocument.getDocumentContentVersions().add(documentContentVersion);
 //        documentContentVersionRepository.save(documentContentVersion);
 //        storeInAzureBlobStorage(storedDocument, documentContentVersion, file);
@@ -166,7 +165,8 @@ public class HearingRecordingService {
 //        storedDocumentRepository.save(storedDocument);
 //    }
 //
-//    public void updateHearingRecording(@NonNull HearingRecording storedDocument, @NonNull UpdateDocumentCommand command) {
+//    public void updateHearingRecording(@NonNull HearingRecording storedDocument,
+//    @NonNull UpdateDocumentCommand command) {
 //        updateHearingRecording(storedDocument, command.getTtl(), null);
 //    }
 //
