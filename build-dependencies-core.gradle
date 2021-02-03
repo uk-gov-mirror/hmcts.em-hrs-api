@@ -18,7 +18,21 @@ ext.libraries = [
 
 dependencies {
 
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+
+  compile (group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4') {
+    exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
+  }
+  compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.logging
+  compile ("uk.gov.hmcts.reform:properties-volume-spring-boot-starter:0.1.0"){
+    exclude group: 'org.springframework.cloud' , module : 'spring-cloud-context'
+    exclude group: 'org.springframework.boot' , module: 'spring-boot-starter-web'
+  }
+
+
+
+
 
 // *****************************************************
 // HMCTS standard libs
@@ -36,8 +50,12 @@ dependencies {
     "org.springframework.boot:spring-boot-starter-json",
     "org.springframework.boot:spring-boot-starter-validation",
     "org.springframework.boot:spring-boot-starter-web",
+    "org.springframework.boot:spring-boot-starter-security",
     "uk.gov.hmcts.reform:properties-volume-spring-boot-starter:0.1.0", //injects secret properties into container from azure vault
   )
+
+
+
 
 //hmcts logging
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'

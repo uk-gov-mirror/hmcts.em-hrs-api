@@ -22,8 +22,7 @@ import static org.mockito.Mockito.*;
 public class AuditEntryServiceTests {
 
     @Mock
-    private HearingRecordingAuditEntryRepository hearingRecordingAuditEntryRepository
-        ;
+    private HearingRecordingAuditEntryRepository hearingRecordingAuditEntryRepository;
 
 
     @Mock
