@@ -44,7 +44,8 @@ public enum AuditActions {
 
 
     DATA_LIFECYCLE_CREATED,
-    DATA_LIFECYCLE_UPDATED,
+    DATA_LIFECYCLE_UPDATED,//TODO note audio files CANNOT be updated, however some meta fields can, perhaps
+    // ccd_attachment_id?
     DATA_LIFECYCLE_DELETED,
     DATA_LIFECYCLE_HARD_DELETED,
 

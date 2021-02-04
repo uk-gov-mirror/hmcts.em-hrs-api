@@ -9,11 +9,11 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 @Entity
-@DiscriminatorValue(value = "hearing_recording")
-public class HearingRecordingAuditEntry extends AuditEntry {
+@DiscriminatorValue(value = "hearing_recording_segment")
+public class HearingRecordingSegmentAuditEntry extends AuditEntry {
 
     @Getter @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    private HearingRecording hearingRecording;
+    private HearingRecordingSegment hearingRecordingSegment;
 
 }
