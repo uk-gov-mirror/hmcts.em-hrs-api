@@ -6,23 +6,22 @@ import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {TestUtil.class})
+@SpringBootTest
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Smoke")})
-public class SmokeJavaTest {
+public class SmokeTest {
 
     private static final String MESSAGE = "Welcome to Hearing Recordings Service";
 
-    @Autowired
-    private TestUtil testUtil;
+    @Value("${test.url}")
+    private String testUrl;
 
     @Test
     public void testHealthEndpoint() {
@@ -32,7 +31,7 @@ public class SmokeJavaTest {
         String response =
             SerenityRest
                 .given()
-                .baseUri(testUtil.getTestUrl())
+                .baseUri(testUrl)
                 .when()
                 .get("/")
                 .then()

@@ -50,7 +50,7 @@ dependencies {
     "org.springframework.boot:spring-boot-starter-json",
     "org.springframework.boot:spring-boot-starter-validation",
     "org.springframework.boot:spring-boot-starter-web",
-    "org.springframework.boot:spring-boot-starter-security",
+//    "org.springframework.boot:spring-boot-starter-security",
     "uk.gov.hmcts.reform:properties-volume-spring-boot-starter:0.1.0", //injects secret properties into container from azure vault
   )
 
