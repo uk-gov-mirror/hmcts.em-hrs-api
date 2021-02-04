@@ -26,7 +26,7 @@ public class HearingRecordingService {
     private FolderRepository folderRepository;
 
     @Autowired
-    private HearingRecordingRepository storedDocumentRepository;
+    private HearingRecordingRepository hearingRecordingRepository;
 
 
 //    @Autowired
@@ -45,23 +45,23 @@ public class HearingRecordingService {
     //private BlobStorageDeleteService blobStorageDeleteService;
 
     public Optional<HearingRecording> findOne(UUID id) {
-        Optional<HearingRecording> storedDocument = storedDocumentRepository.findById(id);
-        if (storedDocument.isPresent() && storedDocument.get().isDeleted()) {
+        Optional<HearingRecording> hearingRecording = hearingRecordingRepository.findById(id);
+        if (hearingRecording.isPresent() && hearingRecording.get().isDeleted()) {
             return Optional.empty();
         }
-        return storedDocument;
+        return hearingRecording;
     }
 
     public Optional<HearingRecording> findOneWithBinaryData(UUID id) {
-        Optional<HearingRecording> storedDocument = storedDocumentRepository.findById(id);
-        if (storedDocument.isPresent() && storedDocument.get().isHardDeleted()) {
+        Optional<HearingRecording> hearingRecording = hearingRecordingRepository.findById(id);
+        if (hearingRecording.isPresent() && hearingRecording.get().isHardDeleted()) {
             return Optional.empty();
         }
-        return storedDocument;
+        return hearingRecording;
     }
 
-    public HearingRecording save(HearingRecording storedDocument) {
-        return storedDocumentRepository.save(storedDocument);
+    public HearingRecording save(HearingRecording hearingRecording) {
+        return hearingRecordingRepository.save(hearingRecording);
     }
 
 
@@ -70,21 +70,21 @@ public class HearingRecordingService {
 //    public void saveItemsToBucket(Folder folder, List<MultipartFile> files) {
 //        String userId = securityUtilService.getUserId();
 //        List<HearingRecording> items = files.stream().map(file -> {
-//            HearingRecording storedDocument = new HearingRecording();
-//            storedDocument.setFolder(folder);
-//            storedDocument.setCreatedBy(userId);
-//            storedDocument.setLastModifiedBy(userId);
-//            final DocumentContentVersion documentContentVersion = new DocumentContentVersion(storedDocument,
+//            HearingRecording hearingRecording = new HearingRecording();
+//            hearingRecording.setFolder(folder);
+//            hearingRecording.setCreatedBy(userId);
+//            hearingRecording.setLastModifiedBy(userId);
+//            final DocumentContentVersion documentContentVersion = new DocumentContentVersion(hearingRecording,
 //                                                                                             file,
 //                                                                                             userId,
 //                                                                                             azureStorageConfiguration
 //                                                                                     .isPostgresBlobStorageEnabled());
-//            storedDocument.getDocumentContentVersions().add(documentContentVersion);
+//            hearingRecording.getDocumentContentVersions().add(documentContentVersion);
 //
-//            save(storedDocument);
-//            storeInAzureBlobStorage(storedDocument, documentContentVersion, file);
+//            save(hearingRecording);
+//            storeInAzureBlobStorage(hearingRecording, documentContentVersion, file);
 //            closeBlobInputStream(documentContentVersion);
-//            return storedDocument;
+//            return hearingRecording;
 //        }).collect(Collectors.toList());
 //
 //        folder.getHearingRecordings().addAll(items);
@@ -135,25 +135,25 @@ public class HearingRecordingService {
 //        }
 //    }
 //
-//    public DocumentContentVersion addHearingRecordingVersion(HearingRecording storedDocument, MultipartFile file) {
-//        DocumentContentVersion documentContentVersion = new DocumentContentVersion(storedDocument,
+//    public DocumentContentVersion addHearingRecordingVersion(HearingRecording hearingRecording, MultipartFile file) {
+//        DocumentContentVersion documentContentVersion = new DocumentContentVersion(hearingRecording,
 //                                                                                   file,
 //                                                                                   securityUtilService.getUserId(),
 //                                                                                   azureStorageConfiguration
 //                                                                                 .isPostgresBlobStorageEnabled());
-//        storedDocument.getDocumentContentVersions().add(documentContentVersion);
+//        hearingRecording.getDocumentContentVersions().add(documentContentVersion);
 //        documentContentVersionRepository.save(documentContentVersion);
-//        storeInAzureBlobStorage(storedDocument, documentContentVersion, file);
+//        storeInAzureBlobStorage(hearingRecording, documentContentVersion, file);
 //        closeBlobInputStream(documentContentVersion);
 //
 //        return documentContentVersion;
 //    }
 //
-//    public void deleteDocument(HearingRecording storedDocument, boolean permanent) {
-//        storedDocument.setDeleted(true);
+//    public void deleteDocument(HearingRecording hearingRecording, boolean permanent) {
+//        hearingRecording.setDeleted(true);
 //        if (permanent) {
-//            storedDocument.setHardDeleted(true);
-//            storedDocument.getDocumentContentVersions().parallelStream().forEach(documentContentVersion -> {
+//            hearingRecording.setHardDeleted(true);
+//            hearingRecording.getDocumentContentVersions().parallelStream().forEach(documentContentVersion -> {
 //                if (azureStorageConfiguration.isAzureBlobStoreEnabled()) {
 //                    blobStorageDeleteService.deleteDocumentContentVersion(documentContentVersion);
 //                } else if (documentContentVersion.getDocumentContent() != null) {
@@ -162,41 +162,41 @@ public class HearingRecordingService {
 //                }
 //            });
 //        }
-//        storedDocumentRepository.save(storedDocument);
+//        hearingRecordingRepository.save(hearingRecording);
 //    }
 //
-//    public void updateHearingRecording(@NonNull HearingRecording storedDocument,
+//    public void updateHearingRecording(@NonNull HearingRecording hearingRecording,
 //    @NonNull UpdateDocumentCommand command) {
-//        updateHearingRecording(storedDocument, command.getTtl(), null);
+//        updateHearingRecording(hearingRecording, command.getTtl(), null);
 //    }
 //
 //    public void updateHearingRecording(
-//        @NonNull HearingRecording storedDocument,
+//        @NonNull HearingRecording hearingRecording,
 //        Date ttl,
 //        Map<String, String> metadata
 //    ) {
-//        if (storedDocument.isDeleted()) {
+//        if (hearingRecording.isDeleted()) {
 //            return;
 //        }
 //
 //        if (metadata != null) {
-//            storedDocument.getMetadata().putAll(metadata);
+//            hearingRecording.getMetadata().putAll(metadata);
 //        }
 //
-//        storedDocument.setTtl(ttl);
-//        storedDocument.setLastModifiedBy(securityUtilService.getUserId());
-//        save(storedDocument);
+//        hearingRecording.setTtl(ttl);
+//        hearingRecording.setLastModifiedBy(securityUtilService.getUserId());
+//        save(hearingRecording);
 //    }
 //
 //    public List<HearingRecording> findAllExpiredHearingRecordings() {
-//        return storedDocumentRepository.findByTtlLessThanAndHardDeleted(new Date(), false);
+//        return hearingRecordingRepository.findByTtlLessThanAndHardDeleted(new Date(), false);
 //    }
 //
-//    private void storeInAzureBlobStorage(HearingRecording storedDocument,
+//    private void storeInAzureBlobStorage(HearingRecording hearingRecording,
 //                                         DocumentContentVersion documentContentVersion,
 //                                         MultipartFile file) {
 //        if (azureStorageConfiguration.isAzureBlobStoreEnabled()) {
-//            blobStorageWriteService.uploadDocumentContentVersion(storedDocument,
+//            blobStorageWriteService.uploadDocumentContentVersion(hearingRecording,
 //                documentContentVersion,
 //                file);
 //        }

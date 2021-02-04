@@ -49,8 +49,8 @@ public class AuditEntryService {
     @Autowired
     private SecurityUtilService securityUtilService;
 
-    public List<HearingRecordingAuditEntry> findStoredDocumentAudits(HearingRecording hearingRecording) {
-        return hearingRecordingAuditEntryRepository.findByStoredDocumentOrderByRecordedDateTimeAsc(hearingRecording);
+    public List<HearingRecordingAuditEntry> findHearingRecordingAudits(HearingRecording hearingRecording) {
+        return hearingRecordingAuditEntryRepository.findByHearingRecordingOrderByRecordedDateTimeAsc(hearingRecording);
     }
 
     public HearingRecordingAuditEntry createAndSaveEntry(HearingRecording hearingRecording,

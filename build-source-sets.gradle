@@ -31,6 +31,12 @@ sourceSets {
       runtimeClasspath += main.output
       srcDir file('src/smokeTest/java')
     }
+    groovy {
+      compileClasspath += main.output + test.output
+      runtimeClasspath += main.output + test.output
+      srcDir('src/smokeTest/groovy')
+    }
+
     resources.srcDir file('src/smokeTest/resources')
   }
 }

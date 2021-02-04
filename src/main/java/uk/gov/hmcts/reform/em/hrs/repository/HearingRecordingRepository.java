@@ -18,10 +18,10 @@ import java.util.UUID;
 @Repository
 public interface HearingRecordingRepository extends PagingAndSortingRepository<HearingRecording, UUID> {
 
-    //@Query("select s from StoredDocument s join s.metadata m where s.deleted = false and KEY(m) =
+    //@Query("select s from HearingRecording s join s.metadata m where s.deleted = false and KEY(m) =
     //:#{#metadataSearchCommand.name} and m = :#{#metadataSearchCommand.value}")
 
-    //Page<StoredDocument> findAllByMetadata(@NonNull @Param("metadataSearchCommand") MetadataSearchCommand
+    //Page<HearingRecording> findAllByMetadata(@NonNull @Param("metadataSearchCommand") MetadataSearchCommand
     //metadataSearchCommand, @NonNull Pageable pageable);
 
 

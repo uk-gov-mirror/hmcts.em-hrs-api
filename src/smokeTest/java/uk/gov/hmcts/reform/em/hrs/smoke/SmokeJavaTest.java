@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Smoke")})
-public class SmokeTest {
+public class SmokeJavaTest {
 
     private static final String MESSAGE = "Welcome to Hearing Recordings Service";
 

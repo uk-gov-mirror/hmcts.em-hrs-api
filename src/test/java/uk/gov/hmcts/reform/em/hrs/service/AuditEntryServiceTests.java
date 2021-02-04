@@ -52,10 +52,10 @@ public class AuditEntryServiceTests {
     @Test
     public void testFindHearingRecordingAudits() {
         when(hearingRecordingAuditEntryRepository
-                 .findByStoredDocumentOrderByRecordedDateTimeAsc(TestUtil.HEARING_RECORDING))
+                 .findByHearingRecordingOrderByRecordedDateTimeAsc(TestUtil.HEARING_RECORDING))
             .thenReturn(Stream.of(new HearingRecordingAuditEntry()).collect(Collectors.toList()));
         List<HearingRecordingAuditEntry> entries =
-            auditEntryService.findStoredDocumentAudits(TestUtil.HEARING_RECORDING);
+            auditEntryService.findHearingRecordingAudits(TestUtil.HEARING_RECORDING);
         Assert.assertEquals(1, entries.size());
     }
 

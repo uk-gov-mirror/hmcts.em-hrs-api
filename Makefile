@@ -41,11 +41,16 @@ sonarqube-run-tests:
 report-checkstyle:
 	xdg-open build/reports/checkstyle/main.html
 
+report-code-tests:
+	xdg-open build/reports/tests/test/index.html
+
 report-integration-tests:
 	xdg-open build/reports/tests/integration/index.html
 
-report-code-tests:
-	xdg-open build/reports/tests/test/index.html
+report-smoke-tests:
+	xdg-open build/reports/tests/smoke/index.html
+
+
 
 report-code-pmd-main:
 	xdg-open build/reports/pmd/main.html

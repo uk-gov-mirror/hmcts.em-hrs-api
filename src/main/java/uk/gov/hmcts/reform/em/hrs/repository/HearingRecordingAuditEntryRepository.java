@@ -12,6 +12,6 @@ import java.util.UUID;
 public interface HearingRecordingAuditEntryRepository
     extends PagingAndSortingRepository<HearingRecordingAuditEntry, UUID> {
 
-    List<HearingRecordingAuditEntry> findByStoredDocumentOrderByRecordedDateTimeAsc(HearingRecording hearingRecording);
+    List<HearingRecordingAuditEntry> findByHearingRecordingOrderByRecordedDateTimeAsc(HearingRecording hearingRecording);
 
 }
