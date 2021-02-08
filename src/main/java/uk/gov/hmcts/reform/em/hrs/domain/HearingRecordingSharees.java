@@ -53,11 +53,11 @@ public class HearingRecordingSharees {
         }
     }
 
-    public void setSharedOn(Date recordedDateTime) {
-        if (recordedDateTime == null) {
+    public void setSharedOn(Date eventDateTime) {
+        if (eventDateTime == null) {
             throw new IllegalArgumentException();
         } else {
-            this.sharedOn = new Date(recordedDateTime.getTime());
+            this.sharedOn = new Date(eventDateTime.getTime());
         }
     }
 }

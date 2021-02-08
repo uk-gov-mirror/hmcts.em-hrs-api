@@ -50,7 +50,7 @@ public class AuditEntryService {
     private SecurityUtilService securityUtilService;
 
     public List<HearingRecordingAuditEntry> findHearingRecordingAudits(HearingRecording hearingRecording) {
-        return hearingRecordingAuditEntryRepository.findByHearingRecordingOrderByRecordedDateTimeAsc(hearingRecording);
+        return hearingRecordingAuditEntryRepository.findByHearingRecordingOrderByEventDateTimeAsc(hearingRecording);
     }
 
     public HearingRecordingAuditEntry createAndSaveEntry(HearingRecording hearingRecording,
@@ -81,7 +81,7 @@ public class AuditEntryService {
         auditEntry.setAction(action);
         auditEntry.setUsername(username);
         auditEntry.setServiceName(serviceName);
-        auditEntry.setRecordedDateTime(new Date());
+        auditEntry.setEventDateTime(new Date());
     }
 
 

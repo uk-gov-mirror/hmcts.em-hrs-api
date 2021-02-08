@@ -38,26 +38,28 @@ public abstract class AuditEntry {
 
     private String username;
 
+    private String ipAddress;
+
     @NotNull
     private String serviceName;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    private Date recordedDateTime;
+    private Date eventDateTime;
 
-    public Date getRecordedDateTime() {
-        if (recordedDateTime == null) {
+    public Date getEventDateTime() {
+        if (eventDateTime == null) {
             return null;
         } else {
-            return new Date(recordedDateTime.getTime());
+            return new Date(eventDateTime.getTime());
         }
     }
 
-    public void setRecordedDateTime(Date recordedDateTime) {
-        if (recordedDateTime == null) {
+    public void setEventDateTime(Date eventDateTime) {
+        if (eventDateTime == null) {
             throw new IllegalArgumentException();
         } else {
-            this.recordedDateTime = new Date(recordedDateTime.getTime());
+            this.eventDateTime = new Date(eventDateTime.getTime());
         }
     }
 }

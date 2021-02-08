@@ -10,7 +10,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -93,12 +92,13 @@ public class HearingRecording {
 
 
     private Date ttl;
+    private String recordingReference;
     private String caseReference;
     private String hearingLocationReference;
     private String hearingSource;
     private String jurisdictionCode;
     private String serviceCode;
-    private Integer ccdId; //TODO check if Integer big enough / if should be a string....
+    private Long ccdCaseId;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hearingRecording")
     private Set<HearingRecordingSegment> segments;
@@ -113,8 +113,10 @@ public class HearingRecording {
                             Set<HearingRecordingAuditEntry> auditEntries,
                             //Set<String> roles,
                             Map<String, String> metadata, Date ttl,
-                            String caseReference, String hearingLocationReference, String hearingSource,
-                            String jurisdictionCode, String serviceCode, Integer ccdId, Set<HearingRecordingSegment> segments) {
+                            String recordingReference, String caseReference, String hearingLocationReference,
+                            String hearingSource,
+                            String jurisdictionCode, String serviceCode, Long ccdCaseId,
+                            Set<HearingRecordingSegment> segments) {
         setId(id);
         setCreatedBy(createdBy);
         setCreatedByService(createdByService);
@@ -132,14 +134,14 @@ public class HearingRecording {
         setTtl(ttl);
 
 
-
+        setRecordingReference(recordingReference);
         setCaseReference(caseReference);
         setHearingLocationReference(hearingLocationReference);
         setHearingSource(hearingSource);
         setJurisdictionCode(jurisdictionCode);
 
         setServiceCode(serviceCode);
-        setCcdId(ccdId);
+        setCcdCaseId(ccdCaseId);
 
         setSegments(segments);
 
