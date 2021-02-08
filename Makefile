@@ -10,23 +10,27 @@ liquibase-create-change-log:
 liquibase-apply-change-log:
 	./gradlew migratePostgresDatabase
 
-application-run:
+app-run:
 	./gradlew bootRun
 
-application-smoke-test:
+app-smoke-test:
 	./gradlew smoke -i
 
-build-functional-test:
+test-functional:
 	./gradlew functional -i
 
-build-integration-test:
+test-integration:
 	./gradlew integration -i
 
-build-test:
+test-code:
 	./gradlew test -i
 
-build-check:
+check-code:
 	./gradlew check -i
+
+check-dependencies:
+	./gradlew dependencyCheckAggregate -i
+
 
 
 #Note this fails if there is already a container.
@@ -63,3 +67,6 @@ report-code-pmd-integration-test:
 
 report-code-pmd-smoke-test:
 	xdg-open build/reports/pmd/test.html
+
+report-dependency-check:
+	xdg-open build/reports/dependency-check-report.html
