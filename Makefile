@@ -32,7 +32,10 @@ check-dependencies:
 	./gradlew dependencyCheckAggregate -i
 
 check-coverage:
-	./gradlew jacocoTestCoverageVerification jacocoTestReport
+	./gradlew test integration  jacocoTestCoverageVerification jacocoTestReport && xdg-open build/reports/jacoco/test/html/index.html
+
+check-all:
+	./gradlew test integration check dependencyCheckAggregate jacocoTestCoverageVerification jacocoTestReport && xdg-open	build/reports/jacoco/test/html/index.html
 
 #Note this fails if there is already a container.
 sonarqube-run-local-sonarqube-server:
@@ -77,6 +80,3 @@ report-dependency-check:
 
 report-jacoco:
 	xdg-open build/reports/jacoco/test/html/index.html
-
-report-all:
-
