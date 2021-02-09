@@ -10,12 +10,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class RootUrlControllerTest {
+class RootUrlControllerTest {
 
-    private final RootUrlController rootUrlController = new RootUrlController();
+    final RootUrlController rootUrlController = new RootUrlController();
 
     @Test
-    public void test_should_return_welcome_response() {
+    void test_should_return_welcome_response() {
 
         ResponseEntity<String> responseEntity = rootUrlController.welcome();
         String expectedMessage = "Welcome to Hearing Recordings Service";
