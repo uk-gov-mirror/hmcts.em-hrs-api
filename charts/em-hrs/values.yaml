@@ -20,7 +20,7 @@ java:
     SPRING_DATASOURCE_USERNAME: emhrs@em-hrs-postgres-db-{{ .Values.global.environment }}
 
     # Document Storage
-    STORAGE_CONTAINER_DOCUMENT_CONTAINER_NAME: em-hrs-hearing-recording-store-{{ .Values.global.environment }}
+    STORAGE_CONTAINER_DOCUMENT_CONTAINER_NAME: dm-store-docstore-{{ .Values.global.environment }}
 
     IDAM_API_BASE_URI: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
 
