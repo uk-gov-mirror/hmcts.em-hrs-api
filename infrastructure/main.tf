@@ -68,7 +68,7 @@ resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
   name         = "${var.component}-POSTGRES-PORT"
-  value        = "5432"
+  value        = module.db.postgresql_listen_port
   key_vault_id = module.key-vault.key_vault_id
 }
 
