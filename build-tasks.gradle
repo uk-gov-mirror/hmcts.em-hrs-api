@@ -29,6 +29,7 @@ task integration(type: Test) {
 }
 
 task smoke(type: Test) {
+  group = 'Delivery pipeline'
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath

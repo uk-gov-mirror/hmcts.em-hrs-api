@@ -6,26 +6,29 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
 import java.util.UUID;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 
-
 @Entity
 @Getter
 @Setter
-@DiscriminatorColumn(name = "type")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class AuditEntry {
+public class HearingRecordingSharees {
+
+    @Getter
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    private HearingRecording hearingRecording;
+
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -33,33 +36,28 @@ public abstract class AuditEntry {
     private UUID id;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    private AuditActions action;
-
-    private String username;
-
-    private String ipAddress;
+    private String shareeEmail;
 
     @NotNull
-    private String serviceName;
+    private String sharedByRef;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    private Date eventDateTime;
+    private Date sharedOn;
 
-    public Date getEventDateTime() {
-        if (eventDateTime == null) {
+    public Date getSharedOn() {
+        if (sharedOn == null) {
             return null;
         } else {
-            return new Date(eventDateTime.getTime());
+            return new Date(sharedOn.getTime());
         }
     }
 
-    public void setEventDateTime(Date eventDateTime) {
+    public void setSharedOn(Date eventDateTime) {
         if (eventDateTime == null) {
             throw new IllegalArgumentException();
         } else {
-            this.eventDateTime = new Date(eventDateTime.getTime());
+            this.sharedOn = new Date(eventDateTime.getTime());
         }
     }
 }

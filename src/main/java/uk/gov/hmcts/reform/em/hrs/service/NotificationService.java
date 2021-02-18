@@ -1,15 +1,15 @@
-package uk.gov.hmcts.reform.em.hrs.service.notification;
+package uk.gov.hmcts.reform.em.hrs.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.hrs.service.DocumentProcessingException;
+import uk.gov.hmcts.reform.em.hrs.exception.JsonDocumentProcessingException;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -31,7 +31,7 @@ public class NotificationService {
 
     private static final String IDAM_USER_DETAILS_ENDPOINT = "/details";
 
-    private final Logger log = LoggerFactory.getLogger(NotificationService.class);
+    //private final Logger log = LoggerFactory.getLogger(NotificationService.class);
 
     public NotificationService(NotificationClient notificationClient, OkHttpClient http) {
         this.notificationClient = notificationClient;
@@ -40,7 +40,7 @@ public class NotificationService {
 
     public void sendEmailNotification(String templateId, String jwt,
                                       String docLink) throws NotificationClientException,
-        IOException, DocumentProcessingException {
+        IOException, JsonDocumentProcessingException {
 
         String userEmail = getUserEmail(jwt);
         notificationClient.sendEmail(
@@ -49,7 +49,7 @@ public class NotificationService {
                 createPersonalisation(docLink),
                 "Email Notification: " + userEmail);
 
-        log.info(String.format("Notification email sent to email-Id: %s", userEmail));
+        //log.info(String.format("Notification email sent to email-Id: %s", userEmail));
     }
 
     private Map<String, String> createPersonalisation(String docLink) {
@@ -59,7 +59,7 @@ public class NotificationService {
     }
 
     private String getUserEmail(String jwt) throws
-        IOException, DocumentProcessingException {
+        IOException, JsonDocumentProcessingException {
 
         final Request request = new Request.Builder()
                 .addHeader("authorization", jwt)
@@ -67,16 +67,14 @@ public class NotificationService {
                 .get()
                 .build();
 
-         try (final Response response = http.newCall(request).execute()) {
-             if (response.isSuccessful()) {
-                 JsonNode userDetails = jsonMapper.readValue(response.body().byteStream(), JsonNode.class);
-                 return userDetails.get("email").asText();
-             } else {
-                 throw new DocumentProcessingException(response.body().string());
-             }
+        final Response response = http.newCall(request).execute();
 
-         }
-
+        if (response.isSuccessful()) {
+            JsonNode userDetails = jsonMapper.readValue(response.body().byteStream(), JsonNode.class);
+            return userDetails.get("email").asText();
+        } else {
+            throw new JsonDocumentProcessingException(response.body().string());
+        }
 
     }
 }

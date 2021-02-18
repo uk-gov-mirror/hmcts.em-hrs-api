@@ -1,8 +1,11 @@
 docker-compose:
 	docker-compose up
 
-docker-compose-dependencies:
+docker-compose-dependencies-up:
 	docker-compose -f docker-compose-dependencies.yml up
+
+docker-compose-dependencies-down:
+	docker-compose -f docker-compose-dependencies.yml down
 
 liquibase-create-change-log:
 	./gradlew liquibaseDiffChangelog
@@ -35,7 +38,7 @@ check-coverage:
 	./gradlew test integration  jacocoTestCoverageVerification jacocoTestReport && xdg-open build/reports/jacoco/test/html/index.html
 
 check-all:
-	./gradlew -i test integration check dependencyCheckAggregate jacocoTestCoverageVerification jacocoTestReport && xdg-open	build/reports/jacoco/test/html/index.html
+	./gradlew test integration check dependencyCheckAggregate jacocoTestCoverageVerification jacocoTestReport && xdg-open	build/reports/jacoco/test/html/index.html
 
 #Note this fails if there is already a container.
 sonarqube-run-local-sonarqube-server:
@@ -49,7 +52,7 @@ sonarqube-run-tests-with-password-as-admin:
 	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="admin" -i
 
 sonarqube-run-tests-with-password-as-adminnew:
-	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="adminnew" -i
+	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="adminnew" -i && xdg-open http://localhost:9000/
 
 report-sonarcube:
 	xdg-open http://localhost:9000/

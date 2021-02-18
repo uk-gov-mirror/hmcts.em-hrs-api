@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-public class GetWelcomeTest {
+public class GetRootUrlTest {
 
     @Autowired
     private transient MockMvc mockMvc;
