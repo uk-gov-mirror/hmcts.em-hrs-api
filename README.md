@@ -3,6 +3,33 @@
 
 #Local Dev
 
+##First Time Build
+
+You'll need to get sonarcube, and initialise it and change the password to adminnew
+
+to fetch the latest image, run it and open the browser
+run:
+make sonarqube-fetch-sonarqube-latest
+make report-sonarcube
+
+in the browser, log in as admin (password=admin), go to http://localhost:9000/account/security/ and change password to adminnew
+
+
+##Subsequent Builds (these must all pass before raising a PR)
+
+checks:
+ - make check-all
+
+sonarcube:
+ - make sonarqube-run-local-sonarqube-server
+ - sonarqube-run-tests-with-password-as-adminnew
+
+smoketest:
+
+ - make docker-compose-dependencies-up
+ - make app-run
+ - make app-smoke-test
+
 #Connecting to Database
 Using PGAdmin, or IntelliJ Ultimate:
 

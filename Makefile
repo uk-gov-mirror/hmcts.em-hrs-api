@@ -52,7 +52,7 @@ sonarqube-run-tests-with-password-as-admin:
 	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="admin" -i
 
 sonarqube-run-tests-with-password-as-adminnew:
-	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="adminnew" -i
+	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="adminnew" -i && xdg-open http://localhost:9000/
 
 report-sonarcube:
 	xdg-open http://localhost:9000/
