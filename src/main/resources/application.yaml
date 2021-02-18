@@ -31,7 +31,7 @@ spring:
     allow-bean-definition-overriding: true
 
   liquibase:
-    enabled: ${ENABLE_DB_MIGRATE:true}
+    enabled: ${ENABLE_DB_MIGRATE:false}
     change-log: classpath:/db/db.changelog-master.xml
 
   datasource:

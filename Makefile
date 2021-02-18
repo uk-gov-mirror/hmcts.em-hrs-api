@@ -1,8 +1,11 @@
 docker-compose:
 	docker-compose up
 
-docker-compose-dependencies:
+docker-compose-dependencies-up:
 	docker-compose -f docker-compose-dependencies.yml up
+
+docker-compose-dependencies-down:
+	docker-compose -f docker-compose-dependencies.yml down
 
 liquibase-create-change-log:
 	./gradlew liquibaseDiffChangelog
