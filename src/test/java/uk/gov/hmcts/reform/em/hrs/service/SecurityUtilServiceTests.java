@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.auth.checker.spring.serviceonly.ServiceDetails;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SecurityUtilServiceTests {
 
     @InjectMocks
@@ -31,12 +31,12 @@ public class SecurityUtilServiceTests {
 
         SecurityContextHolder.setContext(securityContext);
 
-        Assert.assertEquals("x", securityUtilService.getCurrentlyAuthenticatedServiceName());
+        Assertions.assertEquals("x", securityUtilService.getCurrentlyAuthenticatedServiceName());
     }
 
     @Test
     public void testFailureOfUsernameFromSecurityContextWhenItsNotThere() {
-        Assert.assertNull(securityUtilService.getCurrentlyAuthenticatedServiceName());
+        Assertions.assertNull(securityUtilService.getCurrentlyAuthenticatedServiceName());
     }
 
 }

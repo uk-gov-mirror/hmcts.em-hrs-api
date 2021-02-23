@@ -1,22 +1,20 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.repository.FolderRepository;
 
 import java.util.Optional;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FolderServiceTests {
 
     @Mock
@@ -32,7 +30,7 @@ public class FolderServiceTests {
 
         Optional<Folder> folder = folderService.findById(TestUtil.RANDOM_UUID);
 
-        Assert.assertEquals(Optional.of(TestUtil.folder), folder);
+        Assertions.assertEquals(Optional.of(TestUtil.folder), folder);
 
     }
 

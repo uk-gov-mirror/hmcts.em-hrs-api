@@ -1,14 +1,14 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
 //import static uk.gov.hmcts.reform.em.security.Classifications.PRIVATE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class HearingRecordingServiceTests {
 
     //    @Mock
@@ -43,7 +43,7 @@ public class HearingRecordingServiceTests {
 
     @Test
     public void dummyTest() {
-        assertThat("TRUE", equalTo("TRUE"));
+        MatcherAssert.assertThat("TRUE", equalTo("TRUE"));
     }
 
 

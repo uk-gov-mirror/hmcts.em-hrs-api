@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.domain.AuditActions;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
@@ -16,12 +16,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AuditEntryServiceTests {
 
     @InjectMocks
@@ -42,12 +39,11 @@ public class AuditEntryServiceTests {
             AuditActions.DATA_LIFECYCLE_CREATED
         );
 
-        Assert.assertEquals("x", entry.getUsername());
-        Assert.assertEquals("s", entry.getServiceName());
+        Assertions.assertEquals("x", entry.getUsername());
+        Assertions.assertEquals("s", entry.getServiceName());
 
         verify(hearingRecordingAuditEntryRepository, times(1)).save(any(HearingRecordingAuditEntry.class));
     }
-
 
     @Test
     public void testFindHearingRecordingAudits() {
@@ -56,8 +52,6 @@ public class AuditEntryServiceTests {
             .thenReturn(Stream.of(new HearingRecordingAuditEntry()).collect(Collectors.toList()));
         List<HearingRecordingAuditEntry> entries =
             auditEntryService.findHearingRecordingAudits(TestUtil.HEARING_RECORDING);
-        Assert.assertEquals(1, entries.size());
+        Assertions.assertEquals(1, entries.size());
     }
-
-
 }
