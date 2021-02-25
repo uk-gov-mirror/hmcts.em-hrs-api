@@ -135,3 +135,13 @@ resource "azurerm_key_vault_secret" "storage_account_secondary_connection_string
   value        = module.storage_account.storageaccount_secondary_connection_string
   key_vault_id = module.key-vault.key_vault_id
 }
+
+data "azurerm_key_vault" "s2s_vault" {
+  name = "s2s-${var.env}"
+  resource_group_name = "rpe-service-auth-provider-${var.env}"
+}
+
+data "azurerm_key_vault_secret" "s2s_key" {
+  name      = "microservicekey-em-hrs-api"
+  key_vault_id = data.azurerm_key_vault.s2s_vault.id
+}
