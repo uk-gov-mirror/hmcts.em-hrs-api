@@ -1,15 +1,154 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
+import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
+import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
+import uk.gov.hmcts.reform.em.hrs.repository.JobInProgressRepository;
+import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-//import static uk.gov.hmcts.reform.em.security.Classifications.PRIVATE;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.Collections.singleton;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
-public class HearingRecordingServiceTests {
+public class HearingRecordingServiceImplTests {
+    @Mock
+    private JobInProgressRepository jobInProgressRepository;
+    @Mock
+    private HearingRecordingRepository hearingRecordingRepository;
+    @Mock
+    private HearingRecordingStorage hearingRecordingStorage;
+    @InjectMocks
+    private HearingRecordingServiceImpl underTest;
+
+    private final String folderName = "folder-1";
+
+    @Test
+    void testShouldReturnEmptySetWhenNoCompletedFilesAndNoInProgressFilesFound() {
+        doReturn(Collections.emptyList()).when(jobInProgressRepository).findByFolder(folderName);
+        doReturn(Collections.emptyList()).when(hearingRecordingRepository).findByFolder(folderName);
+        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(folderName);
+        final Set<String> expectedFilenames = Collections.emptySet();
+
+        final Set<String> actualFilenames = underTest.getStoredFiles(folderName);
+
+        assertThat(actualFilenames).hasSameElementsAs(expectedFilenames);
+    }
+
+    @Test
+    void testShouldReturnCompletedFilesWhenCompletedFilesButNoInProgressFilesFound() {
+        doReturn(Collections.emptyList()).when(jobInProgressRepository).findByFolder(folderName);
+        doReturn(createMetadataFilenames(1, 3)).when(hearingRecordingRepository).findByFolder(folderName);
+        doReturn(createBlobstoreFilenames(1, 3)).when(hearingRecordingStorage).findByFolder(folderName);
+        final Set<String> expectedFilenames = Set.of("f1.mp4", "f2.mp4", "f3.mp4");
+
+        final Set<String> actualFilenames = underTest.getStoredFiles(folderName);
+
+        assertThat(actualFilenames).hasSameElementsAs(expectedFilenames);
+    }
+
+    @Test
+    void testShouldReturnInProgressFilesWhenNoCompletedFilesButInProgressFilesFound() {
+        doReturn(createJobsInProgress(1, 2)).when(jobInProgressRepository).findByFolder(folderName);
+        doReturn(Collections.emptyList()).when(hearingRecordingRepository).findByFolder(folderName);
+        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(folderName);
+        final Set<String> expectedFilenames = Set.of("f1.mp4", "f2.mp4");
+
+        final Set<String> actualFilenames = underTest.getStoredFiles(folderName);
+
+        assertThat(actualFilenames).hasSameElementsAs(expectedFilenames);
+    }
+
+    @Test
+    void testShouldReturnInProgressFilesAndCompletedFilesWhenCompletedFilesAndInProgressFilesFound() {
+        doReturn(createJobsInProgress(3, 3)).when(jobInProgressRepository).findByFolder(folderName);
+        doReturn(createMetadataFilenames(1, 2)).when(hearingRecordingRepository).findByFolder(folderName);
+        doReturn(createBlobstoreFilenames(1, 2)).when(hearingRecordingStorage).findByFolder(folderName);
+        final Set<String> expectedFilenames = Set.of("f1.mp4", "f2.mp4", "f3.mp4");
+
+        final Set<String> actualFilenames = underTest.getStoredFiles(folderName);
+
+        assertThat(actualFilenames).hasSameElementsAs(expectedFilenames);
+    }
+
+    @Test
+    void testShouldReturnUnionOfInProgressFilesAndCompletedFilesWhenFileAppearsInBothInProgressAndCompleted() {
+        doReturn(createJobsInProgress(2, 3)).when(jobInProgressRepository).findByFolder(folderName);
+        doReturn(createMetadataFilenames(1, 2)).when(hearingRecordingRepository).findByFolder(folderName);
+        doReturn(createBlobstoreFilenames(1, 2)).when(hearingRecordingStorage).findByFolder(folderName);
+        final Set<String> expectedFilenames = Set.of("f1.mp4", "f2.mp4", "f3.mp4");
+
+        final Set<String> actualFilenames = underTest.getStoredFiles(folderName);
+
+        assertThat(actualFilenames).hasSameElementsAs(expectedFilenames);
+    }
+
+    @Test
+    void testShouldExcludeFileWhenFileIsPresentInMetadataDatabaseButMissingInBlobstore() {
+        doReturn(Collections.emptyList()).when(jobInProgressRepository).findByFolder(folderName);
+        doReturn(createMetadataFilenames(1, 3)).when(hearingRecordingRepository).findByFolder(folderName);
+        doReturn(createBlobstoreFilenames(2, 3)).when(hearingRecordingStorage).findByFolder(folderName);
+        final Set<String> expectedFilenames = Set.of("f2.mp4", "f3.mp4");
+
+        final Set<String> actualFilenames = underTest.getStoredFiles(folderName);
+
+        assertThat(actualFilenames).hasSameElementsAs(expectedFilenames);
+    }
+
+    @Test
+    void testShouldExcludeFileWhenFileIsPresentInBlobstoreButMissingInMetadataDatabase() {
+        doReturn(Collections.emptyList()).when(jobInProgressRepository).findByFolder(folderName);
+        doReturn(createMetadataFilenames(2, 3)).when(hearingRecordingRepository).findByFolder(folderName);
+        doReturn(createBlobstoreFilenames(1, 3)).when(hearingRecordingStorage).findByFolder(folderName);
+        final Set<String> expectedFilenames = Set.of("f2.mp4", "f3.mp4");
+
+        final Set<String> actualFilenames = underTest.getStoredFiles(folderName);
+
+        assertThat(actualFilenames).hasSameElementsAs(expectedFilenames);
+    }
+
+    private String createIndexedFilename(final int index) {
+        return "f" + index + ".mp4";
+    }
+
+    private List<HearingRecording> createMetadataFilenames(final int start, final int end) {
+        return IntStream.rangeClosed(start, end)
+            .mapToObj(x -> HearingRecording.builder().segments(buildSingleHearingRecordingSegments(x)).build())
+            .collect(Collectors.toUnmodifiableList());
+    }
+
+    private Set<HearingRecordingSegment> buildSingleHearingRecordingSegments(final int fileIndex) {
+        return singleton(HearingRecordingSegment.builder().fileName(createIndexedFilename(fileIndex)).build());
+    }
+
+    private Set<String> createBlobstoreFilenames(final int start, final int end) {
+        return IntStream.rangeClosed(start, end)
+            .mapToObj(this::createIndexedFilename)
+            .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private List<JobInProgress> createJobsInProgress(final int start, final int end) {
+        return IntStream.rangeClosed(start, end)
+            .mapToObj(x -> JobInProgress.builder().filename(createIndexedFilename(x)).build())
+            .collect(Collectors.toUnmodifiableList());
+    }
+
+
+
+
+
 
     //    @Mock
     //    private HearingRecordingRepository hearingRecordingRepository;
@@ -32,19 +171,11 @@ public class HearingRecordingServiceTests {
     ////
     ////    @Mock
     ////    private BlobStorageDeleteService blobStorageDeleteService;
-    //
-    //    @InjectMocks
-    //    private HearingRecordingService hearingRecordingService;
 
     //    @Before
     //    public void setUp() {
     //        when(securityUtilService.getUserId()).thenReturn("Corín Tellado");
     //    }
-
-    @Test
-    public void dummyTest() {
-        MatcherAssert.assertThat("TRUE", equalTo("TRUE"));
-    }
 
 
     //    @Test

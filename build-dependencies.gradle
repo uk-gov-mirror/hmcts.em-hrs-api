@@ -164,6 +164,10 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
+  testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.24.0'
+  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.15.2', {
+    exclude group: 'junit', module: 'junit'
+  }
 
 
 

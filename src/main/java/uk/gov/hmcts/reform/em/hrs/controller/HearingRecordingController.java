@@ -8,11 +8,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
 
+import javax.inject.Inject;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 public class HearingRecordingController {
+    private final HearingRecordingService hearingRecordingService;
+
+    @Inject
+    public HearingRecordingController(final HearingRecordingService hearingRecordingService) {
+        this.hearingRecordingService = hearingRecordingService;
+    }
 
     @GetMapping(
         path = "/folders/{name}/hearing-recording-file-names",
@@ -23,9 +33,15 @@ public class HearingRecordingController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Names of successfully stored recording files")
     })
-    public ResponseEntity<RecordingFilenameDto> getHearingRecordingFilenames(@PathVariable(value = "name") String folderName) {
-
-        return new ResponseEntity<>(null, HttpStatus.OK);
+    public ResponseEntity<RecordingFilenameDto> getFilenames(@PathVariable(value = "name") final String folderName) {
+        final RecordingFilenameDto recordingFilenameDto = new RecordingFilenameDto(
+            folderName,
+            hearingRecordingService.getStoredFiles(folderName)
+        );
+        return ResponseEntity
+            .ok()
+            .contentType(APPLICATION_JSON)
+            .body(recordingFilenameDto);
     }
 
     @PostMapping(
