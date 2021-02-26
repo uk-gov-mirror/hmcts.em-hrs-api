@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
 
 import javax.inject.Inject;
@@ -21,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = HearingRecordingController.class)
+@WebMvcTest
 class HearingRecordingControllerTest {
     @Inject
     private MockMvc mockMvc;
@@ -33,8 +32,7 @@ class HearingRecordingControllerTest {
     public void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
         final String folderName = "folder-1";
         final String path = "/folders/" + folderName + "/hearing-recording-file-names";
-        final RecordingFilenameDto recordingFilenameDto = new RecordingFilenameDto(folderName, emptySet());
-        doReturn(recordingFilenameDto).when(hearingRecordingService).getStoredFiles(folderName);
+        doReturn(emptySet()).when(hearingRecordingService).getStoredFiles(folderName);
 
         final MvcResult mvcResult = mockMvc.perform(get(path).accept(APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -56,11 +54,7 @@ class HearingRecordingControllerTest {
     public void testWhenRequestedFolderHasStoredFiles() throws Exception {
         final String folderName = "folder-1";
         final String path = "/folders/" + folderName + "/hearing-recording-file-names";
-        final RecordingFilenameDto recordingFilenameDto = new RecordingFilenameDto(
-            folderName,
-            Set.of("file-1.mp4", "file-2.mp4")
-        );
-        doReturn(recordingFilenameDto).when(hearingRecordingService).getStoredFiles(folderName);
+        doReturn(Set.of("file-1.mp4", "file-2.mp4")).when(hearingRecordingService).getStoredFiles(folderName);
 
         final MvcResult mvcResult = mockMvc.perform(get(path).accept(APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
