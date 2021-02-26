@@ -36,3 +36,35 @@ data "azurerm_user_assigned_identity" "em-shared-identity" {
   resource_group_name = "managed-identities-${var.env}-rg"
 }
 
+module "db" {
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product            = "${local.app_full_name}-postgres-v11-db"
+  location           = var.location
+  env                = var.env
+  postgresql_user    = var.postgresql_user
+  postgresql_version = 11
+  database_name      = var.database_name
+  common_tags        = var.common_tags
+  subscription       = var.subscription
+}
+
+module "storage_account" {
+  source                    = "git@github.com:hmcts/cnp-module-storage-account?ref=master"
+  env                       = var.env
+  storage_account_name      = "emhrsapi${var.env}"
+  resource_group_name       = azurerm_resource_group.rg.name
+  location                  = var.location
+  account_kind              = "StorageV2"
+  account_tier              = "Standard"
+  account_replication_type  = "LRS"
+  access_tier               = "Hot"
+
+  enable_https_traffic_only = true
+
+  default_action = "Allow"
+
+  // Tags
+  common_tags  = local.tags
+  team_contact = var.team_contact
+  destroy_me   = var.destroy_me
+}
