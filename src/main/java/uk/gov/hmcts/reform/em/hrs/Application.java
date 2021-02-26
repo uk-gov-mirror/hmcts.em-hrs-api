@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.em.hrs;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 
 //DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class excluded as using repository finder pattern?
 // Without these exclusions it complains about various dependencies that are there

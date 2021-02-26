@@ -5,6 +5,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SetUtils {
+    private SetUtils() {
+    }
+
     public static <T> Set<T> intersect(final Set<T> setA, final Set<T> setB) {
         return setA.stream()
             .filter(setB::contains)

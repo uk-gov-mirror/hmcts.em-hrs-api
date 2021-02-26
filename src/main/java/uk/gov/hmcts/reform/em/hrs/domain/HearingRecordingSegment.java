@@ -99,7 +99,8 @@ public class HearingRecordingSegment {
                                    Set<HearingRecordingSegmentAuditEntry> auditEntries,
                                    String blobUuid, String fileName,
                                    String fileExtension, String fileMd5Checksum, BigDecimal fileSizeMb,
-                                   String ingestionFileSourceUri, String segmentIngestionStatus, Integer ingestionRetryCount,
+                                   String ingestionFileSourceUri, String segmentIngestionStatus,
+                                   Integer ingestionRetryCount,
                                    Integer recordingLengthMins,
                                    Integer recordingSegment, Integer ccdAttachmentId) {
         setHearingRecording(hearingRecording);

@@ -12,7 +12,9 @@ import uk.gov.hmcts.reform.em.hrs.repository.FolderRepository;
 
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class FolderServiceTests {

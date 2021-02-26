@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class HearingRecordingDto {
-    private final String recordingFileURI;
+    private final String recordingFileUri;
     private final String checkSum;
 }
