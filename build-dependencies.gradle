@@ -148,6 +148,7 @@ dependencies {
  * **************************************************************
  */
 
+  configurations.testImplementation.exclude group: 'com.vaadin.external.google', module: 'android-json'
 
   testImplementation "org.springframework.boot:spring-boot-starter-test", withoutStuff
   testImplementation 'com.github.gmazzo:okhttp-mock:1.3.2'
