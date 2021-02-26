@@ -88,7 +88,7 @@ resource "azurerm_key_vault_secret" "OLD-POSTGRES-PASS" {
 module "storage_account" {
   source                    = "git@github.com:hmcts/cnp-module-storage-account?ref=master"
   env                       = var.env
-  storage_account_name      = "emhrs${var.env}"
+  storage_account_name      = "emhrsapi${var.env}"
   resource_group_name       = azurerm_resource_group.rg.name
   location                  = var.location
   account_kind              = "StorageV2"
