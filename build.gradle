@@ -233,6 +233,7 @@ def versions = [
   serenityreporter   : '2.3.12',
   junit           : '5.7.0',
   junitPlatform   : '1.7.0',
+  testcontainers: '1.15.2',
 ]
 
 ext.libraries = [
@@ -262,6 +263,8 @@ dependencies {
 //    exclude group: 'org.springframework.cloud' , module : 'spring-cloud-context'
 //    exclude group: 'org.springframework.boot' , module: 'spring-boot-starter-web'
 //  }
+
+  implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
   implementation "org.apache.tomcat.embed:tomcat-embed-core:9.0.40" //TODO is tomcat version independent of spring boot version?
   implementation "org.apache.tomcat.embed:tomcat-embed-websocket:9.0.40" //TODO is tomcat version independent of spring boot version?
@@ -333,6 +336,14 @@ dependencies {
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+  }
+
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
+  testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.24.0'
+  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: versions.testcontainers
+  testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
+  testImplementation group: 'com.devskiller', name: 'jfairy', version: '0.6.4', {
+    exclude group: 'com.google.guava', module: 'guava'
   }
 
   smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff

@@ -36,8 +36,6 @@ public class Folder {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
-    @Getter
-    @Setter
     private String name;
 
     @OneToMany(mappedBy = "folder")

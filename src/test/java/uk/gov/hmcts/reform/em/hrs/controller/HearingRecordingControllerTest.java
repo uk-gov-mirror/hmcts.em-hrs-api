@@ -30,11 +30,12 @@ class HearingRecordingControllerTest {
     @MockBean
     private HearingRecordingService hearingRecordingService;
 
+    private static final String TEST_FOLDER = "folder-1";
+
     @Test
-    public void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
-        final String folderName = "folder-1";
-        final String path = "/folders/" + folderName + "/hearing-recording-file-names";
-        doReturn(emptySet()).when(hearingRecordingService).getStoredFiles(folderName);
+    void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
+        final String path = "/folders/" + TEST_FOLDER + "/hearing-recording-file-names";
+        doReturn(emptySet()).when(hearingRecordingService).getStoredFiles(TEST_FOLDER);
 
         final MvcResult mvcResult = mockMvc.perform(get(path).accept(APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -49,14 +50,13 @@ class HearingRecordingControllerTest {
                 x -> x.node("folder-name").isEqualTo("folder-1"),
                 x -> x.node("filenames").isArray().isEmpty()
             );
-        verify(hearingRecordingService, times(1)).getStoredFiles(folderName);
+        verify(hearingRecordingService, times(1)).getStoredFiles(TEST_FOLDER);
     }
 
     @Test
-    public void testWhenRequestedFolderHasStoredFiles() throws Exception {
-        final String folderName = "folder-1";
-        final String path = "/folders/" + folderName + "/hearing-recording-file-names";
-        doReturn(Set.of("file-1.mp4", "file-2.mp4")).when(hearingRecordingService).getStoredFiles(folderName);
+    void testWhenRequestedFolderHasStoredFiles() throws Exception {
+        final String path = "/folders/" + TEST_FOLDER + "/hearing-recording-file-names";
+        doReturn(Set.of("file-1.mp4", "file-2.mp4")).when(hearingRecordingService).getStoredFiles(TEST_FOLDER);
 
         final MvcResult mvcResult = mockMvc.perform(get(path).accept(APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -68,9 +68,9 @@ class HearingRecordingControllerTest {
         assertThatJson(content)
             .when(Option.IGNORING_ARRAY_ORDER)
             .and(
-                x -> x.node("folder-name").isEqualTo("folder-1"),
+                x -> x.node("folder-name").isEqualTo(TEST_FOLDER),
                 x -> x.node("filenames").isArray().isEqualTo(json("[\"file-1.mp4\",\"file-2.mp4\"]"))
             );
-        verify(hearingRecordingService, times(1)).getStoredFiles(folderName);
+        verify(hearingRecordingService, times(1)).getStoredFiles(TEST_FOLDER);
     }
 }

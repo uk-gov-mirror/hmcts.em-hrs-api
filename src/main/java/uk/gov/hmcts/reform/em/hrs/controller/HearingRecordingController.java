@@ -38,7 +38,7 @@ public class HearingRecordingController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Names of successfully stored recording files")
     })
-    public ResponseEntity<RecordingFilenameDto> getFilenames(@PathVariable(value = "name") final String folderName) {
+    public ResponseEntity<RecordingFilenameDto> getFilenames(@PathVariable("name") final String folderName) {
         final RecordingFilenameDto recordingFilenameDto = new RecordingFilenameDto(
             folderName,
             hearingRecordingService.getStoredFiles(folderName)
@@ -59,7 +59,7 @@ public class HearingRecordingController {
     @ApiResponses(value = {
         @ApiResponse(code = 202, message = "Request accepted for asynchronous processing")
     })
-    public ResponseEntity<HearingRecordingDto> createHearingRecording(@PathVariable(value = "name") String folderName,
+    public ResponseEntity<HearingRecordingDto> createHearingRecording(@PathVariable("name") String folderName,
                                                                       @RequestBody HearingRecordingDto request) {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }

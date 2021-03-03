@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.em.hrs.utils;
+package uk.gov.hmcts.reform.em.hrs.util;
 
 import org.junit.jupiter.api.Test;
 

@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.JobInProgressRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
-import uk.gov.hmcts.reform.em.hrs.utils.SetUtils;
+import uk.gov.hmcts.reform.em.hrs.util.SetUtils;
 
 import java.util.List;
 import java.util.Set;
