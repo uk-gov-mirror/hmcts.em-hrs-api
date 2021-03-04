@@ -4,7 +4,7 @@ java:
   ingressHost: ${SERVICE_FQDN}
   readinessDelay: 45
   keyVaults:
-    dm:
+    em-hrs-api:
       resourceGroup: em-hrs-api
       secrets:
         - storage-account-primary-connection-string
