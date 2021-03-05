@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.em.hrs.storage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.reform.em.hrs.Application;
-import uk.gov.hmcts.reform.em.hrs.componenttests.AzureOperations;
-import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestAzureStorageConfiguration;
+import uk.gov.hmcts.reform.em.hrs.config.TestAzureStorageConfiguration;
+import uk.gov.hmcts.reform.em.hrs.helper.AzureOperations;
 
 import java.util.Random;
 import java.util.Set;
@@ -17,10 +16,7 @@ import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
-    classes = {Application.class,
-        TestAzureStorageConfiguration.class,
-        DefaultHearingRecordingStorage.class,
-        AzureOperations.class}
+    classes = {TestAzureStorageConfiguration.class, DefaultHearingRecordingStorage.class, AzureOperations.class}
 )
 class DefaultHearingRecordingStorageTest {
     @Inject
