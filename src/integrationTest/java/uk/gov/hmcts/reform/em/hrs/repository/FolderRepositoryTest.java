@@ -5,6 +5,7 @@ import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 
 import java.util.Optional;
+import java.util.UUID;
 import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +26,12 @@ class FolderRepositoryTest extends AbstractRepositoryIntegrationTest {
     void testFindByFolderName() {
         final Optional<Folder> folder = underTest.findByName("folder-1");
 
-        assertThat(folder).isPresent();
+        assertThat(folder).hasValueSatisfying(x -> {
+            assertThat(x.getId()).isEqualTo(UUID.fromString("3E3F63FB-3C7A-447B-86DA-69ED164763B0"));
+            assertThat(x.getName()).isEqualTo("folder-1");
+            assertThat(x.getJobsInProgress().size()).isEqualTo(2);
+            assertThat(x.getHearingRecordings().size()).isEqualTo(2);
+        });
     }
 
 }
