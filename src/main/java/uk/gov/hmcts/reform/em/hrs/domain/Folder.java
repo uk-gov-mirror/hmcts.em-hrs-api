@@ -8,29 +8,23 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-
 @Entity
 @Builder
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
 public class Folder {
-    //public class Folder implements CreatorAware { //TODO unsure if this is useful in future
-
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -39,8 +33,10 @@ public class Folder {
     private String name;
 
     @OneToMany(mappedBy = "folder")
-    //@OrderColumn(name = "ds_idx") //TODO verify if having a sort index makes sense, case ref + segment probs better
     private List<HearingRecording> hearingRecordings;
+
+    @OneToMany(mappedBy = "folder")
+    private List<JobInProgress> jobsInProgress;
 
     @CreatedBy
     private String createdBy;
@@ -58,11 +54,18 @@ public class Folder {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOn;
 
-    public Folder(UUID id, String name, List<HearingRecording> hearingRecordings, String createdBy,
-                  String lastModifiedBy, Date modifiedOn, Date createdOn) {
+    public Folder(UUID id,
+                  String name,
+                  List<HearingRecording> hearingRecordings,
+                  List<JobInProgress> jobsInProgress,
+                  String createdBy,
+                  String lastModifiedBy,
+                  Date modifiedOn,
+                  Date createdOn) {
         this.id = id;
         this.name = name;
         this.hearingRecordings = hearingRecordings;
+        this.jobsInProgress = jobsInProgress;
         this.createdBy = createdBy;
         this.lastModifiedBy = lastModifiedBy;
         setModifiedOn(modifiedOn);
@@ -71,6 +74,7 @@ public class Folder {
 
     public Folder() {
         hearingRecordings = new ArrayList<>();
+        jobsInProgress = new ArrayList<>();
     }
 
     public Date getModifiedOn() {

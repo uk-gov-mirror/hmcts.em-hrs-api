@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -16,9 +16,10 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(initializers = AbstractRepositoryIntegrationTest.DockerPostgreDataSourceInitializer.class)
+//@TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=validate"})
 @Testcontainers
 public abstract class AbstractRepositoryIntegrationTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRepositoryIntegrationTest.class);
@@ -36,7 +37,6 @@ public abstract class AbstractRepositoryIntegrationTest {
         .withExposedPorts(MAPPED_PORT)
         .withLogConsumer(new Slf4jLogConsumer(LOGGER))
         .waitingFor(Wait.forListeningPort());
-
 
     static {
         POSTGRES_CONTAINER.start();

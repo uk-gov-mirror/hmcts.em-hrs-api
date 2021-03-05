@@ -283,7 +283,6 @@ dependencies {
     exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
     exclude group: 'com.vaadin.external.google', module: 'android-json'
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
-    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
     exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
   }
 
@@ -361,7 +360,6 @@ dependencies {
  * TEST DEPENDENCIES
  **********************************************************************************************************************/
 
-  testImplementation "org.springframework.boot:spring-boot-starter-test", withoutStuff
   testImplementation 'com.github.gmazzo:okhttp-mock:1.3.2'
   testImplementation libraries.junit5
 
