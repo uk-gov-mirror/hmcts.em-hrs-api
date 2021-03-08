@@ -142,10 +142,12 @@ jacocoTestReport {
 def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/Application*',
   '**uk/gov/hmcts/reform/em/hrs/config/**',
+  '**uk/gov/hmcts/reform/em/hrs/dto/**',
   '**uk/gov/hmcts/reform/em/hrs/domain/**',
   '**uk/gov/hmcts/reform/em/hrs/exception/**',
   '**uk/gov/hmcts/reform/em/hrs/repository/**',
   '**uk/gov/hmcts/reform/em/hrs/service/**',
+  '**uk/gov/hmcts/reform/em/hrs/storage/**',
 ]
 
 jacocoTestReport {

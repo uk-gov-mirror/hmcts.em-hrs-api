@@ -19,7 +19,6 @@ import javax.inject.Inject;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
 @RestController
 public class HearingRecordingController {
@@ -65,35 +64,35 @@ public class HearingRecordingController {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
-    @GetMapping(
-        path = "/folders/{name}/hearing-recording/{id}/segment/{segmentId}",
-        produces = APPLICATION_OCTET_STREAM_VALUE
-    )
-    @ResponseBody
-    @ApiOperation(value = "Get hearing recording", notes = "Return hearing recording file from the specified folder")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Return the requested hearing recording")
-    })
-    public ResponseEntity<HearingRecordingDto> getHearingRecording(@PathVariable("name") String folderName,
-                                                                      @PathVariable("id") String recordingId,
-                                                                   @PathVariable("segmentId") String segmentId) {
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PostMapping(
-        path = "/folders/{name}/hearing-recording/{id}/access-right",
-        consumes = APPLICATION_JSON_VALUE,
-        produces = APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    @ApiOperation(value = "Create permissions record", notes = "Create permissions record to the specified "
-        + "hearing recording and notify user with the link to the resource via email")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Return the location of the resource being granted "
-            + "access to (the download link)")
-    })
-    public ResponseEntity<HearingRecordingDto> shareHearingRecording(@PathVariable("name") String folderName,
-                                                                   @PathVariable("id") String recordingId) {
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+    //    @GetMapping(
+    //        path = "/folders/{name}/hearing-recording/{id}/segment/{segmentId}",
+    //        produces = APPLICATION_OCTET_STREAM_VALUE
+    //    )
+    //    @ResponseBody
+    //    @ApiOperation(value = "Get hearing recording", notes = "Return hearing recording file from the specified folder")
+    //    @ApiResponses(value = {
+    //        @ApiResponse(code = 200, message = "Return the requested hearing recording")
+    //    })
+    //    public ResponseEntity<HearingRecordingDto> getHearingRecording(@PathVariable("name") String folderName,
+    //                                                                      @PathVariable("id") String recordingId,
+    //                                                                   @PathVariable("segmentId") String segmentId) {
+    //        return new ResponseEntity<>(HttpStatus.OK);
+    //    }
+    //
+    //    @PostMapping(
+    //        path = "/folders/{name}/hearing-recording/{id}/access-right",
+    //        consumes = APPLICATION_JSON_VALUE,
+    //        produces = APPLICATION_JSON_VALUE
+    //    )
+    //    @ResponseBody
+    //    @ApiOperation(value = "Create permissions record", notes = "Create permissions record to the specified "
+    //        + "hearing recording and notify user with the link to the resource via email")
+    //    @ApiResponses(value = {
+    //        @ApiResponse(code = 200, message = "Return the location of the resource being granted "
+    //            + "access to (the download link)")
+    //    })
+    //    public ResponseEntity<HearingRecordingDto> shareHearingRecording(@PathVariable("name") String folderName,
+    //                                                                   @PathVariable("id") String recordingId) {
+    //        return new ResponseEntity<>(HttpStatus.OK);
+    //    }
 }

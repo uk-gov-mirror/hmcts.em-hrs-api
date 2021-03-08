@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FOLDER_WITH_SEG
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FOLDER_WITH_SEGMENT_AND_IN_PROGRESS;
 
 @ExtendWith(MockitoExtension.class)
-public class FolderServiceImplTests {
+class FolderServiceImplTests {
     @Mock
     private FolderRepository folderRepository;
     @Mock
@@ -39,7 +39,7 @@ public class FolderServiceImplTests {
     private static final String TEST_FOLDER_NAME = "folder-1";
 
     @Test
-    public void testShouldFindOne() {
+    void testShouldFindOne() {
         doReturn(Optional.of(TestUtil.FOLDER)).when(this.folderRepository).findById(TestUtil.RANDOM_UUID);
 
         final Optional<Folder> folder = underTest.findById(TestUtil.RANDOM_UUID);
@@ -48,7 +48,7 @@ public class FolderServiceImplTests {
     }
 
     @Test
-    public void testShouldSave() {
+    void testShouldSave() {
         final Folder folder = TestUtil.EMPTY_FOLDER;
 
         underTest.save(folder);
