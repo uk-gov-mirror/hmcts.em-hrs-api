@@ -9,7 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -25,8 +25,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 
@@ -54,12 +52,10 @@ public class HearingRecording {
     private String lastModifiedByService;
 
     @LastModifiedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedOn;
+    private LocalDateTime modifiedOn;
 
     @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdOn;
+    private LocalDateTime createdOn;
 
     //TODO should the deleted columns be
     //A) represented by an enum, ie AVAILABLE,ARCHIVED,DELETED,HARD_DELETED
@@ -84,7 +80,7 @@ public class HearingRecording {
         joinColumns = @JoinColumn(name = "hearing_recording_metadata_id"))
     private Map<String, String> metadata;
 
-    private Date ttl;
+    private LocalDateTime ttl;
     private String recordingReference;
     private String caseReference;
     private String hearingLocationReference;
@@ -97,16 +93,13 @@ public class HearingRecording {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hearingRecording")
     private Set<HearingRecordingSegment> segments;
 
-
-
-
     public HearingRecording(UUID id, String createdBy, String createdByService, String lastModifiedBy,
                             String lastModifiedByService,
-                            Date modifiedOn, Date createdOn,
+                            LocalDateTime modifiedOn, LocalDateTime createdOn,
                             boolean deleted, boolean hardDeleted, Folder folder,
                             Set<HearingRecordingAuditEntry> auditEntries,
                             //Set<String> roles,
-                            Map<String, String> metadata, Date ttl,
+                            Map<String, String> metadata, LocalDateTime ttl,
                             String recordingReference, String caseReference, String hearingLocationReference,
                             String hearingSource,
                             String jurisdictionCode, String serviceCode, Long ccdCaseId,
@@ -143,32 +136,14 @@ public class HearingRecording {
 
     }
 
-    //TODO shouldn't this field always be not null?
-    public Date getModifiedOn() {
-        return (modifiedOn == null) ? null : new Date(modifiedOn.getTime());
-    }
-
-    public void setModifiedOn(Date modifiedOn) {
-        this.modifiedOn = (modifiedOn == null) ? null : new Date(modifiedOn.getTime());
-    }
-
-    //TODO shouldn't this field always be not null?
-    public Date getCreatedOn() {
-        return (createdOn == null) ? null : new Date(createdOn.getTime());
-    }
-
-    public void setCreatedOn(Date createdOn) {
-        this.createdOn = (createdOn == null) ? null : new Date(createdOn.getTime());
-    }
-
     public static class HearingRecordingBuilder {
-        public HearingRecordingBuilder modifiedOn(Date modifiedOn) {
-            this.modifiedOn = (modifiedOn == null) ? null : new Date(modifiedOn.getTime());
+        public HearingRecordingBuilder modifiedOn(LocalDateTime modifiedOn) {
+            this.modifiedOn = modifiedOn;
             return this;
         }
 
-        public HearingRecordingBuilder createdOn(Date createdOn) {
-            this.createdOn = (createdOn == null) ? null : new Date(createdOn.getTime());
+        public HearingRecordingBuilder createdOn(LocalDateTime createdOn) {
+            this.createdOn = createdOn;
             return this;
         }
     }

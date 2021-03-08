@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,15 +8,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
-import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.repository.FolderRepository;
+import uk.gov.hmcts.reform.em.hrs.repository.JobInProgressRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,35 +29,23 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FILE_3;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FOLDER_WITH_JOBS_IN_PROGRESS;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FOLDER_WITH_SEGMENT;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FOLDER_WITH_SEGMENT_AND_IN_PROGRESS;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.TEST_FOLDER_NAME;
 
 @ExtendWith(MockitoExtension.class)
 class FolderServiceImplTests {
     @Mock
     private FolderRepository folderRepository;
     @Mock
+    private JobInProgressRepository jobInProgressRepository;
+    @Mock
     private HearingRecordingStorage hearingRecordingStorage;
 
     @InjectMocks
     private FolderServiceImpl underTest;
 
-    private static final String TEST_FOLDER_NAME = "folder-1";
-
-    @Test
-    void testShouldFindOne() {
-        doReturn(Optional.of(TestUtil.FOLDER)).when(this.folderRepository).findById(TestUtil.RANDOM_UUID);
-
-        final Optional<Folder> folder = underTest.findById(TestUtil.RANDOM_UUID);
-
-        assertThat(folder).isEqualTo(Optional.of(TestUtil.FOLDER));
-    }
-
-    @Test
-    void testShouldSave() {
-        final Folder folder = TestUtil.EMPTY_FOLDER;
-
-        underTest.save(folder);
-
-        verify(folderRepository, times(1)).save(folder);
+    @BeforeEach
+    void prepare() {
+        doNothing().when(jobInProgressRepository).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
 
     @Test
@@ -65,6 +57,7 @@ class FolderServiceImplTests {
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Collections.emptySet());
+        verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
 
     @Test
@@ -77,6 +70,7 @@ class FolderServiceImplTests {
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Collections.emptySet());
+        verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
 
     @Test
@@ -89,6 +83,7 @@ class FolderServiceImplTests {
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Collections.emptySet());
+        verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
 
     @Test
@@ -100,6 +95,7 @@ class FolderServiceImplTests {
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Set.of(FILE_1, FILE_2, FILE_3));
+        verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
 
     @Test
@@ -111,6 +107,7 @@ class FolderServiceImplTests {
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Set.of(FILE_1, FILE_2, FILE_3));
+        verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
 
     @Test
@@ -122,6 +119,7 @@ class FolderServiceImplTests {
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Set.of(FILE_3));
+        verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
 
     @Test
@@ -133,5 +131,6 @@ class FolderServiceImplTests {
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Set.of(FILE_1, FILE_2));
+        verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
 }

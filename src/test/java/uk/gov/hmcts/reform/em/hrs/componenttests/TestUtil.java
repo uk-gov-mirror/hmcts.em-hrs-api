@@ -20,6 +20,7 @@ public class TestUtil {
     public static final String FILE_1 = "file-1.mp4";
     public static final String FILE_2 = "file-2.mp4";
     public static final String FILE_3 = "file-3.mp4";
+    public static final String TEST_FOLDER_NAME = "folder-1";
     public static final UUID RANDOM_UUID = UUID.randomUUID();
 
     private static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()

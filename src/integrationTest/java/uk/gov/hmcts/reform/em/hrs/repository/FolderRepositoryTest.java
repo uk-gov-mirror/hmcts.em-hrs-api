@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql({"/create-folder.sql"})
+@Sql({"/data/create-folder.sql"})
 class FolderRepositoryTest extends AbstractRepositoryIntegrationTest {
     @Inject
     private FolderRepository underTest;

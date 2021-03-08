@@ -69,7 +69,8 @@ public class HearingRecordingController {
     //        produces = APPLICATION_OCTET_STREAM_VALUE
     //    )
     //    @ResponseBody
-    //    @ApiOperation(value = "Get hearing recording", notes = "Return hearing recording file from the specified folder")
+    //    @ApiOperation(value = "Get hearing recording",
+    //    notes = "Return hearing recording file from the specified folder")
     //    @ApiResponses(value = {
     //        @ApiResponse(code = 200, message = "Return the requested hearing recording")
     //    })
