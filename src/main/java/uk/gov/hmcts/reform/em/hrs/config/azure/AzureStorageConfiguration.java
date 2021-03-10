@@ -5,11 +5,12 @@ import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.azure.storage.blob.models.BlobStorageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-//@Configuration
+@Configuration
 public class AzureStorageConfiguration {
 
     @Value("${azure.storage.connection-string}")
@@ -20,7 +21,7 @@ public class AzureStorageConfiguration {
 
     @Bean
     BlobContainerClient cloudBlobContainer() throws UnknownHostException {
-        String blobAddress = connectionString.contains("azure-storage-emulator-azurite")
+        final String blobAddress = connectionString.contains("azure-storage-emulator-azurite")
             ? connectionString.replace(
                 "azure-storage-emulator-azurite",
                 InetAddress.getByName("azure-storage-emulator-azurite").getHostAddress())
@@ -38,5 +39,4 @@ public class AzureStorageConfiguration {
             return client;
         }
     }
-
 }

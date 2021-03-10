@@ -39,6 +39,9 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:emhrs}
     password: ${SPRING_DATASOURCE_PASSWORD:emhrs}
 
+  jackson:
+    property-naming-strategy: KEBAB_CASE
+
 auth:
   idam:
     client:

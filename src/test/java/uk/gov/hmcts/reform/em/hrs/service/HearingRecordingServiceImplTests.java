@@ -1,15 +1,22 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-//import static uk.gov.hmcts.reform.em.security.Classifications.PRIVATE;
+@ExtendWith(MockitoExtension.class)
+class HearingRecordingServiceImplTests {
+    @Mock
+    private HearingRecordingRepository hearingRecordingRepository;
 
-@RunWith(MockitoJUnitRunner.class)
-public class HearingRecordingServiceTests {
+    @InjectMocks
+    private HearingRecordingServiceImpl underTest;
+
+
+
+
 
     //    @Mock
     //    private HearingRecordingRepository hearingRecordingRepository;
@@ -32,19 +39,11 @@ public class HearingRecordingServiceTests {
     ////
     ////    @Mock
     ////    private BlobStorageDeleteService blobStorageDeleteService;
-    //
-    //    @InjectMocks
-    //    private HearingRecordingService hearingRecordingService;
 
     //    @Before
     //    public void setUp() {
     //        when(securityUtilService.getUserId()).thenReturn("Corín Tellado");
     //    }
-
-    @Test
-    public void dummyTest() {
-        assertThat("TRUE", equalTo("TRUE"));
-    }
 
 
     //    @Test

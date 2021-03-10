@@ -16,6 +16,9 @@ liquibase-apply-change-log:
 app-run:
 	./gradlew bootRun
 
+app-clean-run:
+	./gradlew clean bootRun
+
 app-smoke-test:
 	./gradlew smoke -i
 
