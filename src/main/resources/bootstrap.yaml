@@ -8,4 +8,5 @@ spring:
 #        microservicekey-em-hrs-api: S2S_KEY
 #        AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
         hrs-api-POSTGRES-PASS: SPRING_DATASOURCE_PASSWORD
+        storage-account-primary-connection-string: azure.storage.connection-string
 #        notification-api-key: NOTIFICATION_API_KEY
