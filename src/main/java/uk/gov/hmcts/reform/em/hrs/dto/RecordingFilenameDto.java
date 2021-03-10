@@ -10,4 +10,5 @@ import java.util.Set;
 public class RecordingFilenameDto {
     private final String folderName;
     private final Set<String> filenames;
+    private final String caseRef;
 }
