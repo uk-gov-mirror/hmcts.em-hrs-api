@@ -37,3 +37,13 @@ variable "team_contact" {
 variable "destroy_me" {
   default = "No"
 }
+
+variable "appinsights_location" {
+  default     = "West Europe"
+  description = "Location for Application Insights"
+}
+
+variable "application_type" {
+  default     = "web"
+  description = "Type of Application Insights (Web/Other)"
+}
