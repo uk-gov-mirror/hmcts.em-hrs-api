@@ -146,14 +146,15 @@ resource "azurerm_key_vault_secret" "local_s2s_key" {
 }
 
 
-# Load AppInsights key from rpa vault
-data "azurerm_key_vault_secret" "app_insights_key" {
-  name      = "AppInsightsInstrumentationKey"
-  key_vault_id = module.key-vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "local_app_insights_key" {
-  name         = "AppInsightsInstrumentationKey"
-  value        = data.azurerm_key_vault_secret.app_insights_key.value
-  key_vault_id = module.key-vault.key_vault_id
-}
+//commented out as need App Insights resource to be built first in order to get build to pass
+//# Load AppInsights key from  vault
+//data "azurerm_key_vault_secret" "app_insights_key" {
+//  name      = "AppInsightsInstrumentationKey"
+//  key_vault_id = module.key-vault.key_vault_id
+//}
+//
+//resource "azurerm_key_vault_secret" "local_app_insights_key" {
+//  name         = "AppInsightsInstrumentationKey"
+//  value        = data.azurerm_key_vault_secret.app_insights_key.value
+//  key_vault_id = module.key-vault.key_vault_id
+//}
