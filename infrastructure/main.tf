@@ -4,6 +4,7 @@ provider "azurerm" {
 
 locals {
   app_full_name = "${var.product}-${var.component}"
+  local_env           = var.env == "preview" ? "aat" : var.env
   tags = "${merge(
       var.common_tags,
       map(
@@ -145,16 +146,21 @@ resource "azurerm_key_vault_secret" "local_s2s_key" {
   key_vault_id = module.key-vault.key_vault_id
 }
 
+# Load AppInsights key from common EM vault - aka "rpa vault"
+data "azurerm_key_vault" "rpa_vault" {
+  name                = "rpa-${local.local_env}"
+  resource_group_name = "rpa-${local.local_env}"
+}
 
-//commented out as need App Insights resource to be built first in order to get build to pass
-//# Load AppInsights key from  vault
-//data "azurerm_key_vault_secret" "app_insights_key" {
-//  name      = "AppInsightsInstrumentationKey"
-//  key_vault_id = module.key-vault.key_vault_id
-//}
-//
-//resource "azurerm_key_vault_secret" "local_app_insights_key" {
-//  name         = "AppInsightsInstrumentationKey"
-//  value        = data.azurerm_key_vault_secret.app_insights_key.value
-//  key_vault_id = module.key-vault.key_vault_id
-//}
+
+data "azurerm_key_vault_secret" "app_insights_key" {
+  name      = "AppInsightsInstrumentationKey"
+  key_vault_id = data.azurerm_key_vault.rpa_vault.id
+}
+
+#copy AppInsights key to "local vault" as that's where kubernetes injects secrets from
+resource "azurerm_key_vault_secret" "local_app_insights_key" {
+  name         = "AppInsightsInstrumentationKey"
+  value        = data.azurerm_key_vault_secret.app_insights_key.value
+  key_vault_id = module.key-vault.key_vault_id
+}
