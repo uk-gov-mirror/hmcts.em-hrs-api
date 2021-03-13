@@ -21,7 +21,7 @@ public class CaseDataServiceImpl implements CaseDataService {
         if (caseId.isEmpty()) {
             caseId = Optional.of(ccdClient.createHRCase(recordingFile));
         } else {
-            ccdClient.updateHRCase(caseId.get(), recordingFile);
+            ccdClient.updateHRCase(caseId.get().toString(), recordingFile);
         }
         return caseId.get();
     }

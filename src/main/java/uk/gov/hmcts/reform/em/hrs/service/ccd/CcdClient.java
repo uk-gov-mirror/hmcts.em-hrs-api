@@ -1,26 +1,33 @@
 package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
+import uk.gov.hmcts.reform.em.hrs.service.tokens.IdamHelper;
+import uk.gov.hmcts.reform.em.hrs.service.tokens.S2sHelper;
 
 public class CcdClient {
 
-    private static final String CASE_TYPE = "NEED_TO_FIND_CASE_TYPE";
-    private static final String JURISDICTION = "NEED_TO_FIND_JURISDICTION";
     private static final String EVENT_ID = "createCase";
+    private static final String CASE_TYPE = "NEED_TO_FIND_CASE_TYPE";//TODO - GET CASE TYPE
+    private static final String JURISDICTION = "NEED_TO_FIND_JURISDICTION";//TODO - GET JURISDICTION
 
-    //private final IdamHelper idamHelper;
-    //private final S2sHelper s2sHelper;
+    private final IdamHelper idamHelper;
+    private final S2sHelper s2sHelper;
     private final CoreCaseDataApi coreCaseDataApi;
+    private final CcdDataStoreApiClient ccdDataStoreApiClient;
+    private final CaseDataContentCreator caseDataContentCreator;
 
-    public CcdClient(CoreCaseDataApi coreCaseDataApi) {
-        //this.idamHelper = idamHelper;
-        //this.s2sHelper = s2sHelper;
+    public CcdClient(CoreCaseDataApi coreCaseDataApi,
+                     CcdDataStoreApiClient ccdDataStoreApiClient,
+                     CaseDataContentCreator caseDataContentCreator,
+                     IdamHelper idamHelper, S2sHelper s2sHelper) {
+        this.idamHelper = idamHelper;
+        this.s2sHelper = s2sHelper;
         this.coreCaseDataApi = coreCaseDataApi;
+        this.caseDataContentCreator = caseDataContentCreator;
+        this.ccdDataStoreApiClient = ccdDataStoreApiClient;
     }
 
     /***
@@ -29,28 +36,17 @@ public class CcdClient {
      * @return
      */
     public Long createHRCase(RecordingFilenameDto recordingFile) {
-        final String userAuthorization = "userToken";//idamHelper.authenticateUser(username);
-        final String s2sAuthorization = "s2sToken";//s2sHelper.getS2sToken();
+        final String userAuthorization = idamHelper.getUserToken();
+        final String userId = idamHelper.getUserId();
+        final String s2sAuthorization = s2sHelper.getS2sToken();
 
-        StartEventResponse startEventResponse = coreCaseDataApi.startCase(
-            userAuthorization,
-            s2sAuthorization,
-            CASE_TYPE,
-            EVENT_ID);
+        StartEventResponse startEventResponse =
+            coreCaseDataApi.startCase(userAuthorization, s2sAuthorization, CASE_TYPE, EVENT_ID);
 
-        Object caseData = "NEED TO CONSTRUCT CASE DATA";
-
-        CaseDetails caseDetails = coreCaseDataApi.submitForCaseworker(
-            userAuthorization,
-            s2sAuthorization,
-            "userId",//idamHelper.getUserId(username),
-            JURISDICTION,
-            CASE_TYPE,
-            false,
-            CaseDataContent.builder()
-                .event(Event.builder().id(startEventResponse.getEventId()).build())
-                .eventToken(startEventResponse.getToken())
-                .data(caseData).build());
+        CaseDetails caseDetails = coreCaseDataApi
+            .submitForCaseworker(userAuthorization, s2sAuthorization, userId,
+                                 JURISDICTION, CASE_TYPE, false,
+                                 caseDataContentCreator.createStartCaseDataContent(startEventResponse, recordingFile));
 
         return caseDetails.getId();
     }
@@ -58,10 +54,17 @@ public class CcdClient {
     /***
      * Update case with new recordingFile
      * @param caseId
-     * @param recordingFile
+     * @param recordingFilenameDto
      */
-    public void updateHRCase(Long caseId, RecordingFilenameDto recordingFile) {
-
-
+    public void updateHRCase(String caseId, RecordingFilenameDto recordingFilenameDto) {
+        HRCaseUpdateDto hrCaseUpdateDto = null;
+        final String userAuthorization = idamHelper.getUserToken();
+        try {
+            hrCaseUpdateDto = ccdDataStoreApiClient.getHRCaseData(caseId, userAuthorization);
+        } finally {
+            if (hrCaseUpdateDto != null) {
+                ccdDataStoreApiClient.updateHRCaseData(hrCaseUpdateDto, userAuthorization, recordingFilenameDto);
+            }
+        }
     }
 }
