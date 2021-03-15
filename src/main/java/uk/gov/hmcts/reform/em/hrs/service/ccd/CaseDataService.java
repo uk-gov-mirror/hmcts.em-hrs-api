@@ -1,10 +1,30 @@
 package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
-import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
+import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingServiceImpl;
 
-import java.io.IOException;
+import java.util.Optional;
 
-public interface CaseDataService {
+@Service
+public class CaseDataService {
 
-    Long addHRFileToCase(RecordingFilenameDto recordingFile) throws IOException;
+    private final HearingRecordingServiceImpl hearingRecordingService;
+    private final CcdDataStoreApiClient ccdDataStoreApiClient;
+
+    public CaseDataService(CcdDataStoreApiClient ccdDataStoreApiClient,
+                           HearingRecordingServiceImpl hearingRecordingService) {
+        this.ccdDataStoreApiClient = ccdDataStoreApiClient;
+        this.hearingRecordingService = hearingRecordingService;
+    }
+
+    public Long addHRFileToCase(HearingRecordingDto recordingFile) {
+        Optional<Long> caseId = hearingRecordingService.checkIfHRCaseAlredyCreated(recordingFile.getCaseRef());
+        if (caseId.isEmpty()) {
+            caseId = Optional.of(ccdDataStoreApiClient.createHRCase(recordingFile));
+        } else {
+            ccdDataStoreApiClient.updateHRCaseData(caseId.get().toString(), recordingFile);
+        }
+        return caseId.get();
+    }
 }

@@ -1,97 +1,73 @@
 package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.service.tokens.IdamHelper;
 
-import java.io.IOException;
-
+@Service
 public class CcdDataStoreApiClient {
 
     private final Logger log = LoggerFactory.getLogger(CcdDataStoreApiClient.class);
 
-    private final OkHttpClient http;
+    private final IdamHelper idamHelper;
     private final AuthTokenGenerator authTokenGenerator;
     private final CaseDataContentCreator caseDataContentCreator;
+    private final CoreCaseDataApi coreCaseDataApi;
 
-    private final String ccdDataBaseUrl;
-    private final String ADD_RECORDING_FILE_EVENT_ENDPOINT = "/cases/%s/event-triggers/addRecordingFile";
-    private final String ccdUpdateCasePath = "/cases/%s/events";
-    private final ObjectMapper objectMapper;
+    private static final String CREATE_CASE = "createCase";
+    private static final String CASE_TYPE = "NEED_TO_FIND_CASE_TYPE";//TODO - GET CASE TYPE
+    private static final String JURISDICTION = "NEED_TO_FIND_JURISDICTION";//TODO - GET JURISDICTION
+
+    private final String ADD_RECORDING_FILE = "addRecordingFile";
 
 
-    public CcdDataStoreApiClient(OkHttpClient http,
+    public CcdDataStoreApiClient(IdamHelper idamHelper,
                                  AuthTokenGenerator authTokenGenerator,
                                  CaseDataContentCreator caseDataContentCreator,
-                                 @Value("${ccd.data.api.url}") String ccdDataBaseUrl,
-                                 ObjectMapper objectMapper) {
-        this.http = http;
+                                 CoreCaseDataApi coreCaseDataApi) {
+        this.idamHelper = idamHelper;
         this.authTokenGenerator = authTokenGenerator;
         this.caseDataContentCreator = caseDataContentCreator;
-        this.ccdDataBaseUrl = ccdDataBaseUrl;
-        this.objectMapper = objectMapper;
+        this.coreCaseDataApi = coreCaseDataApi;
     }
 
-    /**
-     * @param caseId - case id
-     * @param jwt - authentication
-     * @return - DTO with CCD case
-     */
-    public HRCaseUpdateDto getHRCaseData(String caseId, String jwt) {
-        final Request request = new Request.Builder()
-            .addHeader("Authorization", jwt)
-            .addHeader("experimental", "true")
-            .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-            .url(String.format(ccdDataBaseUrl + ADD_RECORDING_FILE_EVENT_ENDPOINT, caseId))
-            .get()
-            .build();
+    public Long createHRCase(HearingRecordingDto hearingRecordingDto) {
+        final String userToken = idamHelper.getUserToken();
+        final String userId = idamHelper.getUserId(userToken);
+        final String s2sToken = authTokenGenerator.generate();
 
-        log.info(String.format("Ccd Event Trigger URL : %s", request.url()));
-        try {
-            final Response response = http.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new CcdUpdateException(response.code(), response.body().string(), "Creation of event-trigger failed");
-            }
-            return new HRCaseUpdateDto(objectMapper.readTree(response.body().charStream()));
-        } catch (IOException e) {
-            throw new CcdUpdateException(500, null, String.format("IOException: %s", e.getMessage()));
-        }
+        StartEventResponse startEventResponse =
+            coreCaseDataApi.startCase(userToken, s2sToken, CASE_TYPE, CREATE_CASE);
+
+        CaseDataContent caseData =
+            caseDataContentCreator.createStartCaseDataContent(startEventResponse, hearingRecordingDto);
+
+        CaseDetails caseDetails = coreCaseDataApi
+            .submitForCaseworker(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, false, caseData);
+
+        return caseDetails.getId();
     }
 
-    /**
-     *
-     * @param hrCaseUpdateDto - callbackDTO
-     * @param jwt - authentication
-     */
-    public void updateHRCaseData(HRCaseUpdateDto hrCaseUpdateDto, String jwt, RecordingFilenameDto recordingFilenameDto) {
-        try {
-            final CcdCaseDataContent caseDataContent =
-                caseDataContentCreator.createCcdCaseDataContent(hrCaseUpdateDto, recordingFilenameDto);
-            final RequestBody body = RequestBody.create(objectMapper.writeValueAsString(caseDataContent),
-                                                        MediaType.get("application/json"));
-            final Request updateRequest = new Request.Builder()
-                .addHeader("Authorization", jwt)
-                .addHeader("experimental", "true")
-                .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.get("application/json").toString())
-                .url(String.format(ccdDataBaseUrl + ccdUpdateCasePath, hrCaseUpdateDto.getCaseId()))
-                .post(body)
-                .build();
+    public void updateHRCaseData(String caseId, HearingRecordingDto hearingRecordingDto) {
+        final String userToken = idamHelper.getUserToken();
+        final String userId = idamHelper.getUserId(userToken);
+        final String s2sToken = authTokenGenerator.generate();
 
-            log.info(String.format("Ccd Update URL :  %s", updateRequest.url()));
+        StartEventResponse startEventResponse =
+            coreCaseDataApi.startEvent(userToken, s2sToken, caseId, ADD_RECORDING_FILE);
 
-            final Response updateResponse = http.newCall(updateRequest).execute();
+        CaseDataContent caseData =
+            caseDataContentCreator.createUpdateCaseDataContent(startEventResponse, hearingRecordingDto);
 
-            if (!updateResponse.isSuccessful()) {
-                throw new CcdUpdateException(updateResponse.code(), updateResponse.body().string(), "Update of case data failed");
-            }
-        } catch (IOException e) {
-            throw new CcdUpdateException(500, null, String.format("IOException: %s", e.getMessage()));
-        }
+        coreCaseDataApi
+            .submitForCaseworker(userToken, s2sToken, userId, JURISDICTION, CASE_TYPE, false, caseData);
+
     }
 }

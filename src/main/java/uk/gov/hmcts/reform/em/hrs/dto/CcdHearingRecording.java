@@ -8,22 +8,44 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class HearingRecordingDto {
-    private final String recordingFileUri;
-    private final String checkSum;
-    private final String caseRef;
+@ToString
+public class CcdHearingRecording {
+
+    @JsonProperty("caseHearingSource")
     private Enum<HearingSource> hearingSource;
+
+    @JsonProperty("caseFileCaseID")
     private String caseId;
+
+    @JsonProperty("caseHearingLocation")
     private String hearingLocation;
+
+    @JsonProperty("caseRecordingDate")
     private Date recordingDate;
+
+    @JsonProperty("caseRecordingTimeOfDay")
     private String recordingTimeOfDay;
+
+    @JsonProperty("caseServiceCode")
     private String serviceCode;
+
+    @JsonProperty("caseJurisdictionCode")
     private String jurisdictionCode;
+
+    @JsonProperty("caseCourtLocationCode")
     private String courtLocationCode;
+
+    @JsonProperty("caseRecordingReference")
     private String recordingReference;
+
+    @JsonProperty("caseCreatedDate")
     private String createdDate;
-    private int recordingSegment;
+
+    @JsonProperty("caseAudioFiles")
+    private ArrayNode recordingSegments;
+
 }

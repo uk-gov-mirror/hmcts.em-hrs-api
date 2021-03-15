@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareesService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
+import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseDataService;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 public class HearingRecordingController {
     private final FolderService folderService;
+    private final CaseDataService caseDataService;
     private final HearingRecordingShareesService hearingRecordingShareesService;
     private final HearingRecordingService hearingRecordingService;
     private final HearingRecordingSegmentService hearingRecordingSegmentService;
@@ -39,11 +41,13 @@ public class HearingRecordingController {
 
     @Inject
     public HearingRecordingController(final FolderService folderService,
-                                      final HearingRecordingShareesService hearingRecordingShareesService,
+                                      final CaseDataService caseDataService,
+                                        final HearingRecordingShareesService hearingRecordingShareesService,
                                       final HearingRecordingService hearingRecordingService,
                                       final HearingRecordingSegmentService hearingRecordingSegmentService,
                                       final ShareService shareService) {
         this.folderService = folderService;
+        this.caseDataService = caseDataService;
         this.hearingRecordingShareesService = hearingRecordingShareesService;
         this.hearingRecordingService = hearingRecordingService;
         this.hearingRecordingSegmentService = hearingRecordingSegmentService;
@@ -84,6 +88,8 @@ public class HearingRecordingController {
                                                                       @PathVariable("recordingRef") String recordingRef,
                                                                       @PathVariable("segment") String segment,
                                                                       @RequestBody HearingRecordingDto request) {
+
+        caseDataService.addHRFileToCase(request);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
