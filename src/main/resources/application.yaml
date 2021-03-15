@@ -55,6 +55,9 @@ auth:
   idam:
     client:
       baseUrl: ${IDAM_API_BASE_URI:http://localhost:5000}
+    system-user:
+      username:${HRS_SYSTEM_USER:hrsSystemUser}
+      password:${HRS_SYSTEM_USER_PASSWORD:hrsSystemUserPassword}
   provider:
     service:
       client:
