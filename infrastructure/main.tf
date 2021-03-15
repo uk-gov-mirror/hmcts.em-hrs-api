@@ -4,7 +4,6 @@ provider "azurerm" {
 
 locals {
   app_full_name = "${var.product}-${var.component}"
-  local_env           = var.env == "preview" ? "aat" : var.env
   tags = "${merge(
       var.common_tags,
       map(
@@ -148,8 +147,8 @@ resource "azurerm_key_vault_secret" "local_s2s_key" {
 
 # Load AppInsights key from common EM vault - aka "rpa vault"
 data "azurerm_key_vault" "rpa_vault" {
-  name                = "rpa-${local.local_env}"
-  resource_group_name = "rpa-${local.local_env}"
+  name                = "rpa-${var.env}"
+  resource_group_name = "rpa-${var.env}"
 }
 
 
