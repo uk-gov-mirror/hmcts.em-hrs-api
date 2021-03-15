@@ -92,6 +92,8 @@ task functional(type: Test) {
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
+
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
 task integration(type: Test) {
@@ -107,6 +109,8 @@ task smoke(type: Test) {
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
+
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 
 }
 
