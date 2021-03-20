@@ -1,70 +1,71 @@
 package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.em.hrs.dto.CcdHearingRecording;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.service.ccd.model.CaseDocument;
+import uk.gov.hmcts.reform.em.hrs.service.ccd.model.HearingRecording;
+import uk.gov.hmcts.reform.em.hrs.service.ccd.model.RecordingSegment;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 
 @Service
 public class CaseDataContentCreator {
 
-    public CaseDataContent createStartCaseDataContent(StartEventResponse startEventResponse,
-                                                       HearingRecordingDto hearingRecordingDto) {
+    private final ObjectMapper objectMapper;
 
-        ObjectNode segment = createSegmentNode(hearingRecordingDto);
-
-        CcdHearingRecording hearingRecording = new CcdHearingRecording(
-            hearingRecordingDto.getHearingSource(),
-            hearingRecordingDto.getCaseId(),
-            hearingRecordingDto.getHearingLocation(),
-            hearingRecordingDto.getRecordingDate(),
-            hearingRecordingDto.getRecordingTimeOfDay(),
-            hearingRecordingDto.getServiceCode(),
-            hearingRecordingDto.getJurisdictionCode(),
-            hearingRecordingDto.getCourtLocationCode(),
-            hearingRecordingDto.getRecordingReference(),
-            hearingRecordingDto.getCreatedDate(),
-            JsonNodeFactory.instance.arrayNode().add(String.valueOf(segment))
-        );
-        return CaseDataContent.builder()
-            .event(Event.builder().id(startEventResponse.getEventId()).build())
-            .eventToken(startEventResponse.getToken())
-            .data(hearingRecording)
-            .build();
-    }
-    public CaseDataContent createUpdateCaseDataContent(StartEventResponse startEventResponse,
-                                                       HearingRecordingDto hearingRecordingDto) {
-
-        Map caseData = startEventResponse.getCaseDetails().getData();
-        ArrayNode existingSegments = caseData.get("caseAudioFiles") != null ? (ArrayNode) caseData.get("caseAudioFiles")
-            : JsonNodeFactory.instance.arrayNode();
-
-        existingSegments.add(createSegmentNode(hearingRecordingDto));
-
-        return CaseDataContent.builder()
-            .event(Event.builder().id(startEventResponse.getEventId()).build())
-            .eventToken(startEventResponse.getToken())
-            .data(caseData)
-            .build();
+    public CaseDataContentCreator(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
-    private ObjectNode createSegmentNode(HearingRecordingDto hearingRecordingDto) {
-        ObjectNode documentLink = JsonNodeFactory.instance.objectNode();
-        documentLink.put("url", hearingRecordingDto.getRecordingFileUri());
-        documentLink.put("binaryUrl", hearingRecordingDto.getRecordingFileUri());
-        documentLink.put("filename", hearingRecordingDto.getRecordingReference());
+    public JsonNode createCaseStartData(final HearingRecordingDto hearingRecordingDto) {
 
-        ObjectNode segment = JsonNodeFactory.instance.objectNode();
-        segment.put("documentLink", documentLink);
-        segment.put("audioFileSegment", hearingRecordingDto.getRecordingSegment());
-        segment.put("audioFileLength", hearingRecordingDto.getRecordingSegment());
+        HearingRecording recording = HearingRecording.builder()
+            .recordingFiles(new HashSet(Arrays.asList(createSegmentNode(hearingRecordingDto))))
+            .recordingTime(LocalDateTime.now())
+            .recordingTimeOfDay("morning")
+            .hearingSource(hearingRecordingDto.getHearingSource().toString())
+            .hearingLocation(hearingRecordingDto.getHearingLocation())
+            .serviceCode(hearingRecordingDto.getServiceCode())
+            .jurisdictionCode(hearingRecordingDto.getJurisdictionCode())
+            .courtLocationCode(hearingRecordingDto.getCourtLocationCode())
+            .recordingReference(hearingRecordingDto.getRecordingReference())
+            .build();
+        return objectMapper.convertValue(recording, JsonNode.class);
+    }
+
+    public Map<String, Object> createCaseUpdateData(final Map<String, Object> caseData,
+                                                    final HearingRecordingDto hearingRecordingDto) {
+
+        ArrayNode existingSegments = caseData.get("recordingFiles") != null
+            ? (ArrayNode) caseData.get("recordingFiles") : JsonNodeFactory.instance.arrayNode();
+
+        RecordingSegment segment = createSegmentNode(hearingRecordingDto);
+
+        existingSegments.add(objectMapper.convertValue(segment, JsonNode.class));
+
+        return caseData;
+    }
+
+    private RecordingSegment createSegmentNode(HearingRecordingDto hearingRecordingDto) {
+        CaseDocument recordingFile = CaseDocument.builder()
+            .filename(hearingRecordingDto.getRecordingFilename())
+            .url(hearingRecordingDto.getRecordingFileUri())
+            .binaryUrl(hearingRecordingDto.getRecordingFileUri() + "/binary")
+            .build();
+
+        RecordingSegment segment = RecordingSegment.builder()
+            .recordingFile(recordingFile)
+            .segmentNumber(0)
+            .recordingLength(10)
+            .build();
+
         return segment;
     }
 }

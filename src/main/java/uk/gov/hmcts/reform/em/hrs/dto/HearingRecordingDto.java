@@ -13,6 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class HearingRecordingDto {
     private final String recordingFileUri;
+    private final String recordingFilename;
     private final String checkSum;
     private final String caseRef;
     private Enum<HearingSource> hearingSource;
