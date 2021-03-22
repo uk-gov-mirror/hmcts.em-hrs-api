@@ -25,9 +25,7 @@ docker-compose ${COMPOSE_FILE} up -d fr-am
 docker-compose ${COMPOSE_FILE} up -d fr-idm
 
 echo "Starting IDAM..."
-docker-compose ${COMPOSE_FILE} up -d idam-api \
-                                     idam-web-public \
-                                     idam-web-admin
+docker-compose ${COMPOSE_FILE} up -d idam-api
 
 echo "Testing IDAM Authentication..."
 token=$(./bin/idam-authenticate.sh ${IDAM_URI} ${IDAM_USERNAME} ${IDAM_PASSWORD})
@@ -52,11 +50,9 @@ docker-compose ${COMPOSE_FILE} up -d shared-database \
                                      service-auth-provider-api \
                                      azure-storage-emulator-azurite \
                                      make-container-call \
-                                     dm-store \
                                      ccd-user-profile-api \
                                      ccd-definition-store-api \
                                      ccd-data-store-api \
                                      ccd-api-gateway \
-                                     ccd-case-management-web \
                                      smtp-server
 echo "LOCAL ENVIRONMENT SUCCESSFULLY STARTED"
