@@ -54,7 +54,7 @@ public class HearingRecordingSegment {
     private LocalDateTime createdOn;
 
     private boolean deleted;
-    private boolean hardDeleted;
+
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hearingRecordingSegment")
     private Set<HearingRecordingSegmentAuditEntry> auditEntries;
@@ -67,26 +67,24 @@ public class HearingRecordingSegment {
     private BigDecimal fileSizeMb; // numeric(2),
 
     private String ingestionFileSourceUri;
-    private String segmentIngestionStatus;
+
 
     private Integer recordingLengthMins;
     private Integer recordingSegment;
 
-    @NotNull
-    private Integer ccdAttachmentId; //TODO check if Integer big enough / if should be a string....
 
     public HearingRecordingSegment(HearingRecording hearingRecording, UUID id, String createdBy,
                                    String createdByService, String lastModifiedBy,
                                    String lastModifiedByService,
                                    LocalDateTime modifiedOn,
                                    LocalDateTime createdOn,
-                                   boolean deleted, boolean hardDeleted,
+                                   boolean deleted,
                                    Set<HearingRecordingSegmentAuditEntry> auditEntries,
                                    String blobUuid, String fileName,
                                    String fileExtension, String fileMd5Checksum, BigDecimal fileSizeMb,
-                                   String ingestionFileSourceUri, String segmentIngestionStatus,
+                                   String ingestionFileSourceUri,
                                    Integer recordingLengthMins,
-                                   Integer recordingSegment, Integer ccdAttachmentId) {
+                                   Integer recordingSegment) {
         setHearingRecording(hearingRecording);
         setId(id);
         setCreatedBy(createdBy);
@@ -96,7 +94,7 @@ public class HearingRecordingSegment {
         setModifiedOn(modifiedOn);
         setCreatedOn(createdOn);
         setDeleted(deleted);
-        setHardDeleted(hardDeleted);
+
 
         setAuditEntries(auditEntries);
         //setRoles(roles);
@@ -109,12 +107,12 @@ public class HearingRecordingSegment {
         setFileSizeMb(fileSizeMb);
 
         setIngestionFileSourceUri(ingestionFileSourceUri);
-        setSegmentIngestionStatus(segmentIngestionStatus);
+
 
         setRecordingLengthMins(recordingLengthMins);
         setRecordingSegment(recordingSegment);
 
-        setCcdAttachmentId(ccdAttachmentId);
+
     }
 
     public HearingRecordingSegment() {
