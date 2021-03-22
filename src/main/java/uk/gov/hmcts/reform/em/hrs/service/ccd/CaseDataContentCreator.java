@@ -5,10 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.model.CaseDocument;
-import uk.gov.hmcts.reform.em.hrs.service.ccd.model.HearingRecording;
+import uk.gov.hmcts.reform.em.hrs.service.ccd.model.CaseHearingRecording;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.model.RecordingSegment;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,12 +24,12 @@ public class CaseDataContentCreator {
 
     public JsonNode createCaseStartData(final HearingRecordingDto hearingRecordingDto) {
 
-        HearingRecording recording = HearingRecording.builder()
+        CaseHearingRecording recording = CaseHearingRecording.builder()
             .recordingFiles(Arrays.asList(createSegment(hearingRecordingDto)))
-            .recordingTime(LocalDateTime.now())
+            .recordingDateTime(hearingRecordingDto.getRecordingDateTime())
             .recordingTimeOfDay("morning")
             .hearingSource(hearingRecordingDto.getHearingSource().toString())
-            .hearingLocation(hearingRecordingDto.getHearingLocation())
+            .hearingRoomRef(hearingRecordingDto.getHearingRoomRef())
             .serviceCode(hearingRecordingDto.getServiceCode())
             .jurisdictionCode(hearingRecordingDto.getJurisdictionCode())
             .courtLocationCode(hearingRecordingDto.getCourtLocationCode())
@@ -56,8 +55,8 @@ public class CaseDataContentCreator {
 
         return RecordingSegment.builder()
             .recordingFile(recordingFile)
-            .segmentNumber(0)
-            .recordingLength(10)
+            .segmentNumber(hearingRecordingDto.getRecordingSegment())
+            .recordingLength(hearingRecordingDto.getRecordingLength())
             .build();
     }
 }

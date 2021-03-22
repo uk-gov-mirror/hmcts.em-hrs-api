@@ -22,7 +22,7 @@ public class CaseDataService {
         Optional<Long> caseId = hearingRecordingService
             .checkIfHRCaseAlredyCreated(recordingFile.getRecordingReference());
         if (caseId.isEmpty()) {
-            caseId = Optional.of(ccdDataStoreApiClient.createHRCase(recordingFile));
+            caseId = Optional.of(ccdDataStoreApiClient.createHRCase(recordingFile).getId());
         } else {
             ccdDataStoreApiClient.updateHRCaseData(caseId.get().toString(), recordingFile);
         }

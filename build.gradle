@@ -30,17 +30,16 @@ mainClassName = 'uk.gov.hmcts.reform.em.hrs.Application'
  **********************************************************************************************************************/
 
 sourceSets {
-  //functionalTest typically run on AAT environment only. Includes tests to real external endpoints.
+  //functionalTests typically run on AAT environment only. Includes tests to real external endpoints.
   //if running locally, need the relevant docker containers to test against
   //if need to run any locally, then the specific test(s) should be specified
   functionalTest {
-    //will pick up any tests with @WithTags({@WithTag("testType:Functional")})
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
-      srcDir file('src/functionalTest/java')
+      srcDir file('src/aat/java')
     }
-    resources.srcDir file('src/functionalTest/resources')
+    resources.srcDir file('src/aat/resources')
   }
 
 
@@ -386,6 +385,14 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     exclude group: 'com.vaadin.external.google', module: 'android-json'
   }
+
+  functionalTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
+    exclude group: 'junit', module: 'junit'
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    exclude group: 'com.vaadin.external.google', module: 'android-json'
+  }
+
+  functionalTestImplementation "uk.gov.hmcts.reform:em-test-helper:1.18.1", withoutStuff
 
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
   testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'

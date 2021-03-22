@@ -2,32 +2,29 @@ package uk.gov.hmcts.reform.em.hrs.service.ccd.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class HearingRecording {
+public class CaseHearingRecording {
 
     @JsonProperty("hearingSource")
     private String hearingSource;
 
-    @JsonProperty("hearingLocation")
-    private String hearingLocation;
+    @JsonProperty("hearingRoomRef")
+    private String hearingRoomRef;
+
+    @JsonProperty("recordingDateTime")
+    private LocalDateTime recordingDateTime;
 
     @JsonProperty("recordingTimeOfDay")
     private String recordingTimeOfDay;
-
-    @JsonProperty("recordingTime")
-    private LocalDateTime recordingTime;
 
     @JsonProperty("serviceCode")
     private String serviceCode;
@@ -48,8 +45,8 @@ public class HearingRecording {
      * Format recording dateTime to satisfy CCD validation requirements
      * @return CCD-compliant recording dateTime
      */
-    public String getRecordingTime() {
+    public String getRecordingDateTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        return formatter.format(recordingTime);
+        return formatter.format(recordingDateTime);
     }
 }

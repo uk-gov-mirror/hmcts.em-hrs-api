@@ -36,7 +36,7 @@ public class CcdDataStoreApiClient {
         this.coreCaseDataApi = coreCaseDataApi;
     }
 
-    public Long createHRCase(HearingRecordingDto hearingRecordingDto) {//TODO - check why this is long here and string elsewhere
+    public CaseDetails createHRCase(HearingRecordingDto hearingRecordingDto) {//TODO - check why this is long here and string elsewhere
         Map<String, String> tokens = securityClient.getTokens();
 
         StartEventResponse startEventResponse =
@@ -52,10 +52,10 @@ public class CcdDataStoreApiClient {
             .submitForCaseworker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
                                  JURISDICTION, CASE_TYPE, false, caseData);
 
-        return caseDetails.getId();
+        return caseDetails;
     }
 
-    public void updateHRCaseData(String caseId, HearingRecordingDto hearingRecordingDto) {
+    public CaseDetails updateHRCaseData(String caseId, HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityClient.getTokens();
 
         StartEventResponse startEventResponse =
@@ -69,7 +69,7 @@ public class CcdDataStoreApiClient {
                 hearingRecordingDto)
             ).build();
 
-        coreCaseDataApi.submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
-                                                 JURISDICTION, CASE_TYPE, caseId, false, caseData);
+        return coreCaseDataApi.submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
+                                                        JURISDICTION, CASE_TYPE, caseId, false, caseData);
     }
 }
