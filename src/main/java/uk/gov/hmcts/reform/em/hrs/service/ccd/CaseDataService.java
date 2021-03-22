@@ -19,7 +19,8 @@ public class CaseDataService {
     }
 
     public Long addHRFileToCase(HearingRecordingDto recordingFile) {
-        Optional<Long> caseId = hearingRecordingService.checkIfHRCaseAlredyCreated(recordingFile.getCaseRef());
+        Optional<Long> caseId = hearingRecordingService
+            .checkIfHRCaseAlredyCreated(recordingFile.getRecordingReference());
         if (caseId.isEmpty()) {
             caseId = Optional.of(ccdDataStoreApiClient.createHRCase(recordingFile));
         } else {

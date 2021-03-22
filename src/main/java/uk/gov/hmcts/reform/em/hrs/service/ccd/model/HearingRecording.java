@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,7 +42,7 @@ public class HearingRecording {
     private String recordingReference;
 
     @JsonProperty("recordingFiles")
-    private Set<RecordingSegment> recordingFiles;
+    private List<RecordingSegment> recordingFiles;
 
     /***
      * Format recording dateTime to satisfy CCD validation requirements
@@ -50,16 +51,5 @@ public class HearingRecording {
     public String getRecordingTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         return formatter.format(recordingTime);
-    }
-
-    /***
-     * Add value property to collection entries to satisfy CCD validation requirements
-     * @return CCD-compliant recordingFiles collection
-     */
-    public Set getRecordingFiles() {
-        return recordingFiles.stream()
-                .map(file -> JsonNodeFactory.instance.objectNode()
-                        .set("value", JsonNodeFactory.instance.pojoNode(file)))
-                .collect(Collectors.toSet());
     }
 }

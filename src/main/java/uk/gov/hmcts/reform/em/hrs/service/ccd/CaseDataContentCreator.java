@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.model.CaseDocument;
@@ -11,8 +9,9 @@ import uk.gov.hmcts.reform.em.hrs.service.ccd.model.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.model.RecordingSegment;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -27,7 +26,7 @@ public class CaseDataContentCreator {
     public JsonNode createCaseStartData(final HearingRecordingDto hearingRecordingDto) {
 
         HearingRecording recording = HearingRecording.builder()
-            .recordingFiles(new HashSet(Arrays.asList(createSegmentNode(hearingRecordingDto))))
+            .recordingFiles(Arrays.asList(createSegment(hearingRecordingDto)))
             .recordingTime(LocalDateTime.now())
             .recordingTimeOfDay("morning")
             .hearingSource(hearingRecordingDto.getHearingSource().toString())
@@ -43,29 +42,22 @@ public class CaseDataContentCreator {
     public Map<String, Object> createCaseUpdateData(final Map<String, Object> caseData,
                                                     final HearingRecordingDto hearingRecordingDto) {
 
-        ArrayNode existingSegments = caseData.get("recordingFiles") != null
-            ? (ArrayNode) caseData.get("recordingFiles") : JsonNodeFactory.instance.arrayNode();
-
-        RecordingSegment segment = createSegmentNode(hearingRecordingDto);
-
-        existingSegments.add(objectMapper.convertValue(segment, JsonNode.class));
-
+        List<RecordingSegment> segments = (ArrayList)caseData.getOrDefault("recordingFiles", new ArrayList());
+        segments.add(createSegment(hearingRecordingDto));
         return caseData;
     }
 
-    private RecordingSegment createSegmentNode(HearingRecordingDto hearingRecordingDto) {
+    private RecordingSegment createSegment(HearingRecordingDto hearingRecordingDto) {
         CaseDocument recordingFile = CaseDocument.builder()
             .filename(hearingRecordingDto.getRecordingFilename())
             .url(hearingRecordingDto.getRecordingFileUri())
             .binaryUrl(hearingRecordingDto.getRecordingFileUri() + "/binary")
             .build();
 
-        RecordingSegment segment = RecordingSegment.builder()
+        return RecordingSegment.builder()
             .recordingFile(recordingFile)
             .segmentNumber(0)
             .recordingLength(10)
             .build();
-
-        return segment;
     }
 }

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.tokens.SecurityClient;
 
+import javax.inject.Inject;
 import java.util.Map;
 
 @Service
@@ -68,8 +69,7 @@ public class CcdDataStoreApiClient {
                 hearingRecordingDto)
             ).build();
 
-        coreCaseDataApi
-            .submitForCaseworker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
-                                 JURISDICTION, CASE_TYPE, false, caseData);
+        coreCaseDataApi.submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
+                                                 JURISDICTION, CASE_TYPE, caseId, false, caseData);
     }
 }
