@@ -17,8 +17,18 @@ public class HearingRecordingServiceImpl implements HearingRecordingService {
         this.hearingRecordingRepository = hearingRecordingRepository;
     }
 
+    @Override
     public Optional<HearingRecording> findOne(UUID id) {
         Optional<HearingRecording> hearingRecording = hearingRecordingRepository.findById(id);
         return hearingRecording;
     }
+
+   @Override
+    public HearingRecording createAndSaveEntry(HearingRecording hearingRecording
+    ) {
+        hearingRecordingRepository.save(hearingRecording);
+        return hearingRecording;
+    }
+
+
 }
