@@ -119,15 +119,18 @@ public class HearingRecordingController {
             + "access to (the download link)"),
         @ApiResponse(code = 404, message = "Not Found")
     })
-    public ResponseEntity<HearingRecordingDto> shareHearingRecording(@RequestBody HttpServletRequest request,
+    public ResponseEntity<HearingRecordingDto> shareHearingRecording(@RequestBody String request,
                                                                      @PathVariable("name") String folderName,
                                                                      @PathVariable("id") UUID recordingId) {
+
+        //TODO - @RequestBody should be HttpServletRequest but will need to configure unit test
 
         // Find the associated Hearing Recording
         Optional<HearingRecording> hearingRecording = hearingRecordingService.findOne(recordingId);
 
         // Check if email is valid
-        String emailAddress = request.getParameter("emailAddress");
+        // String emailAddress = request.getParameter("emailAddress");
+        String emailAddress = request;
 
         // Save the hearingRecordingSharee
         if (hearingRecording.isPresent()) {
