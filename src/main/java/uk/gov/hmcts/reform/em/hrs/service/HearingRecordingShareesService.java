@@ -7,10 +7,10 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharees;
 public interface HearingRecordingShareesService {
 
     /**
-     * Save a hearingRecordingSharee
+     * Save a hearingRecordingSharee.
      *
-     * @param emailAddress and hearingRecording the entity to save
-     * @return the persisted entity
+     * @param emailAddress and hearingRecording the entity to save.
+     * @return the persisted entity.
      */
     HearingRecordingSharees createAndSaveEntry(String emailAddress, HearingRecording hearingRecording);
 }

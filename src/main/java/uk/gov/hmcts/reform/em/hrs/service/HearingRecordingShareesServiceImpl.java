@@ -17,8 +17,7 @@ public class HearingRecordingShareesServiceImpl implements HearingRecordingShare
     private final HearingRecordingShareesRepository hearingRecordingShareesRepository;
 
     @Inject
-    public HearingRecordingShareesServiceImpl(final HearingRecordingShareesRepository hearingRecordingShareesRepository)
-    {
+    public HearingRecordingShareesServiceImpl(final HearingRecordingShareesRepository hearingRecordingShareesRepository) {
         this.hearingRecordingShareesRepository = hearingRecordingShareesRepository;
     }
 

@@ -8,6 +8,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareesService;
+import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 
 import java.util.Set;
 import javax.inject.Inject;
@@ -30,6 +34,18 @@ class HearingRecordingControllerTest {
 
     @MockBean
     private FolderService folderService;
+
+    @MockBean
+    private HearingRecordingService hearingRecordingService;
+
+    @MockBean
+    private HearingRecordingSegmentService hearingRecordingSegmentService;
+
+    @MockBean
+    private HearingRecordingShareesService hearingRecordingShareesService;
+
+    @MockBean
+    private ShareService shareService;
 
     private static final String TEST_FOLDER = "folder-1";
 

@@ -24,8 +24,11 @@ class FolderRepositoryTest extends AbstractRepositoryIntegrationTest {
     @Test
     void testShouldFindSegmentByRecordingId() {
         UUID recordingId = UUID.fromString("05A13771-58DF-4ABD-B62D-4A3F8DDF4286");
-        final List<HearingRecordingSegment> hearingRecordingSegmentList = hearingRecordingSegmentRepository.findByRecordingId(recordingId);
-        assertThat(hearingRecordingSegmentList.get(0).getId().toString()).isEqualTo("8a4fdad2-d53e-40a2-ae88-6df8fbd6cc1d");
+        final List<HearingRecordingSegment> hearingRecordingSegmentList =
+            hearingRecordingSegmentRepository.findByRecordingId(recordingId);
+
+        assertThat(hearingRecordingSegmentList.get(0).getId().toString())
+            .isEqualTo("8a4fdad2-d53e-40a2-ae88-6df8fbd6cc1d");
     }
 
     @Test

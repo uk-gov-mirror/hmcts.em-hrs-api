@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Optional;
 import java.util.UUID;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 @Named
 public class HearingRecordingServiceImpl implements HearingRecordingService {
