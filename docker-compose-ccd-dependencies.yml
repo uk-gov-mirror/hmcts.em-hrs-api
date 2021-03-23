@@ -69,17 +69,6 @@ services:
       - 1025:1025
       - 8025:8025
 
-  shared-database:
-    image: postgres
-    volumes:
-      - ./database:/docker-entrypoint-initdb.d
-    environment:
-      - POSTGRES_MULTIPLE_DATABASES=idam,emstitch,evidence,ccd_data,ccd_user_profile,ccd_definition,ccd_definition_designer
-      - POSTGRES_USER=shared
-      - POSTGRES_PASSWORD=shared
-    ports:
-      - 5434:5432
-
   make-container-call:
     image: byrnedo/alpine-curl
     command: --retry 10 --retry-connrefused -XPUT --verbose http://azure-storage-emulator-azurite:10000/devstoreaccount1/hmctstestcontainer?restype=container
@@ -89,13 +78,12 @@ services:
       - azure-storage-emulator-azurite
 
   azure-storage-emulator-azurite:
-    image: arafato/azurite
+    image: mcr.microsoft.com/azure-storage/azurite
     ports:
       - 10000:10000
-    environment:
-      executable: "blob"
+    command: "azurite-blob --blobHost 0.0.0.0 --loose"
     volumes:
-      - ccd-docker-azure-blob-data:/opt/azurite/folder
+      - em-hrs-docker-azure-blob-data:/opt/azurite/folder
 
   ccd-user-profile-api:
     image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
@@ -229,9 +217,30 @@ services:
       - fr-am
       - shared-db
 
+  em-hrs-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=emhrs
+      - POSTGRES_USER=emhrs
+      - POSTGRES_PASSWORD=emhrs
+    ports:
+      - 5432:5432
+
+  shared-database:
+    image: postgres
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES=idam,emhrs,ccd_data,ccd_user_profile,ccd_definition,ccd_definition_designer
+      - POSTGRES_USER=shared
+      - POSTGRES_PASSWORD=shared
+    ports:
+      - 5434:5432
+
   shared-db:
     image: hmctsprivate.azurecr.io/idam/shared-db:latest
     ports:
-      - 5432:5432
+      - 5435:5432
 volumes:
-  ccd-docker-azure-blob-data:
+  em-hrs-docker-azure-blob-data:

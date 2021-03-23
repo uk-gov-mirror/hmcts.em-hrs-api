@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class HearingRecordingDto {
 
     private final String caseRef;
-    private final Enum<HearingSource> hearingSource;
+    private final String hearingSource;
     private final String hearingRoomRef;
     private final String serviceCode;
     private final String jurisdictionCode;

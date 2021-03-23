@@ -47,6 +47,7 @@ echo "Setting up IDAM client..."
 echo "Starting dependencies..."
 docker-compose ${COMPOSE_FILE} build
 docker-compose ${COMPOSE_FILE} up -d shared-database \
+                                     em-hrs-db \
                                      service-auth-provider-api \
                                      azure-storage-emulator-azurite \
                                      make-container-call \

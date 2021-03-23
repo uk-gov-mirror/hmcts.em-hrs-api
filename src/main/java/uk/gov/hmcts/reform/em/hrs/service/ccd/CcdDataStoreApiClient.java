@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.tokens.SecurityClient;
 
-import javax.inject.Inject;
 import java.util.Map;
 
 @Service

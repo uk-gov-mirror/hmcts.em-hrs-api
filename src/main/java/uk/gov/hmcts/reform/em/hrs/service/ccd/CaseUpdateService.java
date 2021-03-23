@@ -7,13 +7,13 @@ import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingServiceImpl;
 import java.util.Optional;
 
 @Service
-public class CaseDataService {
+public class CaseUpdateService {
 
     private final HearingRecordingServiceImpl hearingRecordingService;
     private final CcdDataStoreApiClient ccdDataStoreApiClient;
 
-    public CaseDataService(CcdDataStoreApiClient ccdDataStoreApiClient,
-                           HearingRecordingServiceImpl hearingRecordingService) {
+    public CaseUpdateService(CcdDataStoreApiClient ccdDataStoreApiClient,
+                             HearingRecordingServiceImpl hearingRecordingService) {
         this.ccdDataStoreApiClient = ccdDataStoreApiClient;
         this.hearingRecordingService = hearingRecordingService;
     }

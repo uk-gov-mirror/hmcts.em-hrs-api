@@ -40,8 +40,8 @@ public class CaseDataContentCreator {
 
     public Map<String, Object> createCaseUpdateData(final Map<String, Object> caseData,
                                                     final HearingRecordingDto hearingRecordingDto) {
-
-        List<RecordingSegment> segments = (ArrayList)caseData.getOrDefault("recordingFiles", new ArrayList());
+        @SuppressWarnings("unchecked")
+        List<RecordingSegment> segments = (ArrayList) caseData.getOrDefault("recordingFiles", new ArrayList());
         segments.add(createSegment(hearingRecordingDto));
         return caseData;
     }

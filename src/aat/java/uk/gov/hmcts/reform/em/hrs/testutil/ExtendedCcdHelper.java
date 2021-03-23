@@ -2,10 +2,7 @@ package uk.gov.hmcts.reform.em.hrs.testutil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
-import uk.gov.hmcts.reform.em.hrs.dto.HearingSource;
-import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdDataStoreApiClient;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefinitionHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 
@@ -25,9 +22,6 @@ public class ExtendedCcdHelper {
     @Autowired
     private CcdDefinitionHelper ccdDefinitionHelper;
 
-    @Autowired
-    private CcdDataStoreApiClient ccdDataStoreApiClient;
-
     private String hrsTester = "hrs.test.user@hmcts.net";
     private List<String> hrTesterRoles = Stream.of("caseworker", "caseworker-hrs", "ccd-import").collect(Collectors.toList());
 
@@ -37,18 +31,10 @@ public class ExtendedCcdHelper {
         importHRSDefinitionFile();
     }
 
-    public CaseDetails createHRSCase(HearingRecordingDto hearingRecordingDto) {
-        return ccdDataStoreApiClient.createHRCase(hearingRecordingDto);
-    }
-
-    public CaseDetails updateHRSCase(HearingRecordingDto hearingRecordingDto, String caseId) {
-        return ccdDataStoreApiClient.updateHRCaseData(caseId, hearingRecordingDto);
-    }
-
     public HearingRecordingDto createRecordingSegment(String url, String filename, int length, int segment) {
         return new HearingRecordingDto(
             "hearing-12-family-probate-morning",
-            HearingSource.CVP,
+            "CVP",
             "London",
             "PROBATE",
             "HRS",
