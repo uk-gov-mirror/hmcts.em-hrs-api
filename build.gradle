@@ -6,7 +6,8 @@ plugins {
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   id 'org.springframework.boot' version '2.3.4.RELEASE'
   id 'uk.gov.hmcts.java' version '0.12.5'
-  id 'com.github.ben-manes.versions' version '0.38.0'
+  id 'com.github.ben-manes.versions' version '0.36.0'// NOTE version 0.38 is suspected to be the cause of
+  // the intermittant failure with module metadata. TO BE CONFIRMED!!
   id 'org.sonarqube' version '3.1.1'
   id 'org.liquibase.gradle' version '2.0.4'
   id 'groovy'
@@ -253,9 +254,8 @@ dependencyManagement {
 
 repositories {
   maven { url "https://dl.bintray.com/hmcts/hmcts-maven" } //TODO confirm this should be the primary maven repo (it is in dm store and em stictching)
-  mavenLocal()
-  jcenter()
   mavenCentral()
+  jcenter()
 }
 
 def versions = [
@@ -384,7 +384,7 @@ dependencies {
   }
 
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
-  testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.24.0'
+  testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.15.2'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.2'
   testImplementation group: 'com.devskiller', name: 'jfairy', version: '0.6.4', {
