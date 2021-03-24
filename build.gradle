@@ -39,9 +39,8 @@ sourceSets {
       runtimeClasspath += main.output
       srcDir file('src/aat/java')
     }
-    resources.srcDir file('src/aat/r`esources')
+    resources.srcDir file('src/aat/resources')
   }
-
 
   //integrationTest typically tests with mocked external endpoints (so can run locally without dependencies)
   integrationTest {
@@ -287,12 +286,6 @@ ext.libraries = [
 
 dependencies {
 
-  def withoutSomeStuff = {
-    exclude group: 'com.vaadin.external.google', module: 'android-json'
-    exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
-    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
-  }
-
   def withoutStuff = {
     exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
     exclude group: 'com.vaadin.external.google', module: 'android-json'
@@ -399,10 +392,8 @@ dependencies {
     exclude group: 'com.vaadin.external.google', module: 'android-json'
   }
 
-  functionalTestImplementation "uk.gov.hmcts.reform:em-test-helper:1.18.1", withoutSomeStuff
-  functionalTestImplementation "net.serenity-bdd:serenity-rest-assured:2.3.4", withoutSomeStuff
-  functionalTestImplementation "net.serenity-bdd:serenity-spring:2.3.4"
-
+  functionalTestImplementation 'uk.gov.hmcts.reform:em-test-helper:1.18.1', withoutStuff
+  functionalTestImplementation 'net.serenity-bdd:serenity-rest-assured:2.3.4', withoutStuff
 
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
   testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
@@ -438,7 +429,6 @@ dependencies {
 
 test {
   failFast = true
-
 }
 
 bootJar {

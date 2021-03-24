@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.PostConstruct;
 
-
 @Service
 public class ExtendedCcdHelper {
 
@@ -50,10 +49,7 @@ public class ExtendedCcdHelper {
     }
 
     public void importHrsDefinitionFile() throws Exception {
-        ccdDefinitionHelper.importDefinitionFile(
-            hrsTester,
-            "caseworker-hrs",
-            getHrsDefinitionFile());
+        ccdDefinitionHelper.importDefinitionFile(hrsTester, "caseworker-hrs", getHrsDefinitionFile());
     }
 
     public InputStream getHrsDefinitionFile() {
