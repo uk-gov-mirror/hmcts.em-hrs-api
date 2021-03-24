@@ -24,7 +24,7 @@ public class HearingRecordingSegmentServiceImpl implements HearingRecordingSegme
 
     public List<HearingRecordingSegment> findByRecordingId(UUID id) {
         List<HearingRecordingSegment> hearingRecordingSegmentsList =
-            hearingRecordingSegmentRepository.findByRecordingId(id);
+            hearingRecordingSegmentRepository.findByHearingRecordingId(id);
         return hearingRecordingSegmentsList;
     }
 }

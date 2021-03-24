@@ -14,8 +14,11 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class NotificationService {
@@ -39,22 +42,26 @@ public class NotificationService {
     }
 
     public void sendEmailNotification(String templateId, String jwt,
-                                      String docLink) throws NotificationClientException,
+                                      List<String> docLink, String caseReference,
+                                      String createdOn, UUID shareesId) throws NotificationClientException,
         IOException, JsonDocumentProcessingException {
 
         String userEmail = getUserEmail(jwt);
         notificationClient.sendEmail(
                 templateId,
                 userEmail,
-                createPersonalisation(docLink),
-                "Email Notification: " + userEmail);
+                createPersonalisation(docLink, caseReference, createdOn),
+//                "Email Notification: " + userEmail);
+                "hrs-grant-" + shareesId);
 
         //log.info(String.format("Notification email sent to email-Id: %s", userEmail));
     }
 
-    private Map<String, String> createPersonalisation(String docLink) {
-        HashMap<String, String> personalisation = new HashMap<>();
+    private Map<String, Object> createPersonalisation(List<String> docLink, String caseReference, String createdOn) {
+        HashMap<String, Object> personalisation = new HashMap<>();
         personalisation.put("document_link", docLink);
+        personalisation.put("case_reference", caseReference);
+        personalisation.put("created_on", createdOn) ;
         return personalisation;
     }
 

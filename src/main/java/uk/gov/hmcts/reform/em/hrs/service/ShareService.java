@@ -1,41 +1,76 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-//import com.microsoft.applicationinsights.core.dependencies.google.api.Http;
-//import org.apache.commons.lang3.BooleanUtils;
-//import org.apache.commons.lang3.StringUtils;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Value;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-//import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
-//import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
-//import uk.gov.hmcts.reform.em.hrs.service.NotificationService;
-//
-//import javax.servlet.http.HttpServletRequest;
-//import java.util.List;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharees;
+import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.exception.JsonDocumentProcessingException;
+import uk.gov.service.notify.NotificationClientException;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class ShareService {
 
     private final NotificationService notificationService;
 
-    public ShareService(NotificationService notificationService) {
+    private final HearingRecordingShareesService hearingRecordingShareesService;
+
+    private final HearingRecordingSegmentService hearingRecordingSegmentService;
+
+    @Value("${notify.emailTemplateId}")
+    private String emailTemplateId;
+
+    public ShareService(NotificationService notificationService,
+                        HearingRecordingSegmentService hearingRecordingSegmentService,
+                        HearingRecordingShareesService hearingRecordingShareesService) {
         this.notificationService = notificationService;
+        this.hearingRecordingSegmentService = hearingRecordingSegmentService;
+        this.hearingRecordingShareesService = hearingRecordingShareesService;
     }
 
-    // TODO - Fill this out
 
-//    public HearingRecordingDto executeNotify(List<HearingRecordingSegment> hearingRecordingSegmentList,
-//    HttpServletRequest request) {
-//        HearingRecordingDto hearingRecordingDto =
-//        notificationService.sendEmailNotification();
-//    }
+    public void executeNotify(HearingRecording hearingRecording,
+                                             HttpServletRequest request) throws NotificationClientException,
+        IOException, JsonDocumentProcessingException {
 
-//    notificationService.sendEmailNotification(
-//    failureTemplateId,
-//        dto.getJwt(),
-//        dto.getCaseId(),
-//        dto.getCaseData().has("caseTitle") ? dto.getCaseData().get("caseTitle").asText() : "Bundle",
-//        ccdCallbackResponseDto.getErrors().toString()
-//            );
+
+        /* Different ways to get the email address based on the request payload:
+                String emailAddress = request;
+                String emailAddress = notificationService.getUserEmail(jwt); */
+        String emailAddress = request.getParameter("emailAddress");
+
+        // Save the hearingRecordingSharee
+        HearingRecordingSharees hearingRecordingSharees = hearingRecordingShareesService.createAndSaveEntry(emailAddress, hearingRecording);
+
+        // Get the Hearing Recording Segments associated with the Hearing Recording
+        List<HearingRecordingSegment> hearingRecordingSegmentList = hearingRecordingSegmentService.findByRecordingId(
+            hearingRecording.getId());
+
+
+        List<String> hearingRecordingSegmentUrls = hearingRecordingSegmentList.stream()
+            .map(hearingRecordingSegment -> new String("https://SOMEPREFIXTBD" + hearingRecordingSegment.getFileName()))
+            .collect(Collectors.toList());
+
+
+        // String jwt = request;
+        String jwt = request.getHeader("authorization");
+
+            notificationService.sendEmailNotification(
+                emailTemplateId,
+                jwt,
+                hearingRecordingSegmentUrls,
+                hearingRecording.getCaseReference(),
+                hearingRecording.getCreatedOn().toString(),
+                hearingRecordingSharees.getId()
+            );
+    }
 }

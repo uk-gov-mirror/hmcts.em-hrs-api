@@ -28,7 +28,7 @@ public class HearingRecordingSegmentServiceImplTests {
         hearingRecordingSegmentServiceImpl.findByRecordingId(recordingId);
 
         // verify the hearingRecordingSegmentRepository is being called correctly
-        verify(hearingRecordingSegmentRepository, times(1)).findByRecordingId(recordingId);
+        verify(hearingRecordingSegmentRepository, times(1)).findByHearingRecordingId(recordingId);
 
     }
 }

@@ -16,12 +16,15 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
+import uk.gov.hmcts.reform.em.hrs.exception.JsonDocumentProcessingException;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareesService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
+import uk.gov.service.notify.NotificationClientException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -119,33 +122,27 @@ public class HearingRecordingController {
             + "access to (the download link)"),
         @ApiResponse(code = 404, message = "Not Found")
     })
-    public ResponseEntity<HearingRecordingDto> shareHearingRecording(@RequestBody String request,
+    public ResponseEntity<HearingRecordingDto> shareHearingRecording(@RequestBody HttpServletRequest request,
                                                                      @PathVariable("name") String folderName,
                                                                      @PathVariable("id") UUID recordingId) {
 
-        //TODO - @RequestBody should be HttpServletRequest but will need to configure unit test
+        // TODO - add a check that email request is valid : /^\S+@\S+\.\S+$/
+        // String emailAddress = request.getParameter("emailAddress");
 
         // Find the associated Hearing Recording
         Optional<HearingRecording> hearingRecording = hearingRecordingService.findOne(recordingId);
 
-        // Check if email is valid
-        // String emailAddress = request.getParameter("emailAddress");
-        String emailAddress = request;
-
-        // Save the hearingRecordingSharee
+        // Trigger the Share Service, with the Hearing Recording and the request
         if (hearingRecording.isPresent()) {
-            hearingRecordingShareesService.createAndSaveEntry(emailAddress, hearingRecording.get());
+            try {
+                shareService.executeNotify(hearingRecording.get(), request);
+                return ResponseEntity.ok().build();
+            } catch (NotificationClientException | IOException | JsonDocumentProcessingException e) {
+                return ResponseEntity.badRequest().build();
+            }
         }
 
-        // Get the Hearing Recording Segments associated with the Hearing Recording
-        List<HearingRecordingSegment> hearingRecordingSegments = hearingRecordingSegmentService.findByRecordingId(
-            recordingId);
-
-        // TODO - Trigger the ShareService with the info
-        // Return ResponseEntity.ok(shareService.executeNotify(hearingRecordingSegments, request));
-
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.notFound().build();
 
     }
 }
