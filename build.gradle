@@ -39,7 +39,7 @@ sourceSets {
       runtimeClasspath += main.output
       srcDir file('src/aat/java')
     }
-    resources.srcDir file('src/aat/resources')
+    resources.srcDir file('src/aat/r`esources')
   }
 
 
@@ -94,6 +94,7 @@ task functional(type: Test) {
   classpath = sourceSets.functionalTest.runtimeClasspath
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+  include "uk/gov/hmcts/reform/em/hrs/**"
 }
 
 task integration(type: Test) {
@@ -286,6 +287,12 @@ ext.libraries = [
 
 dependencies {
 
+  def withoutSomeStuff = {
+    exclude group: 'com.vaadin.external.google', module: 'android-json'
+    exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
+  }
+
   def withoutStuff = {
     exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
     exclude group: 'com.vaadin.external.google', module: 'android-json'
@@ -392,8 +399,9 @@ dependencies {
     exclude group: 'com.vaadin.external.google', module: 'android-json'
   }
 
-  functionalTestImplementation "uk.gov.hmcts.reform:em-test-helper:1.18.1", withoutStuff
-  functionalTestImplementation "net.serenity-bdd:serenity-rest-assured:2.3.4", withoutStuff
+  functionalTestImplementation "uk.gov.hmcts.reform:em-test-helper:1.18.1", withoutSomeStuff
+  functionalTestImplementation "net.serenity-bdd:serenity-rest-assured:2.3.4", withoutSomeStuff
+  functionalTestImplementation "net.serenity-bdd:serenity-spring:2.3.4"
 
 
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'

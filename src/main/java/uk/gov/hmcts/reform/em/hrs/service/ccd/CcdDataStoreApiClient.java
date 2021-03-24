@@ -35,7 +35,7 @@ public class CcdDataStoreApiClient {
         this.coreCaseDataApi = coreCaseDataApi;
     }
 
-    public CaseDetails createHRCase(HearingRecordingDto hearingRecordingDto) {//TODO - check why this is long here and string elsewhere
+    public CaseDetails createCase(HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityClient.getTokens();
 
         StartEventResponse startEventResponse =
@@ -54,7 +54,7 @@ public class CcdDataStoreApiClient {
         return caseDetails;
     }
 
-    public CaseDetails updateHRCaseData(String caseId, HearingRecordingDto hearingRecordingDto) {
+    public CaseDetails updateCaseData(String caseId, HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityClient.getTokens();
 
         StartEventResponse startEventResponse =

@@ -42,9 +42,9 @@ public class CaseHearingRecording {
     private List<RecordingSegment> recordingFiles;
 
     /***
-     * Format recording dateTime to satisfy CCD validation requirements
-     * @return CCD-compliant recording dateTime
-     */
+     * <p>Format recording dateTime to satisfy CCD validation requirements
+     * @return CCD-compliant recording dateTime</p>
+     ***/
     public String getRecordingDateTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         return formatter.format(recordingDateTime);

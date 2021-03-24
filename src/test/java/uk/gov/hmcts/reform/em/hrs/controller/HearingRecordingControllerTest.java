@@ -7,6 +7,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
+import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareesService;
@@ -33,6 +34,9 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
 
     @MockBean
     private FolderService folderService;
+
+    @MockBean
+    private CaseUpdateService caseUpdateService;
 
     @MockBean
     private HearingRecordingService hearingRecordingService;

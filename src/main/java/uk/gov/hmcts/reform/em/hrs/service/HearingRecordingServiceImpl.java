@@ -29,9 +29,7 @@ public class HearingRecordingServiceImpl implements HearingRecordingService {
         return hearingRecording;
     }
 
-
-
-    public final Optional<Long> checkIfHRCaseAlredyCreated(String recordingReference) {
+    public final Optional<Long> checkIfCaseExists(String recordingReference) {
         Optional<HearingRecording> existingRecording =
             hearingRecordingRepository.findByRecordingReference(recordingReference);
         if (existingRecording.isPresent()) {

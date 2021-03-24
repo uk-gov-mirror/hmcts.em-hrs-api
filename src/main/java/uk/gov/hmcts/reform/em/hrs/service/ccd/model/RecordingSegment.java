@@ -23,9 +23,9 @@ public class RecordingSegment {
     private Integer recordingLength;
 
     /***
-     * Add value property to segment to satisfy CCD validation requirements
-     * @return CCD-compliant recordingSegment
-     */
+     *<p>Add value property to segment to satisfy CCD validation requirements
+     * @return CCD-compliant recordingSegment</p>
+     ***/
     public JsonNode getValue() {
         ObjectNode segmentValue = JsonNodeFactory.instance.objectNode();
         segmentValue.set("documentLink", JsonNodeFactory.instance.pojoNode(recordingFile));

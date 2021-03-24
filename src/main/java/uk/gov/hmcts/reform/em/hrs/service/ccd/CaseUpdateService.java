@@ -18,13 +18,13 @@ public class CaseUpdateService {
         this.hearingRecordingService = hearingRecordingService;
     }
 
-    public Long addHRFileToCase(HearingRecordingDto recordingFile) {
+    public Long addRecordingToCase(HearingRecordingDto recordingFile) {
         Optional<Long> caseId = hearingRecordingService
-            .checkIfHRCaseAlredyCreated(recordingFile.getRecordingReference());
+            .checkIfCaseExists(recordingFile.getRecordingReference());
         if (caseId.isEmpty()) {
-            caseId = Optional.of(ccdDataStoreApiClient.createHRCase(recordingFile).getId());
+            caseId = Optional.of(ccdDataStoreApiClient.createCase(recordingFile).getId());
         } else {
-            ccdDataStoreApiClient.updateHRCaseData(caseId.get().toString(), recordingFile);
+            ccdDataStoreApiClient.updateCaseData(caseId.get().toString(), recordingFile);
         }
         return caseId.get();
     }

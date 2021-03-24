@@ -89,7 +89,7 @@ public class HearingRecordingController {
                                                                       @PathVariable("segment") String segment,
                                                                       @RequestBody HearingRecordingDto request) {
 
-        caseUpdateService.addHRFileToCase(request);
+        caseUpdateService.addRecordingToCase(request);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
