@@ -150,6 +150,7 @@ def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/dto/**',
   '**uk/gov/hmcts/reform/em/hrs/domain/**',
   '**uk/gov/hmcts/reform/em/hrs/exception/**',
+  '**uk/gov/hmcts/reform/em/hrs/controller/**',
   '**uk/gov/hmcts/reform/em/hrs/repository/**',
   '**uk/gov/hmcts/reform/em/hrs/service/**',
   '**uk/gov/hmcts/reform/em/hrs/storage/**',
@@ -303,7 +304,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: versions.springSecurity
   implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
   implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
-  
+
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
 // TODO springboot starter (deprecated) this excludes the following jars, but the spring boot template does not
@@ -374,7 +375,7 @@ dependencies {
 /***********************************************************************************************************************
  * TEST DEPENDENCIES
  **********************************************************************************************************************/
-  
+
   testImplementation libraries.junit5
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
