@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.service.notify.NotificationClient;
 
 @Configuration
-public class Config {
+public class ApplicationConfig {
 
     @Value("${notify.apiKey}")
     String notificationApiKey;

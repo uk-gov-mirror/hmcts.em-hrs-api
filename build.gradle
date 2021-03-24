@@ -136,7 +136,7 @@ pmd {
 }
 
 jacocoTestReport {
-  executionData(test)
+  executionData(test, integration)
   reports {
     xml.enabled = true
     csv.enabled = false
@@ -152,7 +152,6 @@ def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/exception/**',
   '**uk/gov/hmcts/reform/em/hrs/repository/**',
   '**uk/gov/hmcts/reform/em/hrs/service/**',
-  '**uk/gov/hmcts/reform/em/hrs/storage/**',
 ]
 
 jacocoTestReport {
@@ -390,6 +389,7 @@ dependencies {
   testImplementation group: 'com.devskiller', name: 'jfairy', version: '0.6.4', {
     exclude group: 'com.google.guava', module: 'guava'
   }
+  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 
   smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
   smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
