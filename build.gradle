@@ -271,6 +271,7 @@ def versions = [
   serenityreporter   : '2.3.12',
   junit           : '5.7.0',
   junitPlatform   : '1.7.1',
+  springSecurity     : '5.3.8.RELEASE'
 ]
 
 ext.libraries = [
@@ -295,6 +296,14 @@ dependencies {
   compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
   compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
 
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
+  implementation group: 'org.springframework.security', name: 'spring-security-web', version: versions.springSecurity
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: versions.springSecurity
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: versions.springSecurity
+  implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
+  implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
+  
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
 // TODO springboot starter (deprecated) this excludes the following jars, but the spring boot template does not
@@ -365,8 +374,7 @@ dependencies {
 /***********************************************************************************************************************
  * TEST DEPENDENCIES
  **********************************************************************************************************************/
-
-  testImplementation 'com.github.gmazzo:okhttp-mock:1.3.2'
+  
   testImplementation libraries.junit5
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {

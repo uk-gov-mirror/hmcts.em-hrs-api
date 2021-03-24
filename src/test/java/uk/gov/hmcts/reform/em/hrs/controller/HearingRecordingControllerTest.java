@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
 import net.javacrumbs.jsonunit.core.Option;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.em.hrs.Application;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
@@ -31,10 +34,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
-class HearingRecordingControllerTest {
-    @Inject
-    private MockMvc mockMvc;
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {Application.class})
+@Import(TestSecurityConfiguration.class)
+public class HearingRecordingControllerTest extends BaseTest {
 
     @MockBean
     private FolderService folderService;
@@ -55,7 +58,7 @@ class HearingRecordingControllerTest {
     private static final UUID ID = TestUtil.HEARING_RECORDING.getId();
 
     @Test
-    void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
+    public void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
         final String path = "/folders/" + TEST_FOLDER + "/hearing-recording-file-names";
         doReturn(emptySet()).when(folderService).getStoredFiles(TEST_FOLDER);
 
