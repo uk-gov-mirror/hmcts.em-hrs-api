@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.em.hrs.storage;
 
 import com.azure.core.http.rest.PagedIterable;
+import com.azure.storage.blob.BlobAsyncClient;
+import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
+import com.azure.storage.blob.options.BlobBeginCopyOptions;
+import com.azure.storage.blob.specialized.BlockBlobClient;
+import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
 import java.time.Duration;
 import java.util.Set;
@@ -14,12 +19,22 @@ import javax.inject.Named;
 
 @Named
 public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
-    private final BlobContainerClient blobContainerClient;
+    private final BlobContainerAsyncClient hrsBlobContainerAsyncClient;
+    private final BlobContainerClient hrsBlobContainerClient;
+    private final BlobContainerClient cvpBlobContainerClient;
+    private final Snooper snooper;
+
     private static final int BLOB_LIST_TIMEOUT = 5;
 
     @Inject
-    public DefaultHearingRecordingStorage(BlobContainerClient blobContainerClient) {
-        this.blobContainerClient = blobContainerClient;
+    public DefaultHearingRecordingStorage(final BlobContainerAsyncClient hrsContainerAsyncClient,
+                                          final @Named("HrsBlobContainerClient") BlobContainerClient hrsContainerClient,
+                                          final @Named("CvpBlobContainerClient") BlobContainerClient cvpContainerClient,
+                                          final Snooper snooper) {
+        this.hrsBlobContainerAsyncClient = hrsContainerAsyncClient;
+        this.hrsBlobContainerClient = hrsContainerClient;
+        this.cvpBlobContainerClient = cvpContainerClient;
+        this.snooper = snooper;
     }
 
     @Override
@@ -32,8 +47,27 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
             .setPrefix(folderName);
         final Duration duration = Duration.ofMinutes(BLOB_LIST_TIMEOUT);
 
-        final PagedIterable<BlobItem> blobItems = blobContainerClient.listBlobs(options, duration);
+        final PagedIterable<BlobItem> blobItems = hrsBlobContainerClient.listBlobs(options, duration);
 
-        return blobItems.stream().map(BlobItem::getName).collect(Collectors.toUnmodifiableSet());
+        return blobItems.streamByPage()
+            .flatMap(x -> x.getValue().stream().map(BlobItem::getName))
+            .collect(Collectors.toUnmodifiableSet());
     }
+
+    @Override
+    public void copyRecording(final String filename) {
+        final BlockBlobClient srcBlobClient = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
+        final String srcBlobUrl = srcBlobClient.getBlobUrl();
+
+        final BlobBeginCopyOptions blobBeginCopyOptions = new BlobBeginCopyOptions(srcBlobUrl);
+        final BlobAsyncClient destBlobAsyncClient = hrsBlobContainerAsyncClient.getBlobAsyncClient(filename);
+        destBlobAsyncClient.beginCopy(blobBeginCopyOptions)
+            .subscribe(
+                x -> {
+                },
+                y -> snooper.snoop(String.format("File %s copied failed:: %s", filename, y.getMessage())),
+                () -> snooper.snoop(String.format("File %s copied successfully", filename))
+            );
+    }
+
 }

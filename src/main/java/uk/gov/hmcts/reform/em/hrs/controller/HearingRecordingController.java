@@ -74,7 +74,7 @@ public class HearingRecordingController {
     }
 
     @PostMapping(
-        path = "/folders/{name}/hearing-recording",
+        path = "/hearing-recording/{ref}/segment",
         consumes = APPLICATION_JSON_VALUE,
         produces = APPLICATION_JSON_VALUE
     )
