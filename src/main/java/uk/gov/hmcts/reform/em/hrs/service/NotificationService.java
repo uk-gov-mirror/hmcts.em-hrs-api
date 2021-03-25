@@ -14,7 +14,6 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +50,7 @@ public class NotificationService {
                 templateId,
                 userEmail,
                 createPersonalisation(docLink, caseReference, createdOn),
-//                "Email Notification: " + userEmail);
+                // "Email Notification: " + userEmail);
                 "hrs-grant-" + shareesId);
 
         //log.info(String.format("Notification email sent to email-Id: %s", userEmail));
@@ -61,7 +60,7 @@ public class NotificationService {
         HashMap<String, Object> personalisation = new HashMap<>();
         personalisation.put("document_link", docLink);
         personalisation.put("case_reference", caseReference);
-        personalisation.put("created_on", createdOn) ;
+        personalisation.put("created_on", createdOn);
         return personalisation;
     }
 

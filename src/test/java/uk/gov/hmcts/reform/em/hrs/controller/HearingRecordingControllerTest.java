@@ -138,8 +138,9 @@ public class HearingRecordingControllerTest extends BaseTest {
         final String path = "/folders/" + TEST_FOLDER + "/hearing-recording/" + ID + "/access-right";
 
         doReturn(Optional.of(TestUtil.HEARING_RECORDING)).when(hearingRecordingService).findOne(ID);
-        doReturn(ResponseEntity.badRequest().build())
-            .when(shareService).executeNotify(TestUtil.HEARING_RECORDING, Mockito.any(HttpServletRequest.class));
+        doThrow(IllegalArgumentException.class)
+            .when(shareService).executeNotify(Mockito.any(HearingRecording.class),
+                                              Mockito.any(HttpServletRequest.class));
 
         mockMvc.perform(post(path)
                             .contentType(APPLICATION_JSON_VALUE)

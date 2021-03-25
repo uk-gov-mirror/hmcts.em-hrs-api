@@ -9,10 +9,11 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharees;
 import uk.gov.hmcts.reform.em.hrs.exception.JsonDocumentProcessingException;
 import uk.gov.service.notify.NotificationClientException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 
 
 @Service
@@ -36,27 +37,29 @@ public class ShareService {
     }
 
 
-    public void executeNotify(HearingRecording hearingRecording,
-                                             HttpServletRequest request) throws NotificationClientException,
-        IOException, JsonDocumentProcessingException {
+    public void executeNotify(HearingRecording hearingRecording, HttpServletRequest request)
+        throws NotificationClientException, IOException, JsonDocumentProcessingException, IllegalArgumentException {
 
         // String emailAddress = notificationService.getUserEmail(jwt);
         String emailAddress = request.getParameter("emailAddress");
 
-        // Save the hearingRecordingSharee
-        HearingRecordingSharees hearingRecordingSharees = hearingRecordingShareesService.createAndSaveEntry(emailAddress, hearingRecording);
+        if (Pattern.matches("^\\S+@\\S+\\.\\S+$", emailAddress)) {
 
-        // Get the Hearing Recording Segments associated with the Hearing Recording
-        List<HearingRecordingSegment> hearingRecordingSegmentList = hearingRecordingSegmentService.findByRecordingId(
-            hearingRecording.getId());
+            // Save the hearingRecordingSharee
+            HearingRecordingSharees hearingRecordingSharees = hearingRecordingShareesService
+                .createAndSaveEntry(emailAddress, hearingRecording);
 
-
-        List<String> hearingRecordingSegmentUrls = hearingRecordingSegmentList.stream()
-            .map(hearingRecordingSegment -> ("https://SOMEPREFIXTBD" + hearingRecordingSegment.getFileName()))
-            .collect(Collectors.toList());
+            // Get the Hearing Recording Segments associated with the Hearing Recording
+            List<HearingRecordingSegment> hearingRecordingSegmentList = hearingRecordingSegmentService.findByRecordingId(
+                hearingRecording.getId());
 
 
-        String jwt = request.getHeader("authorization");
+            List<String> hearingRecordingSegmentUrls = hearingRecordingSegmentList.stream()
+                .map(hearingRecordingSegment -> ("https://SOMEPREFIXTBD" + hearingRecordingSegment.getFileName()))
+                .collect(Collectors.toList());
+
+
+            String jwt = request.getHeader("authorization");
 
             notificationService.sendEmailNotification(
                 emailTemplateId,
@@ -66,5 +69,8 @@ public class ShareService {
                 hearingRecording.getCreatedOn().toString(),
                 hearingRecordingSharees.getId()
             );
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 }

@@ -57,7 +57,7 @@ class HearingRecordingServiceImplTests {
             .thenReturn(Optional.of(TestUtil.HEARING_RECORDING));
         Optional<HearingRecording> hearingRecording = hearingRecordingServiceImpl.findOne(TestUtil.RANDOM_UUID);
         assert(hearingRecording.get()).equals(TestUtil.HEARING_RECORDING);
-        }
+    }
     //
     //    @Test
     //    public void testFindOneThatDoesNotExist() {

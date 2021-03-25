@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
-import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
 import uk.gov.hmcts.reform.em.hrs.exception.JsonDocumentProcessingException;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -126,9 +124,6 @@ public class HearingRecordingController {
                                                                      @PathVariable("name") String folderName,
                                                                      @PathVariable("id") UUID recordingId) {
 
-        // TODO - add a check that email request is valid : /^\S+@\S+\.\S+$/
-        // String emailAddress = request.getParameter("emailAddress");
-
         // Find the associated Hearing Recording
         Optional<HearingRecording> hearingRecording = hearingRecordingService.findOne(recordingId);
 
@@ -137,7 +132,8 @@ public class HearingRecordingController {
             try {
                 shareService.executeNotify(hearingRecording.get(), request);
                 return ResponseEntity.ok().build();
-            } catch (NotificationClientException | IOException | JsonDocumentProcessingException e) {
+            } catch (NotificationClientException | IOException
+                | JsonDocumentProcessingException | IllegalArgumentException e) {
                 return ResponseEntity.badRequest().build();
             }
         }

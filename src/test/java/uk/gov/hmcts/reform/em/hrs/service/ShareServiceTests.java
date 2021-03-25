@@ -1,29 +1,24 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharees;
 
-import javax.servlet.http.HttpServletRequest;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
-import static reactor.core.publisher.Mono.when;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class ShareServiceTests {
@@ -85,5 +80,16 @@ public class ShareServiceTests {
                                    docLink, "test",
                                    hearingRecording.getCreatedOn().toString(),
                                    hearingRecordingShareesId);
+    }
+
+    @Test
+    public void testExecuteUpdateWithIncorrectEmail() throws Exception {
+        HearingRecording hearingRecording = new HearingRecording();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addParameter("emailAddress", "badEmail@tester,com");
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            shareService.executeNotify(hearingRecording, request);
+        });
     }
 }
