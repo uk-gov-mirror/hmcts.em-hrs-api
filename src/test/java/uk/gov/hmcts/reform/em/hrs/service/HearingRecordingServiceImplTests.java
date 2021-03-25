@@ -1,10 +1,20 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import org.junit.Before;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class HearingRecordingServiceImplTests {
@@ -12,14 +22,9 @@ class HearingRecordingServiceImplTests {
     private HearingRecordingRepository hearingRecordingRepository;
 
     @InjectMocks
-    private HearingRecordingServiceImpl underTest;
+    private HearingRecordingServiceImpl hearingRecordingServiceImpl;
 
-
-
-
-
-    //    @Mock
-    //    private HearingRecordingRepository hearingRecordingRepository;
+    private HearingRecordingService hearingRecordingService;
     //
     ////
     ////    @Mock
@@ -31,8 +36,8 @@ class HearingRecordingServiceImplTests {
     ////    @Mock
     ////    private BlobStorageWriteService blobStorageWriteService;
     //
-    //    @Mock
-    //    private SecurityUtilService securityUtilService;
+    @Mock
+    private SecurityUtilService securityUtilService;
     //
     ////    @Mock
     ////    private AzureStorageConfig azureStorageConfiguration;
@@ -40,19 +45,19 @@ class HearingRecordingServiceImplTests {
     ////    @Mock
     ////    private BlobStorageDeleteService blobStorageDeleteService;
 
-    //    @Before
-    //    public void setUp() {
-    //        when(securityUtilService.getUserId()).thenReturn("Corín Tellado");
-    //    }
+    @Before
+    public void setUp() {
+        Mockito.when(securityUtilService.getUserId()).thenReturn("Corín Tellado");
+    }
 
 
-    //    @Test
-    //    public void testFindOne() {
-    //        when(this.hearingRecordingRepository.findById(any(UUID.class))).thenReturn(Optional.of(TestUtil
-    //        .STORED_DOCUMENT));
-    //        Optional<HearingRecording> hearingRecording = hearingRecordingService.findOne(TestUtil.RANDOM_UUID);
-    //        assertThat(hearingRecording.get(), equalTo(TestUtil.STORED_DOCUMENT));
-    //    }
+    @Test
+    public void testFindOne() {
+        Mockito.when(this.hearingRecordingRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(TestUtil.HEARING_RECORDING));
+        Optional<HearingRecording> hearingRecording = hearingRecordingServiceImpl.findOne(TestUtil.RANDOM_UUID);
+        assert(hearingRecording.get()).equals(TestUtil.HEARING_RECORDING);
+        }
     //
     //    @Test
     //    public void testFindOneThatDoesNotExist() {
