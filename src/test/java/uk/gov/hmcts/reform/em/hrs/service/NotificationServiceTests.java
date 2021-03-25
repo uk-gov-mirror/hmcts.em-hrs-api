@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import okhttp3.*;
-import org.hibernate.CallbackException;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.rules.ExpectedException;
-import org.junit.jupiter.api.Assertions;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -14,9 +16,15 @@ import uk.gov.hmcts.reform.em.hrs.exception.JsonDocumentProcessingException;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceTests {
@@ -103,7 +111,7 @@ public class NotificationServiceTests {
         UUID shareesId = UUID.randomUUID();
 
         Assertions.assertThrows(JsonDocumentProcessingException.class, () -> {
-            notificationService.sendEmailNotification (
+            notificationService.sendEmailNotification(
                 "string",
                 "string",
                 docLink,
