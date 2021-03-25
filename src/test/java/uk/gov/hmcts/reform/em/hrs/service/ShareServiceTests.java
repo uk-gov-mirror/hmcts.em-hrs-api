@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,8 +43,6 @@ public class ShareServiceTests {
 
     @Test
     public void testExecuteUpdate() throws Exception {
-//        when(Mockito.any(HttpServletRequest.class).getParameter("emailAddress"))
-//            .thenReturn("test@tester.com");
         HearingRecordingSharees hearingRecordingSharees = new HearingRecordingSharees();
         UUID hearingRecordingShareesId = UUID.randomUUID();
         hearingRecordingSharees.setId(hearingRecordingShareesId);
@@ -59,7 +58,6 @@ public class ShareServiceTests {
 
         HearingRecordingSegment hearingRecordingSegment = new HearingRecordingSegment();
         hearingRecordingSegment.setFileName("testFileName");
-//        UUID hearingRecordingSegmentId = UUID.randomUUID();
         hearingRecordingSegment.setHearingRecording(hearingRecording);
         List<HearingRecordingSegment> hearingRecordingSegmentList = new ArrayList<>();
         hearingRecordingSegmentList.add(hearingRecordingSegment);

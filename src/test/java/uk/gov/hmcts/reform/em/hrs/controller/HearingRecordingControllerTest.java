@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.em.hrs.controller;
 import net.javacrumbs.jsonunit.core.Option;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.em.hrs.Application;
@@ -120,32 +122,31 @@ public class HearingRecordingControllerTest extends BaseTest {
 
     }
 
+    @Test
+    public void testShareHearingRecordingNotFound() throws Exception {
+        final String path = "/folders/" + TEST_FOLDER + "/hearing-recording/" + ID + "/access-right";
 
+        mockMvc.perform(post(path)
+                            .contentType(APPLICATION_JSON_VALUE)
+                            .header("Authorization", "xxx")
+                            .header("ServiceAuthorization", "xxx"))
+            .andExpect(status().isNotFound());
+    }
 
-//    @Test
-//    void testShareHearingRecordingShareeSave() throws Exception {
-//        final String path = "/folders/" + TEST_FOLDER + "/hearing-recording/" + ID + "/access-right";
-//
-//        doReturn(Optional.of(TestUtil.HEARING_RECORDING)).when(hearingRecordingService).findOne(ID);
-//        doReturn(List.of(TestUtil.FOLDER_WITH_SEGMENT.getHearingRecordings().get(0).getSegments()))
-//            .when(hearingRecordingSegmentService)
-//            .findByRecordingId(ID);
-//
-//        // TODO content should be in a HttpServletRequest form
-//        mockMvc.perform(post(path)
-//                       .content("test@tester.com")
-//                       .contentType(APPLICATION_JSON_VALUE)
-//                       .header("Authorization", "xxx")
-//                       .header("ServiceAuthorization", "xxx"))
-//                    .andExpect(status().isOk());
-//
-//
-//        verify(hearingRecordingService, times(1)).findOne(ID);
-//
-//        verify(hearingRecordingShareesService, times(1))
-//            .createAndSaveEntry("test@tester.com", TestUtil.HEARING_RECORDING);
-//
-////        verify(hearingRecordingSegmentService, times(1)).findByRecordingId(ID);
-//    }
+    @Test
+    public void testShareHearingRecordingBadRequest() throws Exception {
+        final String path = "/folders/" + TEST_FOLDER + "/hearing-recording/" + ID + "/access-right";
+
+        doReturn(Optional.of(TestUtil.HEARING_RECORDING)).when(hearingRecordingService).findOne(ID);
+        doReturn(ResponseEntity.badRequest().build())
+            .when(shareService).executeNotify(TestUtil.HEARING_RECORDING, Mockito.any(HttpServletRequest.class));
+
+        mockMvc.perform(post(path)
+                            .contentType(APPLICATION_JSON_VALUE)
+                            .header("Authorization", "xxx")
+                            .header("ServiceAuthorization", "xxx"))
+            .andExpect(status().isBadRequest());
+
+    }
 
 }

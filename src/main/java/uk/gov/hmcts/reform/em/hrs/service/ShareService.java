@@ -6,13 +6,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharees;
-import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.exception.JsonDocumentProcessingException;
 import uk.gov.service.notify.NotificationClientException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,10 +40,7 @@ public class ShareService {
                                              HttpServletRequest request) throws NotificationClientException,
         IOException, JsonDocumentProcessingException {
 
-
-        /* Different ways to get the email address based on the request payload:
-                String emailAddress = request;
-                String emailAddress = notificationService.getUserEmail(jwt); */
+        // String emailAddress = notificationService.getUserEmail(jwt);
         String emailAddress = request.getParameter("emailAddress");
 
         // Save the hearingRecordingSharee
@@ -57,11 +52,10 @@ public class ShareService {
 
 
         List<String> hearingRecordingSegmentUrls = hearingRecordingSegmentList.stream()
-            .map(hearingRecordingSegment -> new String("https://SOMEPREFIXTBD" + hearingRecordingSegment.getFileName()))
+            .map(hearingRecordingSegment -> ("https://SOMEPREFIXTBD" + hearingRecordingSegment.getFileName()))
             .collect(Collectors.toList());
 
 
-        // String jwt = request;
         String jwt = request.getHeader("authorization");
 
             notificationService.sendEmailNotification(
