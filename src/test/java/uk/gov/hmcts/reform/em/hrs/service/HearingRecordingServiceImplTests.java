@@ -40,7 +40,7 @@ class HearingRecordingServiceImplTests {
     private SecurityUtilService securityUtilService;
     //
     ////    @Mock
-    ////    private AzureStorageConfiguration azureStorageConfiguration;
+    ////    private AzureStorageConfig azureStorageConfiguration;
     ////
     ////    @Mock
     ////    private BlobStorageDeleteService blobStorageDeleteService;

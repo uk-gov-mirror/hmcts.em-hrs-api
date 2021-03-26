@@ -13,9 +13,12 @@ import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql({"/data/create-folder.sql"})
-class FolderRepositoryTest extends AbstractRepositoryIntegrationTest {
+class FolderRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
     @Inject
     private FolderRepository underTest;
+
+    private static final String EMPTY_FOLDER = "folder-0";
+    private static final String TEST_FOLDER = "folder-1";
 
     @Inject
     private HearingRecordingSegmentRepository hearingRecordingSegmentRepository;
@@ -33,18 +36,18 @@ class FolderRepositoryTest extends AbstractRepositoryIntegrationTest {
 
     @Test
     void testShouldReturnEmptySetWhenDatabaseIsEmpty() {
-        final Optional<Folder> folder = underTest.findByName("folder-0");
+        final Optional<Folder> folder = underTest.findByName(EMPTY_FOLDER);
 
         assertThat(folder).isEmpty();
     }
 
     @Test
     void testFindByFolderName() {
-        final Optional<Folder> folder = underTest.findByName("folder-1");
+        final Optional<Folder> folder = underTest.findByName(TEST_FOLDER);
 
         assertThat(folder).hasValueSatisfying(x -> {
             assertThat(x.getId()).isEqualTo(UUID.fromString("3E3F63FB-3C7A-447B-86DA-69ED164763B0"));
-            assertThat(x.getName()).isEqualTo("folder-1");
+            assertThat(x.getName()).isEqualTo(TEST_FOLDER);
             assertThat(x.getJobsInProgress().size()).isEqualTo(2);
             assertThat(x.getHearingRecordings().size()).isEqualTo(2);
         });

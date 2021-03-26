@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -39,7 +37,6 @@ public class HearingRecordingController {
     private final HearingRecordingService hearingRecordingService;
     private final HearingRecordingSegmentService hearingRecordingSegmentService;
     private final ShareService shareService;
-    private final ObjectMapper jsonMapper = new ObjectMapper();
 
     @Inject
     public HearingRecordingController(final FolderService folderService,
@@ -75,7 +72,7 @@ public class HearingRecordingController {
     }
 
     @PostMapping(
-        path = "/folders/{name}/hearing-recording",
+        path = "/folder/{folder}/hearing-recording/{recordingRef}/segment/{segment}",
         consumes = APPLICATION_JSON_VALUE,
         produces = APPLICATION_JSON_VALUE
     )
@@ -84,7 +81,9 @@ public class HearingRecordingController {
     @ApiResponses(value = {
         @ApiResponse(code = 202, message = "Request accepted for asynchronous processing")
     })
-    public ResponseEntity<HearingRecordingDto> createHearingRecording(@PathVariable("name") String folderName,
+    public ResponseEntity<HearingRecordingDto> createHearingRecording(@PathVariable("folder") String folderName,
+                                                                      @PathVariable("recordingRef") String recordingRef,
+                                                                      @PathVariable("segment") String segment,
                                                                       @RequestBody HearingRecordingDto request) {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }

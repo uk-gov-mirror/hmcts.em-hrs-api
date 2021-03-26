@@ -1,18 +1,10 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
 import net.javacrumbs.jsonunit.core.Option;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.em.hrs.Application;
+import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
@@ -24,26 +16,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class})
-@Import(TestSecurityConfiguration.class)
-public class HearingRecordingControllerTest extends BaseTest {
+class HearingRecordingControllerTest extends AbstractBaseTest {
 
     @MockBean
     private FolderService folderService;
@@ -64,7 +50,7 @@ public class HearingRecordingControllerTest extends BaseTest {
     private static final UUID ID = TestUtil.HEARING_RECORDING.getId();
 
     @Test
-    public void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
+    void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
         final String path = "/folders/" + TEST_FOLDER + "/hearing-recording-file-names";
         doReturn(emptySet()).when(folderService).getStoredFiles(TEST_FOLDER);
 
@@ -78,7 +64,7 @@ public class HearingRecordingControllerTest extends BaseTest {
         assertThatJson(content)
             .when(Option.IGNORING_ARRAY_ORDER)
             .and(
-                x -> x.node("folder-name").isEqualTo("folder-1"),
+                x -> x.node("folder-name").isEqualTo(TEST_FOLDER),
                 x -> x.node("filenames").isArray().isEmpty()
             );
         verify(folderService, times(1)).getStoredFiles(TEST_FOLDER);
@@ -105,49 +91,31 @@ public class HearingRecordingControllerTest extends BaseTest {
         verify(folderService, times(1)).getStoredFiles(TEST_FOLDER);
     }
 
+
     @Test
-    public void testShareHearingRecording() throws Exception {
+    void testShareHearingRecordingShareeSave() throws Exception {
         final String path = "/folders/" + TEST_FOLDER + "/hearing-recording/" + ID + "/access-right";
 
         doReturn(Optional.of(TestUtil.HEARING_RECORDING)).when(hearingRecordingService).findOne(ID);
+        doReturn(List.of(TestUtil.FOLDER_WITH_SEGMENT.getHearingRecordings().get(0).getSegments()))
+            .when(hearingRecordingSegmentService)
+            .findByRecordingId(ID);
 
+        // TODO content should be in a HttpServletRequest form
         mockMvc.perform(post(path)
+                            .content("test@tester.com")
                             .contentType(APPLICATION_JSON_VALUE)
                             .header("Authorization", "xxx")
                             .header("ServiceAuthorization", "xxx"))
             .andExpect(status().isOk());
 
-        verify(shareService, times(1))
-            .executeNotify(TestUtil.HEARING_RECORDING, any(HttpServletRequest.class));
 
-    }
+        verify(hearingRecordingService, times(1)).findOne(ID);
 
-    @Test
-    public void testShareHearingRecordingNotFound() throws Exception {
-        final String path = "/folders/" + TEST_FOLDER + "/hearing-recording/" + ID + "/access-right";
+        verify(hearingRecordingShareesService, times(1))
+            .createAndSaveEntry("test@tester.com", TestUtil.HEARING_RECORDING);
 
-        mockMvc.perform(post(path)
-                            .contentType(APPLICATION_JSON_VALUE)
-                            .header("Authorization", "xxx")
-                            .header("ServiceAuthorization", "xxx"))
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void testShareHearingRecordingBadRequest() throws Exception {
-        final String path = "/folders/" + TEST_FOLDER + "/hearing-recording/" + ID + "/access-right";
-
-        doReturn(Optional.of(TestUtil.HEARING_RECORDING)).when(hearingRecordingService).findOne(ID);
-        doThrow(IllegalArgumentException.class)
-            .when(shareService).executeNotify(Mockito.any(HearingRecording.class),
-                                              Mockito.any(HttpServletRequest.class));
-
-        mockMvc.perform(post(path)
-                            .contentType(APPLICATION_JSON_VALUE)
-                            .header("Authorization", "xxx")
-                            .header("ServiceAuthorization", "xxx"))
-            .andExpect(status().isBadRequest());
-
+        verify(hearingRecordingSegmentService, times(1)).findByRecordingId(ID);
     }
 
 }
