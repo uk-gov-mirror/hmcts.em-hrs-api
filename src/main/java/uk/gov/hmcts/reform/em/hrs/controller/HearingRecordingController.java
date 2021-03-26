@@ -14,18 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
-import uk.gov.hmcts.reform.em.hrs.exception.JsonDocumentProcessingException;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareesService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareeService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
-import uk.gov.service.notify.NotificationClientException;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -33,19 +31,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 public class HearingRecordingController {
     private final FolderService folderService;
-    private final HearingRecordingShareesService hearingRecordingShareesService;
+    private final HearingRecordingShareeService hearingRecordingShareeService;
     private final HearingRecordingService hearingRecordingService;
     private final HearingRecordingSegmentService hearingRecordingSegmentService;
     private final ShareService shareService;
 
     @Inject
     public HearingRecordingController(final FolderService folderService,
-                                      final HearingRecordingShareesService hearingRecordingShareesService,
+                                      final HearingRecordingShareeService hearingRecordingShareeService,
                                       final HearingRecordingService hearingRecordingService,
                                       final HearingRecordingSegmentService hearingRecordingSegmentService,
                                       final ShareService shareService) {
         this.folderService = folderService;
-        this.hearingRecordingShareesService = hearingRecordingShareesService;
+        this.hearingRecordingShareeService = hearingRecordingShareeService;
         this.hearingRecordingService = hearingRecordingService;
         this.hearingRecordingSegmentService = hearingRecordingSegmentService;
         this.shareService = shareService;
@@ -128,13 +126,10 @@ public class HearingRecordingController {
 
         // Trigger the Share Service, with the Hearing Recording and the request
         if (hearingRecording.isPresent()) {
-            try {
-                shareService.executeNotify(hearingRecording.get(), request);
-                return ResponseEntity.ok().build();
-            } catch (NotificationClientException | IOException
-                | JsonDocumentProcessingException | IllegalArgumentException e) {
-                return ResponseEntity.badRequest().build();
-            }
+
+//            shareService.executeNotify(hearingRecording.get(), request);
+            return ResponseEntity.ok().build();
+
         }
 
         return ResponseEntity.notFound().build();
