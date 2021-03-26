@@ -42,18 +42,10 @@ public class AzureStorageConfig {
     }
 
     @Bean("HrsBlobContainerClient")
-    public BlobContainerClient provideHrsBlobContainerClient() {
+    public BlobContainerClient provideBlobContainerClient() {
         return new BlobContainerClientBuilder()
             .connectionString(hrsConnectionString)
             .containerName(hrsContainer)
-            .buildClient();
-    }
-
-    @Bean("CvpBlobContainerClient")
-    public BlobContainerClient provideCvpBlobContainerClient() {
-        return new BlobContainerClientBuilder()
-            .connectionString(cvpConnectionString)
-            .containerName(cvpContainer)
             .buildClient();
     }
 

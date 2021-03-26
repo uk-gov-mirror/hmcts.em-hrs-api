@@ -8,7 +8,6 @@ import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.blob.options.BlobBeginCopyOptions;
-import com.azure.storage.blob.specialized.BlockBlobClient;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
 import java.time.Duration;
@@ -21,7 +20,6 @@ import javax.inject.Named;
 public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private final BlobContainerAsyncClient hrsBlobContainerAsyncClient;
     private final BlobContainerClient hrsBlobContainerClient;
-    private final BlobContainerClient cvpBlobContainerClient;
     private final Snooper snooper;
 
     private static final int BLOB_LIST_TIMEOUT = 5;
@@ -29,11 +27,9 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     @Inject
     public DefaultHearingRecordingStorage(final BlobContainerAsyncClient hrsContainerAsyncClient,
                                           final @Named("HrsBlobContainerClient") BlobContainerClient hrsContainerClient,
-                                          final @Named("CvpBlobContainerClient") BlobContainerClient cvpContainerClient,
                                           final Snooper snooper) {
         this.hrsBlobContainerAsyncClient = hrsContainerAsyncClient;
         this.hrsBlobContainerClient = hrsContainerClient;
-        this.cvpBlobContainerClient = cvpContainerClient;
         this.snooper = snooper;
     }
 
@@ -55,11 +51,8 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     }
 
     @Override
-    public void copyRecording(final String filename) {
-        final BlockBlobClient srcBlobClient = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
-        final String srcBlobUrl = srcBlobClient.getBlobUrl();
-
-        final BlobBeginCopyOptions blobBeginCopyOptions = new BlobBeginCopyOptions(srcBlobUrl);
+    public void copyRecording(final String sourceUri, final String filename) {
+        final BlobBeginCopyOptions blobBeginCopyOptions = new BlobBeginCopyOptions(sourceUri);
         final BlobAsyncClient destBlobAsyncClient = hrsBlobContainerAsyncClient.getBlobAsyncClient(filename);
         destBlobAsyncClient.beginCopy(blobBeginCopyOptions)
             .subscribe(

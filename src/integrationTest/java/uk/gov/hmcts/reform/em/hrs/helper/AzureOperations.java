@@ -6,6 +6,7 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
+import com.azure.storage.blob.specialized.BlockBlobClient;
 import com.devskiller.jfairy.Fairy;
 
 import java.io.BufferedInputStream;
@@ -62,6 +63,11 @@ public class AzureOperations {
             ? cvpBlobContainerClient.getBlobClient(filePath)
             : hrsBlobContainerClient.getBlobClient(filePath);
         blobClient.upload(new BufferedInputStream(data), content.length());
+    }
+
+    public String getBlobUrl(final String filename) {
+        final BlockBlobClient srcBlobClient = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
+        return srcBlobClient.getBlobUrl();
     }
 
     public Set<String> getHrsBlobsFrom(final String folder) {

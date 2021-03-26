@@ -5,5 +5,5 @@ import java.util.Set;
 public interface HearingRecordingStorage {
     Set<String> findByFolder(String folderName);
 
-    void copyRecording(String filename);
+    void copyRecording(String sourceUri, String filename);
 }
