@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.em.hrs.storage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.reform.em.hrs.config.TestAzureStorageConfig;
+import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestAzureStorageConfig;
 import uk.gov.hmcts.reform.em.hrs.helper.AzureOperations;
 import uk.gov.hmcts.reform.em.hrs.helper.SimpleSnooper;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
@@ -76,8 +76,9 @@ class DefaultHearingRecordingStorageIntegrationTest {
         final String folder = UUID.randomUUID().toString();
         final String file = folder + "/" + UUID.randomUUID().toString() + ".txt";
         azureOperations.uploadToCvpContainer(file);
+        final String sourceUrl = azureOperations.getBlobUrl(file);
 
-        underTest.copyRecording(file);
+        underTest.copyRecording(sourceUrl, file);
 
         await().atMost(TEN_SECONDS)
             .untilAsserted(() -> assertThat(azureOperations.getHrsBlobsFrom(folder))
@@ -90,9 +91,10 @@ class DefaultHearingRecordingStorageIntegrationTest {
         final String folder = UUID.randomUUID().toString();
         final String file1 = folder + "/" + UUID.randomUUID().toString() + ".txt";
         final String file2 = folder + "/" + UUID.randomUUID().toString() + ".txt";
-        azureOperations.populateCvpContainer(Set.of(file1,file2));
+        azureOperations.populateCvpContainer(Set.of(file1, file2));
+        final String sourceUrl = azureOperations.getBlobUrl(file1);
 
-        underTest.copyRecording(file1);
+        underTest.copyRecording(sourceUrl, file1);
 
         await().atMost(TEN_SECONDS)
             .untilAsserted(() -> assertThat(azureOperations.getHrsBlobsFrom(folder))
@@ -104,8 +106,9 @@ class DefaultHearingRecordingStorageIntegrationTest {
     void testShouldEmitCopySuccessfulMessage() {
         final String file = UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString() + ".txt";
         azureOperations.uploadToCvpContainer(file);
+        final String sourceUrl = azureOperations.getBlobUrl(file);
 
-        underTest.copyRecording(file);
+        underTest.copyRecording(sourceUrl, file);
 
         await().atMost(TEN_SECONDS)
             .untilAsserted(() -> assertThat(snooper.getMessages())
@@ -116,8 +119,9 @@ class DefaultHearingRecordingStorageIntegrationTest {
     @Test
     void testShouldEmitCopyFailedMessage() {
         final String file = UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString() + ".txt";
+        final String sourceUrl = azureOperations.getBlobUrl(file);
 
-        underTest.copyRecording(file);
+        underTest.copyRecording(sourceUrl, file);
 
         await().atMost(TEN_SECONDS)
             .untilAsserted(() -> assertThat(snooper.getMessages())
