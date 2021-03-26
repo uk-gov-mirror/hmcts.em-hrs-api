@@ -1,11 +1,19 @@
 package uk.gov.hmcts.reform.em.hrs.testutil;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefImportApi;
+import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefUserRoleApi;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefinitionHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
+import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -19,7 +27,13 @@ public class ExtendedCcdHelper {
     private IdamHelper idamHelper;
 
     @Autowired
-    private CcdDefinitionHelper ccdDefinitionHelper;
+    private AuthTokenGenerator authTokenGenerator;
+
+    @Autowired
+    private CcdDefImportApi ccdDefImportApi;
+
+    @Autowired
+    private CcdDefUserRoleApi ccdDefUserRoleApi;
 
     private String hrsTester = "hrs.test.user@hmcts.net";
     private List<String> hrTesterRoles = Arrays.asList("caseworker", "caseworker-hrs", "ccd-import");
@@ -58,5 +72,21 @@ public class ExtendedCcdHelper {
 
     public void initHrsTestUser() {
         idamHelper.createUser(hrsTester, hrTesterRoles);
+    }
+
+    private void importDefinitionFile(String username, String userRole, InputStream caseDefFile) throws IOException {
+
+        ccdDefUserRoleApi.createUserRole(new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
+                                         idamHelper.authenticateUser(username), authTokenGenerator.generate());
+
+        MultipartFile multipartFile = new MockMultipartFile(
+            "x",
+            "x",
+            "application/octet-stream",
+            caseDefFile);
+
+        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(username),
+                                             authTokenGenerator.generate(), multipartFile);
+
     }
 }

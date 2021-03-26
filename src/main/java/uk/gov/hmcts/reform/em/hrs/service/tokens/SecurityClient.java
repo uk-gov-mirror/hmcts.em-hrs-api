@@ -19,8 +19,8 @@ public class SecurityClient {
 
     public SecurityClient(IdamClient idamClient,
                           AuthTokenGenerator authTokenGenerator,
-                          @Value("auth.idam.system-user.username") String username,
-                          @Value("auth.idam.system-user.password") String password) {
+                          @Value("${idam.system-user.username}") String username,
+                          @Value("${idam.system-user.password}") String password) {
         this.idamClient = idamClient;
         this.authTokenGenerator = authTokenGenerator;
         this.hrsSystemUserName = username;
@@ -40,7 +40,19 @@ public class SecurityClient {
         return idamClient.getAccessToken(hrsSystemUserName, hrsSystemUserPassword);
     }
 
-    public String getUserId(String userAuthorization) {
+    public String getUserId() {
+        return getUserId(getUserToken());
+    }
+
+    public String getUserEmail() {
+        return getUserEmail(getUserToken());
+    }
+
+    private String getUserId(String userAuthorization) {
         return idamClient.getUserDetails(userAuthorization).getId();
+    }
+
+    private String getUserEmail(String userAuthorization) {
+        return idamClient.getUserDetails(userAuthorization).getEmail();
     }
 }
