@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.em.hrs.controller;
+package uk.gov.hmcts.reform.em.hrs.componenttests.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,33 +39,34 @@ public class TestSecurityConfiguration {
     }
 
     private ClientRegistration.Builder clientRegistration() {
-
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("end_session_endpoint", "https://jhipster.org/logout");
 
         return ClientRegistration.withRegistrationId("oidc")
-                .redirectUriTemplate("{baseUrl}/{action}/oauth2/code/{registrationId}")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .scope("read:user")
-                .authorizationUri("https://jhipster.org/login/oauth/authorize")
-                .tokenUri("https://jhipster.org/login/oauth/access_token")
-                .jwkSetUri("https://jhipster.org/oauth/jwk")
-                .userInfoUri("https://api.jhipster.org/user")
-                .providerConfigurationMetadata(metadata)
-                .userNameAttributeName("id")
-                .clientName("Client Name")
-                .clientId("client-id")
-                .clientSecret("client-secret");
+            .redirectUriTemplate("{baseUrl}/{action}/oauth2/code/{registrationId}")
+            .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .scope("read:user")
+            .authorizationUri("https://jhipster.org/login/oauth/authorize")
+            .tokenUri("https://jhipster.org/login/oauth/access_token")
+            .jwkSetUri("https://jhipster.org/oauth/jwk")
+            .userInfoUri("https://api.jhipster.org/user")
+            .providerConfigurationMetadata(metadata)
+            .userNameAttributeName("id")
+            .clientName("Client Name")
+            .clientId("client-id")
+            .clientSecret("client-secret");
     }
 
     @Bean
-    public OAuth2AuthorizedClientService authorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
+    public OAuth2AuthorizedClientService authorizedClientService(
+        ClientRegistrationRepository clientRegistrationRepository) {
         return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
     }
 
     @Bean
-    public OAuth2AuthorizedClientRepository authorizedClientRepository(OAuth2AuthorizedClientService authorizedClientService) {
+    public OAuth2AuthorizedClientRepository authorizedClientRepository(
+        OAuth2AuthorizedClientService authorizedClientService) {
         return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
     }
 
