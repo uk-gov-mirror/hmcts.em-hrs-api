@@ -22,7 +22,8 @@ def secrets = [
                 secret('microservicekey-em-gw', 'FUNCTIONAL_TEST_CLIENT_S2S_TOKEN')
         ],
         'rpa-${env}': [
-                secret('show-oauth2-token', 'FUNCTIONAL_TEST_CLIENT_OAUTH_SECRET')
+                secret('oauth2-client-id', 'OAUTH_CLIENT_ID'),
+                secret('show-oauth2-token', 'IDAM_CLIENT_OAUTH_SECRET')
         ]
 ]
 

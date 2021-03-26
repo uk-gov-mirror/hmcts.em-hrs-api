@@ -87,9 +87,10 @@ public class HearingRecordingController {
     public ResponseEntity<HearingRecordingDto> createHearingRecording(@PathVariable("folder") String folderName,
                                                                       @PathVariable("recordingRef") String recordingRef,
                                                                       @PathVariable("segment") String segment,
-                                                                      @RequestBody HearingRecordingDto request) {
+                                                                      @RequestBody HearingRecordingDto hearingRecordingDto) {
 
-        caseUpdateService.addRecordingToCase(request);
+        caseUpdateService.addRecordingToCase(hearingRecordingDto);
+        hearingRecordingService.persistRecording(hearingRecordingDto);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 

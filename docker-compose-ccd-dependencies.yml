@@ -8,6 +8,7 @@ services:
       - jwtKey=wThK0f0/lh3FlxFcL4xUWDMI5C1J9KyQBgXV4wseh1e5J1uYJIjvTvArHxQDrYoHJ23xFxjHkOnvNbR5dXRoxA==
 #      - Add key for any microservice that will be used: orchestrator, stitching api, doc store
       - microserviceKeys_em_gw=AAAAAAAAAAAAAAAA
+      - microserviceKeys_em_hrs_api=AAAAAAAAAAAAAAAA
       - microserviceKeys_ccd_data=AAAAAAAAAAAAAAAA
       - microserviceKeys_ccd_gw=AAAAAAAAAAAAAAAA
       - microserviceKeys_ccd_definition=AAAAAAAAAAAAAAAA
@@ -93,7 +94,7 @@ services:
       USER_PROFILE_DB_USERNAME: shared
       USER_PROFILE_DB_PASSWORD: shared
       USER_PROFILE_DB_USE_SSL: "false"
-      USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,em_gw
+      USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,em_gw,em_hrs_api
       IDAM_S2S_URL: http://service-auth-provider-api:8489
       REFORM_SERVICE_NAME: ccd-user-profile-api
       REFORM_TEAM: ccd
@@ -115,7 +116,7 @@ services:
       DEFINITION_STORE_DB_PASSWORD: shared
       DEFINITION_STORE_DB_USE_SSL: "false"
       DEFINITION_STORE_IDAM_KEY: AAAAAAAAAAAAAAAA
-      DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,em_gw
+      DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,em_gw,em_hrs_api
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
       IDAM_USER_URL: http://idam-api:5000
       IDAM_S2S_URL: http://service-auth-provider-api:8489
@@ -145,7 +146,7 @@ services:
       DATA_STORE_DB_USE_SSL: "false"
       DATA_STORE_IDAM_KEY: AAAAAAAAAAAAAAAA
       DATA_STORE_TOKEN_SECRET: iuasbcuasdcbasdgcasdgcuysachjsacyasdgjcgasdj
-      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,em_gw
+      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,em_gw,em_hrs_api
       DEFINITION_STORE_HOST: http://ccd-definition-store-api:4451
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
       IDAM_USER_URL: http://idam-api:5000

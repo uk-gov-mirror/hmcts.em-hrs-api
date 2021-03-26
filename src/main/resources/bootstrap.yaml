@@ -12,3 +12,5 @@ spring:
 #        notification-api-key: NOTIFICATION_API_KEY
         idam-system-user-name: HRS_SYSTEM_USER
         idam-system-user-password: HRS_SYSTEM_USER_PASSWORD
+        show-oauth2-token: IDAM_CLIENT_OAUTH_SECRET
+        oauth2-client-id: OAUTH_CLIENT_ID

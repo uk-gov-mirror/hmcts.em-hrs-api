@@ -2,18 +2,18 @@ package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingServiceImpl;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
 
 import java.util.Optional;
 
 @Service
 public class CaseUpdateService {
 
-    private final HearingRecordingServiceImpl hearingRecordingService;
+    private final HearingRecordingService hearingRecordingService;
     private final CcdDataStoreApiClient ccdDataStoreApiClient;
 
     public CaseUpdateService(CcdDataStoreApiClient ccdDataStoreApiClient,
-                             HearingRecordingServiceImpl hearingRecordingService) {
+                             HearingRecordingService hearingRecordingService) {
         this.ccdDataStoreApiClient = ccdDataStoreApiClient;
         this.hearingRecordingService = hearingRecordingService;
     }

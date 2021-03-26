@@ -54,16 +54,16 @@ spring:
 # service-auth-provider-client lib
 idam:
   client:
-    id: ${OAUTH_CLIENT:webshow}
-    secret: ${FUNCTIONAL_TEST_CLIENT_OAUTH_SECRET:AAAAAAAAAAAAAAAA}
+    id: ${OAUTH_CLIENT_ID:webshow} #TODO: ask idam team to create hrs client for us (add to vault once created)
+    secret: ${IDAM_CLIENT_OAUTH_SECRET:AAAAAAAAAAAAAAAA}
     redirect_uri: ${IDAM_REDIRECT_URI:http://localhost:8080/oauth2redirect}
     grant_type: password
     scope: openid roles profile
   api:
     url: ${IDAM_API_BASE_URI:http://localhost:5000}
   system-user:
-    username: ${HRS_SYSTEM_USER:hrs.test.user@hmcts.net}
-    password: ${HRS_SYSTEM_USER_PASSWORD:4590fgvhbfgbDdffm3lk4j}
+    username: ${HRS_SYSTEM_USER:hrs.user@hmcts.net} #TODO: need to create hrs systemUser for each environment
+    password: ${HRS_SYSTEM_USER_PASSWORD:4590fgvhbfgbDdffm3lk4j} #password only used locally with docker containers
   s2s-auth:
     url: ${S2S_BASE_URI:http://localhost:4502}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
