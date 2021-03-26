@@ -4,7 +4,6 @@
     <cve>CVE-2018-1258</cve>
     <cve>CVE-2021-25122</cve>
     <cve>CVE-2021-25329</cve>
-    <cve>CVE-2021-21295</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[False Positive]]></notes>
