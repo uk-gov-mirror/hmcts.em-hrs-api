@@ -1,12 +1,12 @@
-package uk.gov.hmcts.reform.em.hrs.config;
+package uk.gov.hmcts.reform.em.hrs.componenttests.config;
 
 import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -15,7 +15,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-@Configuration
+@TestConfiguration
 public class TestAzureStorageConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestAzureStorageConfig.class);
 
