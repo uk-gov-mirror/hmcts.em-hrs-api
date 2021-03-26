@@ -1,14 +1,10 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
 import net.javacrumbs.jsonunit.core.Option;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.em.hrs.Application;
+import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
@@ -20,24 +16,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import javax.inject.Inject;
 
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class})
-@Import(TestSecurityConfiguration.class)
-public class HearingRecordingControllerTest extends BaseTest {
+class HearingRecordingControllerTest extends AbstractBaseTest {
 
     @MockBean
     private FolderService folderService;
@@ -58,7 +50,7 @@ public class HearingRecordingControllerTest extends BaseTest {
     private static final UUID ID = TestUtil.HEARING_RECORDING.getId();
 
     @Test
-    public void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
+    void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
         final String path = "/folders/" + TEST_FOLDER + "/hearing-recording-file-names";
         doReturn(emptySet()).when(folderService).getStoredFiles(TEST_FOLDER);
 
@@ -72,7 +64,7 @@ public class HearingRecordingControllerTest extends BaseTest {
         assertThatJson(content)
             .when(Option.IGNORING_ARRAY_ORDER)
             .and(
-                x -> x.node("folder-name").isEqualTo("folder-1"),
+                x -> x.node("folder-name").isEqualTo(TEST_FOLDER),
                 x -> x.node("filenames").isArray().isEmpty()
             );
         verify(folderService, times(1)).getStoredFiles(TEST_FOLDER);
@@ -111,11 +103,11 @@ public class HearingRecordingControllerTest extends BaseTest {
 
         // TODO content should be in a HttpServletRequest form
         mockMvc.perform(post(path)
-                       .content("test@tester.com")
-                       .contentType(APPLICATION_JSON_VALUE)
-                       .header("Authorization", "xxx")
-                       .header("ServiceAuthorization", "xxx"))
-                    .andExpect(status().isOk());
+                            .content("test@tester.com")
+                            .contentType(APPLICATION_JSON_VALUE)
+                            .header("Authorization", "xxx")
+                            .header("ServiceAuthorization", "xxx"))
+            .andExpect(status().isOk());
 
 
         verify(hearingRecordingService, times(1)).findOne(ID);

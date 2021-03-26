@@ -12,7 +12,7 @@ import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JobInProgressRepositoryTest extends AbstractRepositoryIntegrationTest {
+class JobInProgressRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
     @Inject
     private JobInProgressRepository underTest;
 
