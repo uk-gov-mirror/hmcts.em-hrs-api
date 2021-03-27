@@ -242,14 +242,14 @@ dependencyManagement {
       entry 'guava'
     }
 
-    dependencySet(group: 'org.jetbrains.kotlin', version: '1.4.30') {
-      entry 'kotlin'
-      entry 'kotlin-stdlib'
-      entry 'kotlin-reflect'
-      entry 'kotlin-stdlib-common'
-      entry 'kotlin-stdlib-jdk7'
-      entry 'kotlin-stdlib-jdk8'
-    }
+        dependencySet(group: 'org.jetbrains.kotlin', version: '1.4.30') {
+            entry 'kotlin'
+            entry 'kotlin-stdlib'
+            entry 'kotlin-reflect'
+            entry 'kotlin-stdlib-common'
+            entry 'kotlin-stdlib-jdk7'
+            entry 'kotlin-stdlib-jdk8'
+        }
 
     //CVE-2021-21295
     dependencySet(group: 'io.netty', version: '4.1.60.Final') {
@@ -291,10 +291,10 @@ repositories {
 }
 
 def versions = [
-  lombok          : '1.18.10',
-  reformLogging   : '5.1.5',
-  springBoot      : springBoot.class.package.implementationVersion,
-  springfoxSwagger: '2.9.2',
+        lombok             : '1.18.10',
+        reformLogging      : '5.1.5',
+        springBoot         : springBoot.class.package.implementationVersion,
+        springfoxSwagger   : '2.9.2',
 
         postgresql         : '42.2.13',
         pact_version       : '3.6.15',
@@ -308,13 +308,13 @@ def versions = [
 ]
 
 ext.libraries = [
-  junit5: [
-    "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
-    "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
-    "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
-  ]
+        junit5: [
+                "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
+                "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
+                "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
+                "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
+                "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
+        ]
 ]
 
 dependencies {
@@ -345,23 +345,24 @@ dependencies {
 //    exclude group: 'org.springframework.boot' , module: 'spring-boot-starter-web'
 //  }
 
-  implementation group: 'javax.inject', name: 'javax.inject', version: '1'
+    implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
-  implementation "org.springframework.boot:spring-boot-starter-actuator"
-  implementation "org.springframework.boot:spring-boot-starter-aop"
-  implementation "org.springframework.boot:spring-boot-starter-json"
-  implementation "org.springframework.boot:spring-boot-starter-validation"
-  implementation "org.springframework.boot:spring-boot-starter-web"
-  implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-aop"
+    implementation "org.springframework.boot:spring-boot-starter-json"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-security"
 
-  implementation "uk.gov.hmcts.reform:properties-volume-spring-boot-starter:0.1.0" //injects secret properties into container from azure vault TODO deprecated in favour of spring config tree
+    implementation "uk.gov.hmcts.reform:properties-volume-spring-boot-starter:0.1.0"
+    //injects secret properties into container from azure vault TODO deprecated in favour of spring config tree
 
 //hmcts autho
 
-  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
-  implementation (group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4') {
-    exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
-  }
+    implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
+    implementation(group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4') {
+        exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
+    }
 
 //hmcts logging
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
@@ -370,20 +371,20 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
 //hmcts resilience
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
 
 //gov notify email service
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
+    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
 
 //rest clients
-  implementation "com.squareup.okhttp3:okhttp:4.9.1"
-  implementation "com.squareup.okhttp3:logging-interceptor:4.9.1"
+    implementation "com.squareup.okhttp3:okhttp:4.9.1"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.1"
 
 //rest server / API publishing?
-  implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
 
 //azure components
-  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.10.0'
+    implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.10.0'
 
 /***********************************************************************************************************************
  * DATABASE DEPENDENCIES AND SOURCE SETS
@@ -395,26 +396,26 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation "org.springframework.boot:spring-boot-starter-jdbc"
 
-  liquibaseRuntime "com.h2database:h2"
-  liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.2.2"
-  liquibaseRuntime "org.liquibase:liquibase-core:4.3.1"
-  liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.0"
-  liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
+    liquibaseRuntime "com.h2database:h2"
+    liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.2.2"
+    liquibaseRuntime "org.liquibase:liquibase-core:4.3.1"
+    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.0"
+    liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
 
-  liquibaseRuntime sourceSets.main.compileClasspath
-  liquibaseRuntime sourceSets.main.output
+    liquibaseRuntime sourceSets.main.compileClasspath
+    liquibaseRuntime sourceSets.main.output
 
 /***********************************************************************************************************************
  * TEST DEPENDENCIES
  **********************************************************************************************************************/
 
-  testImplementation libraries.junit5
+    testImplementation libraries.junit5
 
-  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
-    exclude group: 'junit', module: 'junit'
-    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    exclude group: 'com.vaadin.external.google', module: 'android-json'
-  }
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
+        exclude group: 'junit', module: 'junit'
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
 
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
   testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
@@ -425,20 +426,20 @@ dependencies {
   }
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 
-  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
-  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
-  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
-  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
-  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
+    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
+    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
+    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
 
 /***********************************************************************************************************************
  * TEST SOURCE SETS
  **********************************************************************************************************************/
 
-  functionalTestImplementation sourceSets.main.runtimeClasspath
+    functionalTestImplementation sourceSets.main.runtimeClasspath
 
-  integrationTestImplementation sourceSets.main.runtimeClasspath
-  integrationTestImplementation sourceSets.test.runtimeClasspath
+    integrationTestImplementation sourceSets.main.runtimeClasspath
+    integrationTestImplementation sourceSets.test.runtimeClasspath
 
     smokeTestImplementation sourceSets.main.runtimeClasspath
     smokeTestImplementation sourceSets.test.runtimeClasspath
@@ -475,18 +476,18 @@ dependencies {
  **********************************************************************************************************************/
 
 test {
-  failFast = true
+    failFast = true
 
 }
 
 bootJar {
-  getArchiveFileName().set(provider {
-    'em-hrs-api.jar'
-  })
+    getArchiveFileName().set(provider {
+        'em-hrs-api.jar'
+    })
 
-  manifest {
-    attributes('Implementation-Version': project.version.toString())
-  }
+    manifest {
+        attributes('Implementation-Version': project.version.toString())
+    }
 }
 
 wrapper {
