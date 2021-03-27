@@ -6,7 +6,7 @@ services:
     healthcheck:
       test: psql postgres --command "select 1" -U postgres
     ports:
-    - "5444:5432"
+    - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -24,4 +24,3 @@ services:
       PACT_BROKER_DATABASE_HOST: postgres
       PACT_BROKER_DATABASE_NAME: postgres
       PACT_BROKER_WEBHOOK_SCHEME_WHITELIST: http
-      PACT_BROKER_DATABASE_PORT : 5444
