@@ -90,7 +90,7 @@ public class HearingRecordingController {
                                                                       @RequestBody HearingRecordingDto hearingRecordingDto) {
 
         caseUpdateService.addRecordingToCase(hearingRecordingDto);
-        hearingRecordingService.persistRecording(hearingRecordingDto);
+//        hearingRecordingService.persistRecording(hearingRecordingDto);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 

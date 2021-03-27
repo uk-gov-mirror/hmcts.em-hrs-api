@@ -41,7 +41,7 @@ public class ExtendedCcdHelper {
     @PostConstruct
     public void init() throws Exception {
         initHrsTestUser();
-        importHrsDefinitionFile();
+        importDefinitionFile();
     }
 
     public HearingRecordingDto createRecordingSegment(String url, String filename, int length, int segment) {
@@ -62,31 +62,32 @@ public class ExtendedCcdHelper {
         );
     }
 
-    public void importHrsDefinitionFile() throws Exception {
-        ccdDefinitionHelper.importDefinitionFile(hrsTester, "caseworker-hrs", getHrsDefinitionFile());
-    }
+    private void importDefinitionFile() throws IOException {
 
-    public InputStream getHrsDefinitionFile() {
-        return ClassLoader.getSystemResourceAsStream("CCD_CVP_v.03.xlsx");
+        createUserRole("caseworker");
+        createUserRole("caseworker-hrs");
+
+        MultipartFile multipartFile = new MockMultipartFile(
+            "x",
+            "x",
+            "application/octet-stream",
+            getHrsDefinitionFile());
+
+        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(hrsTester),
+                                             authTokenGenerator.generate(), multipartFile);
+
     }
 
     public void initHrsTestUser() {
         idamHelper.createUser(hrsTester, hrTesterRoles);
     }
 
-    private void importDefinitionFile(String username, String userRole, InputStream caseDefFile) throws IOException {
+    private InputStream getHrsDefinitionFile() {
+        return ClassLoader.getSystemResourceAsStream("CCD_CVP_v.03.xlsx");
+    }
 
+    private void createUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
-                                         idamHelper.authenticateUser(username), authTokenGenerator.generate());
-
-        MultipartFile multipartFile = new MockMultipartFile(
-            "x",
-            "x",
-            "application/octet-stream",
-            caseDefFile);
-
-        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(username),
-                                             authTokenGenerator.generate(), multipartFile);
-
+                                         idamHelper.authenticateUser(hrsTester), authTokenGenerator.generate());
     }
 }
