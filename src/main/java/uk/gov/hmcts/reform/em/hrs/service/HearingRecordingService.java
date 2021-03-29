@@ -5,7 +5,6 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import java.util.Optional;
 import java.util.UUID;
 
-
 public interface HearingRecordingService {
 
     /**
@@ -17,6 +16,5 @@ public interface HearingRecordingService {
     Optional<HearingRecording> findOne(UUID id);
 
 
-    HearingRecording createAndSaveEntry(HearingRecording hearingRecording
-    );
+    HearingRecording createAndSaveEntry(HearingRecording hearingRecording);
 }

@@ -18,7 +18,8 @@ public class HearingRecordingSegmentServiceImpl implements HearingRecordingSegme
     private final HearingRecordingSegmentRepository hearingRecordingSegmentRepository;
 
     @Inject
-    public HearingRecordingSegmentServiceImpl(final HearingRecordingSegmentRepository hearingRecordingSegmentRepository) {
+    public HearingRecordingSegmentServiceImpl(
+        final HearingRecordingSegmentRepository hearingRecordingSegmentRepository) {
         this.hearingRecordingSegmentRepository = hearingRecordingSegmentRepository;
     }
 
@@ -26,5 +27,13 @@ public class HearingRecordingSegmentServiceImpl implements HearingRecordingSegme
         List<HearingRecordingSegment> hearingRecordingSegmentsList =
             hearingRecordingSegmentRepository.findByRecordingId(id);
         return hearingRecordingSegmentsList;
+    }
+
+    @Override
+    public HearingRecordingSegment createAndSaveEntry(
+        HearingRecordingSegment hearingRecordingSegment) {
+        hearingRecordingSegmentRepository.save(hearingRecordingSegment);
+        return hearingRecordingSegment;
+
     }
 }

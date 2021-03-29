@@ -23,9 +23,8 @@ public class HearingRecordingServiceImpl implements HearingRecordingService {
         return hearingRecording;
     }
 
-   @Override
-    public HearingRecording createAndSaveEntry(HearingRecording hearingRecording
-    ) {
+    @Override
+    public HearingRecording createAndSaveEntry(HearingRecording hearingRecording) {
         hearingRecordingRepository.save(hearingRecording);
         return hearingRecording;
     }
