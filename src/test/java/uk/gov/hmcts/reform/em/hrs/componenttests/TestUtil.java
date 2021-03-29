@@ -25,15 +25,15 @@ public class TestUtil {
 
     private static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
-        .fileName(FILE_1)
+        .filename(FILE_1)
         .build();
     private static final HearingRecordingSegment SEGMENT_2 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
-        .fileName(FILE_2)
+        .filename(FILE_2)
         .build();
     private static final HearingRecordingSegment SEGMENT_3 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
-        .fileName(FILE_3)
+        .filename(FILE_3)
         .build();
 
     public static final String BLOB_DATA = "data";
@@ -71,8 +71,8 @@ public class TestUtil {
         .id(RANDOM_UUID)
         .hearingRecordings(Collections.emptyList())
         .jobsInProgress(List.of(
-            JobInProgress.builder().fileName(FILE_1).build(),
-            JobInProgress.builder().fileName(FILE_2).build()
+            JobInProgress.builder().filename(FILE_1).build(),
+            JobInProgress.builder().filename(FILE_2).build()
         ))
         .build();
 
@@ -82,7 +82,7 @@ public class TestUtil {
                                        .id(RANDOM_UUID)
                                        .segments(Set.of(SEGMENT_1, SEGMENT_2))
                                        .build()))
-        .jobsInProgress(List.of(JobInProgress.builder().fileName(FILE_3).build()))
+        .jobsInProgress(List.of(JobInProgress.builder().filename(FILE_3).build()))
         .build();
 
     public static final HearingRecording HEARING_RECORDING = HearingRecording.builder()

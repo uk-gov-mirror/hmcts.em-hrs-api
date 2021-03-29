@@ -60,7 +60,7 @@ public class HearingRecordingSegment {
 
     private String blobUuid; //32 char?
 
-    private String fileName;
+    private String filename;
     private String fileExtension;
     private String fileMd5Checksum; // char(32),
     private BigDecimal fileSizeMb; // numeric(2),
@@ -79,7 +79,7 @@ public class HearingRecordingSegment {
                                    LocalDateTime createdOn,
                                    boolean deleted,
                                    Set<HearingRecordingSegmentAuditEntry> auditEntries,
-                                   String blobUuid, String fileName,
+                                   String blobUuid, String filename,
                                    String fileExtension, String fileMd5Checksum, BigDecimal fileSizeMb,
                                    String ingestionFileSourceUri,
                                    Integer recordingLengthMins,
@@ -99,7 +99,7 @@ public class HearingRecordingSegment {
         //setRoles(roles);
 
         setBlobUuid(blobUuid);
-        setFileName(fileName);
+        setFilename(filename);
 
         setFileExtension(fileExtension);
         setFileMd5Checksum(fileMd5Checksum);

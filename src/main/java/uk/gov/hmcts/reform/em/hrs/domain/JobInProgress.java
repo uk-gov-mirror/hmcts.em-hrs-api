@@ -27,7 +27,7 @@ public class JobInProgress {
     @ManyToOne(fetch = FetchType.LAZY)
     private Folder folder;
 
-    private String fileName;
+    private String filename;
 
     @CreatedDate
     private LocalDateTime createdOn;
@@ -35,10 +35,10 @@ public class JobInProgress {
     public JobInProgress() {
     }
 
-    public JobInProgress(UUID id, Folder folder, String fileName, LocalDateTime createdOn) {
+    public JobInProgress(UUID id, Folder folder, String filename, LocalDateTime createdOn) {
         this.id = id;
         this.folder = folder;
-        this.fileName = fileName;
+        this.filename = filename;
         setCreatedOn(createdOn);
     }
 }

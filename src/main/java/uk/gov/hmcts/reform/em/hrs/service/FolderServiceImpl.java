@@ -72,7 +72,7 @@ public class FolderServiceImpl implements FolderService {
 
     private Set<String> getFilesInProgress(final List<JobInProgress> jobInProgresses) {
         return jobInProgresses.stream()
-            .map(JobInProgress::getFileName)
+            .map(JobInProgress::getFilename)
             .collect(Collectors.toUnmodifiableSet());
     }
 
@@ -83,7 +83,7 @@ public class FolderServiceImpl implements FolderService {
 
     private Set<String> getSegmentFilenames(final List<HearingRecording> hearingRecordings) {
         return hearingRecordings.stream()
-            .flatMap(x -> x.getSegments().stream().map(HearingRecordingSegment::getFileName))
+            .flatMap(x -> x.getSegments().stream().map(HearingRecordingSegment::getFilename))
             .collect(Collectors.toUnmodifiableSet());
     }
 
