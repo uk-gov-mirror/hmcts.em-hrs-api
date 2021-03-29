@@ -75,7 +75,7 @@ public class HearingRecordingController {
     }
 
     @PostMapping(
-        path = "/folder/{folder}/hearing-recording/{recordingRef}/segment/{segment}",
+        path = "/folders/{folder}/hearing-recordings/{recordingRef}/segments/{segment}",//TODO: this seems like a GET mapping rather than POST
         consumes = APPLICATION_JSON_VALUE,
         produces = APPLICATION_JSON_VALUE
     )
@@ -93,24 +93,6 @@ public class HearingRecordingController {
         hearingRecordingService.persistRecording(hearingRecordingDto, caseId);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
-
-    //    @GetMapping(
-    //        path = "/folders/{name}/hearing-recording/{id}/segment/{segmentId}",
-    //        produces = APPLICATION_OCTET_STREAM_VALUE
-    //    )
-    //    @ResponseBody
-    //    @ApiOperation(value = "Get hearing recording",
-    //    notes = "Return hearing recording file from the specified folder")
-    //    @ApiResponses(value = {
-    //        @ApiResponse(code = 200, message = "Return the requested hearing recording")
-    //    })
-    //    public ResponseEntity<HearingRecordingDto> getHearingRecording(@PathVariable("name") String folderName,
-    //                                                                      @PathVariable("id") String recordingId,
-    //                                                                   @PathVariable("segmentId") String segmentId) {
-    //        return new ResponseEntity<>(HttpStatus.OK);
-    //    }
-    //
-
 
     @PostMapping(
         path = "/folders/{name}/hearing-recording/{id}/access-right",

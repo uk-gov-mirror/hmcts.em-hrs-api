@@ -43,7 +43,7 @@ public class CaseUpdateScenarios {
             .baseUri("http://localhost:8080")
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
-            .post("/folders/london/hearing-recording");
+            .post("/folders/london/hearing-recordings/first-hearing-recording-segment/segments/0");
 
 
         Assert.assertEquals(202, response.getStatusCode());
@@ -63,7 +63,7 @@ public class CaseUpdateScenarios {
             .baseUri("http://localhost:8080")
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
-            .post("/folders/london/hearing-recording");
+            .post("/folders/london/hearing-recordings/first-hearing-recording-segment/segments/0");
 
 
         Assert.assertEquals(202, response.getStatusCode());
