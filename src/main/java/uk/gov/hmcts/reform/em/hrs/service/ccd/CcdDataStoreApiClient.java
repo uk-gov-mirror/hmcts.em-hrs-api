@@ -25,7 +25,7 @@ public class CcdDataStoreApiClient {
     private static final String JURISDICTION = "HRS";
     private static final String CASE_TYPE = "HearingRecordings";
     private static final String CREATE_CASE = "createCase";
-    private static final String ADD_RECORDING_FILE = "addRecordingFile";
+    private static final String ADD_RECORDING_FILE = "manageFiles";
 
     public CcdDataStoreApiClient(SecurityClient securityClient,
                                  CaseDataContentCreator caseDataCreator,

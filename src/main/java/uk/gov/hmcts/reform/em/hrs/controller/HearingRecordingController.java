@@ -89,8 +89,8 @@ public class HearingRecordingController {
                                                                       @PathVariable("segment") String segment,
                                                                       @RequestBody HearingRecordingDto hearingRecordingDto) {
 
-        caseUpdateService.addRecordingToCase(hearingRecordingDto);
-//        hearingRecordingService.persistRecording(hearingRecordingDto);
+        Long caseId = caseUpdateService.addRecordingToCase(hearingRecordingDto);
+        hearingRecordingService.persistRecording(hearingRecordingDto, caseId);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
