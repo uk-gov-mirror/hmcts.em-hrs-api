@@ -1,23 +1,24 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.em.hrs.Application;
+import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
+import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestSecurityConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = {RootUrlController.class})
-public class GetRootUrlTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {Application.class})
+@Import(TestSecurityConfiguration.class)
+public class GetRootUrlTest extends AbstractBaseTest {
 
-    @Autowired
-    private transient MockMvc mockMvc;
-
-    @DisplayName("Should welcome upon root request with 200 response code")
     @Test
     public void welcomeRootEndpoint() throws Exception {
         MvcResult response = mockMvc.perform(get("/")).andExpect(status().isOk()).andReturn();

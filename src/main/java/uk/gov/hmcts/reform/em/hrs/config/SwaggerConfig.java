@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.em.hrs.Application;
 
 @Configuration
 @EnableSwagger2
-public class SwaggerConfiguration {
+public class SwaggerConfig {
 
     @Bean
     public Docket api() {
