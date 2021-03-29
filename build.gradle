@@ -211,7 +211,8 @@ dependencyManagement {
       entry 'guava'
     }
 
-    dependencySet(group: 'org.jetbrains.kotlin', version: '1.4.30') {
+    //CVE-2020-15824, CVE-2020-29582
+    dependencySet(group: 'org.jetbrains.kotlin', version: '1.5.0-M1') {
       entry 'kotlin'
       entry 'kotlin-stdlib'
       entry 'kotlin-reflect'
@@ -331,7 +332,7 @@ dependencies {
   }
 
 //hmcts logging
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
@@ -357,14 +358,14 @@ dependencies {
  **********************************************************************************************************************/
 
   implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-  implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.29.Final'
+  implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.30.Final'
   implementation "org.liquibase:liquibase-core"
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation "org.springframework.boot:spring-boot-starter-jdbc"
 
   liquibaseRuntime "com.h2database:h2"
   liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.2.2"
-  liquibaseRuntime "org.liquibase:liquibase-core:4.3.1"
+  liquibaseRuntime "org.liquibase:liquibase-core:4.3.2"
   liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.0"
   liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
 
