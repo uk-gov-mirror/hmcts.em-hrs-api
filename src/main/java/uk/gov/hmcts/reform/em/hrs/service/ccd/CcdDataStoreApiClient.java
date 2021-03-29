@@ -35,7 +35,7 @@ public class CcdDataStoreApiClient {
         this.coreCaseDataApi = coreCaseDataApi;
     }
 
-    public CaseDetails createCase(HearingRecordingDto hearingRecordingDto) {
+    public CaseDetails createCase(final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityClient.getTokens();
 
         StartEventResponse startEventResponse =
@@ -54,7 +54,7 @@ public class CcdDataStoreApiClient {
         return caseDetails;
     }
 
-    public CaseDetails updateCaseData(String caseId, HearingRecordingDto hearingRecordingDto) {
+    public CaseDetails updateCaseData(final String caseId, final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityClient.getTokens();
 
         StartEventResponse startEventResponse =

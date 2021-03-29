@@ -49,8 +49,8 @@ public class CaseDataContentCreator {
     private RecordingSegment createSegment(HearingRecordingDto hearingRecordingDto) {
         CaseDocument recordingFile = CaseDocument.builder()
             .filename(hearingRecordingDto.getRecordingFilename())
-            .url(hearingRecordingDto.getRecordingFileUri())
-            .binaryUrl(hearingRecordingDto.getRecordingFileUri() + "/binary")
+            .url(hearingRecordingDto.getRecordingFileUri())//TODO: this is CVP url, I need to construct it from filename
+            .binaryUrl(hearingRecordingDto.getRecordingFileUri() + "/binary")//TODO: this is CVP url, I need to construct it from filename
             .build();
 
         return RecordingSegment.builder()

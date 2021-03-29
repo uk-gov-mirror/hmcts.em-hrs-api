@@ -44,7 +44,8 @@ public class ExtendedCcdHelper {
         importDefinitionFile();
     }
 
-    public HearingRecordingDto createRecordingSegment(String url, String filename, int length, int segment) {
+    public HearingRecordingDto createRecordingSegment(
+        String url, String filename, String fileExt, int length, int segment) {
         return new HearingRecordingDto(
             "hearing-12-family-probate-morning",
             "CVP",
@@ -55,6 +56,7 @@ public class ExtendedCcdHelper {
             "hearing-12-family-probate-morning",
             url,
             filename,
+            fileExt,
             length,
             segment,
             "",

@@ -15,11 +15,7 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
-import uk.gov.hmcts.reform.em.hrs.service.FolderService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareesService;
-import uk.gov.hmcts.reform.em.hrs.service.ShareService;
+import uk.gov.hmcts.reform.em.hrs.service.*;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
 
 import java.util.List;
@@ -75,7 +71,7 @@ public class HearingRecordingController {
     }
 
     @PostMapping(
-        path = "/folders/{folder}/hearing-recordings/{recordingRef}/segments/{segment}",//TODO: this seems like a GET mapping rather than POST
+        path = "/folders/{folder}/hearing-recordings/{recordingRef}/segments",//TODO: this seems like a GET mapping rather than POST
         consumes = APPLICATION_JSON_VALUE,
         produces = APPLICATION_JSON_VALUE
     )
@@ -86,7 +82,6 @@ public class HearingRecordingController {
     })
     public ResponseEntity<HearingRecordingDto> createHearingRecording(@PathVariable("folder") String folderName,
                                                                       @PathVariable("recordingRef") String recordingRef,
-                                                                      @PathVariable("segment") String segment,
                                                                       @RequestBody HearingRecordingDto hearingRecordingDto) {
 
         Long caseId = caseUpdateService.addRecordingToCase(hearingRecordingDto);

@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
+import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -29,12 +33,30 @@ public class HearingRecordingServiceImpl implements HearingRecordingService {
         return hearingRecording;
     }
 
-    public final Optional<Long> checkIfCaseExists(String recordingReference) {
+    @Override
+    public final Optional<Long> checkIfCaseExists(final String recordingReference) {
+
         Optional<HearingRecording> existingRecording =
             hearingRecordingRepository.findByRecordingReference(recordingReference);
         if (existingRecording.isPresent()) {
             return Optional.of(existingRecording.get().getCcdCaseId());
         }
         return Optional.empty();
+    }
+
+    @Override
+    public HearingRecording persistRecording(final HearingRecordingDto hearingRecordingDto, final Long caseId) {
+        HearingRecordingSegment segment = HearingRecordingSegment.builder()
+            .ingestionFileSourceUri(hearingRecordingDto.getRecordingFileUri())
+            .recordingLengthMins(hearingRecordingDto.getRecordingLength())
+            .recordingSegment(hearingRecordingDto.getRecordingSegment())
+            .build();
+
+        HearingRecording hearingRecording = HearingRecording.builder()
+            .recordingReference(hearingRecordingDto.getRecordingReference())
+            .segments(new HashSet<HearingRecordingSegment>(Arrays.asList(segment)))
+            .ccdCaseId(caseId)
+            .build();
+        return hearingRecordingRepository.save(hearingRecording);
     }
 }

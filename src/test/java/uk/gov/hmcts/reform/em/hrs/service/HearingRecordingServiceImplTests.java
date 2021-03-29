@@ -12,7 +12,7 @@ class HearingRecordingServiceImplTests {
     private HearingRecordingRepository hearingRecordingRepository;
 
     @InjectMocks
-    private HearingRecordingService underTest;
+    private HearingRecordingServiceImpl underTest;
 
 
 

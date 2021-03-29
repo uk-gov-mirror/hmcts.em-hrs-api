@@ -12,15 +12,14 @@ public class CaseUpdateService {
     private final HearingRecordingService hearingRecordingService;
     private final CcdDataStoreApiClient ccdDataStoreApiClient;
 
-    public CaseUpdateService(CcdDataStoreApiClient ccdDataStoreApiClient,
-                             HearingRecordingService hearingRecordingService) {
+    public CaseUpdateService(final CcdDataStoreApiClient ccdDataStoreApiClient,
+                             final HearingRecordingService hearingRecordingService) {
         this.ccdDataStoreApiClient = ccdDataStoreApiClient;
         this.hearingRecordingService = hearingRecordingService;
     }
 
-    public Long addRecordingToCase(HearingRecordingDto recordingFile) {
-        Optional<Long> caseId = hearingRecordingService
-            .checkIfCaseExists(recordingFile.getRecordingReference());
+    public Long addRecordingToCase(final HearingRecordingDto recordingFile) {
+        Optional<Long> caseId = hearingRecordingService.checkIfCaseExists(recordingFile.getRecordingReference());
         if (caseId.isEmpty()) {
             caseId = Optional.of(ccdDataStoreApiClient.createCase(recordingFile).getId());
         } else {

@@ -18,6 +18,7 @@ public class HearingRecordingDto {
     private final String recordingReference;
     private final String recordingFileUri;
     private final String recordingFilename;
+    private final String recordingFileExtension;
     private final int recordingLength;
     private final int recordingSegment;
     private final String checkSum;

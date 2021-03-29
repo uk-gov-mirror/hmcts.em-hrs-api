@@ -32,8 +32,9 @@ public class CaseUpdateScenarios {
     @Test
     public void testCaseCreation() {
         HearingRecordingDto request = extendedCcdHelper.createRecordingSegment(
-            "http://dm-store:8080/documents/57340931-bfce-424d-bcee-6b3f0abf56fb",
+            "http://em-hrs-api:8080/documents/57340931-bfce-424d-bcee-6b3f0abf56fb",
             "first-hearing-recording-segment",
+            ".mp4",
             12,
             0
             );
@@ -43,7 +44,7 @@ public class CaseUpdateScenarios {
             .baseUri("http://localhost:8080")
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
-            .post("/folders/london/hearing-recordings/first-hearing-recording-segment/segments/0");
+            .post("/folders/london/hearing-recordings/first-hearing-recording-segment/segments");
 
 
         Assert.assertEquals(202, response.getStatusCode());
@@ -52,8 +53,9 @@ public class CaseUpdateScenarios {
     @Test
     public void testCaseUpdate() {
         HearingRecordingDto request = extendedCcdHelper.createRecordingSegment(
-            "http://dm-store:8080/documents/57340931-bfce-424d-bcee-6b3f0abf56fb",
+            "http://em-hrs-api:8080/documents/57340931-bfce-424d-bcee-6b3f0abf56fb",
             "first-hearing-recording-segment",
+            ".mp4",
             12,
             0
             );
@@ -63,7 +65,7 @@ public class CaseUpdateScenarios {
             .baseUri("http://localhost:8080")
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
-            .post("/folders/london/hearing-recordings/first-hearing-recording-segment/segments/0");
+            .post("/folders/london/hearing-recordings/first-hearing-recording-segment/segments");
 
 
         Assert.assertEquals(202, response.getStatusCode());
