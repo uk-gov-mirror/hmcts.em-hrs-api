@@ -55,7 +55,6 @@ withNightlyPipeline(type, product, component) {
     env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
 
     env.TEST_URL = "http://em-hrs-aat.service.core-compute-aat.internal"
-
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
     enableSecurityScan()
