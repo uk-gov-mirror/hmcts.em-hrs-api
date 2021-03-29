@@ -71,8 +71,8 @@ public class TestUtil {
         .id(RANDOM_UUID)
         .hearingRecordings(Collections.emptyList())
         .jobsInProgress(List.of(
-            JobInProgress.builder().filename(FILE_1).build(),
-            JobInProgress.builder().filename(FILE_2).build()
+            JobInProgress.builder().fileName(FILE_1).build(),
+            JobInProgress.builder().fileName(FILE_2).build()
         ))
         .build();
 
@@ -82,7 +82,7 @@ public class TestUtil {
                                        .id(RANDOM_UUID)
                                        .segments(Set.of(SEGMENT_1, SEGMENT_2))
                                        .build()))
-        .jobsInProgress(List.of(JobInProgress.builder().filename(FILE_3).build()))
+        .jobsInProgress(List.of(JobInProgress.builder().fileName(FILE_3).build()))
         .build();
 
     public static final HearingRecording HEARING_RECORDING = HearingRecording.builder()

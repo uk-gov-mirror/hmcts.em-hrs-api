@@ -24,17 +24,17 @@ class JobInProgressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
         final List<JobInProgress> jobsInProgress = List.of(
             JobInProgress.builder()
                 .id(UUID.randomUUID())
-                .filename("a.txt")
+                .fileName("a.txt")
                 .createdOn(yesterday)
                 .build(),
             JobInProgress.builder()
                 .id(UUID.randomUUID())
-                .filename("b.txt")
+                .fileName("b.txt")
                 .createdOn(yesterday)
                 .build(),
             JobInProgress.builder()
                 .id(UUID.randomUUID())
-                .filename("c.txt")
+                .fileName("c.txt")
                 .createdOn(now)
                 .build()
         );
@@ -52,7 +52,7 @@ class JobInProgressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
         underTest.deleteByCreatedOnLessThan(twentyFourHoursAgo);
 
         final Iterable<JobInProgress> actualJobs = underTest.findAll();
-        assertThat(actualJobs).singleElement().satisfies(x -> assertThat(x.getFilename()).isEqualTo("c.txt"));
+        assertThat(actualJobs).singleElement().satisfies(x -> assertThat(x.getFileName()).isEqualTo("c.txt"));
     }
 
 }
