@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
 import java.util.UUID;
 
 @Repository
-public interface HearingRecordingShareesRepository extends PagingAndSortingRepository<HearingRecordingSharee, UUID> {
+public interface ShareesRepository extends PagingAndSortingRepository<HearingRecordingSharee, UUID> {
 
 }
 
