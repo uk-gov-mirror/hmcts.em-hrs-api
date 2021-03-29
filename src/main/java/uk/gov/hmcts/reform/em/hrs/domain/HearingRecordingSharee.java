@@ -6,10 +6,12 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -23,6 +25,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @Builder
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@EntityListeners(AuditingEntityListener.class)
 public class HearingRecordingSharee {
 
     @Id
