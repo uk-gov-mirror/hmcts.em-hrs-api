@@ -184,7 +184,6 @@ def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/controller/**',
   '**uk/gov/hmcts/reform/em/hrs/exception/**',
   '**uk/gov/hmcts/reform/em/hrs/repository/**',
-  '**uk/gov/hmcts/reform/em/hrs/service/**',
   '**uk/gov/hmcts/reform/em/hrs/util/DefaultSnooper**',
 ]
 
