@@ -1,65 +1,45 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
 
-import org.springframework.beans.factory.annotation.Value;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
+import uk.gov.hmcts.reform.em.hrs.util.Tuple2;
 
-import java.util.UUID;
+import java.util.Set;
 import javax.inject.Named;
 
 
 @Named
 public class ShareServiceImpl implements ShareService {
 
+    private final HearingRecordingService hearingRecordingService;
+    private final HearingRecordingShareeService hearingRecordingShareeService;
     private final NotificationService notificationService;
 
-    private final HearingRecordingShareeService hearingRecordingShareeService;
-
-    private final HearingRecordingSegmentService hearingRecordingSegmentService;
-
-    @Value("${notify.emailTemplateId}")
-    private String emailTemplateId;
-
-    public ShareServiceImpl(NotificationService notificationService,
-                            HearingRecordingSegmentService hearingRecordingSegmentService,
-                            HearingRecordingShareeService hearingRecordingShareeService) {
-        this.notificationService = notificationService;
-        this.hearingRecordingSegmentService = hearingRecordingSegmentService;
+    public ShareServiceImpl(HearingRecordingService hearingRecordingService,
+                            HearingRecordingShareeService hearingRecordingShareeService,
+                            NotificationService notificationService) {
+        this.hearingRecordingService = hearingRecordingService;
         this.hearingRecordingShareeService = hearingRecordingShareeService;
+        this.notificationService = notificationService;
     }
 
     @Override
-    public void executeNotify(final UUID recordingId, final String emailAddress) {
+    public void executeNotify(final Long ccdCaseId, final String recipientEmailAddress, final String authorizationJwt) {
+        final Tuple2<HearingRecording, Set<String>> result = hearingRecordingService.getDownloadSegmentUris(ccdCaseId);
 
-//        String emailAddress = request.getParameter("emailAddress");
-//
+        hearingRecordingShareeService.createAndSaveEntry(recipientEmailAddress, result.getT1());
 
-//
-//            // Save the hearingRecordingSharee
-//            HearingRecordingSharees hearingRecordingSharees = hearingRecordingShareesService
-//                .createAndSaveEntry(emailAddress, hearingRecording);
-//
-//            // Get the Hearing Recording Segments associated with the Hearing Recording
-//            List<HearingRecordingSegment> hearingRecordingSegmentList = hearingRecordingSegmentService.findByRecordingId(
-//                hearingRecording.getId());
-//
-//
-//            List<String> hearingRecordingSegmentUrls = hearingRecordingSegmentList.stream()
-//                .map(hearingRecordingSegment -> ("https://SOMEPREFIXTBD" + hearingRecordingSegment.getFileName()))
-//                .collect(Collectors.toList());
-//
-//
-//            String jwt = request.getHeader("authorization");
-//
-//            notificationService.sendEmailNotification(
-//                emailTemplateId,
-//                jwt,
-//                hearingRecordingSegmentUrls,
-//                hearingRecording.getCaseReference(),
-//                hearingRecording.getCreatedOn().toString(),
-//                hearingRecordingSharees.getId()
-//            );
-//        } else {
-//            throw new IllegalArgumentException();
-//        }
+        //
+        //            notificationService.sendEmailNotification(
+        //                emailTemplateId,
+        //                jwt,
+        //                hearingRecordingSegmentUrls,
+        //                hearingRecording.getCaseReference(),
+        //                hearingRecording.getCreatedOn().toString(),
+        //                hearingRecordingSharees.getId()
+        //            );
+        //        } else {
+        //            throw new IllegalArgumentException();
+        //        }
     }
 }

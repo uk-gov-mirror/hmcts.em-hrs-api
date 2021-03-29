@@ -121,16 +121,20 @@ public class HearingRecordingController {
                                                                      @PathVariable("name") String folderName,
                                                                      @PathVariable("id") UUID recordingId) {
 
+        // recipientEmailAddress
+
+//            String jwt = request.getHeader("authorization");
+        //        String emailAddress = request.getParameter("emailAddress");
         // Find the associated Hearing Recording
-        Optional<HearingRecording> hearingRecording = hearingRecordingService.findOne(recordingId);
-
-        // Trigger the Share Service, with the Hearing Recording and the request
-        if (hearingRecording.isPresent()) {
-
-//            shareService.executeNotify(hearingRecording.get(), request);
-            return ResponseEntity.ok().build();
-
-        }
+//        Optional<HearingRecording> hearingRecording = hearingRecordingService.findOne(recordingId);
+//
+//        // Trigger the Share Service, with the Hearing Recording and the request
+//        if (hearingRecording.isPresent()) {
+//
+//            //shareService.executeNotify(hearingRecording.get(), request);
+//            return ResponseEntity.ok().build();
+//
+//        }
 
         return ResponseEntity.notFound().build();
 

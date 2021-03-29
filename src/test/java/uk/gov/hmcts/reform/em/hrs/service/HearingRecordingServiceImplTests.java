@@ -1,63 +1,59 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
+import uk.gov.hmcts.reform.em.hrs.exception.HearingRecordingNotFoundException;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
+import uk.gov.hmcts.reform.em.hrs.util.Tuple2;
 
 import java.util.Optional;
-import java.util.UUID;
+import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CCD_CASE_ID;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SEGMENTS_DOWNLOAD_LINKS;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_WITH_SEGMENTS;
 
-@ExtendWith(MockitoExtension.class)
 class HearingRecordingServiceImplTests {
-    @Mock
-    private HearingRecordingRepository hearingRecordingRepository;
+    private final HearingRecordingRepository hearingRecordingRepository = mock(HearingRecordingRepository.class);
+    private static final String EMAIL_DOMAIN = "https://SOMEPREFIXTBD";
 
-    @InjectMocks
-    private HearingRecordingServiceImpl hearingRecordingServiceImpl;
-
-    private HearingRecordingService hearingRecordingService;
-    //
-    ////
-    ////    @Mock
-    ////    private ToggleConfiguration toggleConfiguration;
-    //
-    //    @Mock
-    //    private FolderRepository folderRepository;
-    //
-    ////    @Mock
-    ////    private BlobStorageWriteService blobStorageWriteService;
-    //
-    @Mock
-    private SecurityUtilService securityUtilService;
-    //
-    ////    @Mock
-    ////    private AzureStorageConfig azureStorageConfiguration;
-    ////
-    ////    @Mock
-    ////    private BlobStorageDeleteService blobStorageDeleteService;
-
-    @Before
-    public void setUp() {
-        Mockito.when(securityUtilService.getUserId()).thenReturn("Corín Tellado");
-    }
-
+    private final HearingRecordingServiceImpl underTest = new HearingRecordingServiceImpl(
+        hearingRecordingRepository,
+        EMAIL_DOMAIN
+    );
 
     @Test
-    public void testFindOne() {
-        Mockito.when(this.hearingRecordingRepository.findById(any(UUID.class)))
-            .thenReturn(Optional.of(TestUtil.HEARING_RECORDING));
-        Optional<HearingRecording> hearingRecording = hearingRecordingServiceImpl.findOne(TestUtil.RANDOM_UUID);
-        assert(hearingRecording.get()).equals(TestUtil.HEARING_RECORDING);
+    void testShouldRaiseHearingRecordingNotFoundExceptionWhenHearingRecordingNotFound() {
+        doReturn(Optional.empty()).when(hearingRecordingRepository).findByCcdCaseId(anyLong());
+
+        assertThatExceptionOfType(HearingRecordingNotFoundException.class)
+            .isThrownBy(() -> underTest.getDownloadSegmentUris(CCD_CASE_ID));
+
+        verify(hearingRecordingRepository, times(1)).findByCcdCaseId(anyLong());
     }
+
+    @Test
+    void testShouldReturnSetOfDownloadSegmentUris() {
+        doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS))
+            .when(hearingRecordingRepository)
+            .findByCcdCaseId(anyLong());
+
+        final Tuple2<HearingRecording, Set<String>> result = underTest.getDownloadSegmentUris(CCD_CASE_ID);
+
+        assertThat(result).isNotNull().satisfies(x -> {
+            assertThat(x.getT1()).isNotNull().isInstanceOf(HearingRecording.class);
+            assertThat(x.getT2()).isNotEmpty().hasSameElementsAs(SEGMENTS_DOWNLOAD_LINKS);
+        });
+        verify(hearingRecordingRepository, times(1)).findByCcdCaseId(anyLong());
+    }
+
     //
     //    @Test
     //    public void testFindOneThatDoesNotExist() {
@@ -65,342 +61,6 @@ class HearingRecordingServiceImplTests {
     //        Optional<HearingRecording> hearingRecording = hearingRecordingService.findOne(TestUtil.RANDOM_UUID);
     //        assertFalse(hearingRecording.isPresent());
     //    }
-    //
-    //    @Test
-    //    public void testFindOneThatIsMarkedDeleted() {
-    //        when(this.hearingRecordingRepository.findById(any(UUID.class))).thenReturn(Optional.of(DELETED_DOCUMENT));
-    //        Optional<HearingRecording> hearingRecording = hearingRecordingService.findOne(TestUtil.RANDOM_UUID);
-    //        assertFalse(hearingRecording.isPresent());
-    //    }
-    //
-    //    @Test
-    //    public void testFindOneWithBinaryDataThatDoesNotExist() {
-    //        when(this.hearingRecordingRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
-    //        Optional<HearingRecording> hearingRecording = hearingRecordingService.findOneWithBinaryData(TestUtil
-    //        .RANDOM_UUID);
-    //        assertFalse(hearingRecording.isPresent());
-    //    }
-    //
-    //    @Test
-    //    public void testFindOneWithBinaryDataThatIsMarkedHardDeleted() {
-    //        when(this.hearingRecordingRepository.findById(any(UUID.class))).thenReturn(Optional.of
-    //        (HARD_DELETED_DOCUMENT));
-    //        Optional<HearingRecording> hearingRecording = hearingRecordingService.findOneWithBinaryData(TestUtil
-    //        .RANDOM_UUID);
-    //        assertFalse(hearingRecording.isPresent());
-    //    }
-    //
-    //    @Test
-    //    public void testFindOneWithBinaryDataThatIsMarkedDeleted() {
-    //        when(this.hearingRecordingRepository.findById(any(UUID.class))).thenReturn(Optional.of(DELETED_DOCUMENT));
-    //        Optional<HearingRecording> hearingRecording = hearingRecordingService.findOneWithBinaryData(TestUtil
-    //        .RANDOM_UUID);
-    //        assertTrue(hearingRecording.isPresent());
-    //    }
-    //
-    //    @Test
-    //    public void testSave() {
-    //        final HearingRecording hearingRecording = TestUtil.STORED_DOCUMENT;
-    //        hearingRecordingService.save(hearingRecording);
-    //        verify(hearingRecordingRepository).save(hearingRecording);
-    //    }
-    //
-    //    @Test
-    //    public void testSaveItemsWithCommand() {
-    //        UploadDocumentsCommand uploadDocumentsCommand = new UploadDocumentsCommand();
-    //        uploadDocumentsCommand.setFiles(singletonList(TEST_FILE));
-    //        uploadDocumentsCommand.setRoles(ImmutableList.of("a", "b"));
-    //        uploadDocumentsCommand.setClassification(PRIVATE);
-    //        uploadDocumentsCommand.setMetadata(ImmutableMap.of("prop1", "value1"));
-    //        uploadDocumentsCommand.setTtl(new Date());
-    //
-    //        when(hearingRecordingRepository.save(any(HearingRecording.class))).thenReturn(new HearingRecording());
-    //        List<HearingRecording> documents = hearingRecordingService.saveItems(uploadDocumentsCommand);
-    //
-    //        final HearingRecording hearingRecording = documents.get(0);
-    //        final DocumentContentVersion latestVersion = hearingRecording.getDocumentContentVersions().get(0);
-    //
-    //        assertEquals(1, documents.size());
-    //        assertEquals(hearingRecording.getRoles(), newHashSet("a", "b"));
-    //        assertEquals(hearingRecording.getClassification(), PRIVATE);
-    //        Assert.assertNull(hearingRecording.getMetadata());
-    //        Assert.assertNull(hearingRecording.getTtl());
-    //        assertEquals(TEST_FILE.getContentType(), latestVersion.getMimeType());
-    //        assertEquals(TEST_FILE.getOriginalFilename(), latestVersion.getOriginalDocumentName());
-    //    }
-    //
-    //    @Test
-    //    public void testSaveItemsWithCommandAndToggleConfiguration() {
-    //
-    //        when(toggleConfiguration.isMetadatasearchendpoint()).thenReturn(true);
-    //        when(toggleConfiguration.isTtl()).thenReturn(true);
-    //
-    //        UploadDocumentsCommand uploadDocumentsCommand = new UploadDocumentsCommand();
-    //        uploadDocumentsCommand.setFiles(singletonList(TEST_FILE));
-    //        uploadDocumentsCommand.setRoles(ImmutableList.of("a", "b"));
-    //        uploadDocumentsCommand.setClassification(PRIVATE);
-    //        uploadDocumentsCommand.setMetadata(ImmutableMap.of("prop1", "value1"));
-    //        uploadDocumentsCommand.setTtl(new Date());
-    //
-    //        List<HearingRecording> documents = hearingRecordingService.saveItems(uploadDocumentsCommand);
-    //
-    //        final HearingRecording hearingRecording = documents.get(0);
-    //        final DocumentContentVersion latestVersion = hearingRecording.getDocumentContentVersions().get(0);
-    //
-    //        assertEquals(1, documents.size());
-    //        assertEquals(hearingRecording.getRoles(), newHashSet("a", "b"));
-    //        assertEquals(hearingRecording.getClassification(), PRIVATE);
-    //        assertEquals(hearingRecording.getMetadata(), ImmutableMap.of("prop1", "value1"));
-    //        Assert.assertNotNull(hearingRecording.getTtl());
-    //        assertEquals(TEST_FILE.getContentType(), latestVersion.getMimeType());
-    //        assertEquals(TEST_FILE.getOriginalFilename(), latestVersion.getOriginalDocumentName());
-    //    }
-    //
-    //    @Test
-    //    public void testSaveItems() {
-    //        List<HearingRecording> documents = hearingRecordingService.saveItems(singletonList(TEST_FILE));
-    //
-    //        final DocumentContentVersion latestVersion = documents.get(0).getDocumentContentVersions().get(0);
-    //
-    //        assertEquals(1, documents.size());
-    //        assertEquals(TEST_FILE.getContentType(), latestVersion.getMimeType());
-    //        assertEquals(TEST_FILE.getOriginalFilename(), latestVersion.getOriginalDocumentName());
-    //        verifyNoMoreInteractions(blobStorageWriteService);
-    //    }
-    //
-    //    @Test
-    //    public void testSaveItemsToAzure() {
-    //        setupStorageOptions(true, false);
-    //        List<HearingRecording> documents = hearingRecordingService.saveItems(singletonList(TEST_FILE));
-    //
-    //        assertEquals(1, documents.size());
-    //
-    //        final DocumentContentVersion latestVersion = documents.get(0).getDocumentContentVersions().get(0);
-    //
-    //        assertEquals(TEST_FILE.getContentType(), latestVersion.getMimeType());
-    //        assertEquals(TEST_FILE.getOriginalFilename(), latestVersion.getOriginalDocumentName());
-    //        verify(blobStorageWriteService).uploadDocumentContentVersion(documents.get(0), latestVersion, TEST_FILE);
-    //    }
-    //
-    //    @Test
-    //    public void testAddHearingRecordingVersion() {
-    //
-    //        setupStorageOptions(false, true);
-    //        HearingRecording hearingRecording = new HearingRecording();
-    //
-    //        DocumentContentVersion documentContentVersion = hearingRecordingService.addHearingRecordingVersion(
-    //            hearingRecording, TEST_FILE);
-    //
-    //        assertThat(hearingRecording.getDocumentContentVersions().size(), equalTo(1));
-    //
-    //        assertThat(documentContentVersion, notNullValue());
-    //
-    //        final DocumentContentVersion latestVersion = hearingRecording.getDocumentContentVersions().get(0);
-    //        assertThat(latestVersion.getMimeType(), equalTo(TEST_FILE.getContentType()));
-    //        assertThat(latestVersion.getOriginalDocumentName(), equalTo(TEST_FILE.getOriginalFilename()));
-    //
-    //        ArgumentCaptor<DocumentContentVersion> captor = ArgumentCaptor.forClass(DocumentContentVersion.class);
-    //        verify(documentContentVersionRepository).save(captor.capture());
-    //        assertThat(captor.getValue(), is(documentContentVersion));
-    //    }
-    //
-    //    @Test
-    //    public void testAddHearingRecordingVersionWhenAzureBlobStoreEnabled() {
-    //
-    //        setupStorageOptions(true, false);
-    //        HearingRecording hearingRecording = new HearingRecording();
-    //
-    //        DocumentContentVersion documentContentVersion = hearingRecordingService.addHearingRecordingVersion(
-    //            hearingRecording, TEST_FILE);
-    //
-    //        assertThat(hearingRecording.getDocumentContentVersions().size(), equalTo(1));
-    //        assertThat(documentContentVersion, notNullValue());
-    //
-    //        final DocumentContentVersion latestVersion = hearingRecording.getDocumentContentVersions().get(0);
-    //        assertThat(latestVersion.getMimeType(), equalTo(TEST_FILE.getContentType()));
-    //        assertThat(latestVersion.getOriginalDocumentName(), equalTo(TEST_FILE.getOriginalFilename()));
-    //
-    //        ArgumentCaptor<DocumentContentVersion> captor = ArgumentCaptor.forClass(DocumentContentVersion.class);
-    //        verify(blobStorageWriteService).uploadDocumentContentVersion(hearingRecording, documentContentVersion,
-    //        TEST_FILE);
-    //        verify(documentContentVersionRepository).save(captor.capture());
-    //        assertThat(captor.getValue(), is(documentContentVersion));
-    //    }
-    //
-    //    @Test
-    //    public void testDelete() {
-    //        HearingRecording hearingRecording = new HearingRecording();
-    //        hearingRecordingService.deleteDocument(hearingRecording, false);
-    //
-    //        assertThat(hearingRecording.isDeleted(), is(true));
-    //        verify(hearingRecordingRepository).save(hearingRecording);
-    //    }
-    //
-    //    @Test
-    //    public void testHardDelete() {
-    //        DocumentContent documentContent = new DocumentContent(mock(Blob.class));
-    //        HearingRecording hearingRecordingWithContent = HearingRecording.builder()
-    //            .documentContentVersions(ImmutableList.of(DocumentContentVersion.builder()
-    //                .documentContent(documentContent)
-    //                .build()))
-    //            .build();
-    //
-    //        hearingRecordingService.deleteDocument(hearingRecordingWithContent, true);
-    //
-    //        assertThat(hearingRecordingWithContent.getMostRecentDocumentContentVersion().getDocumentContent(),
-    //        nullValue());
-    //        verify(hearingRecordingRepository, atLeastOnce()).save(hearingRecordingWithContent);
-    //        verify(documentContentRepository).delete(documentContent);
-    //    }
-    //
-    //    @Test
-    //    public void testHardDeleteAzureBlobEnabled() {
-    //        HearingRecording hearingRecordingWithContent = HearingRecording.builder()
-    //            .documentContentVersions(ImmutableList.of(DocumentContentVersion.builder()
-    //                .build()))
-    //            .build();
-    //
-    //        when(azureStorageConfiguration.isAzureBlobStoreEnabled()).thenReturn(true);
-    //
-    //        hearingRecordingService.deleteDocument(hearingRecordingWithContent, true);
-    //
-    //        verify(hearingRecordingRepository, atLeastOnce()).save(hearingRecordingWithContent);
-    //        verify(blobStorageDeleteService)
-    //            .deleteDocumentContentVersion(hearingRecordingWithContent.getMostRecentDocumentContentVersion());
-    //    }
-    //
-    //    @Test
-    //    public void testHardDeleteWithManyVersions() {
-    //        DocumentContentVersion contentVersion = DocumentContentVersion.builder()
-    //            .documentContent(new DocumentContent(mock(Blob.class)))
-    //            .build();
-    //
-    //        DocumentContentVersion secondContentVersion = DocumentContentVersion.builder()
-    //            .documentContent(new DocumentContent(mock(Blob.class)))
-    //            .build();
-    //
-    //        HearingRecording hearingRecordingWithContent = HearingRecording.builder()
-    //            .documentContentVersions(Arrays.asList(contentVersion, secondContentVersion))
-    //            .build();
-    //
-    //        hearingRecordingService.deleteDocument(hearingRecordingWithContent, true);
-    //
-    //        hearingRecordingWithContent.getDocumentContentVersions().forEach(documentContentVersion -> {
-    //            assertThat(documentContentVersion.getDocumentContent(), nullValue());
-    //        });
-    //        verify(hearingRecordingRepository, atLeastOnce()).save(hearingRecordingWithContent);
-    //        verify(documentContentRepository, times(2)).delete(Mockito.any(DocumentContent.class));
-    //    }
-    //
-    //    @Test
-    //    public void testSaveItemsToBucket() {
-    //        Folder folder = new Folder();
-    //
-    //        hearingRecordingService.saveItemsToBucket(folder, Stream.of(TEST_FILE).collect(Collectors.toList()));
-    //
-    //        assertThat(folder.getHearingRecordings().size(), equalTo(1));
-    //
-    //        final DocumentContentVersion latestVersionInFolder = folder.getHearingRecordings().get(0)
-    //        .getDocumentContentVersions().get(0);
-    //
-    //        assertThat(latestVersionInFolder.getMimeType(), equalTo(TEST_FILE.getContentType()));
-    //        assertThat(latestVersionInFolder.getOriginalDocumentName(), equalTo(TEST_FILE.getOriginalFilename()));
-    //        verify(securityUtilService).getUserId();
-    //        verify(folderRepository).save(folder);
-    //        verifyNoMoreInteractions(blobStorageWriteService);
-    //    }
-    //
-    //    @Test
-    //    public void testSaveItemsToBucketToBlobStore() throws Exception {
-    //        Folder folder = new Folder();
-    //        setupStorageOptions(true, false);
-    //        hearingRecordingService.saveItemsToBucket(folder, Stream.of(TEST_FILE).collect(Collectors.toList()));
-    //
-    //        assertThat(folder.getHearingRecordings().size(), equalTo(1));
-    //
-    //        final DocumentContentVersion latestVersionInFolder = folder.getHearingRecordings().get(0)
-    //        .getDocumentContentVersions().get(0);
-    //
-    //        assertThat(latestVersionInFolder.getMimeType(), equalTo(TEST_FILE.getContentType()));
-    //        assertThat(latestVersionInFolder.getOriginalDocumentName(), equalTo(TEST_FILE.getOriginalFilename()));
-    //        verify(securityUtilService).getUserId();
-    //        verify(folderRepository).save(folder);
-    //        verify(blobStorageWriteService).uploadDocumentContentVersion(folder.getHearingRecordings().get(0),
-    //        latestVersionInFolder, TEST_FILE);
-    //    }
-    //
-    //    @Test
-    //    public void testUpdateItems() {
-    //        HearingRecording hearingRecording = new HearingRecording();
-    //        hearingRecording.setId(UUID.randomUUID());
-    //        hearingRecording.setMetadata(Maps.newHashMap("Key", "Value"));
-    //
-    //        when(hearingRecordingRepository.findById(any(UUID.class))).thenReturn(Optional.of(hearingRecording));
-    //
-    //        DocumentUpdate update = new DocumentUpdate(hearingRecording.getId(), Maps.newHashMap("UpdateKey",
-    //        "UpdateValue"));
-    //        UpdateDocumentsCommand command = new UpdateDocumentsCommand(null, singletonList(update));
-    //
-    //        hearingRecordingService.updateItems(command);
-    //
-    //        assertEquals(hearingRecording.getMetadata().get("Key"), "Value");
-    //        assertEquals(hearingRecording.getMetadata().get("UpdateKey"), "UpdateValue");
-    //    }
-    //
-    //    @Test
-    //    public void testUpdateDocument() {
-    //        HearingRecording hearingRecording = new HearingRecording();
-    //        UpdateDocumentCommand command = new UpdateDocumentCommand();
-    //        Date newTtl = new Date();
-    //        command.setTtl(newTtl);
-    //        hearingRecordingService.updateHearingRecording(hearingRecording, command);
-    //        assertEquals(newTtl, hearingRecording.getTtl());
-    //    }
-    //
-    //    @Test
-    //    public void testUpdateDocumentWithMetaData() {
-    //        HearingRecording hearingRecording = new HearingRecording();
-    //        hearingRecording.setMetadata(Maps.newHashMap("Key", "Value"));
-    //
-    //        Date newTtl = new Date();
-    //        hearingRecordingService.updateHearingRecording(hearingRecording, newTtl, Maps.newHashMap("UpdateKey",
-    //        "UpdateValue"));
-    //
-    //        assertEquals(newTtl, hearingRecording.getTtl());
-    //        assertEquals(hearingRecording.getMetadata().get("Key"), "Value");
-    //        assertEquals(hearingRecording.getMetadata().get("UpdateKey"), "UpdateValue");
-    //    }
-    //
-    //    @Test
-    //    public void testUpdateDeletedDocument() {
-    //        HearingRecording hearingRecording = new HearingRecording();
-    //        hearingRecording.setDeleted(true);
-    //        UpdateDocumentCommand command = new UpdateDocumentCommand();
-    //        Date newTtl = new Date();
-    //        command.setTtl(newTtl);
-    //        hearingRecordingService.updateHearingRecording(hearingRecording, command);
-    //        Assert.assertNull(hearingRecording.getTtl());
-    //    }
-    //
-    //    @Test
-    //    public void testFindAllExpiredHearingRecordings() {
-    //        hearingRecordingService.findAllExpiredHearingRecordings();
-    //        verify(hearingRecordingRepository, times(1)).findByTtlLessThanAndHardDeleted(any(), any());
-    //    }
-    //
-    //    @Test(expected = NullPointerException.class)
-    //    public void testUpdateHearingRecordingNullHearingRecording() {
-    //        hearingRecordingService.updateHearingRecording(null, new UpdateDocumentCommand());
-    //    }
-    //
-    //    @Test(expected = NullPointerException.class)
-    //    public void testUpdateHearingRecordingNullCommand() {
-    //        hearingRecordingService.updateHearingRecording(new HearingRecording(), null);
-    //    }
-    //
-    //    private void setupStorageOptions(Boolean azureEnabled, Boolean postgresEnabled) {
-    //        when(azureStorageConfiguration.isAzureBlobStoreEnabled()).thenReturn(azureEnabled);
-    //        when(azureStorageConfiguration.isPostgresBlobStorageEnabled()).thenReturn(postgresEnabled);
-    //    }
+
 }
 

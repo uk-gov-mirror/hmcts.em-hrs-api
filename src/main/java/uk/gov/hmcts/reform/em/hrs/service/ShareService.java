@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import java.util.UUID;
-
 public interface ShareService {
 
-    void executeNotify(UUID recordingId, String emailAddress);
+    void executeNotify(final Long ccdCaseId, final String recipientEmailAddress, final String authorizationJwt);
 }

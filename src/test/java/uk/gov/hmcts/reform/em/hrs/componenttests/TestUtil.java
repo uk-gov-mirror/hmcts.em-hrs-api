@@ -22,6 +22,9 @@ public class TestUtil {
     public static final String FILE_3 = "file-3.mp4";
     public static final String TEST_FOLDER_NAME = "folder-1";
     public static final UUID RANDOM_UUID = UUID.randomUUID();
+    public static final Long CCD_CASE_ID = 1234L;
+    public static final String RECIPIENT_EMAIL_ADDRESS = "testerEmail@test.com";
+    private static final String EMAIL_DOMAIN = "https://SOMEPREFIXTBD";
 
     private static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
@@ -42,6 +45,13 @@ public class TestUtil {
         MediaType.APPLICATION_JSON.getSubtype(),
         StandardCharsets.UTF_8
     );
+
+    public static final Set<String> SEGMENTS_DOWNLOAD_LINKS = Set.of(
+        String.format("%s/%s", EMAIL_DOMAIN, SEGMENT_1.getFileName()),
+        String.format("%s/%s", EMAIL_DOMAIN, SEGMENT_2.getFileName()),
+        String.format("%s/%s", EMAIL_DOMAIN, SEGMENT_3.getFileName())
+    );
+
     public static final Folder EMPTY_FOLDER = Folder.builder()
         .id(RANDOM_UUID)
         .name("name")
@@ -87,6 +97,12 @@ public class TestUtil {
 
     public static final HearingRecording HEARING_RECORDING = HearingRecording.builder()
         .id(RANDOM_UUID)
+        .folder(Folder.builder().id(RANDOM_UUID).build())
+        .build();
+
+    public static final HearingRecording HEARING_RECORDING_WITH_SEGMENTS = HearingRecording.builder()
+        .id(RANDOM_UUID)
+        .segments(Set.of(SEGMENT_1, SEGMENT_2, SEGMENT_3))
         .folder(Folder.builder().id(RANDOM_UUID).build())
         .build();
 

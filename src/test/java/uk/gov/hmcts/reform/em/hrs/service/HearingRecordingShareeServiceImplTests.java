@@ -6,17 +6,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
-import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingShareesRepository;
+import uk.gov.hmcts.reform.em.hrs.repository.ShareesRepository;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECIPIENT_EMAIL_ADDRESS;
 
 @ExtendWith(MockitoExtension.class)
 public class HearingRecordingShareeServiceImplTests {
     @Mock
-    private HearingRecordingShareesRepository hearingRecordingShareesRepository;
+    private ShareesRepository shareesRepository;
 
     @InjectMocks
     private HearingRecordingShareeServiceImpl hearingRecordingShareesServiceImpl;
@@ -24,10 +25,9 @@ public class HearingRecordingShareeServiceImplTests {
 
     @Test
     public void testShouldSaveEntity() {
-        final String emailAddress = "testerEmail@test.com";
 
-        hearingRecordingShareesServiceImpl.createAndSaveEntry(emailAddress, HEARING_RECORDING);
+        hearingRecordingShareesServiceImpl.createAndSaveEntry(RECIPIENT_EMAIL_ADDRESS, HEARING_RECORDING);
 
-        verify(hearingRecordingShareesRepository, times(1)).save(any(HearingRecordingSharee.class));
+        verify(shareesRepository, times(1)).save(any(HearingRecordingSharee.class));
     }
 }
