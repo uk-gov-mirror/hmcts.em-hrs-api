@@ -15,8 +15,13 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
-import uk.gov.hmcts.reform.em.hrs.service.*;
+import uk.gov.hmcts.reform.em.hrs.service.FolderService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareesService;
+import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -80,9 +85,10 @@ public class HearingRecordingController {
     @ApiResponses(value = {
         @ApiResponse(code = 202, message = "Request accepted for asynchronous processing")
     })
-    public ResponseEntity<HearingRecordingDto> createHearingRecording(@PathVariable("folder") String folderName,
-                                                                      @PathVariable("recordingRef") String recordingRef,
-                                                                      @RequestBody HearingRecordingDto hearingRecordingDto) {
+    public ResponseEntity<HearingRecordingDto> createHearingRecording(
+        @PathVariable("folder") String folderName,
+        @PathVariable("recordingRef") String recordingRef,
+        @RequestBody HearingRecordingDto hearingRecordingDto) {
 
         Long caseId = caseUpdateService.addRecordingToCase(hearingRecordingDto);
         hearingRecordingService.persistRecording(hearingRecordingDto, caseId);
@@ -126,7 +132,6 @@ public class HearingRecordingController {
 
         // TODO - Trigger the ShareService with the info
         // Return ResponseEntity.ok(shareService.executeNotify(hearingRecordingSegments, request));
-
 
         return ResponseEntity.ok().build();
 

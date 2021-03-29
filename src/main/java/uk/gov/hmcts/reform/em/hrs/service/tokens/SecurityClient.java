@@ -44,15 +44,15 @@ public class SecurityClient {
         return getUserId(getUserToken());
     }
 
+    public String getUserId(String userAuthorization) {
+        return idamClient.getUserDetails(userAuthorization).getId();
+    }
+
     public String getUserEmail() {
         return getUserEmail(getUserToken());
     }
 
-    private String getUserId(String userAuthorization) {
-        return idamClient.getUserDetails(userAuthorization).getId();
-    }
-
-    private String getUserEmail(String userAuthorization) {
+    public String getUserEmail(String userAuthorization) {
         return idamClient.getUserDetails(userAuthorization).getEmail();
     }
 }
