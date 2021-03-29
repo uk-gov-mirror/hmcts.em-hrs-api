@@ -23,7 +23,7 @@ public class CaseUpdateService {
         if (caseId.isEmpty()) {
             caseId = Optional.of(ccdDataStoreApiClient.createCase(recordingFile).getId());
         } else {
-            ccdDataStoreApiClient.updateCaseData(caseId.get().toString(), recordingFile);
+            ccdDataStoreApiClient.updateCaseData(caseId.get(), recordingFile);
         }
         return caseId.get();
     }

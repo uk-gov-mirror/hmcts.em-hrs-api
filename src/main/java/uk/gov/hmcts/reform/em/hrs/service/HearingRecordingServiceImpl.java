@@ -57,6 +57,6 @@ public class HearingRecordingServiceImpl implements HearingRecordingService {
             .segments(new HashSet<HearingRecordingSegment>(Arrays.asList(segment)))
             .ccdCaseId(caseId)
             .build();
-        return hearingRecordingRepository.save(hearingRecording);
+        return hearingRecordingRepository.save(hearingRecording);//TODO: need to create or update to avoid duplicate records
     }
 }

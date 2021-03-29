@@ -54,11 +54,11 @@ public class CcdDataStoreApiClient {
         return caseDetails;
     }
 
-    public CaseDetails updateCaseData(final String caseId, final HearingRecordingDto hearingRecordingDto) {
+    public CaseDetails updateCaseData(final Long caseId, final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityClient.getTokens();
 
         StartEventResponse startEventResponse =
-            coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"), caseId, ADD_RECORDING_FILE);
+            coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"), caseId.toString(), ADD_RECORDING_FILE);
 
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
@@ -68,7 +68,8 @@ public class CcdDataStoreApiClient {
                 hearingRecordingDto)
             ).build();
 
-        return coreCaseDataApi.submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
-                                                        JURISDICTION, CASE_TYPE, caseId, false, caseData);
+        return coreCaseDataApi
+            .submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
+                                      JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData);
     }
 }

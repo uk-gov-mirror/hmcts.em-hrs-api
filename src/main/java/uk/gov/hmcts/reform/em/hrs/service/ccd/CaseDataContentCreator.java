@@ -28,7 +28,7 @@ public class CaseDataContentCreator {
             .recordingFiles(Arrays.asList(createSegment(hearingRecordingDto)))
             .recordingDateTime(hearingRecordingDto.getRecordingDateTime())
             .recordingTimeOfDay("morning")
-            .hearingSource(hearingRecordingDto.getHearingSource().toString())
+            .hearingSource(hearingRecordingDto.getHearingSource())
             .hearingRoomRef(hearingRecordingDto.getHearingRoomRef())
             .serviceCode(hearingRecordingDto.getServiceCode())
             .jurisdictionCode(hearingRecordingDto.getJurisdictionCode())

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Usage: ./bin/idam-authenticate.sh IDAM_URI IDAM_USERNAME IDAM_PASSWORD
+## Usage: ./docker/dependencies/idam-authenticate.sh IDAM_URI IDAM_USERNAME IDAM_PASSWORD
 ##
 ##
 ## Make call to IDAM to get auth token
