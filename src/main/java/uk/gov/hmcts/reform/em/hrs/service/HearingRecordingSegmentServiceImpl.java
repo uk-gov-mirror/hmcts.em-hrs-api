@@ -25,7 +25,7 @@ public class HearingRecordingSegmentServiceImpl implements HearingRecordingSegme
 
     @Inject
     public HearingRecordingSegmentServiceImpl(
-        final HearingRecordingSegmentRepository segmentRepository, HearingRecordingRepository recordingRepository) {
+        final HearingRecordingSegmentRepository segmentRepository, final HearingRecordingRepository recordingRepository) {
         this.segmentRepository = segmentRepository;
         this.recordingRepository = recordingRepository;
     }

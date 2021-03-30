@@ -148,6 +148,7 @@ def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/config/**',
   '**uk/gov/hmcts/reform/em/hrs/dto/**',
   '**uk/gov/hmcts/reform/em/hrs/domain/**',
+  '**uk/gov/hmcts/reform/em/hrs/controller/**',
   '**uk/gov/hmcts/reform/em/hrs/exception/**',
   '**uk/gov/hmcts/reform/em/hrs/repository/**',
   '**uk/gov/hmcts/reform/em/hrs/service/**',
@@ -236,6 +237,7 @@ dependencyManagement {
       entry 'netty-codec-socks'
       entry 'netty-handler-proxy'
     }
+
 
     //CVE-2021-22112
     dependencySet(group: 'org.springframework.security', version: '5.3.8.RELEASE') {
