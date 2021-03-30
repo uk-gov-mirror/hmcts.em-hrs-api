@@ -35,7 +35,7 @@ public class CcdDataStoreApiClient {
         this.coreCaseDataApi = coreCaseDataApi;
     }
 
-    public CaseDetails createCase(final HearingRecordingDto hearingRecordingDto) {
+    public Long createCase(final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityClient.getTokens();
 
         StartEventResponse startEventResponse =
@@ -51,25 +51,25 @@ public class CcdDataStoreApiClient {
             .submitForCaseworker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
                                  JURISDICTION, CASE_TYPE, false, caseData);
 
-        return caseDetails;
+        return caseDetails.getId();
     }
 
-    public CaseDetails updateCaseData(final Long caseId, final HearingRecordingDto hearingRecordingDto) {
+    public Long updateCaseData(final Long caseId, final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityClient.getTokens();
 
-        StartEventResponse startEventResponse =
-            coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"), caseId.toString(), ADD_RECORDING_FILE);
+        StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"),
+                                                                           caseId.toString(), ADD_RECORDING_FILE);
 
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
             .eventToken(startEventResponse.getToken())
-            .data(caseDataCreator.createCaseUpdateData(
-                startEventResponse.getCaseDetails().getData(),
-                hearingRecordingDto)
-            ).build();
+            .data(caseDataCreator.createCaseUpdateData(startEventResponse.getCaseDetails().getData(),
+                                                       hearingRecordingDto))
+            .build();
 
         return coreCaseDataApi
             .submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
-                                      JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData);
+                                      JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData)
+            .getId();
     }
 }

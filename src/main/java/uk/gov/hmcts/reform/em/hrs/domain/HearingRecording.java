@@ -78,10 +78,10 @@ public class HearingRecording {
     private Map<String, String> metadata;
 
     private LocalDateTime ttl;
-    private String recordingReference;
-    private String caseReference;
+    private String recordingRef;
+    private String caseRef;
     private String hearingLocationCode;
-    private String hearingRoomReference;
+    private String hearingRoomRef;
     private String hearingSource;
     private String jurisdictionCode;
     private String serviceCode;
@@ -98,8 +98,8 @@ public class HearingRecording {
                             Set<HearingRecordingAuditEntry> auditEntries,
                             //Set<String> roles,
                             Map<String, String> metadata, LocalDateTime ttl,
-                            String recordingReference, String caseReference, String hearingLocationCode,
-                            String hearingRoomReference, String hearingSource,
+                            String recordingRef, String caseRef, String hearingLocationCode,
+                            String hearingRoomRef, String hearingSource,
                             String jurisdictionCode, String serviceCode, Long ccdCaseId,
                             Set<HearingRecordingSegment> segments) {
         setId(id);
@@ -117,10 +117,10 @@ public class HearingRecording {
         setMetadata(metadata);
         setTtl(ttl);
 
-        setRecordingReference(recordingReference);
-        setCaseReference(caseReference);
+        setRecordingRef(recordingRef);
+        setCaseRef(caseRef);
         setHearingLocationCode(hearingLocationCode);
-        setHearingRoomReference(hearingRoomReference);
+        setHearingRoomRef(hearingRoomRef);
         setHearingSource(hearingSource);
         setJurisdictionCode(jurisdictionCode);
 

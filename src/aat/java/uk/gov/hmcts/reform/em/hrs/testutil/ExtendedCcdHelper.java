@@ -42,7 +42,7 @@ public class ExtendedCcdHelper {
     }
 
     public HearingRecordingDto createRecordingSegment(
-        String url, String filename, String fileExt, int length, int segment) {
+        String url, String filename, String fileExt, Long fileSize, int segment) {
         return new HearingRecordingDto(
             "hearing-12-family-probate-morning",
             "CVP",
@@ -54,7 +54,7 @@ public class ExtendedCcdHelper {
             url,
             filename,
             fileExt,
-            length,
+            fileSize,
             segment,
             "",
             LocalDateTime.now()

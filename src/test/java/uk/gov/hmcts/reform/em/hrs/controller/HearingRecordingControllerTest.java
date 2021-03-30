@@ -1,18 +1,18 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.javacrumbs.jsonunit.core.Option;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.service.*;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -51,7 +51,7 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
 
     @Test
     void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
-        final String path = "/folders/" + TEST_FOLDER + "/hearing-recording-file-names";
+        final String path = "/folders/" + TEST_FOLDER;
         doReturn(emptySet()).when(folderService).getStoredFiles(TEST_FOLDER);
 
         final MvcResult mvcResult = mockMvc.perform(get(path).accept(APPLICATION_JSON_VALUE))
@@ -72,7 +72,7 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
 
     @Test
     void testWhenRequestedFolderHasStoredFiles() throws Exception {
-        final String path = "/folders/" + TEST_FOLDER + "/hearing-recording-file-names";
+        final String path = "/folders/" + TEST_FOLDER;
         doReturn(Set.of(TestUtil.FILE_1, TestUtil.FILE_2)).when(folderService).getStoredFiles(TEST_FOLDER);
 
         final MvcResult mvcResult = mockMvc.perform(get(path).accept(APPLICATION_JSON_VALUE))
@@ -94,28 +94,28 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
 
     @Test
     void testShareHearingRecordingShareeSave() throws Exception {
-        final String path = "/folders/" + TEST_FOLDER + "/hearing-recording/" + ID + "/access-right";
+        final String path = "/sharees";
+        final Long CASE_ID = 12L;
+        final HearingRecording HEARING_RECORDING = TestUtil.FOLDER_WITH_SEGMENT.getHearingRecordings().get(0);
 
-        doReturn(Optional.of(TestUtil.HEARING_RECORDING)).when(hearingRecordingService).findOne(ID);
-        doReturn(List.of(TestUtil.FOLDER_WITH_SEGMENT.getHearingRecordings().get(0).getSegments()))
-            .when(hearingRecordingSegmentService)
-            .findByRecordingId(ID);
+        doReturn(Optional.of(HEARING_RECORDING)).when(hearingRecordingService).findByCaseId(CASE_ID);
 
-        // TODO content should be in a HttpServletRequest form
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put("recipientEmailAddress", "test@tester.com");
+        CaseDetails request = CaseDetails.builder().data(caseData).id(CASE_ID).build();
+
         mockMvc.perform(post(path)
-                            .content("test@tester.com")
+                            .content(new ObjectMapper().writeValueAsString(request))
                             .contentType(APPLICATION_JSON_VALUE)
                             .header("Authorization", "xxx")
                             .header("ServiceAuthorization", "xxx"))
             .andExpect(status().isOk());
 
 
-        verify(hearingRecordingService, times(1)).findOne(ID);
-
+        verify(hearingRecordingService, times(1))
+            .findByCaseId(CASE_ID);
         verify(hearingRecordingShareesService, times(1))
-            .createAndSaveEntry("test@tester.com", TestUtil.HEARING_RECORDING);
-
-        verify(hearingRecordingSegmentService, times(1)).findByRecordingId(ID);
+            .createAndSaveEntry("test@tester.com", HEARING_RECORDING);
     }
 
 }

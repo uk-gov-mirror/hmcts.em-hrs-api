@@ -28,12 +28,12 @@ public class CaseDataContentCreator {
             .recordingFiles(Arrays.asList(createSegment(hearingRecordingDto)))
             .recordingDateTime(hearingRecordingDto.getRecordingDateTime())
             .recordingTimeOfDay("morning")
-            .hearingSource(hearingRecordingDto.getHearingSource())
+            .hearingSource(hearingRecordingDto.getRecordingSource())
             .hearingRoomRef(hearingRecordingDto.getHearingRoomRef())
             .serviceCode(hearingRecordingDto.getServiceCode())
             .jurisdictionCode(hearingRecordingDto.getJurisdictionCode())
             .courtLocationCode(hearingRecordingDto.getCourtLocationCode())
-            .recordingReference(hearingRecordingDto.getRecordingReference())
+            .recordingReference(hearingRecordingDto.getRecordingRef())
             .build();
         return objectMapper.convertValue(recording, JsonNode.class);
     }
@@ -48,15 +48,15 @@ public class CaseDataContentCreator {
 
     private RecordingSegment createSegment(HearingRecordingDto hearingRecordingDto) {
         CaseDocument recordingFile = CaseDocument.builder()
-            .filename(hearingRecordingDto.getRecordingFilename())
-            .url(hearingRecordingDto.getRecordingFileUri())//TODO: this is CVP url, I need to construct it from filename
-            .binaryUrl(hearingRecordingDto.getRecordingFileUri() + "/binary")
+            .filename(hearingRecordingDto.getFilename())
+            .url(hearingRecordingDto.getCvpFileUrl())//TODO: this is CVP url, I need to construct it from filename
+            .binaryUrl(hearingRecordingDto.getCvpFileUrl() + "/binary")
             .build();
 
         return RecordingSegment.builder()
             .recordingFile(recordingFile)
-            .segmentNumber(hearingRecordingDto.getRecordingSegment())
-            .recordingLength(hearingRecordingDto.getRecordingLength())
+            .segmentNumber(hearingRecordingDto.getSegment())
+            .fileSize(hearingRecordingDto.getFileSize())
             .build();
     }
 }

@@ -35,7 +35,7 @@ public class CaseUpdateScenarios {
             "http://dm-store:8080/documents/57340931-bfce-424d-bcee-6b3f0abf56fb",//TODO: need to ask CCD not to reject HRS URLs
             "first-hearing-recording-segment",
             ".mp4",
-            12,
+            12L,
             0
             );
 
@@ -44,8 +44,7 @@ public class CaseUpdateScenarios {
             .baseUri("http://localhost:8080")
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
-            .post("/folders/london/hearing-recordings/first-hearing-recording-segment/segments");
-
+            .post("/segments");
 
         Assert.assertEquals(202, response.getStatusCode());
     }
@@ -56,8 +55,8 @@ public class CaseUpdateScenarios {
             "http://dm-store:8080/documents/57340931-bfce-424d-bcee-6b3f0abf56fb",
             "first-hearing-recording-segment",
             ".mp4",
-            12,
-            0
+            12L,
+            1
             );
 
         Response response = SerenityRest
@@ -65,8 +64,7 @@ public class CaseUpdateScenarios {
             .baseUri("http://localhost:8080")
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
-            .post("/folders/london/hearing-recordings/first-hearing-recording-segment/segments");
-
+            .post("/segments");
 
         Assert.assertEquals(202, response.getStatusCode());
     }

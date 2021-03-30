@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
@@ -22,41 +23,42 @@ import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareesService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
 
-
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.Set;
 import javax.inject.Inject;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
+
 
 @RestController
 public class HearingRecordingController {
+
     private final FolderService folderService;
-    private final HearingRecordingShareesService hearingRecordingShareesService;
-    private final HearingRecordingService hearingRecordingService;
-    private final HearingRecordingSegmentService hearingRecordingSegmentService;
+    private final HearingRecordingShareesService shareesService;
+    private final HearingRecordingService recordingService;
+    private final HearingRecordingSegmentService segmentService;
     private final ShareService shareService;
     private final CaseUpdateService caseUpdateService;
 
     @Inject
     public HearingRecordingController(final FolderService folderService,
                                       final CaseUpdateService caseUpdateService,
-                                      final HearingRecordingShareesService hearingRecordingShareesService,
-                                      final HearingRecordingService hearingRecordingService,
-                                      final HearingRecordingSegmentService hearingRecordingSegmentService,
+                                      final HearingRecordingShareesService shareesService,
+                                      final HearingRecordingService recordingService,
+                                      final HearingRecordingSegmentService segmentService,
                                       final ShareService shareService) {
         this.folderService = folderService;
         this.caseUpdateService = caseUpdateService;
-        this.hearingRecordingShareesService = hearingRecordingShareesService;
-        this.hearingRecordingService = hearingRecordingService;
-        this.hearingRecordingSegmentService = hearingRecordingSegmentService;
+        this.shareesService = shareesService;
+        this.recordingService = recordingService;
+        this.segmentService = segmentService;
         this.shareService = shareService;
     }
 
     @GetMapping(
-        path = "/folders/{name}/hearing-recording-file-names",
+        path = "/folders/{name}",
         produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
@@ -76,27 +78,29 @@ public class HearingRecordingController {
     }
 
     @PostMapping(
-        path = "/folders/{folder}/hearing-recordings/{recordingRef}/segments",//TODO: this seems like a GET mapping rather than POST
+        path = "/segments",
         consumes = APPLICATION_JSON_VALUE,
         produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    @ApiOperation(value = "Post hearing recording", notes = "Save hearing recording file in the specified folder")
+    @ApiOperation(value = "Post hearing recording segment", notes = "Save hearing recording segment")
     @ApiResponses(value = {
         @ApiResponse(code = 202, message = "Request accepted for asynchronous processing")
     })
     public ResponseEntity<HearingRecordingDto> createHearingRecording(
-        @PathVariable("folder") String folderName,
-        @PathVariable("recordingRef") String recordingRef,
-        @RequestBody HearingRecordingDto hearingRecordingDto) {
+            @RequestBody HearingRecordingDto hearingRecordingDto) {
 
-        Long caseId = caseUpdateService.addRecordingToCase(hearingRecordingDto);
-        hearingRecordingService.persistRecording(hearingRecordingDto, caseId);
+        Optional<HearingRecording> hearingRecording =
+            recordingService.findByRecordingRef(hearingRecordingDto.getRecordingRef());
+
+        Long caseId = caseUpdateService
+            .addRecordingToCase(hearingRecordingDto, hearingRecording.map(HearingRecording::getCcdCaseId));
+        segmentService.persistRecording(hearingRecordingDto, hearingRecording, caseId);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PostMapping(
-        path = "/folders/{name}/hearing-recording/{id}/access-right",
+        path = "/sharees",
         consumes = APPLICATION_JSON_VALUE,
         produces = APPLICATION_JSON_VALUE
     )
@@ -108,32 +112,35 @@ public class HearingRecordingController {
             + "access to (the download link)"),
         @ApiResponse(code = 404, message = "Not Found")
     })
-    public ResponseEntity<HearingRecordingDto> shareHearingRecording(@RequestBody String request,
-                                                                     @PathVariable("name") String folderName,
-                                                                     @PathVariable("id") UUID recordingId) {
+    public ResponseEntity<HearingRecordingDto> shareHearingRecording(@RequestBody CaseDetails request) {
 
         //TODO - @RequestBody should be HttpServletRequest but will need to configure unit test
 
-        // Find the associated Hearing Recording
-        Optional<HearingRecording> hearingRecording = hearingRecordingService.findOne(recordingId);
+        Optional<HearingRecording> hearingRecording = recordingService.findByCaseId(request.getId());
 
-        // Check if email is valid
-        // String emailAddress = request.getParameter("emailAddress");
-        String emailAddress = request;
+        String emailAddress = request.getData().get("recipientEmailAddress").toString();
 
-        // Save the hearingRecordingSharee
         if (hearingRecording.isPresent()) {
-            hearingRecordingShareesService.createAndSaveEntry(emailAddress, hearingRecording.get());
+            shareesService.createAndSaveEntry(emailAddress, hearingRecording.get());
+            Set<HearingRecordingSegment> segments = hearingRecording.get().getSegments();
+            // TODO - Trigger the ShareService with the info
+            // Return ResponseEntity.ok(shareService.executeNotify(hearingRecordingSegments, request));
         }
-
-        // Get the Hearing Recording Segments associated with the Hearing Recording
-        List<HearingRecordingSegment> hearingRecordingSegments = hearingRecordingSegmentService.findByRecordingId(
-            recordingId);
-
-        // TODO - Trigger the ShareService with the info
-        // Return ResponseEntity.ok(shareService.executeNotify(hearingRecordingSegments, request));
 
         return ResponseEntity.ok().build();
 
+    }
+
+    @GetMapping(
+        path = "/documents/hearing-recordings/{recordingRef}/segments/{segment}",
+        produces = APPLICATION_OCTET_STREAM_VALUE
+    )
+    @ResponseBody
+    @ApiOperation(value = "Get hearing recording file",
+                  notes = "Return hearing recording file from the specified folder")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Return the requested hearing recording")})
+    public ResponseEntity getHearingRecording(@PathVariable("recordingRef") String recordingRef,
+                                              @PathVariable("segment") String segment) {
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

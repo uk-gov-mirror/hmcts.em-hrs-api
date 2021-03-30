@@ -19,7 +19,9 @@ public interface HearingRecordingRepository extends PagingAndSortingRepository<H
     @Query("select s from HearingRecording s where s.deleted = false and s.createdBy = :#{#creator}")
     Page<HearingRecording> findByCreatedBy(@Param("creator") String creator, @NonNull Pageable pageable);
 
-    Optional<HearingRecording> findByRecordingReference(String recordingReference);
+    Optional<HearingRecording> findByRecordingRef(String recordingReference);
+
+    Optional<HearingRecording> findByCcdCaseId(Long caseId);
 
     Optional<HearingRecording> findByIdAndDeleted(UUID uuid, boolean deleted);
 
