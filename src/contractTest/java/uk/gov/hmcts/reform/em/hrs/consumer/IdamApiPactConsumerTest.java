@@ -1,10 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.consumer;
 
-import java.util.Map;
-import java.util.TreeMap;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.Pact;
 import au.com.dius.pact.consumer.dsl.DslPart;
@@ -31,12 +26,17 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.hrs.Application;
 
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @ActiveProfiles("contract")
 @SpringBootTest(classes = {Application.class})
 @ExtendWith(PactConsumerTestExt.class)
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class IdamAPIConsumerTest {
+public class IdamApiPactConsumerTest {
 
     private static final String IDAM_OPENID_TOKEN_URL = "/o/token";
     private static final String IDAM_DETAILS_URL = "/o/userinfo";
@@ -64,7 +64,9 @@ public class IdamAPIConsumerTest {
             .path(IDAM_OPENID_TOKEN_URL)
             .method(HttpMethod.POST.toString())
             .body(
-                "redirect_uri=http%3A%2F%2Fwww.dummy-pact-service.com%2Fcallback&client_id=pact&grant_type=password&username=emCaseOfficer%40email.net&password=Password123&client_secret=pactsecret&scope=openid profile roles",
+                "redirect_uri=http%3A%2F%2Fwww.dummy-pact-service.com%2Fcallback&client_id=pact"
+                    + "&grant_type=password&username=emCaseOfficer%40email.net&password=Password123&client_secret=pactsecret"
+                    + "&scope=openid profile roles",
                 "application/x-www-form-urlencoded")
             .willRespondWith()
             .status(HttpStatus.OK.value())
