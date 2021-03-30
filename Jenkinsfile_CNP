@@ -1,14 +1,14 @@
 #!groovy
-
+import uk.gov.hmcts.contino.AppPipelineDsl
 properties([
-    [
-        $class: 'GithubProjectProperty',
-        displayName: 'Hearing Recording Service',
-        projectUrlStr: 'https://github.com/hmcts/em-hrs-api'
-    ],
-    pipelineTriggers([
-        [$class: 'GitHubPushTrigger']
-    ])
+        [
+                $class       : 'GithubProjectProperty',
+                displayName  : 'Hearing Recording Service',
+                projectUrlStr: 'https://github.com/hmcts/em-hrs-api'
+        ],
+        pipelineTriggers([
+                [$class: 'GitHubPushTrigger']
+        ])
 ])
 
 @Library("Infrastructure")
@@ -28,11 +28,11 @@ def secrets = [
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
-    [ $class: 'AzureKeyVaultSecret',
-      secretType: 'Secret',
-      name: secretName,
-      version: '',
-      envVariable: envVar
+    [$class     : 'AzureKeyVaultSecret',
+     secretType : 'Secret',
+     name       : secretName,
+     version    : '',
+     envVariable: envVar
     ]
 }
 
@@ -42,13 +42,14 @@ env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'
 env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 env.CCD_DATA_API_URL = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
 env.IDAM_REDIRECT_URI = 'https://em-show-aat.service.core-compute-aat.internal/oauth2/callback'
+env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 def vaultOverrides = [
         'preview' : 'aat',
         'spreview': 'saat'
 ]
 
-withPipeline(type , product, component) {
+withPipeline(type, product, component) {
     enableDbMigration('em-hrs-api')
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
@@ -65,4 +66,8 @@ withPipeline(type , product, component) {
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
+
+    enablePactAs([
+            AppPipelineDsl.PactRoles.CONSUMER
+    ])
 }
