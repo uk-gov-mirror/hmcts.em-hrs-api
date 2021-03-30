@@ -39,6 +39,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 env.IDAM_API_BASE_URI = 'https://idam-api.aat.platform.hmcts.net'
 env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'
 env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
+env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 def vaultOverrides = [
         'preview' : 'aat',
