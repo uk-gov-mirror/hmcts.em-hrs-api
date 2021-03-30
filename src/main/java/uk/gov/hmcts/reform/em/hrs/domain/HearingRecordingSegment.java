@@ -20,7 +20,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Builder
@@ -54,39 +53,37 @@ public class HearingRecordingSegment {
     private LocalDateTime createdOn;
 
     private boolean deleted;
-    private boolean hardDeleted;
+
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hearingRecordingSegment")
     private Set<HearingRecordingSegmentAuditEntry> auditEntries;
 
     private String blobUuid; //32 char?
 
-    private String fileName;
+    private String filename;
     private String fileExtension;
     private String fileMd5Checksum; // char(32),
     private BigDecimal fileSizeMb; // numeric(2),
 
     private String ingestionFileSourceUri;
-    private String segmentIngestionStatus;
+
 
     private Integer recordingLengthMins;
     private Integer recordingSegment;
 
-    @NotNull
-    private Integer ccdAttachmentId; //TODO check if Integer big enough / if should be a string....
 
     public HearingRecordingSegment(HearingRecording hearingRecording, UUID id, String createdBy,
                                    String createdByService, String lastModifiedBy,
                                    String lastModifiedByService,
                                    LocalDateTime modifiedOn,
                                    LocalDateTime createdOn,
-                                   boolean deleted, boolean hardDeleted,
+                                   boolean deleted,
                                    Set<HearingRecordingSegmentAuditEntry> auditEntries,
-                                   String blobUuid, String fileName,
+                                   String blobUuid, String filename,
                                    String fileExtension, String fileMd5Checksum, BigDecimal fileSizeMb,
-                                   String ingestionFileSourceUri, String segmentIngestionStatus,
+                                   String ingestionFileSourceUri,
                                    Integer recordingLengthMins,
-                                   Integer recordingSegment, Integer ccdAttachmentId) {
+                                   Integer recordingSegment) {
         setHearingRecording(hearingRecording);
         setId(id);
         setCreatedBy(createdBy);
@@ -96,25 +93,25 @@ public class HearingRecordingSegment {
         setModifiedOn(modifiedOn);
         setCreatedOn(createdOn);
         setDeleted(deleted);
-        setHardDeleted(hardDeleted);
+
 
         setAuditEntries(auditEntries);
         //setRoles(roles);
 
         setBlobUuid(blobUuid);
-        setFileName(fileName);
+        setFilename(filename);
 
         setFileExtension(fileExtension);
         setFileMd5Checksum(fileMd5Checksum);
         setFileSizeMb(fileSizeMb);
 
         setIngestionFileSourceUri(ingestionFileSourceUri);
-        setSegmentIngestionStatus(segmentIngestionStatus);
+
 
         setRecordingLengthMins(recordingLengthMins);
         setRecordingSegment(recordingSegment);
 
-        setCcdAttachmentId(ccdAttachmentId);
+
     }
 
     public HearingRecordingSegment() {

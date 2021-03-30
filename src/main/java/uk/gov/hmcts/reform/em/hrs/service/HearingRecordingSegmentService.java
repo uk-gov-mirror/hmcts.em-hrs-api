@@ -14,4 +14,6 @@ public interface HearingRecordingSegmentService {
      * @return the entity.
      */
     List<HearingRecordingSegment> findByRecordingId(UUID id);
+
+    HearingRecordingSegment createAndSaveEntry(HearingRecordingSegment hearingRecordingSegment);
 }

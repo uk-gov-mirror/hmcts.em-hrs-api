@@ -57,11 +57,8 @@ public class HearingRecording {
     @CreatedDate
     private LocalDateTime createdOn;
 
-    //TODO should the deleted columns be
-    //A) represented by an enum, ie AVAILABLE,ARCHIVED,DELETED,HARD_DELETED
-    //b) named differently to segment, as the segments are the actual data and this is the parent record...
     private boolean deleted;
-    private boolean hardDeleted;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Folder folder;
@@ -83,7 +80,8 @@ public class HearingRecording {
     private LocalDateTime ttl;
     private String recordingReference;
     private String caseReference;
-    private String hearingLocationReference;
+    private String hearingLocationCode;
+    private String hearingRoomReference;
     private String hearingSource;
     private String jurisdictionCode;
     private String serviceCode;
@@ -96,12 +94,12 @@ public class HearingRecording {
     public HearingRecording(UUID id, String createdBy, String createdByService, String lastModifiedBy,
                             String lastModifiedByService,
                             LocalDateTime modifiedOn, LocalDateTime createdOn,
-                            boolean deleted, boolean hardDeleted, Folder folder,
+                            boolean deleted, Folder folder,
                             Set<HearingRecordingAuditEntry> auditEntries,
                             //Set<String> roles,
                             Map<String, String> metadata, LocalDateTime ttl,
-                            String recordingReference, String caseReference, String hearingLocationReference,
-                            String hearingSource,
+                            String recordingReference, String caseReference, String hearingLocationCode,
+                            String hearingRoomReference, String hearingSource,
                             String jurisdictionCode, String serviceCode, Long ccdCaseId,
                             Set<HearingRecordingSegment> segments) {
         setId(id);
@@ -112,7 +110,6 @@ public class HearingRecording {
         setModifiedOn(modifiedOn);
         setCreatedOn(createdOn);
         setDeleted(deleted);
-        setHardDeleted(hardDeleted);
         setFolder(folder);
 
         setAuditEntries(auditEntries);
@@ -122,7 +119,8 @@ public class HearingRecording {
 
         setRecordingReference(recordingReference);
         setCaseReference(caseReference);
-        setHearingLocationReference(hearingLocationReference);
+        setHearingLocationCode(hearingLocationCode);
+        setHearingRoomReference(hearingRoomReference);
         setHearingSource(hearingSource);
         setJurisdictionCode(jurisdictionCode);
 

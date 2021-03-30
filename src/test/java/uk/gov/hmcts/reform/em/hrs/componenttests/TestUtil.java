@@ -25,15 +25,15 @@ public class TestUtil {
 
     private static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
-        .fileName(FILE_1)
+        .filename(FILE_1)
         .build();
     private static final HearingRecordingSegment SEGMENT_2 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
-        .fileName(FILE_2)
+        .filename(FILE_2)
         .build();
     private static final HearingRecordingSegment SEGMENT_3 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
-        .fileName(FILE_3)
+        .filename(FILE_3)
         .build();
 
     public static final String BLOB_DATA = "data";
