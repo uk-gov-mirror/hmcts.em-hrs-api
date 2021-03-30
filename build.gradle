@@ -32,19 +32,17 @@ mainClassName = 'uk.gov.hmcts.reform.em.hrs.Application'
  **********************************************************************************************************************/
 
 sourceSets {
-    //functionalTest typically run on AAT environment only. Includes tests to real external endpoints.
-    //if running locally, need the relevant docker containers to test against
-    //if need to run any locally, then the specific test(s) should be specified
-    functionalTest {
-        //will pick up any tests with @WithTags({@WithTag("testType:Functional")})
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir file('src/functionalTest/java')
-        }
-        resources.srcDir file('src/functionalTest/resources')
+  //functionalTests typically run on AAT environment only. Includes tests to real external endpoints.
+  //if running locally, need the relevant docker containers to test against
+  //if need to run any locally, then the specific test(s) should be specified
+  functionalTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/aat/java')
     }
-
+    resources.srcDir file('src/aat/resources')
+  }
 
     //integrationTest typically tests with mocked external endpoints (so can run locally without dependencies)
     integrationTest {
@@ -56,7 +54,7 @@ sourceSets {
         resources.srcDir file('src/integrationTest/resources')
     }
 
-    //integrationTest typically tests with mocked external endpoints (so can run locally without dependencies)
+    //contractTest typically tests with PACT broker
     contractTest {
         java {
             compileClasspath += main.output
@@ -65,8 +63,9 @@ sourceSets {
         }
         resources.srcDir file('src/contractTest/resources')
     }
+    
     //smokeTest should include helloworld & healthcheck. Ideally will also include downstream healthchecks
-    //should work locally, in AAT and production
+    //should work locally with docker dependencies, in AAT and production
     smokeTest {
         java {
             compileClasspath += main.output
@@ -105,7 +104,9 @@ task functional(type: Test) {
     testClassesDirs = sourceSets.functionalTest.output.classesDirs
     classpath = sourceSets.functionalTest.runtimeClasspath
 
-    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+  include "uk/gov/hmcts/reform/em/hrs/**"
 }
 
 task contract(type: Test) {
@@ -176,15 +177,15 @@ jacocoTestReport {
 }
 
 def coverageExclusionList = [
-        '**uk/gov/hmcts/reform/em/hrs/Application*',
-        '**uk/gov/hmcts/reform/em/hrs/config/**',
-        '**uk/gov/hmcts/reform/em/hrs/dto/**',
-        '**uk/gov/hmcts/reform/em/hrs/domain/**',
-        '**uk/gov/hmcts/reform/em/hrs/exception/**',
-        '**uk/gov/hmcts/reform/em/hrs/controller/**',
-        '**uk/gov/hmcts/reform/em/hrs/repository/**',
-        '**uk/gov/hmcts/reform/em/hrs/service/**',
-        '**uk/gov/hmcts/reform/em/hrs/storage/**',
+  '**uk/gov/hmcts/reform/em/hrs/Application*',
+  '**uk/gov/hmcts/reform/em/hrs/config/**',
+  '**uk/gov/hmcts/reform/em/hrs/dto/**',
+  '**uk/gov/hmcts/reform/em/hrs/domain/**',
+  '**uk/gov/hmcts/reform/em/hrs/controller/**',
+  '**uk/gov/hmcts/reform/em/hrs/exception/**',
+  '**uk/gov/hmcts/reform/em/hrs/repository/**',
+  '**uk/gov/hmcts/reform/em/hrs/service/**',
+  '**uk/gov/hmcts/reform/em/hrs/util/DefaultSnooper**',
 ]
 
 jacocoTestReport {
@@ -270,17 +271,18 @@ dependencyManagement {
       entry 'netty-handler-proxy'
     }
 
-        //CVE-2021-22112
-        dependencySet(group: 'org.springframework.security', version: '5.3.8.RELEASE') {
-            entry 'spring-security-config'
-            entry 'spring-security-core'
-            entry 'spring-security-crypto'
-            entry 'spring-security-oauth2-client'
-            entry 'spring-security-oauth2-core'
-            entry 'spring-security-oauth2-jose'
-            entry 'spring-security-oauth2-resource-server'
-            entry 'spring-security-web'
-        }
+    //CVE-2021-22112
+    dependencySet(group: 'org.springframework.security', version: '5.3.8.RELEASE') {
+      entry 'spring-security-config'
+      entry 'spring-security-core'
+      entry 'spring-security-crypto'
+      entry 'spring-security-oauth2-client'
+      entry 'spring-security-oauth2-core'
+      entry 'spring-security-oauth2-jose'
+      entry 'spring-security-oauth2-resource-server'
+      entry 'spring-security-web'
+    }
+
 
     }
 }
@@ -360,11 +362,15 @@ dependencies {
     //injects secret properties into container from azure vault TODO deprecated in favour of spring config tree
 
 //hmcts autho
+  implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.5.5'
+  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
+  implementation (group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4') {
+    exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
+  }
 
-    implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
-    implementation(group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4') {
-        exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
-    }
+
+//hmcts ccd
+  implementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.5'
 
 //hmcts logging
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
@@ -418,6 +424,15 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
+
+  functionalTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
+    exclude group: 'junit', module: 'junit'
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    exclude group: 'com.vaadin.external.google', module: 'android-json'
+  }
+
+  functionalTestImplementation 'uk.gov.hmcts.reform:em-test-helper:1.18.1', withoutStuff
+  functionalTestImplementation 'net.serenity-bdd:serenity-rest-assured:2.3.4', withoutStuff
 
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
   testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
@@ -478,8 +493,7 @@ dependencies {
  **********************************************************************************************************************/
 
 test {
-    failFast = true
-
+  failFast = true
 }
 
 bootJar {

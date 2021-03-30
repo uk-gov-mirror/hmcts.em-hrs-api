@@ -11,7 +11,6 @@ management:
 spring:
   application:
     name: Hearing Recordings Service
-
   jpa:
     database: postgresql
     show-sql: ${SHOW_SQL:true}
@@ -27,19 +26,15 @@ spring:
           batch_versioned_data: true
   main:
     allow-bean-definition-overriding: true
-
   liquibase:
     enabled: ${ENABLE_DB_MIGRATE:false}
     change-log: classpath:/db/db.changelog-master.xml
-
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5444/emhrs}
     username: ${SPRING_DATASOURCE_USERNAME:emhrs}
     password: ${SPRING_DATASOURCE_PASSWORD:emhrs}
-
   jackson:
     property-naming-strategy: KEBAB_CASE
-
   security:
     oauth2:
       client:
@@ -51,31 +46,33 @@ spring:
             client-id: microservicekey-em-hrs-api
             client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
 
-auth:
-  idam:
-    client:
-      baseUrl: ${IDAM_API_BASE_URI:http://localhost:5000}
-  provider:
-    service:
-      client:
-        baseUrl: ${S2S_BASE_URI:http://localhost:4502}
-
 # service-auth-provider-client lib
 idam:
+  client:
+    id: ${OAUTH_CLIENT_ID:webshow} #TODO: ask idam team to create hrs client for us (add to vault once created)
+    secret: ${IDAM_CLIENT_OAUTH_SECRET:AAAAAAAAAAAAAAAA}
+    redirect_uri: ${IDAM_REDIRECT_URI:http://localhost:8080/oauth2redirect}
+    grant_type: password
+    scope: openid roles profile
+  api:
+    url: ${IDAM_API_BASE_URI:http://localhost:5000}
+  system-user:
+    username: ${HRS_SYSTEM_USER:hrs.test.user@hmcts.net} #TODO: need to create hrs systemUser for each environment
+    password: ${HRS_SYSTEM_USER_PASSWORD:4590fgvhbfgbDdffm3lk4j} #password only used locally with docker containers
   s2s-auth:
     url: ${S2S_BASE_URI:http://localhost:4502}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: ${S2S_SERVICE_NAME:em_hrs_api}
+  provider:
+    service:
+      client:
+        baseUrl: ${S2S_BASE_URI:http://localhost:4502}
   s2s-authorised:
-    services: ${S2S_NAMES_WHITELIST:jui_webapp,em_ccd_orchestrator,em_gw}
+    services: ${S2S_NAMES_WHITELIST:ccd_gw,em_gw}
+
+core_case_data:
   api:
-    url: ${IDAM_API_BASE_URI:http://localhost:5000}
-    client:
-      id: microservicekey-em-hrs-api
-      secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
-      redirect_uri: ${IDAM_WEBSHOW_WHITELIST:http://localhost:8080/oauth2redirect}
-      grant_type: 'password'
-      scope: 'openid roles profile'
+    url: ${CCD_DATA_API_URL:http://localhost:4452}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}

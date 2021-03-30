@@ -10,6 +10,7 @@ import javax.inject.Named;
 
 @Named
 public class HearingRecordingServiceImpl implements HearingRecordingService {
+
     private final HearingRecordingRepository hearingRecordingRepository;
 
     @Inject
@@ -29,5 +30,13 @@ public class HearingRecordingServiceImpl implements HearingRecordingService {
         return hearingRecording;
     }
 
+    @Override
+    public final Optional<HearingRecording> findByRecordingRef(final String recordingRef) {
+        return hearingRecordingRepository.findByRecordingRef(recordingRef);
+    }
 
+    @Override
+    public final Optional<HearingRecording> findByCaseId(final Long caseId) {
+        return hearingRecordingRepository.findByCcdCaseId(caseId);
+    }
 }

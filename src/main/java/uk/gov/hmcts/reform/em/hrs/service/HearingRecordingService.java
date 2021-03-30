@@ -15,6 +15,9 @@ public interface HearingRecordingService {
      */
     Optional<HearingRecording> findOne(UUID id);
 
+    Optional<HearingRecording> findByRecordingRef(final String recordingReference);
+
+    Optional<HearingRecording> findByCaseId(final Long caseId);
 
     HearingRecording createAndSaveEntry(HearingRecording hearingRecording);
 }
