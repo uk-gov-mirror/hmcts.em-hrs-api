@@ -9,10 +9,18 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
-import uk.gov.hmcts.reform.em.hrs.service.*;
+import uk.gov.hmcts.reform.em.hrs.service.FolderService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareeService;
+import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -41,7 +49,7 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     private HearingRecordingSegmentService hearingRecordingSegmentService;
 
     @MockBean
-    private HearingRecordingShareesService hearingRecordingShareesService;
+    private HearingRecordingShareeService hearingRecordingShareeService;
 
     @MockBean
     private ShareService shareService;
@@ -114,7 +122,7 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
 
         verify(hearingRecordingService, times(1))
             .findByCaseId(CASE_ID);
-        verify(hearingRecordingShareesService, times(1))
+        verify(hearingRecordingShareeService, times(1))
             .createAndSaveEntry("test@tester.com", HEARING_RECORDING);
     }
 

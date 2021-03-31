@@ -9,11 +9,11 @@ import javax.inject.Named;
 @Named
 public class ShareServiceImpl implements ShareService {
     private final HearingRecordingService hearingRecordingService;
-    private final HearingRecordingShareesService hearingRecordingShareeService;
+    private final HearingRecordingShareeService hearingRecordingShareeService;
     private final NotificationService notificationService;
 
     public ShareServiceImpl(HearingRecordingService hearingRecordingService,
-                            HearingRecordingShareesService hearingRecordingShareeService,
+                            HearingRecordingShareeService hearingRecordingShareeService,
                             NotificationService notificationService) {
         this.hearingRecordingService = hearingRecordingService;
         this.hearingRecordingShareeService = hearingRecordingShareeService;

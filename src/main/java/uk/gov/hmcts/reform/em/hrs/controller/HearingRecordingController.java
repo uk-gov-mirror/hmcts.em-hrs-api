@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareesService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareeService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
 
@@ -36,7 +36,7 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 public class HearingRecordingController {
 
     private final FolderService folderService;
-    private final HearingRecordingShareesService shareesService;
+    private final HearingRecordingShareeService shareeService;
     private final HearingRecordingService recordingService;
     private final HearingRecordingSegmentService segmentService;
     private final ShareService shareService;
@@ -45,13 +45,13 @@ public class HearingRecordingController {
     @Inject
     public HearingRecordingController(final FolderService folderService,
                                       final CaseUpdateService caseUpdateService,
-                                      final HearingRecordingShareesService shareesService,
+                                      final HearingRecordingShareeService shareeService,
                                       final HearingRecordingService recordingService,
                                       final HearingRecordingSegmentService segmentService,
                                       final ShareService shareService) {
         this.folderService = folderService;
         this.caseUpdateService = caseUpdateService;
-        this.shareesService = shareesService;
+        this.shareeService = shareeService;
         this.recordingService = recordingService;
         this.segmentService = segmentService;
         this.shareService = shareService;
@@ -121,7 +121,7 @@ public class HearingRecordingController {
         String emailAddress = request.getData().get("recipientEmailAddress").toString();
 
         if (hearingRecording.isPresent()) {
-            shareesService.createAndSaveEntry(emailAddress, hearingRecording.get());
+            shareeService.createAndSaveEntry(emailAddress, hearingRecording.get());
             Set<HearingRecordingSegment> segments = hearingRecording.get().getSegments();
             // TODO - Trigger the ShareService with the info
             // Return ResponseEntity.ok(shareService.executeNotify(hearingRecordingSegments, request));

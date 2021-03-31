@@ -32,7 +32,7 @@ public class HearingRecordingServiceImpl implements HearingRecordingService {
 
         final Set<String> downloadLinks = hearingRecording
             .map(x -> buildDownloadLinks(x.getSegments()))
-            .orElseThrow(() -> new HearingRecordingNotFoundException(UUID.randomUUID()));
+            .orElseThrow(() -> new HearingRecordingNotFoundException(ccdCaseId));
 
         return new Tuple2<>(hearingRecording.get(), downloadLinks);
     }

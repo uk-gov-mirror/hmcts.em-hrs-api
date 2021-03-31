@@ -47,9 +47,9 @@ public class TestUtil {
     );
 
     public static final Set<String> SEGMENTS_DOWNLOAD_LINKS = Set.of(
-        String.format("%s/%s", EMAIL_DOMAIN, SEGMENT_1.getFileName()),
-        String.format("%s/%s", EMAIL_DOMAIN, SEGMENT_2.getFileName()),
-        String.format("%s/%s", EMAIL_DOMAIN, SEGMENT_3.getFileName())
+        String.format("%s/%s", EMAIL_DOMAIN, SEGMENT_1.getFilename()),
+        String.format("%s/%s", EMAIL_DOMAIN, SEGMENT_2.getFilename()),
+        String.format("%s/%s", EMAIL_DOMAIN, SEGMENT_3.getFilename())
     );
 
     public static final Folder EMPTY_FOLDER = Folder.builder()
