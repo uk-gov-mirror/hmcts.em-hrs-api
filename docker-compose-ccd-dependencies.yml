@@ -6,7 +6,6 @@ services:
     image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
     environment:
       - jwtKey=wThK0f0/lh3FlxFcL4xUWDMI5C1J9KyQBgXV4wseh1e5J1uYJIjvTvArHxQDrYoHJ23xFxjHkOnvNbR5dXRoxA==
-#      - Add key for any microservice that will be used: orchestrator, stitching api, doc store
       - microserviceKeys_em_gw=AAAAAAAAAAAAAAAA
       - microserviceKeys_em_hrs_api=AAAAAAAAAAAAAAAA
       - microserviceKeys_ccd_data=AAAAAAAAAAAAAAAA
@@ -14,17 +13,6 @@ services:
       - microserviceKeys_ccd_definition=AAAAAAAAAAAAAAAA
       - microserviceKeys_ccd_admin=AAAAAAAAAAAAAAAA
       - microserviceKeys_fpl_case_service=AAAAAAAAAAAAAAAA
-      #      logging env vars
-      - JSON_CONSOLE_PRETTY_PRINT=false
-      - REFORM_SERVICE_TYPE=java
-      - REFORM_SERVICE_NAME=service-auth-provider-api
-      - REFORM_TEAM=rpe
-      - REFORM_ENVIRONMENT=docker
-#      healthcheck env vars
-      - PACKAGES_ENVIRONMENT=docker
-      - PACKAGES_PROJECT=rpe
-      - PACKAGES_NAME=service-auth-provider-api
-      - PACKAGES_VERSION=unkown
       - TESTING_SUPPORT_ENABLED=true
       - JAVA_TOOL_OPTIONS=-Xms128m -Xmx512m -XX:MaxPermSize=512m
     ports:
@@ -218,7 +206,7 @@ services:
       - POSTGRES_USER=emhrs
       - POSTGRES_PASSWORD=emhrs
     ports:
-      - 5432:5432
+      - 5444:5432
 
   shared-database:
     image: postgres
@@ -234,6 +222,6 @@ services:
   shared-db:
     image: hmctsprivate.azurecr.io/idam/shared-db:latest
     ports:
-      - 5435:5432
+      - 5432:5432
 volumes:
   em-hrs-docker-azure-blob-data:

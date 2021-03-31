@@ -6,9 +6,9 @@
 ## Make call to IDAM to get auth token
 
 IDAM_URI=$1
-SYSTEM_USERNAME=$2
-SYSTEM_PASSWORD=$3
-USER_ROLES="[{ \"code\":\"caseworker\"}, {\"code\":\"caseworker-hrs\" }]"
-USER_DETAILS="{ \"email\": ${SYSTEM_PASSWORD}, \"forename\": \"system\", \"surname\": \"user\", \"password\": ${SYSTEM_PASSWORD}, \"roles\": ${USER_ROLES}"
+USERNAME=$2
+PASSWORD=$3
+ROLES=$4
+USER_DETAILS="{ \"email\": ${USERNAME}, \"forename\": \"system\", \"surname\": \"user\", \"password\": ${PASSWORD}, \"roles\": ${ROLES}"
 
 curl -X POST "${IDAM_URI}/testing-support/accounts" -H "accept: */*" -H "Content-Type: application/json" -d "${USER_DETAILS}"
