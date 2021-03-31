@@ -14,7 +14,7 @@ IDAM_URI="http://localhost:5000"
 IDAM_USERNAME="idamOwner@hmcts.net"
 IDAM_PASSWORD="Ref0rmIsFun"
 SYSTEM_USERNAME="em.hrs.api@hmcts.net.internal"
-SYSTEM_PASSWORD="passw0rd0!"
+SYSTEM_PASSWORD="Passw0rd0!"
 export DOCMOSIS_ACCESS_KEY=$1
 
 
