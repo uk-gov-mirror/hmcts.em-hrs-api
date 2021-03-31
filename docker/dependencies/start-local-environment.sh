@@ -13,8 +13,9 @@ COMPOSE_FILE="-f docker-compose-ccd-dependencies.yml"
 IDAM_URI="http://localhost:5000"
 IDAM_USERNAME="idamOwner@hmcts.net"
 IDAM_PASSWORD="Ref0rmIsFun"
-SYSTEM_USERNAME="em.hrs.api@hmcts.net.internal"
-SYSTEM_PASSWORD="Passw0rd0!"
+SYSTEM_USER_NAME="em.hrs.api@hmcts.net.internal"
+SYSTEM_USER_PASSWORD="Passw0rd0!"
+SYSTEM_USER_ROLES='[{ "code":"caseworker"}, {"code":"caseworker-hrs" }]'
 export DOCMOSIS_ACCESS_KEY=$1
 
 
@@ -44,7 +45,7 @@ echo "Setting up IDAM client..."
 (./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker)
 (./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker-hrs)
 (./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} ccd-import)
-(./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} ${SYSTEM_USERNAME} ${SYSTEM_PASSWORD})
+(./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} ${SYSTEM_USER_NAME} ${SYSTEM_USER_PASSWORD} "${SYSTEM_USER_ROLES}")
 
 # Start all other images
 echo "Starting dependencies..."
