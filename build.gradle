@@ -32,17 +32,17 @@ mainClassName = 'uk.gov.hmcts.reform.em.hrs.Application'
  **********************************************************************************************************************/
 
 sourceSets {
-  //functionalTests typically run on AAT environment only. Includes tests to real external endpoints.
-  //if running locally, need the relevant docker containers to test against
-  //if need to run any locally, then the specific test(s) should be specified
-  functionalTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/aat/java')
+    //functionalTests typically run on AAT environment only. Includes tests to real external endpoints.
+    //if running locally, need the relevant docker containers to test against
+    //if need to run any locally, then the specific test(s) should be specified
+    functionalTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/aat/java')
+        }
+        resources.srcDir file('src/aat/resources')
     }
-    resources.srcDir file('src/aat/resources')
-  }
 
     //integrationTest typically tests with mocked external endpoints (so can run locally without dependencies)
     integrationTest {
@@ -103,10 +103,8 @@ task functional(type: Test) {
     group = "Verification"
     testClassesDirs = sourceSets.functionalTest.output.classesDirs
     classpath = sourceSets.functionalTest.runtimeClasspath
-
-
-  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-  include "uk/gov/hmcts/reform/em/hrs/**"
+    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+    include "uk/gov/hmcts/reform/em/hrs/**"
 }
 
 task contract(type: Test) {
@@ -168,12 +166,12 @@ pmd {
 }
 
 jacocoTestReport {
-  executionData(test, integration)
-  reports {
-    xml.enabled = true
-    csv.enabled = false
-    xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
-  }
+    executionData(test, integration)
+    reports {
+        xml.enabled = true
+        csv.enabled = false
+        xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    }
 }
 
 def coverageExclusionList = [
@@ -238,50 +236,50 @@ dependencyCheck {
 }
 
 dependencyManagement {
-  dependencies {
-    dependencySet(group: 'com.google.guava', version: '30.1.1-jre') {
-      // Guava CVE-2018-10237 - Unbounded memory allocation
-      entry 'guava'
-    }
+    dependencies {
+        dependencySet(group: 'com.google.guava', version: '30.1.1-jre') {
+            // Guava CVE-2018-10237 - Unbounded memory allocation
+            entry 'guava'
+        }
 
-    //CVE-2020-15824, CVE-2020-29582
-    dependencySet(group: 'org.jetbrains.kotlin', version: '1.5.0-M1') {
-      entry 'kotlin'
-      entry 'kotlin-stdlib'
-      entry 'kotlin-reflect'
-      entry 'kotlin-stdlib-common'
-      entry 'kotlin-stdlib-jdk7'
-      entry 'kotlin-stdlib-jdk8'
-    }
+        //CVE-2020-15824, CVE-2020-29582
+        dependencySet(group: 'org.jetbrains.kotlin', version: '1.5.0-M1') {
+            entry 'kotlin'
+            entry 'kotlin-stdlib'
+            entry 'kotlin-reflect'
+            entry 'kotlin-stdlib-common'
+            entry 'kotlin-stdlib-jdk7'
+            entry 'kotlin-stdlib-jdk8'
+        }
 
-    //CVE-2021-21295
-    dependencySet(group: 'io.netty', version: '4.1.60.Final') {
-      entry 'netty-buffer'
-      entry 'netty-codec'
-      entry 'netty-common'
-      entry 'netty-handler'
-      entry 'netty-resolver'
-      entry 'netty-transport'
-      entry 'netty-codec-http'
-      entry 'netty-codec-http2'
-      entry 'netty-transport-native-epoll'
-      entry 'netty-transport-native-kqueue'
-      entry 'netty-transport-native-unix-common'
-      entry 'netty-codec-socks'
-      entry 'netty-handler-proxy'
-    }
+        //CVE-2021-21295
+        dependencySet(group: 'io.netty', version: '4.1.60.Final') {
+            entry 'netty-buffer'
+            entry 'netty-codec'
+            entry 'netty-common'
+            entry 'netty-handler'
+            entry 'netty-resolver'
+            entry 'netty-transport'
+            entry 'netty-codec-http'
+            entry 'netty-codec-http2'
+            entry 'netty-transport-native-epoll'
+            entry 'netty-transport-native-kqueue'
+            entry 'netty-transport-native-unix-common'
+            entry 'netty-codec-socks'
+            entry 'netty-handler-proxy'
+        }
 
-    //CVE-2021-22112
-    dependencySet(group: 'org.springframework.security', version: '5.3.8.RELEASE') {
-      entry 'spring-security-config'
-      entry 'spring-security-core'
-      entry 'spring-security-crypto'
-      entry 'spring-security-oauth2-client'
-      entry 'spring-security-oauth2-core'
-      entry 'spring-security-oauth2-jose'
-      entry 'spring-security-oauth2-resource-server'
-      entry 'spring-security-web'
-    }
+        //CVE-2021-22112
+        dependencySet(group: 'org.springframework.security', version: '5.3.8.RELEASE') {
+            entry 'spring-security-config'
+            entry 'spring-security-core'
+            entry 'spring-security-crypto'
+            entry 'spring-security-oauth2-client'
+            entry 'spring-security-oauth2-core'
+            entry 'spring-security-oauth2-jose'
+            entry 'spring-security-oauth2-resource-server'
+            entry 'spring-security-web'
+        }
 
 
     }
@@ -362,21 +360,21 @@ dependencies {
     //injects secret properties into container from azure vault TODO deprecated in favour of spring config tree
 
 //hmcts autho
-  implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.5.5'
-  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
-  implementation (group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4') {
-    exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
-  }
+    implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.5.5'
+    implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
+    implementation(group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4') {
+        exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
+    }
 
 
 //hmcts ccd
-  implementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.5'
+    implementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.5'
 
 //hmcts logging
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
-  implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
-  implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
+    implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
+    implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
 //hmcts resilience
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
@@ -392,23 +390,23 @@ dependencies {
     implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
 
 //azure components
-  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.10.2'
+    implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.10.2'
 
 /***********************************************************************************************************************
  * DATABASE DEPENDENCIES AND SOURCE SETS
  **********************************************************************************************************************/
 
-  implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-  implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.30.Final'
-  implementation "org.liquibase:liquibase-core"
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-  implementation "org.springframework.boot:spring-boot-starter-jdbc"
+    implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.30.Final'
+    implementation "org.liquibase:liquibase-core"
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+    implementation "org.springframework.boot:spring-boot-starter-jdbc"
 
-  liquibaseRuntime "com.h2database:h2"
-  liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.3.2"
-  liquibaseRuntime "org.liquibase:liquibase-core:4.3.2"
-  liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.0"
-  liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
+    liquibaseRuntime "com.h2database:h2"
+    liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.3.2"
+    liquibaseRuntime "org.liquibase:liquibase-core:4.3.2"
+    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.0"
+    liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
 
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
@@ -425,23 +423,23 @@ dependencies {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
 
-  functionalTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
-    exclude group: 'junit', module: 'junit'
-    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    exclude group: 'com.vaadin.external.google', module: 'android-json'
-  }
+    functionalTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
+        exclude group: 'junit', module: 'junit'
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
 
-  functionalTestImplementation 'uk.gov.hmcts.reform:em-test-helper:1.18.1', withoutStuff
-  functionalTestImplementation 'net.serenity-bdd:serenity-rest-assured:2.3.4', withoutStuff
+    functionalTestImplementation 'uk.gov.hmcts.reform:em-test-helper:1.18.1', withoutStuff
+    functionalTestImplementation 'net.serenity-bdd:serenity-rest-assured:2.3.4', withoutStuff
 
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
-  testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
-  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.15.2'
-  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.2'
-  testImplementation group: 'com.devskiller', name: 'jfairy', version: '0.6.4', {
-    exclude group: 'com.google.guava', module: 'guava'
-  }
-  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
+    testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
+    testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.15.2'
+    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.2'
+    testImplementation group: 'com.devskiller', name: 'jfairy', version: '0.6.4', {
+        exclude group: 'com.google.guava', module: 'guava'
+    }
+    testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 
     smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
     smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
@@ -493,7 +491,7 @@ dependencies {
  **********************************************************************************************************************/
 
 test {
-  failFast = true
+    failFast = true
 }
 
 bootJar {
