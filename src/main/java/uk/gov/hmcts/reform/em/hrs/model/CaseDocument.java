@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.em.hrs.service.ccd.model;
+package uk.gov.hmcts.reform.em.hrs.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
