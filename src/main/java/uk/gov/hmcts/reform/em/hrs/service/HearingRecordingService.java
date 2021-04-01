@@ -5,7 +5,6 @@ import uk.gov.hmcts.reform.em.hrs.util.Tuple2;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 public interface HearingRecordingService {
 

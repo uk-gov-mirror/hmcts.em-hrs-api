@@ -7,7 +7,7 @@ public final class EmailValidator {
     private EmailValidator() {
     }
 
-    public static boolean isValid(String emailAddress) {
+    public static boolean isValid(final String emailAddress) {
         return Pattern.matches("^\\S+@\\S+\\.\\S+$", emailAddress);
     }
 }

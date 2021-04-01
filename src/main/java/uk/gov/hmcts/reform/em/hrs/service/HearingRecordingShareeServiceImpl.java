@@ -19,12 +19,12 @@ public class HearingRecordingShareeServiceImpl implements HearingRecordingSharee
         this.shareesRepository = shareesRepository;
     }
 
-    public void createAndSaveEntry(final String emailAddress,
+    public HearingRecordingSharee createAndSaveEntry(final String emailAddress,
                                                      final HearingRecording hearingRecording) {
         final HearingRecordingSharee hearingRecordingSharee = HearingRecordingSharee.builder()
             .hearingRecording(hearingRecording)
             .shareeEmail(emailAddress).build();
-        shareesRepository.save(hearingRecordingSharee);
+        return shareesRepository.save(hearingRecordingSharee);
     }
 
 }
