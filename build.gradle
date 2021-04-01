@@ -449,6 +449,8 @@ dependencies {
     smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
     smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
     smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+    //TODO - This helper is only required by the Smoke Test it should be a Compile Implmentation only.
+    compile "uk.gov.hmcts.reform:em-test-helper:1.18.1"
 
 /***********************************************************************************************************************
  * TEST SOURCE SETS
