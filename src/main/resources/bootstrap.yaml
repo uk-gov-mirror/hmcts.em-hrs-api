@@ -8,7 +8,7 @@ spring:
 #        microservicekey-em-hrs-api: S2S_KEY
 #        AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
         hrs-api-POSTGRES-PASS: SPRING_DATASOURCE_PASSWORD
-        storage-account-primary-connection-string: azure.storage.hrs.connection-string
+        storage-account-primary-connection-string: STORAGEACCOUNT_PRIMARY_CONNECTION_STRING
 #        notification-api-key: NOTIFICATION_API_KEY
         idam-system-user-name: HRS_SYSTEM_USER
         idam-system-user-password: HRS_SYSTEM_USER_PASSWORD
