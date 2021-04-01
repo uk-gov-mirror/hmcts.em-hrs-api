@@ -9,34 +9,33 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
-import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
+import uk.gov.hmcts.reform.em.hrs.exception.ValidationErrorException;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareesService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
+import uk.gov.hmcts.reform.em.hrs.util.EmailValidator;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Optional;
-import java.util.Set;
 import javax.inject.Inject;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
-
 @RestController
 public class HearingRecordingController {
 
     private final FolderService folderService;
-    private final HearingRecordingShareesService shareesService;
     private final HearingRecordingService recordingService;
     private final HearingRecordingSegmentService segmentService;
     private final ShareService shareService;
@@ -45,13 +44,11 @@ public class HearingRecordingController {
     @Inject
     public HearingRecordingController(final FolderService folderService,
                                       final CaseUpdateService caseUpdateService,
-                                      final HearingRecordingShareesService shareesService,
                                       final HearingRecordingService recordingService,
                                       final HearingRecordingSegmentService segmentService,
                                       final ShareService shareService) {
         this.folderService = folderService;
         this.caseUpdateService = caseUpdateService;
-        this.shareesService = shareesService;
         this.recordingService = recordingService;
         this.segmentService = segmentService;
         this.shareService = shareService;
@@ -88,7 +85,7 @@ public class HearingRecordingController {
         @ApiResponse(code = 202, message = "Request accepted for asynchronous processing")
     })
     public ResponseEntity<HearingRecordingDto> createHearingRecording(
-            @RequestBody HearingRecordingDto hearingRecordingDto) {
+        @RequestBody HearingRecordingDto hearingRecordingDto) {
 
         Optional<HearingRecording> hearingRecording =
             recordingService.findByRecordingRef(hearingRecordingDto.getRecordingRef());
@@ -112,23 +109,24 @@ public class HearingRecordingController {
             + "access to (the download link)"),
         @ApiResponse(code = 404, message = "Not Found")
     })
-    public ResponseEntity<HearingRecordingDto> shareHearingRecording(@RequestBody CaseDetails request) {
+    public ResponseEntity<Void> shareHearingRecording(
+        @RequestHeader("authorization") final String authorisationToken,
+        @RequestBody final CaseDetails caseDetails) throws NotificationClientException {
 
-        //TODO - @RequestBody should be HttpServletRequest but will need to configure unit test
+        final String shareeEmailAddress = (String) caseDetails.getData().get("recipientEmailAddress");
 
-        Optional<HearingRecording> hearingRecording = recordingService.findByCaseId(request.getId());
-
-        String emailAddress = request.getData().get("recipientEmailAddress").toString();
-
-        if (hearingRecording.isPresent()) {
-            shareesService.createAndSaveEntry(emailAddress, hearingRecording.get());
-            Set<HearingRecordingSegment> segments = hearingRecording.get().getSegments();
-            // TODO - Trigger the ShareService with the info
-            // Return ResponseEntity.ok(shareService.executeNotify(hearingRecordingSegments, request));
+        if (!EmailValidator.isValid(shareeEmailAddress)) {
+            // TODO: handle errors.  Also, NotificationClientException in method signature
+            throw new ValidationErrorException("");
         }
 
-        return ResponseEntity.ok().build();
+        shareService.executeNotify(
+            caseDetails.getId(),
+            shareeEmailAddress,
+            authorisationToken
+        );
 
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(
@@ -137,8 +135,8 @@ public class HearingRecordingController {
     )
     @ResponseBody
     @ApiOperation(value = "Get hearing recording file",
-                  notes = "Return hearing recording file from the specified folder")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Return the requested hearing recording")})
+        notes = "Return hearing recording file from the specified folder")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording")})
     public ResponseEntity getHearingRecording(@PathVariable("recordingRef") String recordingRef,
                                               @PathVariable("segment") String segment) {
         return new ResponseEntity<>(HttpStatus.OK);

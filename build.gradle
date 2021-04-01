@@ -63,7 +63,7 @@ sourceSets {
         }
         resources.srcDir file('src/contractTest/resources')
     }
-    
+
     //smokeTest should include helloworld & healthcheck. Ideally will also include downstream healthchecks
     //should work locally with docker dependencies, in AAT and production
     smokeTest {
@@ -180,10 +180,10 @@ def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/Application*',
   '**uk/gov/hmcts/reform/em/hrs/config/**',
   '**uk/gov/hmcts/reform/em/hrs/dto/**',
+  '**uk/gov/hmcts/reform/em/hrs/model/**',
   '**uk/gov/hmcts/reform/em/hrs/domain/**',
   '**uk/gov/hmcts/reform/em/hrs/controller/**',
   '**uk/gov/hmcts/reform/em/hrs/exception/**',
-  '**uk/gov/hmcts/reform/em/hrs/repository/**',
   '**uk/gov/hmcts/reform/em/hrs/service/**',
   '**uk/gov/hmcts/reform/em/hrs/util/DefaultSnooper**',
 ]

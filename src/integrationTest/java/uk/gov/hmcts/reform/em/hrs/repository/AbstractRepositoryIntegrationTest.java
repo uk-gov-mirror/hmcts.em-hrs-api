@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -17,6 +18,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @ActiveProfiles("test")
 @DataJpaTest
+@EnableJpaAuditing
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(initializers = AbstractRepositoryIntegrationTest.DockerPostgreDataSourceInitializer.class)
 //@TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=validate"})

@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.em.hrs.Application;
 import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestAzureStorageConfig;
 import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.hrs.config.security.JwtGrantedAuthoritiesConverter;
@@ -20,8 +19,7 @@ import javax.inject.Inject;
 
 @SpringBootTest(classes = {
     TestSecurityConfiguration.class,
-    TestAzureStorageConfig.class,
-    Application.class}
+    TestAzureStorageConfig.class}
 )
 @ExtendWith(MockitoExtension.class)
 public abstract class AbstractBaseTest extends AbstractDataSourceTest {

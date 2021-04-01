@@ -7,21 +7,33 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
 import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 public class TestUtil {
+    private static final String DOWNLOAD_URL_PREFIX = "https://SOMEPREFIXTBD";
+
     public static final String FILE_1 = "file-1.mp4";
     public static final String FILE_2 = "file-2.mp4";
     public static final String FILE_3 = "file-3.mp4";
     public static final String TEST_FOLDER_NAME = "folder-1";
     public static final UUID RANDOM_UUID = UUID.randomUUID();
+    public static final String AUTHORIZATION_TOKEN = "xxx";
+    public static final String SERVICE_AUTHORIZATION_TOKEN = "xxx";
+    public static final Long CCD_CASE_ID = 1234L;
+    public static final String SHAREE_EMAIL_ADDRESS = "sharee.tester@test.com";
+    public static final String SHARER_EMAIL_ADDRESS = "sharer.tester@test.com";
+    public static final UUID SHAREE_ID = UUID.randomUUID();
+    public static final String CASE_REFERENCE = "hrs-grant-" + SHAREE_ID;
+    public static final LocalDateTime RECORDING_DATETIME = LocalDateTime.now();
 
     private static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
@@ -36,12 +48,19 @@ public class TestUtil {
         .filename(FILE_3)
         .build();
 
-    public static final String BLOB_DATA = "data";
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(
         MediaType.APPLICATION_JSON.getType(),
         MediaType.APPLICATION_JSON.getSubtype(),
         StandardCharsets.UTF_8
     );
+
+    public static final Set<String> SEGMENTS_DOWNLOAD_LINKS = Set.of(
+        String.format("%s/%s", DOWNLOAD_URL_PREFIX, SEGMENT_1.getFilename()),
+        String.format("%s/%s", DOWNLOAD_URL_PREFIX, SEGMENT_2.getFilename()),
+        String.format("%s/%s", DOWNLOAD_URL_PREFIX, SEGMENT_3.getFilename())
+    );
+    public static final List<String> RECORDING_SEGMENT_DOWNLOAD_URLS = List.copyOf(SEGMENTS_DOWNLOAD_LINKS);
+
     public static final Folder EMPTY_FOLDER = Folder.builder()
         .id(RANDOM_UUID)
         .name("name")
@@ -88,6 +107,19 @@ public class TestUtil {
     public static final HearingRecording HEARING_RECORDING = HearingRecording.builder()
         .id(RANDOM_UUID)
         .folder(Folder.builder().id(RANDOM_UUID).build())
+        .segments(Collections.emptySet())
+        .build();
+
+    public static final HearingRecording HEARING_RECORDING_WITH_SEGMENTS = HearingRecording.builder()
+        .id(RANDOM_UUID)
+        .caseRef(CASE_REFERENCE)
+        .segments(Set.of(SEGMENT_1, SEGMENT_2, SEGMENT_3))
+        .folder(Folder.builder().id(RANDOM_UUID).build())
+        .createdOn(RECORDING_DATETIME)
+        .build();
+
+    public static final HearingRecordingSharee HEARING_RECORDING_SHAREE = HearingRecordingSharee.builder()
+        .id(SHAREE_ID)
         .build();
 
     private TestUtil() {

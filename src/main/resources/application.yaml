@@ -33,8 +33,7 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5444/emhrs}
     username: ${SPRING_DATASOURCE_USERNAME:emhrs}
     password: ${SPRING_DATASOURCE_PASSWORD:emhrs}
-  jackson:
-    property-naming-strategy: KEBAB_CASE
+  jackson.property-naming-strategy: KEBAB_CASE
   security:
     oauth2:
       client:
@@ -89,7 +88,7 @@ azure:
 #Below values are examples and needs to updated with correct values
 notify:
   apiKey: ${NOTIFICATION_API_KEY:test_key-86d79f79-5045-4df2-87d1-6b7d87b41f6b-a703ea6c-9869-42a7-aaa8-38c98a0cc044}
-  emailTemplateId: 58f6384c-64f9-4ddc-a409-259fe04d1836
+  email.template: 1e10b560-4a3f-49a7-81f7-c3c6eceab455
 
 # OpenId Connect
 oidc:
