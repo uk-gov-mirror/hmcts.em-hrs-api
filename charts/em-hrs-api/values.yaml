@@ -21,16 +21,6 @@ java:
       secrets:
         - show-oauth2-token
         - oauth2-client-id
-  secrets:
-    BLOB_ACCOUNT_NAME:
-      secretRef: storage-secret-{{ .Release.Name }}
-      key: storageAccountName
-    BLOB_ACCESS_KEY:
-      secretRef: storage-secret-{{ .Release.Name }}
-      key: accessKey
-    BLOB_SERVICE_ENDPOINT:
-      secretRef: storage-secret-{{ .Release.Name }}
-      key: primaryBlobServiceEndPoint
   environment:
     SPRING_DATASOURCE_URL: jdbc:postgresql://em-hrs-api-postgres-v11-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/emhrs?ssl=disable
     SPRING_DATASOURCE_USERNAME: emhrs@em-hrs-api-postgres-v11-db-{{ .Values.global.environment }}
