@@ -19,7 +19,7 @@ def component = "hrs-api"
 
 def secrets = [
         's2s-${env}': [
-                secret('microservicekey-em-gw', 'FUNCTIONAL_TEST_CLIENT_S2S_TOKEN')
+                secret('microservicekey-ccd-gw', 'FUNCTIONAL_TEST_CCD_GW_SERVICE_SECRET')
         ],
         'rpa-${env}': [
                 secret('oauth2-client-id', 'OAUTH_CLIENT_ID'),
@@ -41,7 +41,8 @@ env.IDAM_API_BASE_URI = 'https://idam-api.aat.platform.hmcts.net'
 env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'
 env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 env.CCD_DATA_API_URL = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
-env.IDAM_REDIRECT_URI = 'https://em-show-aat.service.core-compute-aat.internal/oauth2/callback'
+env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.internal'
+env.IDAM_REDIRECT_URI = 'https://em-hrs-aat.service.core-compute-aat.internal/oauth2/callback'
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 def vaultOverrides = [

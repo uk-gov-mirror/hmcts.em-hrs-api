@@ -32,8 +32,8 @@ public class CaseUpdateScenarios {
     @Test
     public void testCaseCreation() {
         HearingRecordingDto request = extendedCcdHelper.createRecordingSegment(
-            "http://dm-store:8080/documents/57340931-bfce-424d-bcee-6b3f0abf56fb",//TODO: need to ask CCD not to reject HRS URLs
-            "first-hearing-recording-segment",
+            "http://dm-store:8080/documents/57340931-bfce-424d-bcee-aa11bb22cc33",//TODO: need to ask CCD not to reject HRS URLs
+            "hearing-recording-segment",
             ".mp4",
             12L,
             0
@@ -52,8 +52,8 @@ public class CaseUpdateScenarios {
     @Test
     public void testCaseUpdate() {
         HearingRecordingDto request = extendedCcdHelper.createRecordingSegment(
-            "http://dm-store:8080/documents/57340931-bfce-424d-bcee-6b3f0abf56fb",
-            "first-hearing-recording-segment",
+            "http://dm-store:8080/documents/57340931-bfce-424d-bcee-dd44ee55ff66",
+            "hearing-recording-segment",
             ".mp4",
             12L,
             1
