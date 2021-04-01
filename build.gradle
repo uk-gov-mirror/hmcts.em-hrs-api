@@ -44,42 +44,42 @@ sourceSets {
     resources.srcDir file('src/aat/resources')
   }
 
-  //integrationTest typically tests with mocked external endpoints (so can run locally without dependencies)
-  integrationTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/integrationTest/java')
-    }
-    resources.srcDir file('src/integrationTest/resources')
-  }
-
-  //contractTest typically tests with PACT broker
-  contractTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/contractTest/java')
-    }
-    resources.srcDir file('src/contractTest/resources')
-  }
-
-  //smokeTest should include helloworld & healthcheck. Ideally will also include downstream healthchecks
-  //should work locally with docker dependencies, in AAT and production
-  smokeTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/smokeTest/java')
-    }
-    groovy {
-      compileClasspath += main.output + test.output
-      runtimeClasspath += main.output + test.output
-      srcDir('src/smokeTest/groovy')
+    //integrationTest typically tests with mocked external endpoints (so can run locally without dependencies)
+    integrationTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/integrationTest/java')
+        }
+        resources.srcDir file('src/integrationTest/resources')
     }
 
-    resources.srcDir file('src/smokeTest/resources')
-  }
+    //contractTest typically tests with PACT broker
+    contractTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/contractTest/java')
+        }
+        resources.srcDir file('src/contractTest/resources')
+    }
+
+    //smokeTest should include helloworld & healthcheck. Ideally will also include downstream healthchecks
+    //should work locally with docker dependencies, in AAT and production
+    smokeTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/smokeTest/java')
+        }
+        groovy {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir('src/smokeTest/groovy')
+        }
+
+        resources.srcDir file('src/smokeTest/resources')
+    }
 }
 
 /***********************************************************************************************************************
@@ -87,15 +87,15 @@ sourceSets {
  **********************************************************************************************************************/
 
 tasks.withType(JavaCompile) {
-  options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+    options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
 tasks.withType(Test) {
-  useJUnitPlatform()
+    useJUnitPlatform()
 
-  testLogging {
-    exceptionFormat = 'full'
-  }
+    testLogging {
+        exceptionFormat = 'full'
+    }
 }
 
 task functional(type: Test) {
