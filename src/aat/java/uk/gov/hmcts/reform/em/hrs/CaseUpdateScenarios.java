@@ -28,6 +28,9 @@ public class CaseUpdateScenarios {
 
     @Rule
     public RetryRule retryRule = new RetryRule(1);
+    
+    @Value("${test.url}")
+    private String testUrl;
 
     @Test
     public void testCaseCreation() {
@@ -41,7 +44,7 @@ public class CaseUpdateScenarios {
 
         Response response = SerenityRest
             .given()
-            .baseUri("http://localhost:8080")
+            .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
             .post("/segments");
@@ -61,7 +64,7 @@ public class CaseUpdateScenarios {
 
         Response response = SerenityRest
             .given()
-            .baseUri("http://localhost:8080")
+            .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
             .post("/segments");
