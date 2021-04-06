@@ -1,41 +1,28 @@
 package uk.gov.hmcts.reform.em.hrs.util;
 
-import org.apache.logging.log4j.Logger;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+@Slf4j
 public class DefaultSnooperTest {
 
-    @Test
-    void testsnoop(){
-        DefaultSnooper manager = Mockito.mock(DefaultSnooper.class);
-        Logger logger = Mockito.mock(DefaultSnooper.LOGGER);
-        String expectedMessage = "";
-        manager.snoop(expectedMessage);
-        logger.info(expectedMessage);
+    private final DefaultSnooper defaultSnooper = new DefaultSnooper();
 
-        Mockito.verify(manager).snoop(expectedMessage);
+    @Test
+    void test_snoop() {
+        defaultSnooper.snoop("Test message");
     }
 
     @Test
-    void testGetMessages(){
-        List<String> expectedMessages = new ArrayList<String>();
-        DefaultSnooper DS = new DefaultSnooper();
-        List<String> actualMessages = DS.getMessages();
-        assertThat(expectedMessages).hasSameElementsAs(actualMessages);
+    void test_get_messages() {
+        assertEquals(0, defaultSnooper.getMessages().size());
     }
 
     @Test
-    void testClearMessages(){
-        DefaultSnooper manager = Mockito.mock(DefaultSnooper.class);
-        manager.clearMessages();
-
-        Mockito.verify(manager).clearMessages();
+    void test_clear_messages() {
+        defaultSnooper.clearMessages();
     }
 
 }
