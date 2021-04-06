@@ -14,6 +14,7 @@ import io.restassured.http.ContentType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,7 +61,7 @@ public class IdamApiPactConsumerTest {
 
         return builder
             .given("a user exists", params)
-            .uponReceiving("Provider takes user/pwd and returns Access Token to Annotation API")
+            .uponReceiving("Provider takes user/pwd and returns Access Token to Hrs API")
             .path(IDAM_OPENID_TOKEN_URL)
             .method(HttpMethod.POST.toString())
             .body(
@@ -75,6 +76,7 @@ public class IdamApiPactConsumerTest {
             .toPact();
     }
 
+    @Ignore
     @Test
     @PactTestFor(pactMethod = "executeGetIdamAccessTokenAndGet200")
     public void should_post_to_token_endpoint_and_receive_access_token_with_200_response(MockServer mockServer)
@@ -131,6 +133,7 @@ public class IdamApiPactConsumerTest {
             .toPact();
     }
 
+    @Ignore
     @Test
     @PactTestFor(pactMethod = "executeGetUserDetailsAndGet200")
     public void should_get_user_details_with_access_token(MockServer mockServer) throws JSONException {
