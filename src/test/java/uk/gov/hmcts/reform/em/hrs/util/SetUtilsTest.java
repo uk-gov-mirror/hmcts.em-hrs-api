@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.em.hrs.util;
 
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SetUtilsTest {
     private final Set<String> setA = Set.of("a", "b", "c", "d");
@@ -35,17 +38,23 @@ class SetUtilsTest {
     @Test
     void testIntersectionResultingSetSizeWithNull() {
 
-        final Set<String> intersection = SetUtils.intersect(null, null);
+        NullPointerException exception = assertThrows(
+            NullPointerException.class,
+            () -> { final Set<String> intersection = SetUtils.intersect(null, null);; }
+        );
 
-       // assertThat(intersection).hasSize(expectedSize);
+        assertEquals("setA is marked non-null but is null", exception.getMessage());
     }
 
     @Test
     void testIntersectionResultingSetSizeWithOneNull() {
 
-        final Set<String> intersection = SetUtils.intersect(setA, null);
+        NullPointerException exception = assertThrows(
+            NullPointerException.class,
+            () -> { final Set<String> intersection = SetUtils.intersect(setA, null);; }
+        );
 
-        // assertThat(intersection).hasSize(expectedSize);
+        assertEquals("setB is marked non-null but is null", exception.getMessage());
     }
 
     @Test
@@ -105,18 +114,25 @@ class SetUtilsTest {
 
     @Test
     void testUnionResultingSetElementsForNull() {
-        //final Set<String> expectedSet = Set.of(null, "b", "c", "f");
-//        final Set<String> setE = Set.of(null, "b", "c");
-//        final Set<String> setF = Set.of("c", null, "f");
 
-        final Set<String> intersection = SetUtils.union(null, null);
-    //    assertThat(intersection).hasSameElementsAs(expectedSet);
+        NullPointerException exception = assertThrows(
+            NullPointerException.class,
+            () -> { final Set<String> union = SetUtils.union(null, null);; }
+        );
+
+        assertEquals("setA is marked non-null but is null", exception.getMessage());
     }
+
 
     @Test
     void testUnionResultingSetElementsForOneNull() {
 
-        final Set<String> intersection = SetUtils.union(null, setD);
-       // assertThat(intersection).hasSameElementsAs(expectedSet);
+        NullPointerException exception = assertThrows(
+            NullPointerException.class,
+            () -> { final Set<String> union = SetUtils.union(setD,null);; }
+        );
+
+        assertEquals("setB is marked non-null but is null", exception.getMessage());
+
     }
 }
