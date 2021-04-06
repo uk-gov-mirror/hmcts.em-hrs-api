@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.em.hrs.util;
 
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;

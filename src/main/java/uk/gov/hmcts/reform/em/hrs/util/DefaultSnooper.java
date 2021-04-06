@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.em.hrs.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.inject.Named;
 import java.util.Collections;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 
 @Named
 @Slf4j
