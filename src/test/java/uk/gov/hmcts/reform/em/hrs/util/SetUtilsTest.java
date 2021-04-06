@@ -41,6 +41,14 @@ class SetUtilsTest {
     }
 
     @Test
+    void testIntersectionResultingSetSizeWithOneNull() {
+
+        final Set<String> intersection = SetUtils.intersect(setA, null);
+
+        // assertThat(intersection).hasSize(expectedSize);
+    }
+
+    @Test
     void testIntersectionResultingSetElements() {
         final Set<String> expectedSet = Set.of("c", "d");
 
@@ -56,14 +64,6 @@ class SetUtilsTest {
         final Set<String> intersection = SetUtils.intersect(setC, setD);
 
         assertThat(intersection).hasSameElementsAs(expectedSet);
-    }
-
-    @Test
-    void testIntersectionResultingSetElementsWithNull() {
-
-        final Set<String> intersection = SetUtils.intersect(null, null);
-
-    //    assertThat(intersection).hasSameElementsAs(expectedSet);
     }
 
     @Test
@@ -84,13 +84,6 @@ class SetUtilsTest {
         assertThat(intersection).hasSize(expectedSize);
     }
 
-    @Test
-    void testUnionResultingSetSizeForNull() {
-
-        final Set<String> intersection = SetUtils.union(null, null);
-
-     //   assertThat(intersection).hasSize(expectedSize);
-    }
 
     @Test
     void testUnionResultingSetElements() {
@@ -112,12 +105,18 @@ class SetUtilsTest {
 
     @Test
     void testUnionResultingSetElementsForNull() {
-//        final Set<String> expectedSet = Set.of(null, "b", "c", "f");
+        //final Set<String> expectedSet = Set.of(null, "b", "c", "f");
 //        final Set<String> setE = Set.of(null, "b", "c");
 //        final Set<String> setF = Set.of("c", null, "f");
 
         final Set<String> intersection = SetUtils.union(null, null);
+    //    assertThat(intersection).hasSameElementsAs(expectedSet);
+    }
 
-//        assertThat(intersection).hasSameElementsAs(expectedSet);
+    @Test
+    void testUnionResultingSetElementsForOneNull() {
+
+        final Set<String> intersection = SetUtils.union(null, setD);
+       // assertThat(intersection).hasSameElementsAs(expectedSet);
     }
 }
