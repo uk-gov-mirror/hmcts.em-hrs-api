@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGeneratorFactory;
 public class CcdAuthTokenGeneratorConfiguration {
 
     @Bean
-    public AuthTokenGenerator authTokenGenerator(
+    public AuthTokenGenerator ccdAuthTokenGenerator(
         @Value("${s2s.api.ccdGwSecret}") final String secret,
         @Value("${s2s.api.ccdGwServiceName}") final String microService,
         final ServiceAuthorisationApi serviceAuthorisationApi
