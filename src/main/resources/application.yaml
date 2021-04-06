@@ -2,11 +2,19 @@ management:
   endpoint:
     health:
       show-details: "always"
+      probes:
+        enabled: true
   endpoints:
     web:
       base-path: /
       exposure:
         include: health, info, prometheus
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+
 
 spring:
   application:
