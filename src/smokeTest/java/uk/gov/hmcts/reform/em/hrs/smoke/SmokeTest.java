@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.smoke;
 
-import javax.inject.Inject;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import io.restassured.RestAssured;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
@@ -17,6 +13,10 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.smoke.config.AuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
+
+import javax.inject.Inject;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest(classes = {AuthTokenGeneratorConfiguration.class, EmTestConfig.class})
