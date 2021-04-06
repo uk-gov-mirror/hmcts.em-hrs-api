@@ -13,13 +13,13 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
-import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
+import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(classes = {EmTestConfig.class, AuthTokenGeneratorConfiguration.class, ExtendedCcdHelper.class})
+@SpringBootTest(classes = {EmTestConfig.class, CcdAuthTokenGeneratorConfiguration.class, ExtendedCcdHelper.class})
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class CaseUpdateScenarios {
@@ -29,7 +29,7 @@ public class CaseUpdateScenarios {
 
     @Rule
     public RetryRule retryRule = new RetryRule(1);
-    
+
     @Value("${test.url}")
     private String testUrl;
 
