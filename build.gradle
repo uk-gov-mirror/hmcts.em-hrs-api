@@ -455,7 +455,7 @@ dependencies {
  * TEST SOURCE SETS
  **********************************************************************************************************************/
 
-    functionalTestImplementation sourceSets.main.runtimeClasspath
+  functionalTestImplementation sourceSets.main.runtimeClasspath
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
