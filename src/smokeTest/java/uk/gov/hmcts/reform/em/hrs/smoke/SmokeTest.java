@@ -2,16 +2,14 @@ package uk.gov.hmcts.reform.em.hrs.smoke;
 
 import javax.inject.Inject;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.restassured.RestAssured;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -24,6 +22,7 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 @SpringBootTest(classes = {AuthTokenGeneratorConfiguration.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
 @WithTags({@WithTag("testType:Smoke")})
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SmokeTest {
 
     private static final String MESSAGE = "Welcome to Hearing Recordings Service";
@@ -34,17 +33,17 @@ public class SmokeTest {
     @Inject
     AuthTokenGenerator authTokenGenerator;
 
-    @Autowired
+    @Inject
     private IdamHelper idamHelper;
 
-    private static final String hrsTester = "hrs.test.user@hmcts.net";
-    //private List<String> hrTesterRoles = Arrays.asList("caseworker", "caseworker-hrs", "ccd-import");
-
+    @BeforeAll
+    public void initialise() {
+        RestAssured.useRelaxedHTTPSValidation();
+    }
 
     @Test
     public void testHealthEndpoint() {
 
-        RestAssured.useRelaxedHTTPSValidation();
         String response =
             RestAssured
                 .given()
@@ -59,19 +58,15 @@ public class SmokeTest {
     @Test
     public void testEndpointUpAnRunning() {
 
-        RestAssured.useRelaxedHTTPSValidation();
-        idamHelper.authenticateUser("a@b.com");
-        String response =
-            RestAssured
-                .given()
-                .header("Authorization", idamHelper.authenticateUser("a@b.com"))
-                .header("ServiceAuthorization", authTokenGenerator.generate())
-                .baseUri(testUrl)
-                .when()
-                .get("/folders/testPath")
-                .then()
-                .statusCode(200).extract().body().asString();
-        //assertEquals(MESSAGE, response);
+        RestAssured
+            .given()
+            .header("Authorization", idamHelper.authenticateUser("a@b.com"))
+            .header("ServiceAuthorization", authTokenGenerator.generate())
+            .baseUri(testUrl)
+            .when()
+            .get("/folders/testPath")
+            .then()
+            .statusCode(200).extract().body().asString();
     }
 
 }
