@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,7 @@ public class CaseUpdateScenarios {
     @Value("${test.url}")
     private String testUrl;
 
+    @Ignore
     @Test
     public void testCaseCreation() {
         HearingRecordingDto request = extendedCcdHelper.createRecordingSegment(
@@ -53,6 +55,7 @@ public class CaseUpdateScenarios {
         Assert.assertEquals(202, response.getStatusCode());
     }
 
+    @Ignore
     @Test
     public void testCaseUpdate() {
         HearingRecordingDto request = extendedCcdHelper.createRecordingSegment(
