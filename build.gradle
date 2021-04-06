@@ -44,42 +44,42 @@ sourceSets {
     resources.srcDir file('src/aat/resources')
   }
 
-    //integrationTest typically tests with mocked external endpoints (so can run locally without dependencies)
-    integrationTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir file('src/integrationTest/java')
-        }
-        resources.srcDir file('src/integrationTest/resources')
+  //integrationTest typically tests with mocked external endpoints (so can run locally without dependencies)
+  integrationTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/integrationTest/java')
+    }
+    resources.srcDir file('src/integrationTest/resources')
+  }
+
+  //contractTest typically tests with PACT broker
+  contractTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/contractTest/java')
+    }
+    resources.srcDir file('src/contractTest/resources')
+  }
+
+  //smokeTest should include helloworld & healthcheck. Ideally will also include downstream healthchecks
+  //should work locally with docker dependencies, in AAT and production
+  smokeTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/smokeTest/java')
+    }
+    groovy {
+      compileClasspath += main.output + test.output
+      runtimeClasspath += main.output + test.output
+      srcDir('src/smokeTest/groovy')
     }
 
-    //contractTest typically tests with PACT broker
-    contractTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir file('src/contractTest/java')
-        }
-        resources.srcDir file('src/contractTest/resources')
-    }
-
-    //smokeTest should include helloworld & healthcheck. Ideally will also include downstream healthchecks
-    //should work locally with docker dependencies, in AAT and production
-    smokeTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir file('src/smokeTest/java')
-        }
-        groovy {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir('src/smokeTest/groovy')
-        }
-
-        resources.srcDir file('src/smokeTest/resources')
-    }
+    resources.srcDir file('src/smokeTest/resources')
+  }
 }
 
 /***********************************************************************************************************************
@@ -108,38 +108,38 @@ task functional(type: Test) {
 }
 
 task contract(type: Test) {
-    description = "Runs contract tests"
-    group = "Verification"
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
-    include "uk/gov/hmcts/reform/em/hrs/consumer/**"
-    systemProperty 'pact.rootDir', "pacts"
-    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-    failFast = true
+  description = "Runs contract tests"
+  group = "Verification"
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  include "uk/gov/hmcts/reform/em/hrs/consumer/**"
+  systemProperty 'pact.rootDir', "pacts"
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+  failFast = true
 }
 
 task integration(type: Test) {
-    description = "Runs integration tests"
-    group = "Verification"
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    failFast = true
+  description = "Runs integration tests"
+  group = "Verification"
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  failFast = true
 }
 
 task smoke(type: Test) {
-    group = 'Delivery pipeline'
-    description = "Runs Smoke Tests"
-    testClassesDirs = sourceSets.smokeTest.output.classesDirs
-    classpath = sourceSets.smokeTest.runtimeClasspath
+  group = 'Delivery pipeline'
+  description = "Runs Smoke Tests"
+  testClassesDirs = sourceSets.smokeTest.output.classesDirs
+  classpath = sourceSets.smokeTest.runtimeClasspath
 
-    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 
 }
 
 task runAndPublishConsumerPactTests(type: Test) {
-    logger.lifecycle("Runs pact Tests")
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
+  logger.lifecycle("Runs pact Tests")
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
 }
 
 runAndPublishConsumerPactTests.dependsOn contract
@@ -150,19 +150,19 @@ runAndPublishConsumerPactTests.finalizedBy pactPublish
  **********************************************************************************************************************/
 
 checkstyle {
-    maxWarnings = 10
-    toolVersion = '8.29'
-    getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
+  maxWarnings = 10
+  toolVersion = '8.29'
+  getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
 pmd {
-    toolVersion = "6.30.0"
-    ignoreFailures = true
-    sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
-    reportsDir = file("$project.buildDir/reports/pmd")
-    // https://github.com/pmd/pmd/issues/876
-    ruleSets = []
-    ruleSetFiles = files("config/pmd/ruleset.xml")
+  toolVersion = "6.30.0"
+  ignoreFailures = true
+  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
+  reportsDir = file("$project.buildDir/reports/pmd")
+  // https://github.com/pmd/pmd/issues/876
+  ruleSets = []
+  ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
 jacocoTestReport {
@@ -197,12 +197,12 @@ jacocoTestReport {
 project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
 
 sonarqube {
-    properties {
-        property "sonar.projectName", "Reform :: em-hrs-api"
-        property "sonar.projectKey", "uk.gov.hmcts.reform.em.hrs:em-hrs-api"
-        property "sonar.exclusions", coverageExclusionList.join(", ")
-        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    }
+  properties {
+    property "sonar.projectName", "Reform :: em-hrs-api"
+    property "sonar.projectKey", "uk.gov.hmcts.reform.em.hrs:em-hrs-api"
+    property "sonar.exclusions", coverageExclusionList.join(", ")
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+  }
 }
 
 /***********************************************************************************************************************
