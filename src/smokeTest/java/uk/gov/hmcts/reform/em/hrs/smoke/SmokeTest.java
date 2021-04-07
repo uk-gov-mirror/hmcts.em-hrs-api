@@ -18,7 +18,6 @@ import javax.inject.Inject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 @SpringBootTest(classes = {AuthTokenGeneratorConfiguration.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
 @WithTags({@WithTag("testType:Smoke")})
