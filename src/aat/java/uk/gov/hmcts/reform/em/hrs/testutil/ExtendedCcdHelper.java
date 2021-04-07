@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.PostConstruct;
 
 @Service
 public class ExtendedCcdHelper {
@@ -33,8 +34,14 @@ public class ExtendedCcdHelper {
     @Autowired
     private CcdDefUserRoleApi ccdDefUserRoleApi;
 
-    private String hrsTester = "hrs.tester@hmcts.net";
+    private String hrsTester = "hrs.test.user@hmcts.net";
     private List<String> hrTesterRoles = Arrays.asList("caseworker", "caseworker-hrs", "ccd-import");
+
+    @PostConstruct
+    public void init() throws Exception {
+        initHrsTestUser();
+        importDefinitionFile();
+    }
 
     public HearingRecordingDto createRecordingSegment(
         String url, String filename, String fileExt, Long fileSize, int segment) {
