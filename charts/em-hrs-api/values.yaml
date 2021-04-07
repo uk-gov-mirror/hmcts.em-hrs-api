@@ -16,6 +16,7 @@ java:
         - storage-account-primary-connection-string
         - idam-system-user-name
         - idam-system-user-password
+        - AppInsightsInstrumentationKey
     rpa:
       resourceGroup: rpa
       secrets:
