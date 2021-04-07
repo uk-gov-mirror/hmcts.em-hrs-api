@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
-import uk.gov.hmcts.reform.em.hrs.service.tokens.SecurityClient;
+import uk.gov.hmcts.reform.em.hrs.service.SecurityService;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ public class CcdDataStoreApiClient {
 
     private final Logger log = LoggerFactory.getLogger(CcdDataStoreApiClient.class);
 
-    private final SecurityClient securityClient;
+    private final SecurityService securityService;
     private final CaseDataContentCreator caseDataCreator;
     private final CoreCaseDataApi coreCaseDataApi;
 
@@ -27,16 +27,16 @@ public class CcdDataStoreApiClient {
     private static final String CREATE_CASE = "createCase";
     private static final String ADD_RECORDING_FILE = "manageFiles";
 
-    public CcdDataStoreApiClient(SecurityClient securityClient,
+    public CcdDataStoreApiClient(SecurityService securityService,
                                  CaseDataContentCreator caseDataCreator,
                                  CoreCaseDataApi coreCaseDataApi) {
-        this.securityClient = securityClient;
+        this.securityService = securityService;
         this.caseDataCreator = caseDataCreator;
         this.coreCaseDataApi = coreCaseDataApi;
     }
 
     public Long createCase(final HearingRecordingDto hearingRecordingDto) {
-        Map<String, String> tokens = securityClient.getTokens();
+        Map<String, String> tokens = securityService.getTokens();
 
         StartEventResponse startEventResponse =
             coreCaseDataApi.startCase(tokens.get("user"), tokens.get("service"), CASE_TYPE, CREATE_CASE);
@@ -55,7 +55,7 @@ public class CcdDataStoreApiClient {
     }
 
     public Long updateCaseData(final Long caseId, final HearingRecordingDto hearingRecordingDto) {
-        Map<String, String> tokens = securityClient.getTokens();
+        Map<String, String> tokens = securityService.getTokens();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"),
                                                                            caseId.toString(), ADD_RECORDING_FILE);

@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
-import uk.gov.hmcts.reform.em.hrs.service.ccd.model.CaseDocument;
-import uk.gov.hmcts.reform.em.hrs.service.ccd.model.CaseHearingRecording;
-import uk.gov.hmcts.reform.em.hrs.service.ccd.model.RecordingSegment;
+import uk.gov.hmcts.reform.em.hrs.model.CaseDocument;
+import uk.gov.hmcts.reform.em.hrs.model.CaseHearingRecording;
+import uk.gov.hmcts.reform.em.hrs.model.RecordingSegment;
 
 import java.util.ArrayList;
 import java.util.Arrays;

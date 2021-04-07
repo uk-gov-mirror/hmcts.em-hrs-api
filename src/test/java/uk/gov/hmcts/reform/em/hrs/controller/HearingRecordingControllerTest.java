@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.javacrumbs.jsonunit.core.Option;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -8,15 +7,20 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
-import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
-import uk.gov.hmcts.reform.em.hrs.service.*;
+import uk.gov.hmcts.reform.em.hrs.service.FolderService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
+import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareeService;
+import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,29 +29,32 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CCD_CASE_ID;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SERVICE_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.convertObjectToJsonString;
 
 class HearingRecordingControllerTest extends AbstractBaseTest {
-
     @MockBean
     private FolderService folderService;
+
+    @MockBean
+    private HearingRecordingService recordingService;
+
+    @MockBean
+    private HearingRecordingSegmentService segmentService;
 
     @MockBean
     private CaseUpdateService caseUpdateService;
 
     @MockBean
-    private HearingRecordingService hearingRecordingService;
-
-    @MockBean
-    private HearingRecordingSegmentService hearingRecordingSegmentService;
-
-    @MockBean
-    private HearingRecordingShareesService hearingRecordingShareesService;
+    private HearingRecordingShareeService hearingRecordingShareeService;
 
     @MockBean
     private ShareService shareService;
 
     private static final String TEST_FOLDER = "folder-1";
-    private static final UUID ID = TestUtil.HEARING_RECORDING.getId();
 
     @Test
     void testWhenRequestedFolderDoesNotExistOrIsEmpty() throws Exception {
@@ -64,7 +71,7 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
         assertThatJson(content)
             .when(Option.IGNORING_ARRAY_ORDER)
             .and(
-                x -> x.node("folder-name").isEqualTo(TEST_FOLDER),
+                x -> x.node("folder-name").isPresent().isEqualTo(TEST_FOLDER),
                 x -> x.node("filenames").isArray().isEmpty()
             );
         verify(folderService, times(1)).getStoredFiles(TEST_FOLDER);
@@ -91,31 +98,24 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
         verify(folderService, times(1)).getStoredFiles(TEST_FOLDER);
     }
 
-
     @Test
-    void testShareHearingRecordingShareeSave() throws Exception {
+    void testShouldGrantShareeDownloadAccessToHearingRecording() throws Exception {
         final String path = "/sharees";
-        final Long CASE_ID = 12L;
-        final HearingRecording HEARING_RECORDING = TestUtil.FOLDER_WITH_SEGMENT.getHearingRecordings().get(0);
+        final CaseDetails request = CaseDetails.builder()
+            .data(Map.of("recipientEmailAddress", SHAREE_EMAIL_ADDRESS))
+            .id(CCD_CASE_ID)
+            .build();
 
-        doReturn(Optional.of(HEARING_RECORDING)).when(hearingRecordingService).findByCaseId(CASE_ID);
-
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put("recipientEmailAddress", "test@tester.com");
-        CaseDetails request = CaseDetails.builder().data(caseData).id(CASE_ID).build();
+        doNothing().when(shareService).executeNotify(CCD_CASE_ID, SHAREE_EMAIL_ADDRESS, AUTHORIZATION_TOKEN);
 
         mockMvc.perform(post(path)
-                            .content(new ObjectMapper().writeValueAsString(request))
+                            .content(convertObjectToJsonString(request))
                             .contentType(APPLICATION_JSON_VALUE)
-                            .header("Authorization", "xxx")
-                            .header("ServiceAuthorization", "xxx"))
+                            .header("Authorization", AUTHORIZATION_TOKEN)
+                            .header("ServiceAuthorization", SERVICE_AUTHORIZATION_TOKEN))
             .andExpect(status().isOk());
 
-
-        verify(hearingRecordingService, times(1))
-            .findByCaseId(CASE_ID);
-        verify(hearingRecordingShareesService, times(1))
-            .createAndSaveEntry("test@tester.com", HEARING_RECORDING);
+        verify(shareService, times(1)).executeNotify(CCD_CASE_ID, SHAREE_EMAIL_ADDRESS, AUTHORIZATION_TOKEN);
     }
 
 }

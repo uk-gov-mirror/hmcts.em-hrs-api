@@ -30,9 +30,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
-    @Value("${oidc.issuer}")
-    private String issuerOverride;
-
     private final ServiceAuthFilter serviceAuthFilter;
 
     private JwtAuthenticationConverter jwtAuthenticationConverter;
@@ -87,8 +84,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             JwtDecoders.fromOidcIssuerLocation(issuerUri);
         // We are using issuerOverride instead of issuerUri as SIDAM has the wrong issuer at the moment
         OAuth2TokenValidator<Jwt> withTimestamp = new JwtTimestampValidator();
-        //Add the JwtIssuerValidator back in after Idam issue is resolved
-        OAuth2TokenValidator<Jwt> withIssuer = new JwtIssuerValidator(issuerOverride);
         OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(withTimestamp);
 
         jwtDecoder.setJwtValidator(validator);

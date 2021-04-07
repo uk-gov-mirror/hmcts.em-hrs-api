@@ -23,12 +23,12 @@ class FolderRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest 
     @Inject
     private HearingRecordingSegmentRepository hearingRecordingSegmentRepository;
 
-    // TODO - Move this into a seperate HearingRecordingSegmentRepositoryTest file
+    // TODO - Move this into a separate HearingRecordingSegmentRepositoryTest file
     @Test
     void testShouldFindSegmentByRecordingId() {
-        UUID recordingId = UUID.fromString("05A13771-58DF-4ABD-B62D-4A3F8DDF4286");
+        UUID hearingRecordingId = UUID.fromString("05A13771-58DF-4ABD-B62D-4A3F8DDF4286");
         final List<HearingRecordingSegment> hearingRecordingSegmentList =
-            hearingRecordingSegmentRepository.findByRecordingId(recordingId);
+            hearingRecordingSegmentRepository.findByHearingRecordingId(hearingRecordingId);
 
         assertThat(hearingRecordingSegmentList.get(0).getId().toString())
             .isEqualTo("8a4fdad2-d53e-40a2-ae88-6df8fbd6cc1d");

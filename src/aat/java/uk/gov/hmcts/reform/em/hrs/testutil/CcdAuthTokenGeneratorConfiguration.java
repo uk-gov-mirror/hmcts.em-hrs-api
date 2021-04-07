@@ -8,14 +8,15 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGeneratorFactory;
 
 @Configuration
-public class AuthTokenGeneratorConfiguration {
+public class CcdAuthTokenGeneratorConfiguration {
 
     @Bean
-    public AuthTokenGenerator authTokenGenerator(
-        @Value("${s2s.api.secret}") final String secret,
-        @Value("${s2s.api.serviceName}") final String microService,
+    public AuthTokenGenerator ccdAuthTokenGenerator(
+        @Value("${s2s.api.ccdGwSecret}") final String secret,
+        @Value("${s2s.api.ccdGwServiceName}") final String microService,
         final ServiceAuthorisationApi serviceAuthorisationApi
     ) {
         return AuthTokenGeneratorFactory.createDefaultGenerator(secret, microService, serviceAuthorisationApi);
     }
+
 }

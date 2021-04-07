@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs.testutil;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,7 @@ public class ExtendedCcdHelper {
     @Autowired
     private IdamHelper idamHelper;
 
+    @Qualifier("ccdAuthTokenGenerator")
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
 
