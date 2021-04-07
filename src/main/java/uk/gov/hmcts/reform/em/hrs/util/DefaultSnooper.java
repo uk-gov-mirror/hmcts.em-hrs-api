@@ -1,20 +1,21 @@
 package uk.gov.hmcts.reform.em.hrs.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Named;
 import java.util.Collections;
 import java.util.List;
-import javax.inject.Named;
+
 
 @Named
+@Slf4j
 public class DefaultSnooper implements Snooper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultSnooper.class);
+
 
     @Override
     public void snoop(String message) {
         // TODO: covered by EM-3582
-        LOGGER.info(message);
+        log.info(message);
     }
 
     @Override

@@ -182,8 +182,8 @@ def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/domain/**',
   '**uk/gov/hmcts/reform/em/hrs/controller/**',
   '**uk/gov/hmcts/reform/em/hrs/exception/**',
-  '**uk/gov/hmcts/reform/em/hrs/service/**',
-  '**uk/gov/hmcts/reform/em/hrs/util/DefaultSnooper**',
+  '**uk/gov/hmcts/reform/em/hrs/repository/**',
+  '**uk/gov/hmcts/reform/em/hrs/service/**'
 ]
 
 jacocoTestReport {
@@ -346,6 +346,9 @@ dependencies {
 //    exclude group: 'org.springframework.cloud' , module : 'spring-cloud-context'
 //    exclude group: 'org.springframework.boot' , module: 'spring-boot-starter-web'
 //  }
+
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    implementation "ch.qos.logback:logback-classic:1.2.3"
 
     implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 

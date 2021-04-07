@@ -1,48 +1,92 @@
 package uk.gov.hmcts.reform.em.hrs.util;
 
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SetUtilsTest {
-    private final Set<String> setA = Set.of("a", "b", "c", "d");
-    private final Set<String> setB = Set.of("c", "d", "e", "f");
+    private final Set<String> setA = Set.of("", "  ", "b", "c", "d");
+    private final Set<String> setB = Set.of("c", "", "  ", "d", "e", "f");
+
+
 
     @Test
-    void testIntersectionResultingSetSize() {
-        final int expectedSize = 2;
-
+    void testIntersectionResultingSetSizeAndValues() {
+        final int expectedSize = 4;
+        final Set<String> expectedSet = Set.of("c", "d", "", "  ");
         final Set<String> intersection = SetUtils.intersect(setA, setB);
 
         assertThat(intersection).hasSize(expectedSize);
-    }
-
-    @Test
-    void testIntersectionResultingSetElements() {
-        final Set<String> expectedSet = Set.of("c", "d");
-
-        final Set<String> intersection = SetUtils.intersect(setA, setB);
-
         assertThat(intersection).hasSameElementsAs(expectedSet);
     }
 
-    @Test
-    void testUnionResultingSetSize() {
-        final int expectedSize = 6;
 
+    @Test
+    void testIntersectionResultingSetSizeWithNull() {
+
+        NullPointerException exception = assertThrows(
+            NullPointerException.class,
+            () -> { final Set<String> intersection = SetUtils.intersect(null, null);; }
+        );
+
+        assertEquals("setA is marked non-null but is null", exception.getMessage());
+
+        NullPointerException exception2 = assertThrows(
+            NullPointerException.class,
+            () -> { final Set<String> intersection = SetUtils.intersect(setA, null);; }
+        );
+
+        assertEquals("setB is marked non-null but is null", exception2.getMessage());
+
+        NullPointerException exception3 = assertThrows(
+            NullPointerException.class,
+            () -> { final Set<String> intersection = SetUtils.intersect(null, setB);; }
+        );
+
+        assertEquals("setA is marked non-null but is null", exception3.getMessage());
+    }
+
+
+    @Test
+    void testUnionResultingSetSizeAndValues() {
+        final int expectedSize = 7;
+        final Set<String> expectedSet = Set.of("", "  ", "c", "b", "d", "e", "f");
         final Set<String> intersection = SetUtils.union(setA, setB);
 
         assertThat(intersection).hasSize(expectedSize);
-    }
-
-    @Test
-    void testUnionResultingSetElements() {
-        final Set<String> expectedSet = Set.of("a", "b", "c", "d", "e", "f");
-
-        final Set<String> intersection = SetUtils.union(setA, setB);
-
         assertThat(intersection).hasSameElementsAs(expectedSet);
     }
+
+
+    @Test
+    void testUnionResultingSetElementsForNull() {
+
+        NullPointerException exception = assertThrows(
+            NullPointerException.class,
+            () -> { final Set<String> union = SetUtils.union(null, null);; }
+        );
+
+        assertEquals("setA is marked non-null but is null", exception.getMessage());
+
+        NullPointerException exception2 = assertThrows(
+            NullPointerException.class,
+            () -> { final Set<String> union = SetUtils.union(null, setB);; }
+        );
+
+        assertEquals("setA is marked non-null but is null", exception2.getMessage());
+
+        NullPointerException exception3 = assertThrows(
+            NullPointerException.class,
+            () -> { final Set<String> union = SetUtils.union(setA, null);; }
+        );
+
+        assertEquals("setB is marked non-null but is null", exception3.getMessage());
+    }
+
+
 }
