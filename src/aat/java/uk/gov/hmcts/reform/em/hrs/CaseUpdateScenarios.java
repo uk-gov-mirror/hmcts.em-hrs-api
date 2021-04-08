@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import io.restassured.response.Response;
-import net.serenitybdd.rest.SerenityRest;
-import org.junit.Assert;
+import io.restassured.RestAssured;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,16 +43,15 @@ public class CaseUpdateScenarios {
             0
             );
 
-        Response response = SerenityRest
+        RestAssured
             .given()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
-            .post("/segments");
-
-        System.out.println("this is the response: " + response.body().prettyPrint());
-
-        Assert.assertEquals(202, response.getStatusCode());
+            .when()
+            .post("/segments")
+            .then()
+            .statusCode(202);
     }
 
     @Test
@@ -67,13 +64,14 @@ public class CaseUpdateScenarios {
             1
             );
 
-        Response response = SerenityRest
+        RestAssured
             .given()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
-            .post("/segments");
-
-        Assert.assertEquals(202, response.getStatusCode());
+            .when()
+            .post("/segments")
+            .then()
+            .statusCode(202);
     }
 }
