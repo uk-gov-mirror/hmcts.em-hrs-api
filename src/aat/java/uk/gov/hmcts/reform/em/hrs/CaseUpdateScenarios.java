@@ -32,11 +32,6 @@ public class CaseUpdateScenarios {
     @Value("${test.url}")
     private String testUrl;
 
-    @BeforeAll
-    public void initialise() {
-        RestAssured.useRelaxedHTTPSValidation();
-    }
-
     @Test
     public void testCaseCreation() {
         HearingRecordingDto reqBody = extendedCcdHelper.createRecordingSegment(
@@ -49,6 +44,7 @@ public class CaseUpdateScenarios {
 
         RestAssured
             .given()
+            .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .body(reqBody)
@@ -70,6 +66,7 @@ public class CaseUpdateScenarios {
 
         RestAssured
             .given()
+            .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .body(reqBody)
