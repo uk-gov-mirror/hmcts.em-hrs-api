@@ -35,6 +35,8 @@ public class CaseUpdateScenarios {
 
     @Test
     public void testCaseCreation() {
+        System.out.println("this is the test url" + testUrl);
+
         HearingRecordingDto request = extendedCcdHelper.createRecordingSegment(
             "http://dm-store-aat.service.core-compute-aat.internal:80/documents/e486435e-30e8-456c-9d4d-4adffcb50010",//TODO: need to ask CCD not to reject HRS URLs
             "hearing-recording-segment",
@@ -49,6 +51,8 @@ public class CaseUpdateScenarios {
             .contentType(APPLICATION_JSON_VALUE)
             .body(request)
             .post("/segments");
+
+        System.out.println("this is the response: " + response.body().prettyPrint());
 
         Assert.assertEquals(202, response.getStatusCode());
     }
