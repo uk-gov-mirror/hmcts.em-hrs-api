@@ -59,7 +59,7 @@ Uncheck "Comment at first column"
 Simply run the following script to start all application dependencies.
 
 ```bash
-  ./docker/dependencies/start-local-environment.sh.sh
+  ./docker/dependencies/start-local-environment.sh
 ```
 
 ## Building and deploying the application
