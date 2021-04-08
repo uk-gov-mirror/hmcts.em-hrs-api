@@ -15,7 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class HearingRecordingSegmentServiceImplTests {
+class HearingRecordingSegmentServiceImplTests {
     @Mock
     private HearingRecordingSegmentRepository hearingRecordingSegmentRepository;
 
@@ -23,7 +23,7 @@ public class HearingRecordingSegmentServiceImplTests {
     private HearingRecordingSegmentServiceImpl hearingRecordingSegmentServiceImpl;
 
     @Test
-    public void testFindByRecordingId() {
+    void testFindByRecordingId() {
 
         // Search with a non-existent hearing recording id
         UUID recordingId = UUID.randomUUID();
@@ -37,7 +37,7 @@ public class HearingRecordingSegmentServiceImplTests {
 
 
     @Test
-    public void testCreateAndSaveEntity() {
+    void testCreateAndSaveEntity() {
 
         //  Create a HearingRecord
         UUID uuid = UUID.randomUUID();

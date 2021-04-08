@@ -32,11 +32,16 @@ public class AzureStorageConfig {
             .containerName(hrsContainer)
             .buildAsyncClient();
 
-        blobContainerAsyncClient.create()
-            .subscribe(
-                response -> LOGGER.info("Create {} container completed", hrsContainer),
-                error -> LOGGER.error("Error while creating container {}::: ", hrsContainer, error)
-            );
+        blobContainerAsyncClient.exists()
+            .doOnSuccess(x -> {
+                if (!x) {
+                    blobContainerAsyncClient.create()
+                        .subscribe(
+                            response -> LOGGER.info("Create {} container completed", hrsContainer),
+                            error -> LOGGER.error("Error while creating container {}::: ", hrsContainer, error)
+                        );
+                }
+            });
 
         return blobContainerAsyncClient;
     }

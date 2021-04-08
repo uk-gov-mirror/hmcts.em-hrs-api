@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs.componenttests;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
@@ -34,8 +35,9 @@ public class TestUtil {
     public static final UUID SHAREE_ID = UUID.randomUUID();
     public static final String CASE_REFERENCE = "hrs-grant-" + SHAREE_ID;
     public static final LocalDateTime RECORDING_DATETIME = LocalDateTime.now();
+    public static final String RECORDING_REFERENCE = "file-1";
 
-    private static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
+    public static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
         .filename(FILE_1)
         .build();
@@ -126,12 +128,15 @@ public class TestUtil {
     }
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
-        ObjectMapper om = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        final ObjectMapper om = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         return om.writeValueAsBytes(object);
     }
 
     public static String convertObjectToJsonString(Object object) throws IOException {
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
+        final ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(object);
     }
 }

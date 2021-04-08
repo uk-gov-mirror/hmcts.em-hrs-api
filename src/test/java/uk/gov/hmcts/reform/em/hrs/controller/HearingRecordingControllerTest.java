@@ -7,6 +7,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
+import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
@@ -14,12 +15,16 @@ import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareeService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
 
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -30,7 +35,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CASE_REFERENCE;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CCD_CASE_ID;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_DATETIME;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_REFERENCE;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SERVICE_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.convertObjectToJsonString;
@@ -116,6 +124,46 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
             .andExpect(status().isOk());
 
         verify(shareService, times(1)).executeNotify(CCD_CASE_ID, SHAREE_EMAIL_ADDRESS, AUTHORIZATION_TOKEN);
+    }
+
+    @Test
+    void test() throws Exception {
+        final String path = "/segments";
+        final HearingRecordingDto request = new HearingRecordingDto(
+            CASE_REFERENCE,
+            "CVP",
+            "123",
+            null,
+            "JC",
+            "LC",
+            RECORDING_REFERENCE,
+            "recording-cvp-uri",
+            "hearing-recording-file-name",
+            "mp4",
+            123456789L,
+            0,
+            "erI2foA30B==",
+            RECORDING_DATETIME
+        );
+
+        //        doReturn(Optional.empty()).when(recordingService).findByRecordingRef(RECORDING_REFERENCE);
+        //        doReturn(CCD_CASE_ID).when(caseUpdateService).addRecordingToCase(hearingRecordingDto, Optional.empty());
+        //        doReturn(SEGMENT_1).when(segmentService.persistRecording(hearingRecordingDto, Optional.empty(), CCD_CASE_ID));
+        //
+        //
+        final String payload = convertObjectToJsonString(request);
+
+        final Instant start = Instant.now(Clock.systemDefaultZone());
+
+        mockMvc.perform(post(path)
+                            .content(payload)
+                            .contentType(APPLICATION_JSON_VALUE))
+            .andExpect(status().isAccepted())
+            .andReturn();
+
+        final Instant end = Instant.now(Clock.systemDefaultZone());
+
+        assertThat(Duration.between(start, end)).isLessThanOrEqualTo(Duration.ofSeconds(2L));
     }
 
 }

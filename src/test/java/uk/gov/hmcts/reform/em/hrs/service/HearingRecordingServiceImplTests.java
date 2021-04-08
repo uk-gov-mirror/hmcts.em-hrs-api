@@ -5,10 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.util.function.Tuple2;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.exception.HearingRecordingNotFoundException;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
-import uk.gov.hmcts.reform.em.hrs.util.Tuple2;
 
 import java.util.Optional;
 import java.util.Set;
@@ -49,10 +49,8 @@ class HearingRecordingServiceImplTests {
 
         final Tuple2<HearingRecording, Set<String>> result = underTest.getDownloadSegmentUris(CCD_CASE_ID);
 
-        assertThat(result).isNotNull().satisfies(x -> {
-            assertThat(x.getT1()).isNotNull().isInstanceOf(HearingRecording.class);
-            assertThat(x.getT2()).isNotEmpty();//.hasSameElementsAs(SEGMENTS_DOWNLOAD_LINKS);
-        });
+        assertThat(result.getT1()).isNotNull().isInstanceOf(HearingRecording.class);
+        assertThat(result.getT2()).isNotEmpty();//.hasSameElementsAs(SEGMENTS_DOWNLOAD_LINKS);
         verify(hearingRecordingRepository, times(1)).findByCcdCaseId(anyLong());
     }
 
@@ -64,10 +62,8 @@ class HearingRecordingServiceImplTests {
 
         final Tuple2<HearingRecording, Set<String>> result = underTest.getDownloadSegmentUris(CCD_CASE_ID);
 
-        assertThat(result).isNotNull().satisfies(x -> {
-            assertThat(x.getT1()).isNotNull().isInstanceOf(HearingRecording.class);
-            assertThat(x.getT2()).isEmpty();
-        });
+        assertThat(result.getT1()).isNotNull().isInstanceOf(HearingRecording.class);
+        assertThat(result.getT2()).isEmpty();
         verify(hearingRecordingRepository, times(1)).findByCcdCaseId(anyLong());
     }
 

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import reactor.util.function.Tuple2;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
-import uk.gov.hmcts.reform.em.hrs.util.Tuple2;
 
 import java.util.Optional;
 import java.util.Set;

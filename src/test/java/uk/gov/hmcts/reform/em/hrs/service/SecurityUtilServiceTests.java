@@ -14,13 +14,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class SecurityUtilServiceTests {
+class SecurityUtilServiceTests {
 
     @InjectMocks
     SecurityUtilService securityUtilService;
 
     @Test
-    public void testSuccessfulRetrievalOfUsernameFromSecurityContext() {
+    void testSuccessfulRetrievalOfUsernameFromSecurityContext() {
         SecurityContext securityContext = mock(SecurityContext.class);
         Authentication authentication = mock(Authentication.class);
         ServiceDetails serviceDetails = mock(ServiceDetails.class);
@@ -35,7 +35,7 @@ public class SecurityUtilServiceTests {
     }
 
     @Test
-    public void testFailureOfUsernameFromSecurityContextWhenItsNotThere() {
+    void testFailureOfUsernameFromSecurityContextWhenItsNotThere() {
         Assertions.assertNull(securityUtilService.getCurrentlyAuthenticatedServiceName());
     }
 
