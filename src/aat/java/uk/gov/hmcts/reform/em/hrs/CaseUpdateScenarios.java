@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs;
 import io.restassured.RestAssured;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,12 +32,15 @@ public class CaseUpdateScenarios {
     @Value("${test.url}")
     private String testUrl;
 
+    @BeforeAll
+    public void initialise() {
+        RestAssured.useRelaxedHTTPSValidation();
+    }
+
     @Test
     public void testCaseCreation() {
-        System.out.println("this is the test url" + testUrl);
-
-        HearingRecordingDto request = extendedCcdHelper.createRecordingSegment(
-            "http://dm-store-aat.service.core-compute-aat.internal:80/documents/e486435e-30e8-456c-9d4d-4adffcb50010",//TODO: need to ask CCD not to reject HRS URLs
+        HearingRecordingDto reqBody = extendedCcdHelper.createRecordingSegment(
+            "http://dm-store-aat.service.core-compute-aat.internal:80/documents/e486435e-30e8-456c-9d4d-4adffcb50010",
             "hearing-recording-segment",
             ".mp4",
             12L,
@@ -47,7 +51,7 @@ public class CaseUpdateScenarios {
             .given()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
-            .body(request)
+            .body(reqBody)
             .when()
             .post("/segments")
             .then()
@@ -56,7 +60,7 @@ public class CaseUpdateScenarios {
 
     @Test
     public void testCaseUpdate() {
-        HearingRecordingDto request = extendedCcdHelper.createRecordingSegment(
+        HearingRecordingDto reqBody = extendedCcdHelper.createRecordingSegment(
             "http://dm-store:8080/documents/57340931-bfce-424d-bcee-dd44ee55ff66",
             "hearing-recording-segment",
             ".mp4",
@@ -68,7 +72,7 @@ public class CaseUpdateScenarios {
             .given()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
-            .body(request)
+            .body(reqBody)
             .when()
             .post("/segments")
             .then()
