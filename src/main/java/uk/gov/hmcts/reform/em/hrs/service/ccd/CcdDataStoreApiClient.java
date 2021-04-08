@@ -16,7 +16,7 @@ import java.util.Map;
 @Service
 public class CcdDataStoreApiClient {
 
-    private final Logger log = LoggerFactory.getLogger(CcdDataStoreApiClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CcdDataStoreApiClient.class);
 
     private final SecurityService securityService;
     private final CaseDataContentCreator caseDataCreator;
@@ -51,6 +51,8 @@ public class CcdDataStoreApiClient {
             .submitForCaseworker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
                                  JURISDICTION, CASE_TYPE, false, caseData);
 
+        LOGGER.info("created a new case({}) for recording ({})",
+                                  caseDetails.getId(), hearingRecordingDto.getRecordingRef());
         return caseDetails.getId();
     }
 
@@ -67,6 +69,8 @@ public class CcdDataStoreApiClient {
                                                        hearingRecordingDto))
             .build();
 
+        LOGGER.info("updating case({}) with new recording ({})",
+                                  caseId, hearingRecordingDto.getRecordingRef());
         return coreCaseDataApi
             .submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
                                       JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData)

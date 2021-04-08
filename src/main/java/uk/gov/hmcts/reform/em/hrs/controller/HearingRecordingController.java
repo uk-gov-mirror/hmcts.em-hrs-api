@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.em.hrs.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.em.hrs.config.AzureStorageConfig;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
@@ -34,6 +37,8 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
 @RestController
 public class HearingRecordingController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HearingRecordingController.class);
 
     private final FolderService folderService;
     private final HearingRecordingService recordingService;
@@ -68,6 +73,8 @@ public class HearingRecordingController {
             folderName,
             folderService.getStoredFiles(folderName)
         );
+
+        LOGGER.info("returning the filenames under folder ", folderName);
         return ResponseEntity
             .ok()
             .contentType(APPLICATION_JSON)
@@ -92,7 +99,11 @@ public class HearingRecordingController {
 
         Long caseId = caseUpdateService
             .addRecordingToCase(hearingRecordingDto, hearingRecording.map(HearingRecording::getCcdCaseId));
+        LOGGER.info("Added hearing recording to Case:", caseId);
+
         segmentService.persistRecording(hearingRecordingDto, hearingRecording, caseId);
+        LOGGER.info("persisted recording metadata");
+
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
