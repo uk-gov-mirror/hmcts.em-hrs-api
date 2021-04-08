@@ -45,6 +45,7 @@ env.CCD_DATA_API_URL = 'http://ccd-data-store-api-aat.service.core-compute-aat.i
 env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.internal'
 env.IDAM_REDIRECT_URI = 'https://em-hrs-aat.service.core-compute-aat.internal/oauth2/callback'
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
+env.TEST_URL = "https://em-hrs-api-staging.service.core-compute-aat.internal/"
 
 def vaultOverrides = [
         'preview' : 'aat',

@@ -94,6 +94,8 @@ public class HearingRecordingController {
     public ResponseEntity<HearingRecordingDto> createHearingRecording(
         @RequestBody HearingRecordingDto hearingRecordingDto) {
 
+        LOGGER.info("request to create/update case with new hearing recording");
+
         Optional<HearingRecording> hearingRecording =
             recordingService.findByRecordingRef(hearingRecordingDto.getRecordingRef());
 
