@@ -5,6 +5,28 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  jpa:
+    database: postgresql
+    show-sql: ${SHOW_SQL:true}
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+    properties:
+      hibernate:
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 5
+          batch_versioned_data: true
+    main:
+      allow-bean-definition-overriding: true
+    liquibase:
+      enabled: ${ENABLE_DB_MIGRATE:false}
+      change-log: classpath:/db/db.changelog-master.xml
+    datasource:
+      url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5444/emhrs}
+      username: ${SPRING_DATASOURCE_USERNAME:emhrs}
+      password: ${SPRING_DATASOURCE_PASSWORD:emhrs}
   security:
     oauth2:
       client:
