@@ -99,12 +99,12 @@ tasks.withType(Test) {
 }
 
 task functional(type: Test) {
-    description = "Runs functional tests"
-    group = "Verification"
-    testClassesDirs = sourceSets.functionalTest.output.classesDirs
-    classpath = sourceSets.functionalTest.runtimeClasspath
-    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-    include "uk/gov/hmcts/reform/em/hrs/**"
+  description = "Runs functional tests"
+  group = "Verification"
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+  include "uk/gov/hmcts/reform/em/hrs/**"
 }
 
 task contract(type: Test) {
@@ -347,10 +347,10 @@ dependencies {
 //    exclude group: 'org.springframework.boot' , module: 'spring-boot-starter-web'
 //  }
 
-    compileOnly 'org.projectlombok:lombok:1.18.12'
-    implementation "ch.qos.logback:logback-classic:1.2.3"
+  compileOnly 'org.projectlombok:lombok:1.18.12'
+  implementation "ch.qos.logback:logback-classic:1.2.3"
 
-    implementation group: 'javax.inject', name: 'javax.inject', version: '1'
+  implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
   implementation "org.springframework.boot:spring-boot-starter-actuator"
   implementation "org.springframework.boot:spring-boot-starter-aop"
@@ -436,6 +436,12 @@ dependencies {
   functionalTestImplementation 'net.serenity-bdd:serenity-rest-assured:2.3.4', withoutStuff
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
 
+  functionalTestImplementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
+  functionalTestImplementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.30.Final'
+  functionalTestImplementation "org.liquibase:liquibase-core"
+  functionalTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+  functionalTestImplementation "org.springframework.boot:spring-boot-starter-jdbc"
+
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
   testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.15.2'
@@ -445,18 +451,19 @@ dependencies {
   }
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 
-    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
-    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
-    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
-    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
-    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-    smokeTestImplementation "uk.gov.hmcts.reform:em-test-helper:1.18.1"
+  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
+  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
+  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
+  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+  smokeTestImplementation "uk.gov.hmcts.reform:em-test-helper:1.18.1"
 
 /***********************************************************************************************************************
  * TEST SOURCE SETS
  **********************************************************************************************************************/
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
+  functionalTestImplementation sourceSets.test.runtimeClasspath
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath

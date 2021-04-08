@@ -5,6 +5,7 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  datasource.driver-class-name: org.postgresql.Driver
   jpa:
     database: postgresql
     show-sql: ${SHOW_SQL:true}
