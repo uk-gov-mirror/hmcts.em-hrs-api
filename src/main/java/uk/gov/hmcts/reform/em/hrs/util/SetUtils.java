@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.util;
 
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.util.Collections;
@@ -9,8 +8,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@NoArgsConstructor()
 public final class SetUtils {
+    private SetUtils() {
+    }
 
     public static <T> Set<T> intersect(@NonNull final Set<T> setA, @NonNull final Set<T> setB) {
         Set<T> a = new HashSet<>(setA);
