@@ -101,7 +101,7 @@ public class HearingRecordingController {
 
         Long caseId = caseUpdateService
             .addRecordingToCase(hearingRecordingDto, hearingRecording.map(HearingRecording::getCcdCaseId));
-        LOGGER.info("Added hearing recording to Case:", caseId);
+        LOGGER.info("Added hearing recording to Case({})", caseId);
 
         segmentService.persistRecording(hearingRecordingDto, hearingRecording, caseId);
         LOGGER.info("persisted recording metadata");
