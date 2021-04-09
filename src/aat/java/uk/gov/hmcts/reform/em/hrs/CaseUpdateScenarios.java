@@ -33,35 +33,13 @@ public class CaseUpdateScenarios {
     private String testUrl;
 
     @Test
-    public void testCaseCreation() {
+    public void testCcdCaseUpdate() {
         HearingRecordingDto reqBody = extendedCcdHelper.createRecordingSegment(
             "http://dm-store-aat.service.core-compute-aat.internal:80/documents/e486435e-30e8-456c-9d4d-4adffcb50010",
             "hearing-recording-segment",
             ".mp4",
             12L,
             0
-            );
-
-        RestAssured
-            .given()
-            .relaxedHTTPSValidation()
-            .baseUri(testUrl)
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(reqBody)
-            .when()
-            .post("/segments")
-            .then()
-            .statusCode(202);
-    }
-
-    @Test
-    public void testCaseUpdate() {
-        HearingRecordingDto reqBody = extendedCcdHelper.createRecordingSegment(
-            "http://dm-store:8080/documents/57340931-bfce-424d-bcee-dd44ee55ff66",
-            "hearing-recording-segment",
-            ".mp4",
-            12L,
-            1
             );
 
         RestAssured
