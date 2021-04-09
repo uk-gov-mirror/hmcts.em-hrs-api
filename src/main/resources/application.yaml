@@ -59,8 +59,8 @@ idam:
     id: ${OAUTH_CLIENT_ID:webshow} #TODO: ask idam team to create hrs client for us (add to vault once created)
     secret: ${IDAM_CLIENT_OAUTH_SECRET:AAAAAAAAAAAAAAAA}
     redirect_uri: ${IDAM_REDIRECT_URI:http://localhost:8080/oauth2redirect}
-    grant_type: password
-    scope: openid roles profile
+    grant_type: 'password'
+    scope: 'openid roles profile'
   api:
     url: ${IDAM_API_BASE_URI:http://localhost:5000}
   system-user:

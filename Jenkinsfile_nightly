@@ -51,7 +51,7 @@ withNightlyPipeline(type, product, component) {
     env.IDAM_API_BASE_URI = 'https://idam-api.aat.platform.hmcts.net'
     env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'
     env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
-    env.IDAM_REDIRECT_URI = 'https://em-hrs-aat.service.core-compute-aat.internal/oauth2/callback'
+    env.IDAM_REDIRECT_URI = 'https://em-show-aat.service.core-compute-aat.internal/oauth2/callback'
     env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
     env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.internal'
     env.CCD_DATA_API_URL = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
