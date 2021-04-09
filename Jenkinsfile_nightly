@@ -61,4 +61,15 @@ withNightlyPipeline(type, product, component) {
   loadVaultSecrets(secrets)
   enableMutationTest()
   enableSecurityScan()
+
+  after('test') {
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/pitest",
+      reportFiles          : "index.html",
+      reportName           : "HRS Mutation Test Report"
+    ]
+  }
 }
