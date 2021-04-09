@@ -13,6 +13,7 @@ plugins {
   id 'org.liquibase.gradle' version '2.0.4'
   id 'groovy'
   id 'au.com.dius.pact' version '4.0.10'
+  id "info.solidsoft.pitest" version '1.6.0'
 }
 
 apply from: 'liquibase.gradle'
@@ -99,12 +100,12 @@ tasks.withType(Test) {
 }
 
 task functional(type: Test) {
-    description = "Runs functional tests"
-    group = "Verification"
-    testClassesDirs = sourceSets.functionalTest.output.classesDirs
-    classpath = sourceSets.functionalTest.runtimeClasspath
-    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-    include "uk/gov/hmcts/reform/em/hrs/**"
+  description = "Runs functional tests"
+  group = "Verification"
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+  include "uk/gov/hmcts/reform/em/hrs/**"
 }
 
 task contract(type: Test) {
@@ -297,7 +298,6 @@ def versions = [
   reformLogging      : '5.1.5',
   springBoot         : springBoot.class.package.implementationVersion,
   springfoxSwagger   : '2.9.2',
-
   postgresql         : '42.2.13',
   pact_version       : '3.6.15',
   restAssured        : '4.2.0',
@@ -347,10 +347,10 @@ dependencies {
 //    exclude group: 'org.springframework.boot' , module: 'spring-boot-starter-web'
 //  }
 
-    compileOnly 'org.projectlombok:lombok:1.18.12'
-    implementation "ch.qos.logback:logback-classic:1.2.3"
+  compileOnly 'org.projectlombok:lombok:1.18.12'
+  implementation "ch.qos.logback:logback-classic:1.2.3"
 
-    implementation group: 'javax.inject', name: 'javax.inject', version: '1'
+  implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
   implementation "org.springframework.boot:spring-boot-starter-actuator"
   implementation "org.springframework.boot:spring-boot-starter-aop"
@@ -443,13 +443,14 @@ dependencies {
     exclude group: 'com.google.guava', module: 'guava'
   }
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
+  testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
 
-    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
-    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
-    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
-    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
-    smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-    smokeTestImplementation "uk.gov.hmcts.reform:em-test-helper:1.18.1"
+  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
+  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
+  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
+  smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+  smokeTestImplementation "uk.gov.hmcts.reform:em-test-helper:1.18.1"
 
 /***********************************************************************************************************************
  * TEST SOURCE SETS
@@ -535,4 +536,27 @@ pact {
     tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
     version = project.pactVersion
   }
+}
+
+pitest {
+  targetClasses = ['uk.gov.hmcts.reform.em.hrs.util.*', 'uk.gov.hmcts.reform.em.hrs.service.*', 'uk.gov.hmcts.reform.em.hrs.controller.*', 'uk.gov.hmcts.reform.em.hrs.repository.*', 'uk.gov.hmcts.reform.em.hrs.storage.*']
+  targetTests = ['uk.gov.hmcts.reform.em.hrs.util.*', 'uk.gov.hmcts.reform.em.hrs.service.*', 'uk.gov.hmcts.reform.em.hrs.controller.*', 'uk.gov.hmcts.reform.em.hrs.repository.*', 'uk.gov.hmcts.reform.em.hrs.storage.*']
+  //excludedClasses = ['uk.gov.hmcts.reform.em.hrs.service.SecurityServiceImplTest']
+  //targetClasses = ['uk.gov.hmcts.reform.em.hrs.util.*']
+  //targetTests = ['uk.gov.hmcts.reform.em.hrs.util.*']
+  enableDefaultIncrementalAnalysis = true
+  historyInputLocation = 'build/reports/pitest/fastermutationtesting'
+  historyOutputLocation = 'build/reports/pitest/fastermutationtestingoutput'
+  threads = 15
+  testSourceSets = [sourceSets.test, sourceSets.integrationTest]
+  mainSourceSets = [sourceSets.main]
+  fileExtensionsToFilter.addAll('xml', 'json')
+  outputFormats = ['XML', 'HTML', 'CSV']
+  mutationThreshold = 0
+  coverageThreshold = 0
+  maxMutationsPerClass = 15
+  jvmArgs = ['-Xms1G', '-Xmx3G']
+  timestampedReports = false
+  failWhenNoMutations = false
+  detectInlinedCode = true
 }
