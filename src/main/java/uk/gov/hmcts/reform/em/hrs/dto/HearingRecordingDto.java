@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,5 +25,6 @@ public class HearingRecordingDto {
     private final Long fileSize;
     private final int segment;
     private final String checkSum;
+    @JsonFormat(pattern = "yyyy-MM-dd-HH.mm.ss.SSS")
     private final LocalDateTime recordingDateTime;
 }
