@@ -62,14 +62,12 @@ withNightlyPipeline(type, product, component) {
   enableMutationTest()
   enableSecurityScan()
 
-  after('test') {
-    publishHTML target: [
-      allowMissing         : true,
-      alwaysLinkToLastBuild: true,
-      keepAll              : true,
-      reportDir            : "build/reports/pitest",
-      reportFiles          : "index.html",
-      reportName           : "HRS Mutation Test Report"
-    ]
-  }
+  publishHTML target: [
+    allowMissing         : true,
+    alwaysLinkToLastBuild: true,
+    keepAll              : true,
+    reportDir            : "build/reports/pitest",
+    reportFiles          : "index.html",
+    reportName           : "HRS Mutation Test Report"
+  ]
 }
