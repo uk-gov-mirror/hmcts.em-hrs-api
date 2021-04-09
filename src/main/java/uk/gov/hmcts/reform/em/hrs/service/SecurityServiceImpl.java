@@ -16,9 +16,6 @@ public class SecurityServiceImpl implements SecurityService {
     private final String systemUsername;
     private final String systemUserPassword;
 
-    @Value("${idam.client.id}") String clientId;
-    @Value("${idam.client.secret}") String clientSecret;
-
     @Inject
     public SecurityServiceImpl(final IdamClient idamClient,
                                final AuthTokenGenerator authTokenGenerator,
