@@ -56,7 +56,7 @@ spring:
 # service-auth-provider-client lib
 idam:
   client:
-    id: ${OAUTH_CLIENT_ID:webshow} #TODO: ask idam team to create hrs client for us (add to vault once created)
+    id: ${OAUTH_CLIENT_ID:default} #TODO: ask idam team to create hrs client for us (add to vault once created)
     secret: ${IDAM_CLIENT_OAUTH_SECRET:AAAAAAAAAAAAAAAA}
     redirect_uri: ${IDAM_REDIRECT_URI:http://localhost:8080/oauth2redirect}
     grant_type: password
