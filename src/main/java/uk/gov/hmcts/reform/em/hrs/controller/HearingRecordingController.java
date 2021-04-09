@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.em.hrs.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +33,8 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 @RestController
 public class HearingRecordingController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HearingRecordingController.class);
+
     private final FolderService folderService;
     private final ShareService shareService;
     private final IngestionQueue ingestionQueue;
@@ -58,6 +62,8 @@ public class HearingRecordingController {
             folderName,
             folderService.getStoredFiles(folderName)
         );
+
+        LOGGER.info("returning the filenames under folder {}", folderName);
         return ResponseEntity
             .ok()
             .contentType(APPLICATION_JSON)
@@ -76,6 +82,8 @@ public class HearingRecordingController {
     })
     public ResponseEntity<Void> createHearingRecording(
         @RequestBody final HearingRecordingDto hearingRecordingDto) {
+
+        LOGGER.info("request to create/update case with new hearing recording");
 
         final boolean result = ingestionQueue.offer(hearingRecordingDto);
 
