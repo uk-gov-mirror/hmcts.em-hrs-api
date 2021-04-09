@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.em.hrs;
 
 import io.restassured.RestAssured;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +32,7 @@ public class CaseUpdateScenarios {
     @Value("${test.url}")
     private String testUrl;
 
+    @Ignore
     @Test
     public void testCcdCaseUpdate() {
         HearingRecordingDto reqBody = extendedCcdHelper.createRecordingSegment(
