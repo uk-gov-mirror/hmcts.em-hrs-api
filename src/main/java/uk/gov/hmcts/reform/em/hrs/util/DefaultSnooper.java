@@ -8,7 +8,6 @@ import javax.inject.Named;
 @Slf4j
 public class DefaultSnooper implements Snooper {
 
-
     @Override
     public void snoop(final String message) {
         // TODO: covered by EM-3582
@@ -18,5 +17,6 @@ public class DefaultSnooper implements Snooper {
     @Override
     public void snoop(final String message, final Throwable throwable) {
         // TODO: covered by EM-3582
+        log.error(message, throwable);
     }
 }

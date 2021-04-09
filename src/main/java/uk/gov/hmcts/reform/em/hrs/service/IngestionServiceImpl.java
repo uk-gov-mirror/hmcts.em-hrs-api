@@ -1,9 +1,16 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
-import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
+import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
+import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
+import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdDataStoreApiClient;
+import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
 import java.util.Optional;
@@ -13,64 +20,114 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
+@Transactional
 public class IngestionServiceImpl implements IngestionService {
-    private final HearingRecordingService recordingService;
-    private final HearingRecordingSegmentService segmentService;
-    private final CaseUpdateService caseUpdateService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(IngestionServiceImpl.class);
+
+    private final CcdDataStoreApiClient ccdDataStoreApiClient;
+    private final HearingRecordingRepository recordingRepository;
+    private final HearingRecordingSegmentRepository segmentRepository;
+    private final HearingRecordingStorage hearingRecordingStorage;
     private final Snooper snooper;
 
     @Inject
-    public IngestionServiceImpl(final HearingRecordingService recordingService,
-                                final HearingRecordingSegmentService segmentService,
-                                final CaseUpdateService caseUpdateService,
+    public IngestionServiceImpl(final CcdDataStoreApiClient ccdDataStoreApiClient,
+                                final HearingRecordingRepository recordingRepository,
+                                final HearingRecordingSegmentRepository segmentRepository,
+                                final HearingRecordingStorage hearingRecordingStorage,
                                 final Snooper snooper) {
-        this.recordingService = recordingService;
-        this.segmentService = segmentService;
-        this.caseUpdateService = caseUpdateService;
+        this.ccdDataStoreApiClient = ccdDataStoreApiClient;
+        this.recordingRepository = recordingRepository;
+        this.segmentRepository = segmentRepository;
+        this.hearingRecordingStorage = hearingRecordingStorage;
         this.snooper = snooper;
     }
 
     @Override
     @Async("HrsAsyncExecutor")
     public void ingest(final HearingRecordingDto hearingRecordingDto) {
-        final CompletableFuture<Void> future1 = CompletableFuture.runAsync(() -> {
-            final Optional<HearingRecording> hearingRecording =
-                recordingService.findByRecordingRef(hearingRecordingDto.getRecordingRef());
 
-            final Long caseId = caseUpdateService.addRecordingToCase(
-                hearingRecordingDto,
-                hearingRecording.map(HearingRecording::getCcdCaseId)
+        final CompletableFuture<Void> metadataFuture = CompletableFuture.runAsync(() -> {
+            final Optional<HearingRecording> optionalHearingRecording = recordingRepository.findByRecordingRef(
+                hearingRecordingDto.getRecordingRef()
             );
-            // TODO: Should not persist into database if record failed to create CCD record
-            segmentService.persistRecording(hearingRecordingDto, hearingRecording, caseId);
+
+            final HearingRecordingSegment segment = optionalHearingRecording
+                .map(x -> updateCase(x, hearingRecordingDto))
+                .orElseGet(() -> createCaseAndPersist(hearingRecordingDto));
+
+            segmentRepository.save(segment);
         });
-        /*final CompletableFuture<Void> future2 = CompletableFuture.runAsync(() -> {
-            LOGGER.info("Task::Beautiful started.");
-            try {
-                TimeUnit.SECONDS.sleep(3);
-                snooper.snoop("Beautiful");
-            } catch (InterruptedException e) {
-                snooper.snoop(e.getMessage());
-            }
-            LOGGER.info("Task::Beautiful stopped.");
-        });
-        final CompletableFuture<Void> future3 = CompletableFuture.runAsync(() -> {
-            LOGGER.info("Task::World started.");
-            try {
-                TimeUnit.SECONDS.sleep(5);
-                snooper.snoop("World");
-            } catch (InterruptedException e) {
-                snooper.snoop(e.getMessage());
-            }
-            LOGGER.info("Task::World stopped.");
-        });*/
+
+        final CompletableFuture<Void> blobCopyFuture = CompletableFuture.runAsync(
+            () -> hearingRecordingStorage.copyRecording(
+                hearingRecordingDto.getCvpFileUrl(),
+                hearingRecordingDto.getFilename()
+            )
+        );
 
         try {
             CompletableFuture
-                .allOf(future1/*, future2, future3*/)
+                .allOf(metadataFuture, blobCopyFuture)
                 .get();
-        } catch (InterruptedException | ExecutionException e) {
-            snooper.snoop("Something broke", e);
+        } catch (ExecutionException e) {
+            snoop(hearingRecordingDto.getCvpFileUrl(), e);
+        } catch (InterruptedException e) {
+            snoop(hearingRecordingDto.getCvpFileUrl(), e);
+            Thread.currentThread().interrupt();
         }
     }
+
+    private HearingRecordingSegment updateCase(final HearingRecording recording,
+                                               final HearingRecordingDto recordingDto) {
+
+        LOGGER.info("adding  recording ({}) to case({})", recordingDto.getRecordingRef(), recording.getCcdCaseId());
+
+        ccdDataStoreApiClient.updateCaseData(recording.getCcdCaseId(), recordingDto);
+
+        return HearingRecordingSegment.builder()
+            .filename(recordingDto.getFilename())
+            .fileExtension(recordingDto.getFilenameExtension())
+            .fileSizeMb(recordingDto.getFileSize())
+            .fileMd5Checksum(recordingDto.getCheckSum())
+            .ingestionFileSourceUri(recordingDto.getCvpFileUrl())
+            .recordingSegment(recordingDto.getSegment())
+            .hearingRecording(recording)
+            .build();
+    }
+
+    private HearingRecordingSegment createCaseAndPersist(final HearingRecordingDto recordingDto) {
+        LOGGER.info("creating a new case for recording: {}", recordingDto.getRecordingRef());
+
+        final Long caseId = ccdDataStoreApiClient.createCase(recordingDto);
+
+        final HearingRecording recording = HearingRecording.builder()
+            .recordingRef(recordingDto.getRecordingRef())
+            .ccdCaseId(caseId)
+            .caseRef(recordingDto.getCaseRef())
+            .hearingLocationCode(recordingDto.getCourtLocationCode())
+            .hearingRoomRef(recordingDto.getHearingRoomRef())
+            .hearingSource(recordingDto.getRecordingSource())
+            .jurisdictionCode(recordingDto.getJurisdictionCode())
+            .serviceCode(recordingDto.getServiceCode())
+            .build();
+
+        final HearingRecording savedRecording = recordingRepository.save(recording);
+
+        return HearingRecordingSegment.builder()
+            .filename(recordingDto.getFilename())
+            .fileExtension(recordingDto.getFilenameExtension())
+            .fileSizeMb(recordingDto.getFileSize())
+            .fileMd5Checksum(recordingDto.getCheckSum())
+            .ingestionFileSourceUri(recordingDto.getCvpFileUrl())
+            .recordingSegment(recordingDto.getSegment())
+            .hearingRecording(savedRecording)
+            .build();
+    }
+
+    private void snoop(final String file, final Throwable throwable) {
+        final String message = String.format("An error occurred ingesting file '%s'", file);
+        snooper.snoop(message, throwable);
+    }
+
 }

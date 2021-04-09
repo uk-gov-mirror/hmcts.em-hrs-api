@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDI
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_ADDRESS;
 
 @ExtendWith(MockitoExtension.class)
-class HearingRecordingShareeServiceImplTests {
+class HearingRecordingShareeServiceImplTest {
     @Mock
     private ShareesRepository shareesRepository;
 

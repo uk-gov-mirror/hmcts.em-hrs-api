@@ -27,11 +27,13 @@ public class HearingRecordingServiceImpl implements HearingRecordingService {
     public Tuple2<HearingRecording, Set<String>> getDownloadSegmentUris(final Long ccdCaseId) {
         final Optional<HearingRecording> hearingRecording = hearingRecordingRepository.findByCcdCaseId(ccdCaseId);
 
-        final Set<String> downloadLinks = hearingRecording
-            .map(x -> buildDownloadLinks(x.getSegments()))
-            .orElseThrow(() -> new HearingRecordingNotFoundException(ccdCaseId));
+        return hearingRecording
+            .map(x -> {
+                final Set<String> links = buildDownloadLinks(x.getSegments());
 
-        return Tuples.of(hearingRecording.get(), downloadLinks);
+                return Tuples.of(x, links);
+            })
+            .orElseThrow(() -> new HearingRecordingNotFoundException(ccdCaseId));
     }
 
     private Set<String> buildDownloadLinks(Set<HearingRecordingSegment> segments) {
@@ -40,18 +42,4 @@ public class HearingRecordingServiceImpl implements HearingRecordingService {
             .collect(Collectors.toUnmodifiableSet());
     }
 
-    @Override
-    public HearingRecording createAndSaveEntry(HearingRecording hearingRecording) {
-        return hearingRecordingRepository.save(hearingRecording);
-    }
-
-    @Override
-    public final Optional<HearingRecording> findByRecordingRef(final String recordingRef) {
-        return hearingRecordingRepository.findByRecordingRef(recordingRef);
-    }
-
-    @Override
-    public final Optional<HearingRecording> findByCaseId(final Long caseId) {
-        return hearingRecordingRepository.findByCcdCaseId(caseId);
-    }
 }

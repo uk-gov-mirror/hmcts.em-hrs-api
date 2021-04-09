@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_ID;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHARER_EMAIL_ADDRESS;
 
 @ExtendWith({MockitoExtension.class})
-class ShareServiceImplTests {
+class ShareServiceImplTest {
 
     @Mock
     private HearingRecordingShareeService hearingRecordingShareeService;

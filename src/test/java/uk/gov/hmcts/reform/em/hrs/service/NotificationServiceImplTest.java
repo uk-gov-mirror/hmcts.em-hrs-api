@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_ID;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHARER_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.convertObjectToJsonString;
 
-class NotificationServiceImplTests {
+class NotificationServiceImplTest {
     private static final String EMAIL_TEMPLATE_ID = "1e10b560-4a3f-49a7-81f7-c3c6eceab455";
     private final NotificationClientApi notificationClient = mock(NotificationClientApi.class);
 
@@ -64,7 +64,7 @@ class NotificationServiceImplTests {
                        eq(SHARER_EMAIL_ADDRESS));
     }
 
-    @Test()
+    @Test
     void sendEmailNotificationFailure() throws Exception {
         final Map<String, Object> personalisation = makePersonalisation();
 

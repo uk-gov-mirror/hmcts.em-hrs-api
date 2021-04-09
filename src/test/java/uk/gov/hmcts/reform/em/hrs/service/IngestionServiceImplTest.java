@@ -1,58 +1,90 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestApplicationConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
+import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
+import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
+import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdDataStoreApiClient;
+import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import javax.inject.Inject;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CCD_CASE_ID;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_DTO;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_WITH_SEGMENTS;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_REFERENCE;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SEGMENT_1;
 
-@Disabled
-@SpringBootTest(classes = {TestApplicationConfig.class, IngestionServiceImpl.class})
+@ExtendWith(MockitoExtension.class)
 class IngestionServiceImplTest {
-    @Inject
+    @Mock
+    private CcdDataStoreApiClient ccdDataStoreApiClient;
+    @Mock
+    private HearingRecordingRepository recordingRepository;
+    @Mock
+    private HearingRecordingSegmentRepository segmentRepository;
+    @Mock
+    private HearingRecordingStorage hearingRecordingStorage;
+    @Mock
     private Snooper snooper;
-    @Inject
+
+    @InjectMocks
     private IngestionServiceImpl underTest;
 
-    @Captor
-    private ArgumentCaptor<String> snoopCaptor;
+    @Test
+    void testShouldIngestWhenHearingRecordingIsNew() {
+        doReturn(Optional.empty()).when(recordingRepository).findByRecordingRef(RECORDING_REFERENCE);
+        doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).createCase(HEARING_RECORDING_DTO);
+        doReturn(HEARING_RECORDING).when(recordingRepository).save(any(HearingRecording.class));
+        doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));
+        doNothing().when(hearingRecordingStorage)
+            .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
 
-    @BeforeEach
-    void setup() {
-        snoopCaptor.getAllValues().clear();
+        underTest.ingest(HEARING_RECORDING_DTO);
+
+        verify(recordingRepository).findByRecordingRef(RECORDING_REFERENCE);
+        verify(ccdDataStoreApiClient).createCase(HEARING_RECORDING_DTO);
+        verify(recordingRepository).save(any(HearingRecording.class));
+        verify(segmentRepository).save(any(HearingRecordingSegment.class));
+        verify(hearingRecordingStorage)
+            .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
+        verifyNoInteractions(snooper);
     }
 
     @Test
-    void test1() {
-        final Instant start = Instant.now(Clock.systemDefaultZone());
+    void testShouldIngestWhenHearingRecordingExist() {
+        doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS)).when(recordingRepository)
+            .findByRecordingRef(RECORDING_REFERENCE);
+        doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).updateCaseData(anyLong(), eq(HEARING_RECORDING_DTO));
+        doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));
+        doNothing().when(hearingRecordingStorage)
+            .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
 
-        underTest.ingest(null);
+        underTest.ingest(HEARING_RECORDING_DTO);
 
-        final Instant end = Instant.now(Clock.systemDefaultZone());
-        final Duration duration = Duration.between(start, end);
-
-        assertThat(duration).hasSeconds(5);
-        //        assertThat(messages).isEmpty();
-        //        TimeUnit.SECONDS.sleep(1);
-        //        assertThat(messages).singleElement().isEqualTo("Hello");
-        //        TimeUnit.SECONDS.sleep(1);
-        //        assertThat(messages).isNotEmpty().hasSameElementsAs(List.of("Hello", "Beautiful"));
-        //        TimeUnit.SECONDS.sleep(1);
-
-        verify(snooper, atLeastOnce()).snoop("Hello");
-        verify(snooper, atLeastOnce()).snoop("Beautiful");
-        verify(snooper, atLeastOnce()).snoop("World");
+        verify(recordingRepository).findByRecordingRef(RECORDING_REFERENCE);
+        verify(ccdDataStoreApiClient).updateCaseData(anyLong(), eq(HEARING_RECORDING_DTO));
+        verify(ccdDataStoreApiClient, never()).createCase(HEARING_RECORDING_DTO);
+        verify(recordingRepository, never()).save(any(HearingRecording.class));
+        verify(segmentRepository).save(any(HearingRecordingSegment.class));
+        verify(hearingRecordingStorage)
+            .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
+        verifyNoInteractions(snooper);
     }
+
 }

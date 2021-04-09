@@ -31,21 +31,21 @@ class SetUtilsTest {
 
         NullPointerException exception = assertThrows(
             NullPointerException.class,
-            () -> { final Set<String> intersection = SetUtils.intersect(null, null);; }
+            () -> SetUtils.intersect(null, null)
         );
 
         assertEquals("setA is marked non-null but is null", exception.getMessage());
 
         NullPointerException exception2 = assertThrows(
             NullPointerException.class,
-            () -> { final Set<String> intersection = SetUtils.intersect(setA, null);; }
+            () -> SetUtils.intersect(setA, null)
         );
 
         assertEquals("setB is marked non-null but is null", exception2.getMessage());
 
         NullPointerException exception3 = assertThrows(
             NullPointerException.class,
-            () -> { final Set<String> intersection = SetUtils.intersect(null, setB);; }
+            () -> SetUtils.intersect(null, setB)
         );
 
         assertEquals("setA is marked non-null but is null", exception3.getMessage());
@@ -68,21 +68,21 @@ class SetUtilsTest {
 
         NullPointerException exception = assertThrows(
             NullPointerException.class,
-            () -> { final Set<String> union = SetUtils.union(null, null);; }
+            () -> SetUtils.union(null, null)
         );
 
         assertEquals("setA is marked non-null but is null", exception.getMessage());
 
         NullPointerException exception2 = assertThrows(
             NullPointerException.class,
-            () -> { final Set<String> union = SetUtils.union(null, setB);; }
+            () -> SetUtils.union(null, setB)
         );
 
         assertEquals("setA is marked non-null but is null", exception2.getMessage());
 
         NullPointerException exception3 = assertThrows(
             NullPointerException.class,
-            () -> { final Set<String> union = SetUtils.union(setA, null);; }
+            () -> SetUtils.union(setA, null)
         );
 
         assertEquals("setB is marked non-null but is null", exception3.getMessage());

@@ -9,17 +9,15 @@ import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareeService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
-import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
+import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
 
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -37,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CASE_REFERENCE;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CCD_CASE_ID;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_DTO;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_DATETIME;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_REFERENCE;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SERVICE_AUTHORIZATION_TOKEN;
@@ -48,19 +47,10 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     private FolderService folderService;
 
     @MockBean
-    private HearingRecordingService recordingService;
-
-    @MockBean
-    private HearingRecordingSegmentService segmentService;
-
-    @MockBean
-    private CaseUpdateService caseUpdateService;
-
-    @MockBean
-    private HearingRecordingShareeService hearingRecordingShareeService;
-
-    @MockBean
     private ShareService shareService;
+
+    @Inject
+    private IngestionQueue ingestionQueue;
 
     private static final String TEST_FOLDER = "folder-1";
 
@@ -127,43 +117,20 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     }
 
     @Test
-    void test() throws Exception {
+    void testShouldNotExceedOneSecond() throws Exception {
         final String path = "/segments";
-        final HearingRecordingDto request = new HearingRecordingDto(
-            CASE_REFERENCE,
-            "CVP",
-            "123",
-            null,
-            "JC",
-            "LC",
-            RECORDING_REFERENCE,
-            "recording-cvp-uri",
-            "hearing-recording-file-name",
-            "mp4",
-            123456789L,
-            0,
-            "erI2foA30B==",
-            RECORDING_DATETIME
-        );
-
-        //        doReturn(Optional.empty()).when(recordingService).findByRecordingRef(RECORDING_REFERENCE);
-        //        doReturn(CCD_CASE_ID).when(caseUpdateService).addRecordingToCase(hearingRecordingDto, Optional.empty());
-        //        doReturn(SEGMENT_1).when(segmentService.persistRecording(hearingRecordingDto, Optional.empty(), CCD_CASE_ID));
-        //
-        //
-        final String payload = convertObjectToJsonString(request);
 
         final Instant start = Instant.now(Clock.systemDefaultZone());
 
         mockMvc.perform(post(path)
-                            .content(payload)
+                            .content(convertObjectToJsonString(HEARING_RECORDING_DTO))
                             .contentType(APPLICATION_JSON_VALUE))
             .andExpect(status().isAccepted())
             .andReturn();
 
         final Instant end = Instant.now(Clock.systemDefaultZone());
 
-        assertThat(Duration.between(start, end)).isLessThanOrEqualTo(Duration.ofSeconds(2L));
+        assertThat(Duration.between(start, end)).isLessThanOrEqualTo(Duration.ofSeconds(1L));
     }
 
 }
