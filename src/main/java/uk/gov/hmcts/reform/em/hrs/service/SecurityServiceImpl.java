@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -12,8 +10,6 @@ import javax.inject.Named;
 
 @Named
 public class SecurityServiceImpl implements SecurityService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityServiceImpl.class);
 
     private final IdamClient idamClient;
     private final AuthTokenGenerator authTokenGenerator;
@@ -44,7 +40,6 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public String getUserToken() {
-        LOGGER.info("getting the user token with client-id ({}) and client-secret ({})", clientId, clientSecret);
         return idamClient.getAccessToken(systemUsername, systemUserPassword);
     }
 
