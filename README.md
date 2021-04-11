@@ -1,5 +1,31 @@
 # Hearing Recording Service
 
+Pre-requisites:
+
+To be able to run the applicaiton locally, you will need to be able to run the docker images
+for CCD and other services.
+
+You will need to be able to run this command:
+az acr login --name hmctspublic && az acr login --name hmctsprivate
+
+So standard az cli tools are needed, as well as @hmcts.net log in with appropriate roles
+
+
+#Gotchas:
+
+1) the applicaitons postgres database runs on port 5444 due to issues getting pact broker database
+to run on a different port
+
+2) as with all liquibase projects, sometimes your database will be out of sync with changes within
+   src/main/resources/db/db.changelog-master.xml
+   AS a convenience method, when your run "make app-run", it will call the liquibase apply as part of the
+   gradle commands. this make command resolves to:
+   ./gradlew migratePostgresDatabase bootRun
+
+3) before running any integration tests from hrs-ingestor, you will need to prime the CCD data API with the
+   hrs spreadsheet. This can be achieved by running ./gradlew functional
+
+4) Sonarqube only does analysis
 
 #Local Dev
 
@@ -34,10 +60,10 @@ smoketest:
 Using PGAdmin, or IntelliJ Ultimate:
 
 host:localhost
-port:5432
+port:5444
 username:emhrs
 pass:emhrs
-jdbc_url: jdbc:postgresql://localhost:5432/emhrs
+jdbc_url: jdbc:postgresql://localhost:5444/emhrs
 
 
 #Idea Setup
@@ -86,7 +112,7 @@ Create docker image:
   docker-compose build
 ```
 
-Run the applicaiton in docker by executing the following command:
+Run the application in docker by executing the following command:
 
 ```bash
   docker-compose up

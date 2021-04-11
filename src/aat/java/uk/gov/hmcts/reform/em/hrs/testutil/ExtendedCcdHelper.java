@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -45,6 +46,7 @@ public class ExtendedCcdHelper {
 
     public HearingRecordingDto createRecordingSegment(
         String url, String filename, String fileExt, Long fileSize, int segment) {
+
         return new HearingRecordingDto(
             "hearing-12-family-probate-morning",
             "CVP",
