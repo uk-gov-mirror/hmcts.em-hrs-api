@@ -15,20 +15,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.em.hrs.config.AzureStorageConfig;
-import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
 import uk.gov.hmcts.reform.em.hrs.exception.ValidationErrorException;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
-import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
 import uk.gov.hmcts.reform.em.hrs.util.EmailValidator;
+import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Optional;
 import javax.inject.Inject;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -41,22 +36,16 @@ public class HearingRecordingController {
     private static final Logger LOGGER = LoggerFactory.getLogger(HearingRecordingController.class);
 
     private final FolderService folderService;
-    private final HearingRecordingService recordingService;
-    private final HearingRecordingSegmentService segmentService;
     private final ShareService shareService;
-    private final CaseUpdateService caseUpdateService;
+    private final IngestionQueue ingestionQueue;
 
     @Inject
     public HearingRecordingController(final FolderService folderService,
-                                      final CaseUpdateService caseUpdateService,
-                                      final HearingRecordingService recordingService,
-                                      final HearingRecordingSegmentService segmentService,
-                                      final ShareService shareService) {
+                                      final ShareService shareService,
+                                      final IngestionQueue ingestionQueue) {
         this.folderService = folderService;
-        this.caseUpdateService = caseUpdateService;
-        this.recordingService = recordingService;
-        this.segmentService = segmentService;
         this.shareService = shareService;
+        this.ingestionQueue = ingestionQueue;
     }
 
     @GetMapping(
@@ -74,7 +63,7 @@ public class HearingRecordingController {
             folderService.getStoredFiles(folderName)
         );
 
-        LOGGER.info("returning the filenames under folder ", folderName);
+        LOGGER.info("returning the filenames under folder {}", folderName);
         return ResponseEntity
             .ok()
             .contentType(APPLICATION_JSON)
@@ -83,30 +72,22 @@ public class HearingRecordingController {
 
     @PostMapping(
         path = "/segments",
-        consumes = APPLICATION_JSON_VALUE,
-        produces = APPLICATION_JSON_VALUE
+        consumes = APPLICATION_JSON_VALUE/*,
+        produces = APPLICATION_JSON_VALUE*/
     )
     @ResponseBody
     @ApiOperation(value = "Post hearing recording segment", notes = "Save hearing recording segment")
     @ApiResponses(value = {
         @ApiResponse(code = 202, message = "Request accepted for asynchronous processing")
     })
-    public ResponseEntity<HearingRecordingDto> createHearingRecording(
-        @RequestBody HearingRecordingDto hearingRecordingDto) {
+    public ResponseEntity<Void> createHearingRecording(
+        @RequestBody final HearingRecordingDto hearingRecordingDto) {
 
         LOGGER.info("request to create/update case with new hearing recording");
 
-        Optional<HearingRecording> hearingRecording =
-            recordingService.findByRecordingRef(hearingRecordingDto.getRecordingRef());
+        final boolean result = ingestionQueue.offer(hearingRecordingDto);
 
-        Long caseId = caseUpdateService
-            .addRecordingToCase(hearingRecordingDto, hearingRecording.map(HearingRecording::getCcdCaseId));
-        LOGGER.info("Added hearing recording to Case({})", caseId);
-
-        segmentService.persistRecording(hearingRecordingDto, hearingRecording, caseId);
-        LOGGER.info("persisted recording metadata");
-
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping(

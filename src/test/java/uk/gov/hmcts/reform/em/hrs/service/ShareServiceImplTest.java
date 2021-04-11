@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.em.hrs.util.Tuple2;
+import reactor.util.function.Tuples;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_ID;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHARER_EMAIL_ADDRESS;
 
 @ExtendWith({MockitoExtension.class})
-class ShareServiceImplTests {
+class ShareServiceImplTest {
 
     @Mock
     private HearingRecordingShareeService hearingRecordingShareeService;
@@ -43,7 +43,7 @@ class ShareServiceImplTests {
 
     @Test
     void testShouldSendNotificationSuccessfully() throws Exception {
-        doReturn(new Tuple2<>(HEARING_RECORDING_WITH_SEGMENTS, SEGMENTS_DOWNLOAD_LINKS))
+        doReturn(Tuples.of(HEARING_RECORDING_WITH_SEGMENTS, SEGMENTS_DOWNLOAD_LINKS))
             .when(hearingRecordingService)
             .getDownloadSegmentUris(CCD_CASE_ID);
         doReturn(HEARING_RECORDING_SHAREE).when(hearingRecordingShareeService)

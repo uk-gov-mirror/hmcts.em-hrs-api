@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.em.hrs.componenttests;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
 import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
+import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -34,8 +36,9 @@ public class TestUtil {
     public static final UUID SHAREE_ID = UUID.randomUUID();
     public static final String CASE_REFERENCE = "hrs-grant-" + SHAREE_ID;
     public static final LocalDateTime RECORDING_DATETIME = LocalDateTime.now();
+    public static final String RECORDING_REFERENCE = "file-1";
 
-    private static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
+    public static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
         .filename(FILE_1)
         .build();
@@ -47,6 +50,23 @@ public class TestUtil {
         .id(RANDOM_UUID)
         .filename(FILE_3)
         .build();
+
+    public static final HearingRecordingDto HEARING_RECORDING_DTO = new HearingRecordingDto(
+        CASE_REFERENCE,
+        "CVP",
+        "123",
+        null,
+        "JC",
+        "LC",
+        RECORDING_REFERENCE,
+        "recording-cvp-uri",
+        "hearing-recording-file-name",
+        "mp4",
+        123456789L,
+        0,
+        "erI2foA30B==",
+        RECORDING_DATETIME
+    );
 
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(
         MediaType.APPLICATION_JSON.getType(),
@@ -113,6 +133,7 @@ public class TestUtil {
     public static final HearingRecording HEARING_RECORDING_WITH_SEGMENTS = HearingRecording.builder()
         .id(RANDOM_UUID)
         .caseRef(CASE_REFERENCE)
+        .ccdCaseId(CCD_CASE_ID)
         .segments(Set.of(SEGMENT_1, SEGMENT_2, SEGMENT_3))
         .folder(Folder.builder().id(RANDOM_UUID).build())
         .createdOn(RECORDING_DATETIME)
@@ -126,12 +147,15 @@ public class TestUtil {
     }
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
-        ObjectMapper om = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        final ObjectMapper om = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         return om.writeValueAsBytes(object);
     }
 
     public static String convertObjectToJsonString(Object object) throws IOException {
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
+        final ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(object);
     }
 }

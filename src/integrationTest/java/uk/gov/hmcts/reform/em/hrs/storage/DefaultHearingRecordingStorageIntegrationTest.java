@@ -2,10 +2,12 @@ package uk.gov.hmcts.reform.em.hrs.storage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestApplicationConfig;
 import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestAzureStorageConfig;
 import uk.gov.hmcts.reform.em.hrs.helper.AzureOperations;
-import uk.gov.hmcts.reform.em.hrs.helper.SimpleSnooper;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
 import java.time.Duration;
@@ -18,10 +20,12 @@ import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest(classes = {
     TestAzureStorageConfig.class,
-    SimpleSnooper.class,
+    TestApplicationConfig.class,
     DefaultHearingRecordingStorage.class,
     AzureOperations.class}
 )
@@ -33,6 +37,9 @@ class DefaultHearingRecordingStorageIntegrationTest {
     @Inject
     private DefaultHearingRecordingStorage underTest;
 
+    @Captor
+    private ArgumentCaptor<String> snoopCaptor;
+
     private static final Duration TEN_SECONDS = Duration.ofSeconds(10);
     private static final String EMPTY_FOLDER = "folder-0";
     private static final String ONE_ITEM_FOLDER = "folder-1";
@@ -40,7 +47,7 @@ class DefaultHearingRecordingStorageIntegrationTest {
 
     @BeforeEach
     void setup() {
-        snooper.clearMessages();
+        snoopCaptor.getAllValues().clear();
         azureOperations.clearContainer();
     }
 
@@ -110,10 +117,7 @@ class DefaultHearingRecordingStorageIntegrationTest {
 
         underTest.copyRecording(sourceUrl, file);
 
-        await().atMost(TEN_SECONDS)
-            .untilAsserted(() -> assertThat(snooper.getMessages())
-                .isNotEmpty()
-                .contains(String.format("File %s copied successfully", file)));
+        assertMessagesContain(String.format("File %s copied successfully", file));
     }
 
     @Test
@@ -123,10 +127,17 @@ class DefaultHearingRecordingStorageIntegrationTest {
 
         underTest.copyRecording(sourceUrl, file);
 
-        await().atMost(TEN_SECONDS)
-            .untilAsserted(() -> assertThat(snooper.getMessages())
-                .singleElement()
-                .satisfies(x -> assertThat(x.startsWith(String.format("File %s copied failed:: ", file))).isTrue()));
+        assertMessagesContain(String.format("File %s copied failed:: ", file));
+    }
+
+    private void assertMessagesContain(final String message) {
+        await().atMost(TEN_SECONDS).untilAsserted(() -> {
+            verify(snooper, atLeastOnce()).snoop(snoopCaptor.capture());
+
+            assertThat(snoopCaptor.getAllValues())
+                .isNotEmpty()
+                .satisfies(x -> assertThat(x.stream().anyMatch(y -> y.startsWith(message))).isTrue());
+        });
     }
 
     private Set<String> generateFilePaths() {
