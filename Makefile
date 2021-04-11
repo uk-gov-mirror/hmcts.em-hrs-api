@@ -13,8 +13,9 @@ liquibase-create-change-log:
 liquibase-apply-change-log:
 	./gradlew migratePostgresDatabase
 
+#applies database changes if required, and runs spring bootapp
 app-run:
-	./gradlew bootRun
+	./gradlew migratePostgresDatabase bootRun
 
 app-clean-run:
 	./gradlew clean bootRun
@@ -57,7 +58,7 @@ sonarqube-run-tests-with-password-as-admin:
 sonarqube-run-tests-with-password-as-adminnew:
 	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="adminnew" -i && open http://localhost:9000/
 
-report-sonarcube:
+report-sonarqube:
 	xdg-open http://localhost:9000/
 
 report-checkstyle:
