@@ -47,10 +47,14 @@ public class CaseDataContentCreator {
     }
 
     private RecordingSegment createSegment(HearingRecordingDto hearingRecordingDto) {
+
+//      //force the target url to be acceptable by CCD data API
+        //this is forced to be the domain as specfied in the ccd dependencies file under CCD_DM_DOMAIN: http://dm-store:8080
+        String tempUrlFixer="http://dm-store:8080/documents/hrs-will-be-fixed";
         CaseDocument recordingFile = CaseDocument.builder()
             .filename(hearingRecordingDto.getFilename())
-            .url(hearingRecordingDto.getCvpFileUrl())//TODO: this is CVP url, I need to construct it from filename
-            .binaryUrl(hearingRecordingDto.getCvpFileUrl() + "/binary")
+            .url(tempUrlFixer)//TODO: this is CVP url, I need to construct it from filename
+            .binaryUrl(tempUrlFixer + "/binary")
             .build();
 
         return RecordingSegment.builder()

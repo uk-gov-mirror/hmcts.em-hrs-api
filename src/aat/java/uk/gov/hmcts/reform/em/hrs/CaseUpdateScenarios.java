@@ -34,7 +34,7 @@ public class CaseUpdateScenarios {
     @Test
     public void testCcdCaseUpdate() {
         HearingRecordingDto reqBody = extendedCcdHelper.createRecordingSegment(
-            "http://dm-store-aat.service.core-compute-aat.internal:80/documents/e486435e-30e8-456c-9d4d-4adffcb50010",
+            "http://dm-store:8080/documents/e486435e-30e8-456c-9d4d-4adffcb50010",
             "hearing-recording-segment",
             ".mp4",
             12L,
