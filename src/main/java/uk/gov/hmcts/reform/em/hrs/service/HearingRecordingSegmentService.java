@@ -8,5 +8,4 @@ import java.util.UUID;
 public interface HearingRecordingSegmentService {
 
     List<HearingRecordingSegment> findByRecordingId(UUID id);
-
 }
