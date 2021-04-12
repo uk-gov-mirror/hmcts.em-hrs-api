@@ -7,6 +7,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
+import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
@@ -16,6 +17,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 import javax.inject.Inject;
 
 import static java.util.Collections.emptySet;
@@ -129,4 +131,37 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
         assertThat(Duration.between(start, end)).isLessThanOrEqualTo(Duration.ofSeconds(1L));
     }
 
+    @Test
+    void testShouldReturnRequestAccepted() throws Exception {
+        final String path = "/segments";
+        ingestionQueue.clear();
+
+        mockMvc.perform(post(path)
+                            .content(convertObjectToJsonString(HEARING_RECORDING_DTO))
+                            .contentType(APPLICATION_JSON_VALUE))
+            .andExpect(status().isAccepted())
+            .andReturn();
+    }
+
+    @Test
+    void testShouldReturnTooManyRequests() throws Exception {
+        final String path = "/segments";
+        clogJobQueue();
+
+        mockMvc.perform(post(path)
+                            .content(convertObjectToJsonString(HEARING_RECORDING_DTO))
+                            .contentType(APPLICATION_JSON_VALUE))
+            .andExpect(status().isTooManyRequests())
+            .andReturn();
+    }
+
+    private void clogJobQueue() {
+        IntStream.rangeClosed(1, 1000)
+            .forEach(x -> {
+                final HearingRecordingDto dto = HearingRecordingDto.builder()
+                    .caseRef("cr" + x)
+                    .build();
+                ingestionQueue.offer(dto);
+            });
+    }
 }
