@@ -60,7 +60,7 @@ public class IngestionServiceImpl implements IngestionService {
 
             optionalHearingRecording
                 .map(hearingRecording -> updateCase(hearingRecording, hearingRecordingDto))
-                .orElseGet(() -> Optional.of(createCaseinCcdAndPersist(hearingRecordingDto)))
+                .orElse(Optional.of(createCaseinCcdAndPersist(hearingRecordingDto)))
                 .ifPresent(segment -> segmentRepository.save(segment));
 
         });
@@ -104,15 +104,7 @@ public class IngestionServiceImpl implements IngestionService {
 
         ccdDataStoreApiClient.updateCaseData(recording.getCcdCaseId(), recordingDto);
 
-        return Optional.of(HearingRecordingSegment.builder()
-                               .filename(recordingDto.getFilename())
-                               .fileExtension(recordingDto.getFilenameExtension())
-                               .fileSizeMb(recordingDto.getFileSize())
-                               .fileMd5Checksum(recordingDto.getCheckSum())
-                               .ingestionFileSourceUri(recordingDto.getCvpFileUrl())
-                               .recordingSegment(recordingDto.getSegment())
-                               .hearingRecording(recording)
-                               .build());
+        return Optional.of(createSegment(recording, recordingDto));
     }
 
     private HearingRecordingSegment createCaseinCcdAndPersist(final HearingRecordingDto recordingDto) {
@@ -141,6 +133,11 @@ public class IngestionServiceImpl implements IngestionService {
         recording = recordingRepository.save(recording);
 
 
+        return createSegment(recording, recordingDto);
+    }
+
+    private HearingRecordingSegment createSegment(final HearingRecording recording,
+                                                  final HearingRecordingDto recordingDto) {
         return HearingRecordingSegment.builder()
             .filename(recordingDto.getFilename())
             .fileExtension(recordingDto.getFilenameExtension())
