@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import reactor.util.function.Tuple2;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
-import uk.gov.hmcts.reform.em.hrs.util.Tuple2;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;

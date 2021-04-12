@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
 import org.springframework.transaction.annotation.Transactional;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
@@ -9,7 +11,6 @@ import uk.gov.hmcts.reform.em.hrs.repository.FolderRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.JobInProgressRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
 import uk.gov.hmcts.reform.em.hrs.util.SetUtils;
-import uk.gov.hmcts.reform.em.hrs.util.Tuple2;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -55,7 +56,7 @@ public class FolderServiceImpl implements FolderService {
         final Set<String> completedFiles = filesInDatabase.intersect(filesInBlobstore);
         final Set<String> filesInProgress = databaseRecords.getT2();
 
-        return new Tuple2<>(completedFiles, filesInProgress);
+        return Tuples.of(completedFiles, filesInProgress);
     }
 
     private Tuple2<FilesInDatabase, Set<String>> getFilesetsFromDatabase(final String folderName) {
@@ -67,7 +68,7 @@ public class FolderServiceImpl implements FolderService {
         final Set<String> filesInProgress = optionalFolder.map(x -> getFilesInProgress(x.getJobsInProgress()))
             .orElse(Collections.emptySet());
 
-        return new Tuple2<>(new FilesInDatabase(filesInDatabase), filesInProgress);
+        return Tuples.of(new FilesInDatabase(filesInDatabase), filesInProgress);
     }
 
     private Set<String> getFilesInProgress(final List<JobInProgress> jobInProgresses) {

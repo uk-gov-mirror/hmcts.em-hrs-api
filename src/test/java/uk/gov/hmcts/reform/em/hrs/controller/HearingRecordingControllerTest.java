@@ -7,19 +7,23 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
+import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingSegmentService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
-import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingShareeService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
-import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseUpdateService;
+import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
+import javax.inject.Inject;
 
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -31,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CCD_CASE_ID;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_DTO;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SERVICE_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.convertObjectToJsonString;
@@ -40,19 +45,10 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     private FolderService folderService;
 
     @MockBean
-    private HearingRecordingService recordingService;
-
-    @MockBean
-    private HearingRecordingSegmentService segmentService;
-
-    @MockBean
-    private CaseUpdateService caseUpdateService;
-
-    @MockBean
-    private HearingRecordingShareeService hearingRecordingShareeService;
-
-    @MockBean
     private ShareService shareService;
+
+    @Inject
+    private IngestionQueue ingestionQueue;
 
     private static final String TEST_FOLDER = "folder-1";
 
@@ -118,4 +114,54 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
         verify(shareService, times(1)).executeNotify(CCD_CASE_ID, SHAREE_EMAIL_ADDRESS, AUTHORIZATION_TOKEN);
     }
 
+    @Test
+    void testShouldNotExceedOneSecond() throws Exception {
+        final String path = "/segments";
+
+        final Instant start = Instant.now(Clock.systemDefaultZone());
+
+        mockMvc.perform(post(path)
+                            .content(convertObjectToJsonString(HEARING_RECORDING_DTO))
+                            .contentType(APPLICATION_JSON_VALUE))
+            .andExpect(status().isAccepted())
+            .andReturn();
+
+        final Instant end = Instant.now(Clock.systemDefaultZone());
+
+        assertThat(Duration.between(start, end)).isLessThanOrEqualTo(Duration.ofSeconds(1L));
+    }
+
+    @Test
+    void testShouldReturnRequestAccepted() throws Exception {
+        final String path = "/segments";
+        ingestionQueue.clear();
+
+        mockMvc.perform(post(path)
+                            .content(convertObjectToJsonString(HEARING_RECORDING_DTO))
+                            .contentType(APPLICATION_JSON_VALUE))
+            .andExpect(status().isAccepted())
+            .andReturn();
+    }
+
+    @Test
+    void testShouldReturnTooManyRequests() throws Exception {
+        final String path = "/segments";
+        clogJobQueue();
+
+        mockMvc.perform(post(path)
+                            .content(convertObjectToJsonString(HEARING_RECORDING_DTO))
+                            .contentType(APPLICATION_JSON_VALUE))
+            .andExpect(status().isTooManyRequests())
+            .andReturn();
+    }
+
+    private void clogJobQueue() {
+        IntStream.rangeClosed(1, 1000)
+            .forEach(x -> {
+                final HearingRecordingDto dto = HearingRecordingDto.builder()
+                    .caseRef("cr" + x)
+                    .build();
+                ingestionQueue.offer(dto);
+            });
+    }
 }

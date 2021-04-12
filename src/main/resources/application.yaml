@@ -41,7 +41,6 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5444/emhrs}
     username: ${SPRING_DATASOURCE_USERNAME:emhrs}
     password: ${SPRING_DATASOURCE_PASSWORD:emhrs}
-  jackson.property-naming-strategy: KEBAB_CASE
   security:
     oauth2:
       client:
@@ -75,7 +74,7 @@ idam:
       client:
         baseUrl: ${S2S_BASE_URI:http://localhost:4502}
   s2s-authorised:
-    services: ${S2S_NAMES_WHITELIST:ccd_gw,em_gw}
+    services: ${S2S_NAMES_WHITELIST:ccd_gw,em_gw,em_hrs_ingestor}
 
 core_case_data:
   api:

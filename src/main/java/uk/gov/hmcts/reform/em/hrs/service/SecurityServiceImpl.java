@@ -10,6 +10,7 @@ import javax.inject.Named;
 
 @Named
 public class SecurityServiceImpl implements SecurityService {
+
     private final IdamClient idamClient;
     private final AuthTokenGenerator authTokenGenerator;
     private final String systemUsername;
