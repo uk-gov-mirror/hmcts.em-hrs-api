@@ -4,12 +4,13 @@ import net.javacrumbs.jsonunit.core.Option;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
-import uk.gov.hmcts.reform.em.hrs.service.ShareService;
+import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
 import java.time.Clock;
@@ -46,7 +47,7 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     private FolderService folderService;
 
     @MockBean
-    private ShareService shareService;
+    private ShareAndNotifyService shareAndNotifyService;
 
     @Inject
     private IngestionQueue ingestionQueue;
@@ -98,21 +99,23 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     @Test
     void testShouldGrantShareeDownloadAccessToHearingRecording() throws Exception {
         final String path = "/sharees";
-        final CaseDetails request = CaseDetails.builder()
+        final CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("recipientEmailAddress", SHAREE_EMAIL_ADDRESS))
             .id(CCD_CASE_ID)
             .build();
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
-        doNothing().when(shareService).executeNotify(CCD_CASE_ID, SHAREE_EMAIL_ADDRESS, AUTHORIZATION_TOKEN);
+        doNothing().when(shareAndNotifyService).shareAndNotify(CCD_CASE_ID, caseDetails.getData(), AUTHORIZATION_TOKEN);
 
         mockMvc.perform(post(path)
-                            .content(convertObjectToJsonString(request))
+                            .content(convertObjectToJsonString(callbackRequest))
                             .contentType(APPLICATION_JSON_VALUE)
                             .header("Authorization", AUTHORIZATION_TOKEN)
                             .header("ServiceAuthorization", SERVICE_AUTHORIZATION_TOKEN))
             .andExpect(status().isOk());
 
-        verify(shareService, times(1)).executeNotify(CCD_CASE_ID, SHAREE_EMAIL_ADDRESS, AUTHORIZATION_TOKEN);
+        verify(shareAndNotifyService, times(1))
+            .shareAndNotify(CCD_CASE_ID, caseDetails.getData(), AUTHORIZATION_TOKEN);
     }
 
     @Test

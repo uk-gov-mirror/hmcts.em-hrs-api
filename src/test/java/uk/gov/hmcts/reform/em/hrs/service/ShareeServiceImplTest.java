@@ -15,12 +15,12 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDI
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_ADDRESS;
 
 @ExtendWith(MockitoExtension.class)
-class HearingRecordingShareeServiceImplTest {
+class ShareeServiceImplTest {
     @Mock
     private ShareesRepository shareesRepository;
 
     @InjectMocks
-    private HearingRecordingShareeServiceImpl underTest;
+    private ShareeServiceImpl underTest;
 
     @Test
     void testShouldSaveEntity() {

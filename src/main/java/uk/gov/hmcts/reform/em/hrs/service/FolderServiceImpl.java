@@ -27,6 +27,9 @@ import javax.validation.constraints.NotNull;
 @Named
 @Transactional
 public class FolderServiceImpl implements FolderService {
+
+    private static final String FOLDER_MISSING_EXCEPTION_MSG =
+        "Folders must explicitly exist, based on GET /folders/(foldername) creating them";
     private final FolderRepository folderRepository;
     private final JobInProgressRepository jobInProgressRepository;
     private final HearingRecordingStorage hearingRecordingStorage;
@@ -46,7 +49,6 @@ public class FolderServiceImpl implements FolderService {
 
         Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
 
-        //create folder in database if not exists, and return empty set of files
         if (optionalFolder.isEmpty()) {
             Folder newFolder = Folder.builder().name(folderName).build();
             folderRepository.save(newFolder);
@@ -57,23 +59,9 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public String getFolderNameFromFilePath(@NotNull String path) {
-        int separatorIndex = path.indexOf("/");
-        if (separatorIndex < 0) {
-            throw new RuntimeException("Folder Name must have at least one slash /");
-        }
-        //TODO determine folder name in ingestor instead of here, and pass it in the DTO
-        return path.substring(0, separatorIndex);
-    }
-
-
-    @Override
     public Folder getFolderByName(@NotNull String folderName) {
         return folderRepository.findByName(folderName)
-            .orElseThrow(() -> new DatabaseStorageException(
-                             "Folders must explicitly exist, based on GET /folders/(foldername) creating them"
-                         )
-            );//TODO should a folder be created at this point?
+            .orElseThrow(() -> new DatabaseStorageException(FOLDER_MISSING_EXCEPTION_MSG));
     }
 
 

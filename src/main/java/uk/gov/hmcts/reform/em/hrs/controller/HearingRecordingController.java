@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,15 +15,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
-import uk.gov.hmcts.reform.em.hrs.service.ShareService;
-import uk.gov.hmcts.reform.em.hrs.util.CaseDetailsParser;
+import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
+import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
-import javax.inject.Inject;
+import java.util.UUID;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
@@ -36,16 +40,19 @@ public class HearingRecordingController {
     private static final Logger LOGGER = LoggerFactory.getLogger(HearingRecordingController.class);
 
     private final FolderService folderService;
-    private final ShareService shareService;
+    private final ShareAndNotifyService shareAndNotifyService;
+    private final SegmentDownloadService downloadService;
     private final IngestionQueue ingestionQueue;
 
-    @Inject
+    @Autowired
     public HearingRecordingController(final FolderService folderService,
-                                      final ShareService shareService,
-                                      final IngestionQueue ingestionQueue) {
+                                      final ShareAndNotifyService shareAndNotifyService,
+                                      final IngestionQueue ingestionQueue,
+                                      SegmentDownloadService downloadService) {
         this.folderService = folderService;
-        this.shareService = shareService;
+        this.shareAndNotifyService = shareAndNotifyService;
         this.ingestionQueue = ingestionQueue;
+        this.downloadService = downloadService;
     }
 
     @GetMapping(
@@ -83,7 +90,9 @@ public class HearingRecordingController {
         @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public ResponseEntity<Void> createHearingRecording(@RequestBody final HearingRecordingDto hearingRecordingDto) {
+        LOGGER.info("received request to create hearing recording ({})", hearingRecordingDto.getRecordingRef());
 
+        hearingRecordingDto.setUrlDomain(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString());
         final boolean accepted = ingestionQueue.offer(hearingRecordingDto);
 
         return accepted ? new ResponseEntity<>(ACCEPTED) : new ResponseEntity<>(TOO_MANY_REQUESTS);
@@ -103,25 +112,37 @@ public class HearingRecordingController {
         @ApiResponse(code = 404, message = "Not Found"),
         @ApiResponse(code = 500, message = "Internal Server Error")
     })
-    public ResponseEntity<Void> shareHearingRecording(@RequestHeader("authorization") final String authorisationToken,
-                                                      @RequestBody final CaseDetails caseDetails) {
-        final String shareeEmailAddress = CaseDetailsParser.getShareeEmail(caseDetails.getData());
+    public ResponseEntity<Void> shareHearingRecording(
+        @RequestHeader("authorization") final String authorisationToken,
+        @RequestBody final CallbackRequest request) {
 
-        shareService.executeNotify(caseDetails.getId(), shareeEmailAddress, authorisationToken);
+        CaseDetails caseDetails = request.getCaseDetails();
+
+        LOGGER.info("received request to share recordings for case ({})", caseDetails.getId());
+
+        shareAndNotifyService.shareAndNotify(caseDetails.getId(),
+                                             caseDetails.getData(),
+                                             authorisationToken);
 
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(
-        path = "/documents/hearing-recordings/{recordingRef}/segments/{segment}",
+        path = "/hearing-recordings/{recordingId}/segments/{segment}",
         produces = APPLICATION_OCTET_STREAM_VALUE
     )
     @ResponseBody
     @ApiOperation(value = "Get hearing recording file",
         notes = "Return hearing recording file from the specified folder")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording")})
-    public ResponseEntity getHearingRecording(@PathVariable("recordingRef") String recordingRef,
-                                              @PathVariable("segment") String segment) {
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording segment")})
+    public ResponseEntity getSegmentBinary(@PathVariable("recordingId") UUID recordingId,
+                                           @PathVariable("segment") Integer segmentNo,
+                                           HttpServletResponse response) {
+
+        LOGGER.info("received request to download recording for case ({}) segment ({})", recordingId, segmentNo);
+
+        downloadService.download(recordingId, segmentNo, response);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

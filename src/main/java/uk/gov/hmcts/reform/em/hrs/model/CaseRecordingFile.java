@@ -8,18 +8,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CaseDocument {
+public class CaseRecordingFile {
 
-    @JsonProperty("document_url")
-    private String url;
+    @JsonProperty("documentLink")
+    private CaseDocument caseDocument;
 
-    @JsonProperty("document_binary_url")
-    private String binaryUrl;
+    @JsonProperty("segmentNumber")
+    private Integer segmentNumber;
 
-    @JsonProperty("document_filename")
-    private String filename;
+    @JsonProperty("fileSize")
+    private Long fileSize;
 }
