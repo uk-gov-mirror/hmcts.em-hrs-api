@@ -19,12 +19,16 @@ import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
 import uk.gov.hmcts.reform.em.hrs.exception.ValidationErrorException;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
+import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareService;
 import uk.gov.hmcts.reform.em.hrs.util.EmailValidator;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.io.IOException;
+import java.util.UUID;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
@@ -39,15 +43,18 @@ public class HearingRecordingController {
 
     private final FolderService folderService;
     private final ShareService shareService;
+    private final SegmentDownloadService downloadService;
     private final IngestionQueue ingestionQueue;
 
     @Inject
     public HearingRecordingController(final FolderService folderService,
                                       final ShareService shareService,
-                                      final IngestionQueue ingestionQueue) {
+                                      final IngestionQueue ingestionQueue,
+                                      SegmentDownloadService downloadService) {
         this.folderService = folderService;
         this.shareService = shareService;
         this.ingestionQueue = ingestionQueue;
+        this.downloadService = downloadService;
     }
 
     @GetMapping(
@@ -123,15 +130,22 @@ public class HearingRecordingController {
     }
 
     @GetMapping(
-        path = "/documents/hearing-recordings/{recordingRef}/segments/{segment}",
+        path = "/documents/hrsegments-{segmentId}",
         produces = APPLICATION_OCTET_STREAM_VALUE
     )
     @ResponseBody
     @ApiOperation(value = "Get hearing recording file",
         notes = "Return hearing recording file from the specified folder")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording")})
-    public ResponseEntity getHearingRecording(@PathVariable("recordingRef") String recordingRef,
-                                              @PathVariable("segment") String segment) {
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording segment")})
+    public ResponseEntity getHearingRecording(@PathVariable("segmentId") UUID segmentId,
+                                              HttpServletResponse response) {
+        try {
+            downloadService.download(segmentId, response.getOutputStream());
+        } catch (IOException e) {
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(e);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
