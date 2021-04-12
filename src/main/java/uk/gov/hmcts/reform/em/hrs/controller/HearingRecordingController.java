@@ -26,6 +26,8 @@ import uk.gov.service.notify.NotificationClientException;
 
 import javax.inject.Inject;
 
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
@@ -72,22 +74,19 @@ public class HearingRecordingController {
 
     @PostMapping(
         path = "/segments",
-        consumes = APPLICATION_JSON_VALUE/*,
-        produces = APPLICATION_JSON_VALUE*/
+        consumes = APPLICATION_JSON_VALUE
     )
     @ResponseBody
     @ApiOperation(value = "Post hearing recording segment", notes = "Save hearing recording segment")
     @ApiResponses(value = {
-        @ApiResponse(code = 202, message = "Request accepted for asynchronous processing")
+        @ApiResponse(code = 202, message = "Request accepted for asynchronous processing"),
+        @ApiResponse(code = 429, message = "Request rejected - too many pending requests")
     })
-    public ResponseEntity<Void> createHearingRecording(
-        @RequestBody final HearingRecordingDto hearingRecordingDto) {
+    public ResponseEntity<Void> createHearingRecording(@RequestBody final HearingRecordingDto hearingRecordingDto) {
 
-        LOGGER.info("request to create/update case with new hearing recording");
+        final boolean accepted = ingestionQueue.offer(hearingRecordingDto);
 
-        final boolean result = ingestionQueue.offer(hearingRecordingDto);
-
-        return ResponseEntity.accepted().build();
+        return accepted ? new ResponseEntity<>(ACCEPTED) : new ResponseEntity<>(TOO_MANY_REQUESTS);
     }
 
     @PostMapping(

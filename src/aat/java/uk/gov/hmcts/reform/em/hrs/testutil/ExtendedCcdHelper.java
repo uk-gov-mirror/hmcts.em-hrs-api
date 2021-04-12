@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.PostConstruct;

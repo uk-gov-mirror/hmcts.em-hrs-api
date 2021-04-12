@@ -48,6 +48,8 @@ public class IngestionServiceImpl implements IngestionService {
     public void ingest(final HearingRecordingDto hearingRecordingDto) {
 
         final CompletableFuture<Void> metadataFuture = CompletableFuture.runAsync(() -> {
+            LOGGER.info("request to create/update case with new hearing recording");
+
             final Optional<HearingRecording> optionalHearingRecording = recordingRepository.findByRecordingRef(
                 hearingRecordingDto.getRecordingRef()
             );

@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.em.hrs.model.CaseHearingRecording;
 import uk.gov.hmcts.reform.em.hrs.model.RecordingSegment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,9 +25,9 @@ public class CaseDataContentCreator {
     public JsonNode createCaseStartData(final HearingRecordingDto hearingRecordingDto) {
 
         CaseHearingRecording recording = CaseHearingRecording.builder()
-            .recordingFiles(Arrays.asList(createSegment(hearingRecordingDto)))
+            .recordingFiles(Collections.singletonList(createSegment(hearingRecordingDto)))
             .recordingDateTime(hearingRecordingDto.getRecordingDateTime())
-            .recordingTimeOfDay("morning")
+            .recordingTimeOfDay("morning") // TODO set correct time of day
             .hearingSource(hearingRecordingDto.getRecordingSource())
             .hearingRoomRef(hearingRecordingDto.getHearingRoomRef())
             .serviceCode(hearingRecordingDto.getServiceCode())
@@ -48,9 +48,9 @@ public class CaseDataContentCreator {
 
     private RecordingSegment createSegment(HearingRecordingDto hearingRecordingDto) {
 
-//      //force the target url to be acceptable by CCD data API
+        //force the target url to be acceptable by CCD data API
         //this is forced to be the domain as specfied in the ccd dependencies file under CCD_DM_DOMAIN: http://dm-store:8080
-        String tempUrlFixer="http://dm-store:8080/documents/hrs-will-be-fixed";
+        String tempUrlFixer = "http://dm-store:8080/documents/hrs-will-be-fixed";
         CaseDocument recordingFile = CaseDocument.builder()
             .filename(hearingRecordingDto.getFilename())
             .url(tempUrlFixer)//TODO: this is CVP url, I need to construct it from filename
