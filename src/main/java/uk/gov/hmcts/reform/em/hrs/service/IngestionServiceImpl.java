@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
@@ -29,18 +30,21 @@ public class IngestionServiceImpl implements IngestionService {
     private final HearingRecordingSegmentRepository segmentRepository;
     private final HearingRecordingStorage hearingRecordingStorage;
     private final Snooper snooper;
+    private final FolderService folderService;
 
     @Inject
     public IngestionServiceImpl(final CcdDataStoreApiClient ccdDataStoreApiClient,
                                 final HearingRecordingRepository recordingRepository,
                                 final HearingRecordingSegmentRepository segmentRepository,
                                 final HearingRecordingStorage hearingRecordingStorage,
-                                final Snooper snooper) {
+                                final Snooper snooper,
+                                final FolderService folderService) {
         this.ccdDataStoreApiClient = ccdDataStoreApiClient;
         this.recordingRepository = recordingRepository;
         this.segmentRepository = segmentRepository;
         this.hearingRecordingStorage = hearingRecordingStorage;
         this.snooper = snooper;
+        this.folderService = folderService;
     }
 
     @Override
@@ -54,11 +58,11 @@ public class IngestionServiceImpl implements IngestionService {
                 hearingRecordingDto.getRecordingRef()
             );
 
-            final HearingRecordingSegment segment = optionalHearingRecording
-                .map(x -> updateCase(x, hearingRecordingDto))
-                .orElseGet(() -> createCaseAndPersist(hearingRecordingDto));
+            optionalHearingRecording
+                .map(hearingRecording -> updateCase(hearingRecording, hearingRecordingDto))
+                .orElseGet(() -> Optional.of(createCaseinCcdAndPersist(hearingRecordingDto)))
+                .ifPresent(segment -> segmentRepository.save(segment));
 
-            segmentRepository.save(segment);
         });
 
         final CompletableFuture<Void> blobCopyFuture = CompletableFuture.runAsync(
@@ -72,20 +76,69 @@ public class IngestionServiceImpl implements IngestionService {
             CompletableFuture
                 .allOf(metadataFuture, blobCopyFuture)
                 .get();
-        } catch (ExecutionException e) {
+        } catch (
+            ExecutionException e) {
             snoop(hearingRecordingDto.getCvpFileUrl(), e);
-        } catch (InterruptedException e) {
+        } catch (
+            InterruptedException e) {
             snoop(hearingRecordingDto.getCvpFileUrl(), e);
             Thread.currentThread().interrupt();
         }
+
     }
 
-    private HearingRecordingSegment updateCase(final HearingRecording recording,
-                                               final HearingRecordingDto recordingDto) {
+    private Optional<HearingRecordingSegment> updateCase(final HearingRecording recording,
+                                                         final HearingRecordingDto recordingDto) {
+
+        if (recording.getCcdCaseId() == null) {
+            LOGGER.info(
+                "Case still being created in CCD for recording ({}) to case({})",
+                recordingDto.getRecordingRef(),
+                recording.getCcdCaseId()
+            );
+            //TODO clean down hearingRecordings where created < yesterday and ccdID is null as part of some process
+            return Optional.empty();
+        }
 
         LOGGER.info("adding  recording ({}) to case({})", recordingDto.getRecordingRef(), recording.getCcdCaseId());
 
         ccdDataStoreApiClient.updateCaseData(recording.getCcdCaseId(), recordingDto);
+
+        return Optional.of(HearingRecordingSegment.builder()
+                               .filename(recordingDto.getFilename())
+                               .fileExtension(recordingDto.getFilenameExtension())
+                               .fileSizeMb(recordingDto.getFileSize())
+                               .fileMd5Checksum(recordingDto.getCheckSum())
+                               .ingestionFileSourceUri(recordingDto.getCvpFileUrl())
+                               .recordingSegment(recordingDto.getSegment())
+                               .hearingRecording(recording)
+                               .build());
+    }
+
+    private HearingRecordingSegment createCaseinCcdAndPersist(final HearingRecordingDto recordingDto) {
+        LOGGER.info("creating a new case for recording: {}", recordingDto.getRecordingRef());
+
+
+        Folder folder = folderService.getFolderFromFilePath(recordingDto.getFilename());
+
+        HearingRecording recording = HearingRecording.builder()
+            .folder(folder)
+            .recordingRef(recordingDto.getRecordingRef())
+            .caseRef(recordingDto.getCaseRef())
+            .hearingLocationCode(recordingDto.getCourtLocationCode())
+            .hearingRoomRef(recordingDto.getHearingRoomRef())
+            .hearingSource(recordingDto.getRecordingSource())
+            .jurisdictionCode(recordingDto.getJurisdictionCode())
+            .serviceCode(recordingDto.getServiceCode())
+            .build();
+
+        recording = recordingRepository.save(recording);
+
+        //create case in ccd, and update database with caseIdd
+        final Long caseId = ccdDataStoreApiClient.createCase(recordingDto);
+        recording.setCcdCaseId(caseId);
+        recording = recordingRepository.save(recording);
+
 
         return HearingRecordingSegment.builder()
             .filename(recordingDto.getFilename())
@@ -95,35 +148,6 @@ public class IngestionServiceImpl implements IngestionService {
             .ingestionFileSourceUri(recordingDto.getCvpFileUrl())
             .recordingSegment(recordingDto.getSegment())
             .hearingRecording(recording)
-            .build();
-    }
-
-    private HearingRecordingSegment createCaseAndPersist(final HearingRecordingDto recordingDto) {
-        LOGGER.info("creating a new case for recording: {}", recordingDto.getRecordingRef());
-
-        final Long caseId = ccdDataStoreApiClient.createCase(recordingDto);
-
-        final HearingRecording recording = HearingRecording.builder()
-            .recordingRef(recordingDto.getRecordingRef())
-            .ccdCaseId(caseId)
-            .caseRef(recordingDto.getCaseRef())
-            .hearingLocationCode(recordingDto.getCourtLocationCode())
-            .hearingRoomRef(recordingDto.getHearingRoomRef())
-            .hearingSource(recordingDto.getRecordingSource())
-            .jurisdictionCode(recordingDto.getJurisdictionCode())
-            .serviceCode(recordingDto.getServiceCode())
-            .build();
-
-        final HearingRecording savedRecording = recordingRepository.save(recording);
-
-        return HearingRecordingSegment.builder()
-            .filename(recordingDto.getFilename())
-            .fileExtension(recordingDto.getFilenameExtension())
-            .fileSizeMb(recordingDto.getFileSize())
-            .fileMd5Checksum(recordingDto.getCheckSum())
-            .ingestionFileSourceUri(recordingDto.getCvpFileUrl())
-            .recordingSegment(recordingDto.getSegment())
-            .hearingRecording(savedRecording)
             .build();
     }
 
