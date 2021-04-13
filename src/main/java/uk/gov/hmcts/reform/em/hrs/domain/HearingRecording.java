@@ -25,7 +25,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 
 
 @Entity
@@ -75,9 +74,11 @@ public class HearingRecording {
     @Column(name = "value")
     @CollectionTable(name = "hearing_recording_metadata",
         joinColumns = @JoinColumn(name = "hearing_recording_metadata_id"))
+
     private Map<String, String> metadata;
 
     private LocalDateTime ttl;
+    @Column(unique = true)
     private String recordingRef;
     private String caseRef;
     private String hearingLocationCode;
@@ -85,7 +86,7 @@ public class HearingRecording {
     private String hearingSource;
     private String jurisdictionCode;
     private String serviceCode;
-    @NotNull
+    @Column(unique = true)
     private Long ccdCaseId;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hearingRecording")

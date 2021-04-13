@@ -67,8 +67,8 @@ public class Folder {
     }
 
     public Folder() {
-        hearingRecordings = new ArrayList<>();
-        jobsInProgress = new ArrayList<>();
+       hearingRecordings = new ArrayList<>();
+       jobsInProgress = new ArrayList<>();
     }
 
     public static class FolderBuilder {
