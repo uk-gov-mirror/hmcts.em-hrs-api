@@ -10,7 +10,7 @@ services:
       - POSTGRES_USER=emhrs
       - POSTGRES_PASSWORD=emhrs
     ports:
-      - 5444:5432
+      - 5432:5432
 
   azure-storage-emulator-azurite:
     image: mcr.microsoft.com/azure-storage/azurite
