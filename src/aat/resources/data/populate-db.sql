@@ -1,3 +1,12 @@
+TRUNCATE TABLE
+  audit_entry,
+  hearing_recording_metadata,
+  hearing_recording_sharees,
+  hearing_recording_segment,
+  hearing_recording,
+  job_in_progress,
+  folder;
+
 INSERT INTO folder(id, name)
 VALUES
   ('3E3F63FB-3C7A-447B-86DA-69ED164763B0', 'folder-1'),

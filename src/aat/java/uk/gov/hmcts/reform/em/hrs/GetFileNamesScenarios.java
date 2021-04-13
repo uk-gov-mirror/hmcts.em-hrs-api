@@ -1,60 +1,32 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.TestPropertySourceUtils;
-import uk.gov.hmcts.reform.em.hrs.testutil.TestAppConfig;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
+import javax.inject.Inject;
 
-@SpringBootTest(classes = {TestAppConfig.class})
-@TestPropertySource(value = "classpath:application.yml")
-@RunWith(SpringJUnit4ClassRunner.class)
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(initializers = GetFileNamesScenarios.DatabaseDataSourceInitializer.class)
-@EnableAutoConfiguration(exclude = JpaRepositoriesAutoConfiguration.class)
-@Sql(scripts = "/db/populate-db.sql")
-public class GetFileNamesScenarios {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-    /*@Inject
-    private JobInProgressRepository jobInProgressRepository;
+@Sql(scripts = "/data/populate-db.sql")
+public class GetFileNamesScenarios extends AbstractBaseScenarios {
+    @Inject
+    private JdbcTemplate jdbcTemplate;
 
-    @Rule
-    public RetryRule retryRule = new RetryRule(1);
-
+    /*
     @Value("${test.url}")
     private String testUrl;*/
 
     @Test
-    public void testShouldDeleteJobsOlderThanTwentyFourHours() {
-        final LocalDateTime twentyFourHoursAgo = LocalDateTime.now(Clock.systemUTC()).minusHours(24);
-        //jobInProgressRepository.deleteByCreatedOnLessThan(twentyFourHoursAgo);
+    public void testShouldPopulateDatabaseTables() {
+        final int expectedRowCount = 3;
+        final String table = "job_in_progress";
+
+        final int actualRowCount = JdbcTestUtils.countRowsInTable(this.jdbcTemplate, table);
+
+        assertThat(actualRowCount, is(expectedRowCount));
     }
 
-    public static class DatabaseDataSourceInitializer
-        implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        @Override
-        public void initialize(@NotNull ConfigurableApplicationContext applicationContext) {
-            TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
-                applicationContext,
-                "spring.datasource.url=" + "jdbc:postgresql://localhost:5444/emhrs",
-                "spring.datasource.username=" + "emhrs",
-                "spring.datasource.password=" + "emhrs"
-            );
-        }
-    }
 }
