@@ -2,6 +2,10 @@
 spring:
   main:
     allow-bean-definition-overriding: true
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/emhrs}
+    username: ${SPRING_DATASOURCE_USERNAME:emhrs}
+    password: ${SPRING_DATASOURCE_PASSWORD:emhrs}
   security:
     oauth2:
       client:

@@ -46,6 +46,10 @@ env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.
 env.IDAM_REDIRECT_URI = 'https://em-hrs-aat.service.core-compute-aat.internal/oauth2/callback'
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
+env.SPRING_DATASOURCE_URL = 'jdbc:postgresql://em-hrs-api-pr-123-em-hrs-db:5432/javadatabase?ssl=disable'
+env.SPRING_DATASOURCE_USERNAME = 'emhrs'
+env.SPRING_DATASOURCE_PASSWORD = 'emhrs'
+
 def vaultOverrides = [
         'preview' : 'aat',
         'spreview': 'saat'
