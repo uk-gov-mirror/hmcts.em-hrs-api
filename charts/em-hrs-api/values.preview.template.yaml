@@ -19,17 +19,14 @@ java:
       secretRef: storage-secret-{{ .Release.Name }}
       key: primaryBlobServiceEndPoint
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/emhrs?ssl=disable
-    SPRING_DATASOURCE_USERNAME: emhrs
-    SPRING_DATASOURCE_PASSWORD: emhrs
+    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/javadatabase?ssl=disable
+    SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
     ENABLE_LIQUIBASE: true
     ENABLE_DB_MIGRATE: true
     STORAGEACCOUNT_PRIMARY_CONNECTION_STRING: "DefaultEndpointsProtocol=https;AccountName=$(BLOB_ACCOUNT_NAME);AccountKey=$(BLOB_ACCESS_KEY);EndpointSuffix=core.windows.net"
   postgresql:
     enabled: true
-    postgresqlUsername: emhrs
-    postgresqlPassword: emhrs
-    postgresqlDatabase: emhrs
 blobstorage:
   enabled: true
