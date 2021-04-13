@@ -23,6 +23,7 @@ import java.util.UUID;
 public class TestUtil {
     private static final String DOWNLOAD_URL_PREFIX = "https://SOMEPREFIXTBD";
 
+    public static final int INGESTION_QUEUE_SIZE = 2;
     public static final String FILE_1 = "file-1.mp4";
     public static final String FILE_2 = "file-2.mp4";
     public static final String FILE_3 = "file-3.mp4";
