@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -28,6 +29,7 @@ public class Folder {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
+    @Column(unique = true)
     private String name;
 
     @OneToMany(mappedBy = "folder")
@@ -67,8 +69,8 @@ public class Folder {
     }
 
     public Folder() {
-       hearingRecordings = new ArrayList<>();
-       jobsInProgress = new ArrayList<>();
+        hearingRecordings = new ArrayList<>();
+        jobsInProgress = new ArrayList<>();
     }
 
     public static class FolderBuilder {

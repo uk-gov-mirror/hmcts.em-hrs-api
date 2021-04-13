@@ -344,4 +344,7 @@
     <changeSet author="paul (generated)" id="1618337166748-1">
         <addUniqueConstraint columnNames="filename" constraintName="UC_HEARING_RECORDING_SEGMENTFILENAME_COL" tableName="hearing_recording_segment"/>
     </changeSet>
+    <changeSet author="paul (generated)" id="1618337805634-1">
+        <addUniqueConstraint columnNames="name" constraintName="UC_FOLDERNAME_COL" tableName="folder"/>
+    </changeSet>
 </databaseChangeLog>
