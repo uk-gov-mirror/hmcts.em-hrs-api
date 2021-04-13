@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.constraints.NotNull;
 
 @Named
 @Transactional
@@ -47,6 +48,18 @@ public class FolderServiceImpl implements FolderService {
         return SetUtils.union(compositeFileset.getT1(), compositeFileset.getT2());
     }
 
+    private String getFolderNameFromFilePath(@NotNull final String path) {
+        final int separatorIndex = path.indexOf("/");
+        return path.substring(0, separatorIndex);
+    }
+
+    @Override
+    public Folder getFolderFromFilePath(@NotNull final String path) {
+        final String folderName = getFolderNameFromFilePath(path);
+        Optional<Folder> folder = folderRepository.findByName(folderName);
+        return folder.get();
+    }
+
     private Tuple2<Set<String>, Set<String>> getCompletedAndInProgressFiles(final String folderName) {
         final Tuple2<FilesInDatabase, Set<String>> databaseRecords = getFilesetsFromDatabase(folderName);
         final FilesInDatabase filesInDatabase = databaseRecords.getT1();
@@ -60,9 +73,16 @@ public class FolderServiceImpl implements FolderService {
     }
 
     private Tuple2<FilesInDatabase, Set<String>> getFilesetsFromDatabase(final String folderName) {
-        final Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
+        Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
 
-        final Set<String> filesInDatabase = optionalFolder.map(x -> getSegmentFilenames(x.getHearingRecordings()))
+        //create folder in database if not exists
+        if (optionalFolder.isEmpty()) {
+            Folder newFolder = Folder.builder().name(folderName).build();
+            optionalFolder = Optional.of(folderRepository.save(newFolder));
+            return Tuples.of(new FilesInDatabase(Collections.emptySet()),Collections.emptySet());
+        }
+
+        final Set<String> filesInDatabase = optionalFolder.map(fol -> getSegmentFilenames(fol.getHearingRecordings()))
             .orElse(Collections.emptySet());
 
         final Set<String> filesInProgress = optionalFolder.map(x -> getFilesInProgress(x.getJobsInProgress()))
