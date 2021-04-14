@@ -108,3 +108,4 @@ hrs:
     core-size: 5
     max-size: 10
     queue-capacity: 100
+  ingestion-frequency: 1 # how often to call ccd per second

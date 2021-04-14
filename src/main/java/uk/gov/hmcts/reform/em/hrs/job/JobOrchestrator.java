@@ -7,6 +7,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -15,8 +16,14 @@ import javax.inject.Named;
 
 @Named
 public class JobOrchestrator {
+    private final Scheduler scheduler;
+    private final int rate;
+
     @Inject
-    private Scheduler scheduler;
+    public JobOrchestrator(final Scheduler scheduler, @Value("${hrs.ingestion-frequency}") final int rate) {
+        this.scheduler = scheduler;
+        this.rate = rate;
+    }
 
     @PostConstruct
     public void start() throws SchedulerException {
@@ -27,7 +34,6 @@ public class JobOrchestrator {
             .withDescription("Ingests hearing recordings from CVP into HRS")
             .build();
 
-        final int rate = 1; // TODO: consider making this configurable
         final Trigger trigger = TriggerBuilder.newTrigger()
             .withSchedule(
                 SimpleScheduleBuilder.simpleSchedule()
