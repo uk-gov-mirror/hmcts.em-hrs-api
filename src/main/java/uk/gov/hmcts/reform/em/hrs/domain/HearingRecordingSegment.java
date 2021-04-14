@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -53,19 +54,18 @@ public class HearingRecordingSegment {
 
     private boolean deleted;
 
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hearingRecordingSegment")
     private Set<HearingRecordingSegmentAuditEntry> auditEntries;
 
     private String blobUuid; //32 char?
 
+    @Column(unique = true)
     private String filename;
     private String fileExtension;
     private String fileMd5Checksum; // char(32),
     private Long fileSizeMb; // numeric(2),
 
     private String ingestionFileSourceUri;
-
 
     private Integer recordingLengthMins;
     private Integer recordingSegment;

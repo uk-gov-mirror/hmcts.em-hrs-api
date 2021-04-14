@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
+import uk.gov.hmcts.reform.em.hrs.exception.DatabaseStorageException;
 import uk.gov.hmcts.reform.em.hrs.repository.FolderRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.JobInProgressRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
@@ -21,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.constraints.NotNull;
 
 @Named
 @Transactional
@@ -30,59 +32,86 @@ public class FolderServiceImpl implements FolderService {
     private final HearingRecordingStorage hearingRecordingStorage;
 
     @Inject
-    public FolderServiceImpl(final FolderRepository folderRepository,
-                             final JobInProgressRepository jobInProgressRepository,
-                             final HearingRecordingStorage hearingRecordingStorage) {
+    public FolderServiceImpl(FolderRepository folderRepository,
+                             JobInProgressRepository jobInProgressRepository,
+                             HearingRecordingStorage hearingRecordingStorage) {
         this.folderRepository = folderRepository;
         this.jobInProgressRepository = jobInProgressRepository;
         this.hearingRecordingStorage = hearingRecordingStorage;
     }
 
     @Override
-    public Set<String> getStoredFiles(final String folderName) {
+    public Set<String> getStoredFiles(String folderName) {
         deleteStaledJobs();
 
-        final Tuple2<Set<String>, Set<String>> compositeFileset = getCompletedAndInProgressFiles(folderName);
+        Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
 
-        return SetUtils.union(compositeFileset.getT1(), compositeFileset.getT2());
+        //create folder in database if not exists, and return empty set of files
+        if (optionalFolder.isEmpty()) {
+            Folder newFolder = Folder.builder().name(folderName).build();
+            folderRepository.save(newFolder);
+            return Collections.emptySet();
+        }
+
+        return getCompletedAndInProgressFiles(optionalFolder.get());
     }
 
-    private Tuple2<Set<String>, Set<String>> getCompletedAndInProgressFiles(final String folderName) {
-        final Tuple2<FilesInDatabase, Set<String>> databaseRecords = getFilesetsFromDatabase(folderName);
-        final FilesInDatabase filesInDatabase = databaseRecords.getT1();
-
-        final Set<String> filesInBlobstore = hearingRecordingStorage.findByFolder(folderName);
-
-        final Set<String> completedFiles = filesInDatabase.intersect(filesInBlobstore);
-        final Set<String> filesInProgress = databaseRecords.getT2();
-
-        return Tuples.of(completedFiles, filesInProgress);
+    @Override
+    public String getFolderNameFromFilePath(@NotNull String path) {
+        int separatorIndex = path.indexOf("/");
+        if (separatorIndex < 0) {
+            throw new RuntimeException("Folder Name must have at least one slash /");
+        }
+        //TODO determine folder name in ingestor instead of here, and pass it in the DTO
+        return path.substring(0, separatorIndex);
     }
 
-    private Tuple2<FilesInDatabase, Set<String>> getFilesetsFromDatabase(final String folderName) {
-        final Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
 
-        final Set<String> filesInDatabase = optionalFolder.map(x -> getSegmentFilenames(x.getHearingRecordings()))
-            .orElse(Collections.emptySet());
+    @Override
+    public Folder getFolderByName(@NotNull String folderName) {
+        Optional<Folder> folder = folderRepository.findByName(folderName);
+        if (folder.isEmpty()) {
+            throw new DatabaseStorageException(
+                "Folders must explicitly exist, based on GET /folders/(foldername) creating them");//TODO should a
+            // folder be created at this point?
+        }
+        return folder.get();
+    }
 
-        final Set<String> filesInProgress = optionalFolder.map(x -> getFilesInProgress(x.getJobsInProgress()))
-            .orElse(Collections.emptySet());
+
+    private Set<String> getCompletedAndInProgressFiles(Folder folder) {
+
+        Tuple2<FilesInDatabase, Set<String>> databaseRecords = getFilesetsFromDatabase(folder);
+        FilesInDatabase filesInDatabase = databaseRecords.getT1();
+
+        Set<String> filesInBlobstore = hearingRecordingStorage.findByFolder(folder.getName());
+
+        Set<String> completedFiles = filesInDatabase.intersect(filesInBlobstore);
+        Set<String> filesInProgress = databaseRecords.getT2();
+
+        return SetUtils.union(completedFiles, filesInProgress);
+    }
+
+    private Tuple2<FilesInDatabase, Set<String>> getFilesetsFromDatabase(Folder folder) {
+
+        Set<String> filesInDatabase = getSegmentFilenames(folder.getHearingRecordings());
+        Set<String> filesInProgress = getFilesInProgress(folder.getJobsInProgress());
 
         return Tuples.of(new FilesInDatabase(filesInDatabase), filesInProgress);
     }
 
-    private Set<String> getFilesInProgress(final List<JobInProgress> jobInProgresses) {
+    private Set<String> getFilesInProgress(List<JobInProgress> jobInProgresses) {
         return jobInProgresses.stream()
             .map(JobInProgress::getFilename)
             .collect(Collectors.toUnmodifiableSet());
     }
 
     private void deleteStaledJobs() {
-        final LocalDateTime yesterday = LocalDateTime.now(Clock.systemUTC()).minusHours(24);
+        LocalDateTime yesterday = LocalDateTime.now(Clock.systemUTC()).minusHours(24);
         jobInProgressRepository.deleteByCreatedOnLessThan(yesterday);
     }
 
-    private Set<String> getSegmentFilenames(final List<HearingRecording> hearingRecordings) {
+    private Set<String> getSegmentFilenames(List<HearingRecording> hearingRecordings) {
         return hearingRecordings.stream()
             .flatMap(x -> x.getSegments().stream().map(HearingRecordingSegment::getFilename))
             .collect(Collectors.toUnmodifiableSet());
@@ -91,11 +120,11 @@ public class FolderServiceImpl implements FolderService {
     static class FilesInDatabase {
         private final Set<String> fileset;
 
-        public FilesInDatabase(Set<String> fileset) {
+        FilesInDatabase(Set<String> fileset) {
             this.fileset = fileset;
         }
 
-        public Set<String> intersect(final Set<String> filesInBlobstore) {
+        Set<String> intersect(Set<String> filesInBlobstore) {
             return SetUtils.intersect(fileset, filesInBlobstore);
         }
     }

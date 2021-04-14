@@ -38,6 +38,8 @@ public class TestUtil {
     public static final String CASE_REFERENCE = "hrs-grant-" + SHAREE_ID;
     public static final LocalDateTime RECORDING_DATETIME = LocalDateTime.now();
     public static final String RECORDING_REFERENCE = "file-1";
+    public static final Folder TEST_FOLDER=Folder.builder().name(TEST_FOLDER_NAME).build();
+
 
     public static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
@@ -84,7 +86,7 @@ public class TestUtil {
 
     public static final Folder EMPTY_FOLDER = Folder.builder()
         .id(RANDOM_UUID)
-        .name("name")
+        .name("EMPTY_FOLDER")
         .hearingRecordings(Collections.emptyList())
         .jobsInProgress(Collections.emptyList())
         .build();
@@ -109,6 +111,7 @@ public class TestUtil {
 
     public static final Folder FOLDER_WITH_JOBS_IN_PROGRESS = Folder.builder()
         .id(RANDOM_UUID)
+        .name(TEST_FOLDER_NAME)
         .hearingRecordings(Collections.emptyList())
         .jobsInProgress(List.of(
             JobInProgress.builder().filename(FILE_1).build(),
@@ -127,7 +130,7 @@ public class TestUtil {
 
     public static final HearingRecording HEARING_RECORDING = HearingRecording.builder()
         .id(RANDOM_UUID)
-        .folder(Folder.builder().id(RANDOM_UUID).build())
+        .folder(TEST_FOLDER)
         .segments(Collections.emptySet())
         .build();
 

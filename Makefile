@@ -11,7 +11,7 @@ liquibase-create-change-log:
 	./gradlew liquibaseDiffChangelog
 
 liquibase-apply-change-log:
-	./gradlew migratePostgresDatabase
+	./gradlew liquibaseDiffChangelog migratePostgresDatabase
 
 #applies database changes if required, and runs spring bootapp
 app-run:
@@ -48,15 +48,12 @@ check-all:
 sonarqube-run-local-sonarqube-server:
 	docker start sonarqube
 
-sonarqube-fetch-sonarqube-latest:
+sonarqube-fetch-and-run-sonarqube-latest-with-password-as-admin:
 	docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
 
-# New containers will require logging in, and changing password to a temporary password, and back to admin
-sonarqube-run-tests-with-password-as-admin:
-	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="admin" -i
 
 sonarqube-run-tests-with-password-as-adminnew:
-	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="adminnew" -i && open http://localhost:9000/
+	./gradlew sonarqube -Dsonar.login="admin" -Dsonar.password="adminnew" -Dsonar.host.url="http://localhost:9000/" -i && open http://localhost:9000/
 
 report-sonarqube:
 	xdg-open http://localhost:9000/

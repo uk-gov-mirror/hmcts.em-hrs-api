@@ -310,4 +310,41 @@
     <changeSet author="taleb (generated)" id="1617274152198-1">
         <addNotNullConstraint columnDataType="bigint" columnName="ccd_case_id" tableName="hearing_recording" validate="true"/>
     </changeSet>
+    <changeSet author="paul (generated)" id="1618336690370-2">
+        <createTable tableName="hearing_recording_sharee">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="hearing_recording_shareePK"/>
+            </column>
+            <column name="shared_by_ref" type="VARCHAR(255)"/>
+            <column name="shared_on" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="sharee_email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hearing_recording_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1618336690370-3">
+        <addUniqueConstraint columnNames="ccd_case_id" constraintName="UC_HEARING_RECORDINGCCD_CASE_ID_COL" tableName="hearing_recording"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1618336690370-4">
+        <addUniqueConstraint columnNames="recording_ref" constraintName="UC_HEARING_RECORDINGRECORDING_REF_COL" tableName="hearing_recording"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1618336690370-5">
+        <addForeignKeyConstraint baseColumnNames="hearing_recording_id" baseTableName="hearing_recording_sharee" constraintName="FK40is8ijermb4qs9kw9t6h1op5" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="hearing_recording" validate="true"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1618336690370-6">
+        <dropForeignKeyConstraint baseTableName="hearing_recording_sharees" constraintName="FKm6k07f622p45pd0jomhj29acr"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1618336690370-7">
+        <dropTable tableName="hearing_recording_sharees"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1618336690370-1">
+        <dropNotNullConstraint columnDataType="bigint" columnName="ccd_case_id" tableName="hearing_recording"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1618337166748-1">
+        <addUniqueConstraint columnNames="filename" constraintName="UC_HEARING_RECORDING_SEGMENTFILENAME_COL" tableName="hearing_recording_segment"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1618337805634-1">
+        <addUniqueConstraint columnNames="name" constraintName="UC_FOLDERNAME_COL" tableName="folder"/>
+    </changeSet>
 </databaseChangeLog>
