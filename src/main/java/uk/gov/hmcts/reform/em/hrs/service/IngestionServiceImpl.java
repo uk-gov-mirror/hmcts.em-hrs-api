@@ -119,7 +119,8 @@ public class IngestionServiceImpl implements IngestionService {
         LOGGER.info("creating a new case for recording: {}", recordingDto.getRecordingRef());
 
 
-        Folder folder = folderService.getFolderFromFilePath(recordingDto.getFilename());
+        String folderName = folderService.getFolderNameFromFilePath(recordingDto.getFilename());
+        Folder folder = folderService.getFolderByName(folderName);
 
         HearingRecording recording = HearingRecording.builder()
             .folder(folder)

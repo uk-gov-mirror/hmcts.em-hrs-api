@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
@@ -53,7 +54,9 @@ class IngestionServiceImplTest {
     @Test
     void testShouldIngestWhenHearingRecordingIsNew() {
         doReturn(Optional.empty()).when(recordingRepository).findByRecordingRef(RECORDING_REFERENCE);
-        doReturn(TEST_FOLDER).when(folderService).getFolderFromFilePath(any(String.class));
+
+        doReturn(TEST_FOLDER.getName()).when(folderService).getFolderNameFromFilePath(any(String.class));
+        doReturn(TEST_FOLDER).when(folderService).getFolderByName(TEST_FOLDER.getName());
         doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).createCase(HEARING_RECORDING_DTO);
         doReturn(HEARING_RECORDING).when(recordingRepository).save(any(HearingRecording.class));
         doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));

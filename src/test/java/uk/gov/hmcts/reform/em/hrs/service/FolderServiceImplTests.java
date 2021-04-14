@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.em.hrs.exception.DatabaseStorageException;
 import uk.gov.hmcts.reform.em.hrs.repository.FolderRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.JobInProgressRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
@@ -17,9 +18,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.EMPTY_FOLDER;
@@ -46,7 +48,7 @@ class FolderServiceImplTests {
 
     @BeforeEach
     void prepare() {
-        doNothing().when(jobInProgressRepository).deleteByCreatedOnLessThan(any(LocalDateTime.class));
+        lenient().doNothing().when(jobInProgressRepository).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
 
     @Test
@@ -54,7 +56,7 @@ class FolderServiceImplTests {
     void testShouldReturnEmptyWhenFolderIsNotFound() {
         doReturn(Optional.empty()).when(folderRepository).findByName(TEST_FOLDER_NAME);
 
-        final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
+        Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Collections.emptySet());
         verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
@@ -67,7 +69,7 @@ class FolderServiceImplTests {
         doReturn(Optional.of(EMPTY_FOLDER)).when(folderRepository).findByName(EMPTY_FOLDER.getName());
         doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(EMPTY_FOLDER.getName());
 
-        final Set<String> actualFilenames = underTest.getStoredFiles(EMPTY_FOLDER.getName());
+        Set<String> actualFilenames = underTest.getStoredFiles(EMPTY_FOLDER.getName());
 
         assertThat(actualFilenames).hasSameElementsAs(Collections.emptySet());
         verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
@@ -80,7 +82,7 @@ class FolderServiceImplTests {
         doReturn(Optional.of(FOLDER)).when(folderRepository).findByName(TEST_FOLDER_NAME);
         doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(FOLDER.getName());
 
-        final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
+        Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Collections.emptySet());
         verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
@@ -92,7 +94,7 @@ class FolderServiceImplTests {
         doReturn(Optional.of(FOLDER_WITH_SEGMENT)).when(folderRepository).findByName(TEST_FOLDER_NAME);
         doReturn(Set.of(FILE_1, FILE_2, FILE_3)).when(hearingRecordingStorage).findByFolder(FOLDER.getName());
 
-        final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
+        Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Set.of(FILE_1, FILE_2, FILE_3));
         verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
@@ -104,7 +106,7 @@ class FolderServiceImplTests {
         doReturn(Optional.of(FOLDER_WITH_SEGMENT_AND_IN_PROGRESS)).when(folderRepository).findByName(TEST_FOLDER_NAME);
         doReturn(Set.of(FILE_1, FILE_2)).when(hearingRecordingStorage).findByFolder(FOLDER.getName());
 
-        final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
+        Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Set.of(FILE_1, FILE_2, FILE_3));
         verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
@@ -116,11 +118,12 @@ class FolderServiceImplTests {
         doReturn(Optional.of(FOLDER_WITH_SEGMENT_AND_IN_PROGRESS)).when(folderRepository).findByName(TEST_FOLDER_NAME);
         doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(FOLDER.getName());
 
-        final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
+        Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Set.of(FILE_3));
         verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
+
 
     @Test
     @DisplayName("Test when files are recoded in the blobstore but not in the database and more files in progress")
@@ -128,9 +131,24 @@ class FolderServiceImplTests {
         doReturn(Optional.of(FOLDER_WITH_JOBS_IN_PROGRESS)).when(folderRepository).findByName(TEST_FOLDER_NAME);
         doReturn(Set.of(FILE_3)).when(hearingRecordingStorage).findByFolder(TEST_FOLDER_NAME);
 
-        final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
+        Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
         assertThat(actualFilenames).hasSameElementsAs(Set.of(FILE_1, FILE_2));
         verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
     }
+
+    @Test
+    @DisplayName("Should throw exception when folder not in db")
+    void testShouldThrowExceptionWhenNoFolderInDB() {
+        assertThatExceptionOfType(DatabaseStorageException.class).isThrownBy(() -> underTest.getFolderByName("nopath"));
+    }
+
+
+    @Test
+    @DisplayName("Should throw exception when bad folder path is given")
+    void testShouldThrowExceptionWhenNoSlashInPath() {
+        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> underTest.getFolderNameFromFilePath(""));
+    }
+
+
 }
