@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.repository.FolderRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.JobInProgressRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
@@ -23,9 +22,11 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.EMPTY_FOLDER;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FILE_1;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FILE_2;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FILE_3;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FOLDER;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FOLDER_WITH_JOBS_IN_PROGRESS;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FOLDER_WITH_SEGMENT;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.FOLDER_WITH_SEGMENT_AND_IN_PROGRESS;
@@ -52,7 +53,9 @@ class FolderServiceImplTests {
     @DisplayName("Test when folder is not found in the database and blobstore")
     void testShouldReturnEmptyWhenFolderIsNotFound() {
         doReturn(Optional.empty()).when(folderRepository).findByName(TEST_FOLDER_NAME);
-        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(TEST_FOLDER_NAME);
+//        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(TEST_FOLDER_NAME);
+//        doReturn(TEST_FOLDER).when(folderRepository).save(any());
+
 
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
@@ -64,10 +67,10 @@ class FolderServiceImplTests {
     @DisplayName("Test when folder has no HearingRecording data in the database, "
         + "no files in progress and no files in the blobstore")
     void testShouldReturnEmptyWhenFolderHasNoHearingRecordings() {
-        doReturn(Optional.of(TestUtil.EMPTY_FOLDER)).when(folderRepository).findByName(TEST_FOLDER_NAME);
-        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(TEST_FOLDER_NAME);
+        doReturn(Optional.of(EMPTY_FOLDER)).when(folderRepository).findByName(EMPTY_FOLDER.getName());
+        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(EMPTY_FOLDER.getName());
 
-        final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
+        final Set<String> actualFilenames = underTest.getStoredFiles(EMPTY_FOLDER.getName());
 
         assertThat(actualFilenames).hasSameElementsAs(Collections.emptySet());
         verify(jobInProgressRepository, times(1)).deleteByCreatedOnLessThan(any(LocalDateTime.class));
@@ -77,8 +80,8 @@ class FolderServiceImplTests {
     @DisplayName("Test when folder has HearingRecording data with no segment in the database, "
         + "no files in progress and no files in the blobstore")
     void testShouldReturnEmptyWhenFolderHasHearingRecordingsWithNoSegments() {
-        doReturn(Optional.of(TestUtil.FOLDER)).when(folderRepository).findByName(TEST_FOLDER_NAME);
-        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(TEST_FOLDER_NAME);
+        doReturn(Optional.of(FOLDER)).when(folderRepository).findByName(TEST_FOLDER_NAME);
+        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(FOLDER.getName());
 
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
@@ -90,7 +93,7 @@ class FolderServiceImplTests {
     @DisplayName("Test when files are recorded in the database and the blobstore and no files in progress")
     void testShouldReturnCompletedFilesOnly() {
         doReturn(Optional.of(FOLDER_WITH_SEGMENT)).when(folderRepository).findByName(TEST_FOLDER_NAME);
-        doReturn(Set.of(FILE_1, FILE_2, FILE_3)).when(hearingRecordingStorage).findByFolder(TEST_FOLDER_NAME);
+        doReturn(Set.of(FILE_1, FILE_2, FILE_3)).when(hearingRecordingStorage).findByFolder(FOLDER.getName());
 
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
@@ -102,7 +105,7 @@ class FolderServiceImplTests {
     @DisplayName("Test when files are recorded in the database and blobstore and more files in progress")
     void testShouldReturnBothCompletedAndInProgressFiles() {
         doReturn(Optional.of(FOLDER_WITH_SEGMENT_AND_IN_PROGRESS)).when(folderRepository).findByName(TEST_FOLDER_NAME);
-        doReturn(Set.of(FILE_1, FILE_2)).when(hearingRecordingStorage).findByFolder(TEST_FOLDER_NAME);
+        doReturn(Set.of(FILE_1, FILE_2)).when(hearingRecordingStorage).findByFolder(FOLDER.getName());
 
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
@@ -114,7 +117,7 @@ class FolderServiceImplTests {
     @DisplayName("Test when files are recorded in the database but not in the blobstore and no files in progress")
     void testShouldExcludeWhenFileIsInDatabaseButNotInBlobstore() {
         doReturn(Optional.of(FOLDER_WITH_SEGMENT_AND_IN_PROGRESS)).when(folderRepository).findByName(TEST_FOLDER_NAME);
-        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(TEST_FOLDER_NAME);
+        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(FOLDER.getName());
 
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 

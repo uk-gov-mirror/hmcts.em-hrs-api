@@ -43,9 +43,16 @@ public class FolderServiceImpl implements FolderService {
     public Set<String> getStoredFiles(final String folderName) {
         deleteStaledJobs();
 
-        final Tuple2<Set<String>, Set<String>> compositeFileset = getCompletedAndInProgressFiles(folderName);
+        Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
 
-        return SetUtils.union(compositeFileset.getT1(), compositeFileset.getT2());
+        //create folder in database if not exists, and return empty set of files
+        if (optionalFolder.isEmpty()) {
+            Folder newFolder = Folder.builder().name(folderName).build();
+            folderRepository.save(newFolder);
+            return Collections.emptySet();
+        }
+
+        return getCompletedAndInProgressFiles(optionalFolder.get());
     }
 
     private String getFolderNameFromFilePath(@NotNull final String path) {
@@ -60,33 +67,23 @@ public class FolderServiceImpl implements FolderService {
         return folder.get();
     }
 
-    private Tuple2<Set<String>, Set<String>> getCompletedAndInProgressFiles(final String folderName) {
-        final Tuple2<FilesInDatabase, Set<String>> databaseRecords = getFilesetsFromDatabase(folderName);
+    private Set<String> getCompletedAndInProgressFiles(final Folder optionalFolder) {
+
+        final Tuple2<FilesInDatabase, Set<String>> databaseRecords = getFilesetsFromDatabase(optionalFolder);
         final FilesInDatabase filesInDatabase = databaseRecords.getT1();
 
-        final Set<String> filesInBlobstore = hearingRecordingStorage.findByFolder(folderName);
+        final Set<String> filesInBlobstore = hearingRecordingStorage.findByFolder(optionalFolder.getName());
 
         final Set<String> completedFiles = filesInDatabase.intersect(filesInBlobstore);
         final Set<String> filesInProgress = databaseRecords.getT2();
 
-        return Tuples.of(completedFiles, filesInProgress);
+        return SetUtils.union(completedFiles, filesInProgress);
     }
 
-    private Tuple2<FilesInDatabase, Set<String>> getFilesetsFromDatabase(final String folderName) {
-        Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
+    private Tuple2<FilesInDatabase, Set<String>> getFilesetsFromDatabase(final Folder folder) {
 
-        //create folder in database if not exists
-        if (optionalFolder.isEmpty()) {
-            Folder newFolder = Folder.builder().name(folderName).build();
-            optionalFolder = Optional.of(folderRepository.save(newFolder));
-            return Tuples.of(new FilesInDatabase(Collections.emptySet()),Collections.emptySet());
-        }
-
-        final Set<String> filesInDatabase = optionalFolder.map(fol -> getSegmentFilenames(fol.getHearingRecordings()))
-            .orElse(Collections.emptySet());
-
-        final Set<String> filesInProgress = optionalFolder.map(x -> getFilesInProgress(x.getJobsInProgress()))
-            .orElse(Collections.emptySet());
+        final Set<String> filesInDatabase = getSegmentFilenames(folder.getHearingRecordings());
+        final Set<String> filesInProgress = getFilesInProgress(folder.getJobsInProgress());
 
         return Tuples.of(new FilesInDatabase(filesInDatabase), filesInProgress);
     }
