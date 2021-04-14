@@ -11,10 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING;
 
 class ShareesRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
+    private static final String EMAIL_ADDRESS = "test@testEmail.com";
     @Inject
     private ShareesRepository underTest;
-
-    private static final String EMAIL_ADDRESS = "test@testEmail.com";
 
     @Test
     void testShouldSaveSharee() {

@@ -53,9 +53,6 @@ class FolderServiceImplTests {
     @DisplayName("Test when folder is not found in the database and blobstore")
     void testShouldReturnEmptyWhenFolderIsNotFound() {
         doReturn(Optional.empty()).when(folderRepository).findByName(TEST_FOLDER_NAME);
-//        doReturn(Collections.emptySet()).when(hearingRecordingStorage).findByFolder(TEST_FOLDER_NAME);
-//        doReturn(TEST_FOLDER).when(folderRepository).save(any());
-
 
         final Set<String> actualFilenames = underTest.getStoredFiles(TEST_FOLDER_NAME);
 
