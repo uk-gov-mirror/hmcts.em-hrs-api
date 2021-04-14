@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.em.hrs.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
@@ -17,10 +19,8 @@ import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import javax.inject.Inject;
-import javax.inject.Named;
 
-@Named
+@Service
 @Transactional
 public class IngestionServiceImpl implements IngestionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(IngestionServiceImpl.class);
@@ -32,7 +32,7 @@ public class IngestionServiceImpl implements IngestionService {
     private final Snooper snooper;
     private final FolderService folderService;
 
-    @Inject
+    @Autowired
     public IngestionServiceImpl(final CcdDataStoreApiClient ccdDataStoreApiClient,
                                 final HearingRecordingRepository recordingRepository,
                                 final HearingRecordingSegmentRepository segmentRepository,
@@ -102,7 +102,7 @@ public class IngestionServiceImpl implements IngestionService {
 
         LOGGER.info("adding  recording ({}) to case({})", recordingDto.getRecordingRef(), recording.getCcdCaseId());
 
-        ccdDataStoreApiClient.updateCaseData(recording.getCcdCaseId(), recordingDto);
+        ccdDataStoreApiClient.updateCaseData(recording.getCcdCaseId(), recording.getId(), recordingDto);
 
         return Optional.of(createSegment(recording, recordingDto));
     }
@@ -128,7 +128,7 @@ public class IngestionServiceImpl implements IngestionService {
         recording = recordingRepository.save(recording);
 
         //create case in ccd, and update database with caseIdd
-        final Long caseId = ccdDataStoreApiClient.createCase(recordingDto);
+        final Long caseId = ccdDataStoreApiClient.createCase(recording.getId(), recordingDto);
         recording.setCcdCaseId(caseId);
         recording = recordingRepository.save(recording);
 

@@ -1,20 +1,15 @@
 package uk.gov.hmcts.reform.em.hrs.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HearingRecordingDto {
 
     private String caseRef;
@@ -25,6 +20,7 @@ public class HearingRecordingDto {
     private String courtLocationCode;
     private String recordingRef;
     private String cvpFileUrl;
+    private String urlDomain;
     private String filename;
     private String filenameExtension;
     private Long fileSize;

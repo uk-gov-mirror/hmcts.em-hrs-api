@@ -46,22 +46,19 @@ public class ExtendedCcdHelper {
     public HearingRecordingDto createRecordingSegment(
         String url, String filename, String fileExt, Long fileSize, int segment) {
 
-        return new HearingRecordingDto(
-            "hearing-12-family-probate-morning",
-            "CVP",
-            "London",
-            "PROBATE",
-            "HRS",
-            "12",
-            "hearing-12-family-probate-morning",
-            url,
-            filename,
-            fileExt,
-            fileSize,
-            segment,
-            "",
-            LocalDateTime.now()
-        );
+        return HearingRecordingDto.builder()
+            .recordingRef("hearing-12-family-probate-morning")
+            .recordingSource("CVP").courtLocationCode("London")
+            .serviceCode("PROBATE")
+            .hearingRoomRef("12")
+            .jurisdictionCode("HRS")
+            .caseRef("hearing-12-family-probate-morning")
+            .cvpFileUrl(url)
+            .filename(filename)
+            .filenameExtension(fileExt)
+            .fileSize(fileSize)
+            .segment(segment)
+            .build();
     }
 
     private void importDefinitionFile() throws IOException {
