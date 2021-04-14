@@ -9,10 +9,12 @@ import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.em.hrs.util.IngestionQueue.QUEUE_CAPACITY;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.INGESTION_QUEUE_SIZE;
 
 class IngestionQueueTest {
-    private final IngestionQueue underTest = IngestionQueue.INSTANCE;
+    private final IngestionQueue underTest = IngestionQueue.builder()
+        .capacity(INGESTION_QUEUE_SIZE)
+        .build();
 
     private final TextProducer textProducer = Fairy.create().textProducer();
 
@@ -60,8 +62,18 @@ class IngestionQueueTest {
         assertThat(result).isNotNull();
     }
 
+    @Test
+    void testShouldHaveDefaultQueueSize() {
+        final int expectedQueueSize = 1000;
+
+        final IngestionQueue sut = IngestionQueue.builder()
+            .build();
+
+        assertThat(sut.remainingCapacity()).isEqualTo(expectedQueueSize);
+    }
+
     private void fillUpQueue() {
-        IntStream.rangeClosed(1, QUEUE_CAPACITY).forEach(x -> {
+        IntStream.rangeClosed(1, 2).forEach(x -> {
             final HearingRecordingDto dto = HearingRecordingDto.builder()
                 .caseRef(textProducer.randomString(5))
                 .build();

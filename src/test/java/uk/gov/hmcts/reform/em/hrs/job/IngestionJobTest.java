@@ -14,11 +14,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CASE_REFERENCE;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.INGESTION_QUEUE_SIZE;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_DATETIME;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_REFERENCE;
 
 class IngestionJobTest {
-    private final IngestionQueue ingestionQueue = IngestionQueue.INSTANCE;
+    private final IngestionQueue ingestionQueue = IngestionQueue.builder()
+        .capacity(INGESTION_QUEUE_SIZE)
+        .build();
 
     private final IngestionService ingestionService = mock(IngestionService.class);
 

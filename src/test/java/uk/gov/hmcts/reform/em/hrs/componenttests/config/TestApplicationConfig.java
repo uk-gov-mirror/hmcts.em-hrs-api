@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Primary;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.INGESTION_QUEUE_SIZE;
+
 @TestConfiguration
 public class TestApplicationConfig {
     @Bean
@@ -18,6 +20,8 @@ public class TestApplicationConfig {
     @Bean
     @Primary
     public IngestionQueue provideIngestionQueue() {
-        return IngestionQueue.INSTANCE;
+        return IngestionQueue.builder()
+            .capacity(INGESTION_QUEUE_SIZE)
+            .build();
     }
 }

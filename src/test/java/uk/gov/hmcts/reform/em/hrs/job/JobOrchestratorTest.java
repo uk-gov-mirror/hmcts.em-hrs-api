@@ -1,10 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.job;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
@@ -15,16 +11,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
 class JobOrchestratorTest {
-    @Mock
-    private Scheduler scheduler;
+    private final Scheduler scheduler = mock(Scheduler.class);
 
-    @InjectMocks
-    private JobOrchestrator underTest;
+    private final int rate = 1;
+
+    private final JobOrchestrator underTest = new JobOrchestrator(scheduler, rate);
 
     @Test
     void testShouldStartTheScheduler() throws Exception {

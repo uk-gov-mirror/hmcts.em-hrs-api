@@ -13,7 +13,10 @@ import uk.gov.service.notify.NotificationClientApi;
 public class ApplicationConfig {
 
     @Value("${notify.apiKey}")
-    String notificationApiKey;
+    private String notificationApiKey;
+
+    @Value("${hrs.ingestion-queue-size}")
+    private Integer ingestionQueueSize;
 
     @Bean
     public NotificationClientApi provideNotificationClient() {
@@ -22,7 +25,9 @@ public class ApplicationConfig {
 
     @Bean
     public IngestionQueue provideIngestionQueue() {
-        return IngestionQueue.INSTANCE;
+        return IngestionQueue.builder()
+            .capacity(ingestionQueueSize)
+            .build();
     }
 
     @Bean
