@@ -32,23 +32,23 @@ public class FolderServiceImpl implements FolderService {
     private final HearingRecordingStorage hearingRecordingStorage;
 
     @Inject
-    public FolderServiceImpl(FolderRepository folderRepository,
-                             JobInProgressRepository jobInProgressRepository,
-                             HearingRecordingStorage hearingRecordingStorage) {
+    public FolderServiceImpl(final FolderRepository folderRepository,
+                             final JobInProgressRepository jobInProgressRepository,
+                             final HearingRecordingStorage hearingRecordingStorage) {
         this.folderRepository = folderRepository;
         this.jobInProgressRepository = jobInProgressRepository;
         this.hearingRecordingStorage = hearingRecordingStorage;
     }
 
     @Override
-    public Set<String> getStoredFiles(String folderName) {
+    public Set<String> getStoredFiles(final String folderName) {
         deleteStaledJobs();
 
-        Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
+        final Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
 
         //create folder in database if not exists, and return empty set of files
         if (optionalFolder.isEmpty()) {
-            Folder newFolder = Folder.builder().name(folderName).build();
+            final Folder newFolder = Folder.builder().name(folderName).build();
             folderRepository.save(newFolder);
             return Collections.emptySet();
         }
@@ -57,8 +57,8 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public String getFolderNameFromFilePath(@NotNull String path) {
-        int separatorIndex = path.indexOf("/");
+    public String getFolderNameFromFilePath(@NotNull final String path) {
+        final int separatorIndex = path.indexOf("/");
         if (separatorIndex < 0) {
             throw new RuntimeException("Folder Name must have at least one slash /");
         }
@@ -68,8 +68,8 @@ public class FolderServiceImpl implements FolderService {
 
 
     @Override
-    public Folder getFolderByName(@NotNull String folderName) {
-        Optional<Folder> folder = folderRepository.findByName(folderName);
+    public Folder getFolderByName(@NotNull final String folderName) {
+        final Optional<Folder> folder = folderRepository.findByName(folderName);
         if (folder.isEmpty()) {
             throw new DatabaseStorageException(
                 "Folders must explicitly exist, based on GET /folders/(foldername) creating them");//TODO should a
@@ -79,39 +79,39 @@ public class FolderServiceImpl implements FolderService {
     }
 
 
-    private Set<String> getCompletedAndInProgressFiles(Folder folder) {
+    private Set<String> getCompletedAndInProgressFiles(final Folder folder) {
 
-        Tuple2<FilesInDatabase, Set<String>> databaseRecords = getFilesetsFromDatabase(folder);
-        FilesInDatabase filesInDatabase = databaseRecords.getT1();
+        final Tuple2<FilesInDatabase, Set<String>> databaseRecords = getFilesetsFromDatabase(folder);
+        final FilesInDatabase filesInDatabase = databaseRecords.getT1();
 
-        Set<String> filesInBlobstore = hearingRecordingStorage.findByFolder(folder.getName());
+        final Set<String> filesInBlobstore = hearingRecordingStorage.findByFolder(folder.getName());
 
-        Set<String> completedFiles = filesInDatabase.intersect(filesInBlobstore);
-        Set<String> filesInProgress = databaseRecords.getT2();
+        final Set<String> completedFiles = filesInDatabase.intersect(filesInBlobstore);
+        final Set<String> filesInProgress = databaseRecords.getT2();
 
         return SetUtils.union(completedFiles, filesInProgress);
     }
 
-    private Tuple2<FilesInDatabase, Set<String>> getFilesetsFromDatabase(Folder folder) {
+    private Tuple2<FilesInDatabase, Set<String>> getFilesetsFromDatabase(final Folder folder) {
 
-        Set<String> filesInDatabase = getSegmentFilenames(folder.getHearingRecordings());
-        Set<String> filesInProgress = getFilesInProgress(folder.getJobsInProgress());
+        final Set<String> filesInDatabase = getSegmentFilenames(folder.getHearingRecordings());
+        final Set<String> filesInProgress = getFilesInProgress(folder.getJobsInProgress());
 
         return Tuples.of(new FilesInDatabase(filesInDatabase), filesInProgress);
     }
 
-    private Set<String> getFilesInProgress(List<JobInProgress> jobInProgresses) {
+    private Set<String> getFilesInProgress(final List<JobInProgress> jobInProgresses) {
         return jobInProgresses.stream()
             .map(JobInProgress::getFilename)
             .collect(Collectors.toUnmodifiableSet());
     }
 
     private void deleteStaledJobs() {
-        LocalDateTime yesterday = LocalDateTime.now(Clock.systemUTC()).minusHours(24);
+        final LocalDateTime yesterday = LocalDateTime.now(Clock.systemUTC()).minusHours(24);
         jobInProgressRepository.deleteByCreatedOnLessThan(yesterday);
     }
 
-    private Set<String> getSegmentFilenames(List<HearingRecording> hearingRecordings) {
+    private Set<String> getSegmentFilenames(final List<HearingRecording> hearingRecordings) {
         return hearingRecordings.stream()
             .flatMap(x -> x.getSegments().stream().map(HearingRecordingSegment::getFilename))
             .collect(Collectors.toUnmodifiableSet());
@@ -120,11 +120,11 @@ public class FolderServiceImpl implements FolderService {
     static class FilesInDatabase {
         private final Set<String> fileset;
 
-        FilesInDatabase(Set<String> fileset) {
+        FilesInDatabase(final Set<String> fileset) {
             this.fileset = fileset;
         }
 
-        Set<String> intersect(Set<String> filesInBlobstore) {
+        Set<String> intersect(final Set<String> filesInBlobstore) {
             return SetUtils.intersect(fileset, filesInBlobstore);
         }
     }
