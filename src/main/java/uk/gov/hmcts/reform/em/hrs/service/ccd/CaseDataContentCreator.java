@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.model.CaseDocument;
@@ -22,7 +23,7 @@ public class CaseDataContentCreator {
         this.objectMapper = objectMapper;
     }
 
-    public JsonNode createCaseStartData(final HearingRecordingDto hearingRecordingDto) {
+    public JsonNode createCaseStartData(@NonNull final HearingRecordingDto hearingRecordingDto) {
 
         CaseHearingRecording recording = CaseHearingRecording.builder()
             .recordingFiles(Collections.singletonList(createSegment(hearingRecordingDto)))
