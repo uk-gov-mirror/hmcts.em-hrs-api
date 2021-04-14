@@ -44,7 +44,7 @@ public class CcdDataStoreApiClient {
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
             .eventToken(startEventResponse.getToken())
-            .data(caseDataCreator.createCaseStartData(hearingRecordingDto))
+            .data(caseDataCreator.createCaseStartData(hearingRecordingDto, startEventResponse.getCaseDetails().getId()))
             .build();
 
         CaseDetails caseDetails = coreCaseDataApi
@@ -66,6 +66,7 @@ public class CcdDataStoreApiClient {
             .event(Event.builder().id(startEventResponse.getEventId()).build())
             .eventToken(startEventResponse.getToken())
             .data(caseDataCreator.createCaseUpdateData(startEventResponse.getCaseDetails().getData(),
+                                                       startEventResponse.getCaseDetails().getId(),
                                                        hearingRecordingDto))
             .build();
 

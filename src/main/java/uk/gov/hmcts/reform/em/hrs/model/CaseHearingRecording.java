@@ -39,7 +39,7 @@ public class CaseHearingRecording {
     private String recordingReference;
 
     @JsonProperty("recordingFiles")
-    private List<RecordingSegment> recordingFiles;
+    private List<CaseRecordingFile> recordingFiles;
 
     /**
      * Format recording dateTime to satisfy CCD validation requirements.

@@ -18,17 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
-import uk.gov.hmcts.reform.em.hrs.exception.ValidationErrorException;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
-import uk.gov.hmcts.reform.em.hrs.service.ShareService;
-import uk.gov.hmcts.reform.em.hrs.util.EmailValidator;
+import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
-import java.util.UUID;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
@@ -43,17 +39,17 @@ public class HearingRecordingController {
     private static final Logger LOGGER = LoggerFactory.getLogger(HearingRecordingController.class);
 
     private final FolderService folderService;
-    private final ShareService shareService;
+    private final ShareAndNotifyService shareAndNotifyService;
     private final SegmentDownloadService downloadService;
     private final IngestionQueue ingestionQueue;
 
     @Autowired
     public HearingRecordingController(final FolderService folderService,
-                                      final ShareService shareService,
+                                      final ShareAndNotifyService shareAndNotifyService,
                                       final IngestionQueue ingestionQueue,
                                       SegmentDownloadService downloadService) {
         this.folderService = folderService;
-        this.shareService = shareService;
+        this.shareAndNotifyService = shareAndNotifyService;
         this.ingestionQueue = ingestionQueue;
         this.downloadService = downloadService;
     }
@@ -91,6 +87,8 @@ public class HearingRecordingController {
         @ApiResponse(code = 429, message = "Request rejected - too many pending requests")
     })
     public ResponseEntity<Void> createHearingRecording(@RequestBody final HearingRecordingDto hearingRecordingDto) {
+        LOGGER.info("received request to create hearing recording ({})", hearingRecordingDto.getRecordingRef());
+
 
         final boolean accepted = ingestionQueue.offer(hearingRecordingDto);
 
@@ -114,38 +112,33 @@ public class HearingRecordingController {
         @RequestHeader("authorization") final String authorisationToken,
         @RequestBody final CaseDetails caseDetails) throws NotificationClientException {
 
-        final String shareeEmailAddress = (String) caseDetails.getData().get("recipientEmailAddress");
+        LOGGER.info("received request to share recordings for case ({})", caseDetails.getId());
 
-        if (!EmailValidator.isValid(shareeEmailAddress)) {
-            // TODO: handle errors.  Also, NotificationClientException in method signature
-            throw new ValidationErrorException("");
-        }
-
-        shareService.executeNotify(
-            caseDetails.getId(),
-            shareeEmailAddress,
-            authorisationToken
-        );
+        shareAndNotifyService.shareAndNotify(caseDetails.getId(), caseDetails.getData(), authorisationToken);
 
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(
-        path = "/documents/hrsegments-{segmentId}",
+        path = "/hearing-recordings/{caseId}/segments/{segment}",
         produces = APPLICATION_OCTET_STREAM_VALUE
     )
     @ResponseBody
     @ApiOperation(value = "Get hearing recording file",
         notes = "Return hearing recording file from the specified folder")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording segment")})
-    public ResponseEntity getHearingRecording(@PathVariable("segmentId") UUID segmentId,
-                                              HttpServletResponse response) {
+    public ResponseEntity getSegmentBinary(@PathVariable("caseId") Long caseId,
+                                           @PathVariable("segment") Integer segment,
+                                           HttpServletResponse response) {
+
+        LOGGER.info("received request to download recording for case ({}) segment ({})", caseId, segment);
+
         try {
-            downloadService.download(segmentId, response.getOutputStream());
+            downloadService.download(caseId, segment, response.getOutputStream());
         } catch (IOException e) {
             return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(e);
+                .body(e.getMessage());
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

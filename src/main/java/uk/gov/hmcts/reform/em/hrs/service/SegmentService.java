@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import java.util.List;
 import java.util.UUID;
 
-public interface HearingRecordingSegmentService {
+public interface SegmentService {
 
     List<HearingRecordingSegment> findByRecordingId(UUID id);
 }

@@ -13,4 +13,6 @@ public interface HearingRecordingSegmentRepository extends PagingAndSortingRepos
 
     List<HearingRecordingSegment> findByHearingRecordingId(UUID hearingRecordingId);
 
+    HearingRecordingSegment findByHearingRecordingCcdCaseIdAndRecordingSegment(Long caseId, Integer segment);
+
 }

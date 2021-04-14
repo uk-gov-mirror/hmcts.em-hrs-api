@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RecordingSegment {
+public class CaseRecordingFile {
 
     @JsonProperty("documentLink")
     private CaseDocument recordingFile;
