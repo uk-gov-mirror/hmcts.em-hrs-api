@@ -7,6 +7,8 @@ import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
+import uk.gov.hmcts.reform.em.hrs.exception.DatabaseStorageException;
+import uk.gov.hmcts.reform.em.hrs.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.em.hrs.repository.FolderRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.JobInProgressRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
@@ -55,24 +57,29 @@ public class FolderServiceImpl implements FolderService {
         return getCompletedAndInProgressFiles(optionalFolder.get());
     }
 
+    @Override
+    public Folder getFolderFromFilePath(@NotNull final String path) {
+        final String folderName = getFolderNameFromFilePath(path);
+        Optional<Folder> folder = folderRepository.findByName(folderName);
+        if (folder.isEmpty()) {
+            throw new DatabaseStorageException(
+                "Folders must explicitly exist, based on GET /folders/(foldername) creating them");//TODO should a folder be created at this point?
+        }
+        return folder.get();
+    }
+
     private String getFolderNameFromFilePath(@NotNull final String path) {
         final int separatorIndex = path.indexOf("/");
         return path.substring(0, separatorIndex);
     }
 
-    @Override
-    public Folder getFolderFromFilePath(@NotNull final String path) {
-        final String folderName = getFolderNameFromFilePath(path);
-        Optional<Folder> folder = folderRepository.findByName(folderName);
-        return folder.get();
-    }
 
-    private Set<String> getCompletedAndInProgressFiles(final Folder optionalFolder) {
+    private Set<String> getCompletedAndInProgressFiles(final Folder folder) {
 
-        final Tuple2<FilesInDatabase, Set<String>> databaseRecords = getFilesetsFromDatabase(optionalFolder);
+        final Tuple2<FilesInDatabase, Set<String>> databaseRecords = getFilesetsFromDatabase(folder);
         final FilesInDatabase filesInDatabase = databaseRecords.getT1();
 
-        final Set<String> filesInBlobstore = hearingRecordingStorage.findByFolder(optionalFolder.getName());
+        final Set<String> filesInBlobstore = hearingRecordingStorage.findByFolder(folder.getName());
 
         final Set<String> completedFiles = filesInDatabase.intersect(filesInBlobstore);
         final Set<String> filesInProgress = databaseRecords.getT2();
