@@ -70,6 +70,6 @@ public class CaseDataContentCreator {
     }
 
     private String getTimeOfDay(LocalDateTime dateTime) {
-        return dateTime.getHour() < 12 ? "AM" : "PM";
+        return dateTime != null ? dateTime.getHour() < 12 ? "AM" : "PM" : null;
     }
 }

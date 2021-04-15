@@ -109,8 +109,8 @@ echo "LOCAL ENVIRONMENT BOOT UP SUCCESSFULLY STARTED, about to tail logs whilst 
 
 date
 
-echo "Remember to prime CCD with the hrs ccd data definition - by running the functional tests once the CCD simulator is ready.."
-echo "The final log to see, to indicate that ccd simulator is ready is this:"
+echo "Remember to prime CCD with the hrs ccd data definition - by running the functional tests once the CCD data-store API is ready.."
+echo "The final log to see, to indicate that ccd-data-store-api  is ready is this:"
 echo "ccd-data-store-api_1    | 2021-04-11T10:54:38.861 INFO  [main] o.s.d.r.c.DeferredRepositoryInitializationListener Spring Data repositories initialized!"
 echo ""
 read -p "Press the ENTER key to continue"
