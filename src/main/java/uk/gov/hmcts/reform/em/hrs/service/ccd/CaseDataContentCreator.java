@@ -39,10 +39,10 @@ public class CaseDataContentCreator {
         return objectMapper.convertValue(recording, JsonNode.class);
     }
 
-    public Map<String, Object> createCaseUpdateData(final Map<String, Object> caseData,
-                                                    final HearingRecordingDto hearingRecordingDto) {
+    public Map<String, Object> createCaseUpdateData(@NonNull final Map<String, Object> caseData,
+                                                    @NonNull final HearingRecordingDto hearingRecordingDto) {
         @SuppressWarnings("unchecked")
-        List<RecordingSegment> segments = (ArrayList) caseData.getOrDefault("recordingFiles", new ArrayList());
+        List<RecordingSegment> segments = (ArrayList) caseData.getOrDefault("recordingFiles", new ArrayList<RecordingSegment>());
         segments.add(createSegment(hearingRecordingDto));
         return caseData;
     }
