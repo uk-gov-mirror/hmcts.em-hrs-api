@@ -94,7 +94,7 @@ class CcdDataStoreApiClientTest {
         );
         Long id = underTest.createCase(hearingRecordingDto);
         assertEquals(1213456789L, id);
-
+        Mockito.verify(caseDataCreator).createCaseStartData(any());
     }
 
     @Test
@@ -115,14 +115,14 @@ class CcdDataStoreApiClientTest {
         LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
         hearingRecordingDto.setRecordingDateTime(now);
 
-        Mockito.lenient().doReturn(map).when(securityService).getTokens();
-        Mockito.lenient().doReturn(startEventResponse).when(coreCaseDataApi).startEvent(
+        doReturn(map).when(securityService).getTokens();
+        doReturn(startEventResponse).when(coreCaseDataApi).startEvent(
             "xxx",
             "yyy",
             "123456789",
             ADD_RECORDING_FILE
         );
-        Mockito.lenient().doReturn(caseDetails).when(coreCaseDataApi).submitEventForCaseWorker(
+        doReturn(caseDetails).when(coreCaseDataApi).submitEventForCaseWorker(
             eq("xxx"),
             eq("yyy"),
             eq("aaa"),
