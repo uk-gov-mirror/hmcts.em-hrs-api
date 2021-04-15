@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.em.hrs.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,6 +23,8 @@ public class CaseHearingRecording {
     private String hearingRoomRef;
 
     @JsonProperty("recordingDateTime")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime recordingDateTime;
 
     @JsonProperty("recordingTimeOfDay")
@@ -40,13 +44,4 @@ public class CaseHearingRecording {
 
     @JsonProperty("recordingFiles")
     private List<CaseRecordingFile> recordingFiles;
-
-    /**
-     * Format recording dateTime to satisfy CCD validation requirements.
-     * @return CCD-compliant recording dateTime
-    */
-    public String getRecordingDateTime() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        return formatter.format(recordingDateTime);
-    }
 }

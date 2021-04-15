@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.restassured.RestAssured;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class CaseUpdateScenarios {
             .statusCode(200);
 
 
-        HearingRecordingDto reqBody = extendedCcdHelper.createRecordingSegment(
+        JsonNode reqBody = extendedCcdHelper.createRecordingSegment(
             "http://dm-store:8080/documents/e486435e-30e8-456c-9d4d-4adffcb50010",
             "functional-tests/hearing-recording-segment",
             ".mp4",

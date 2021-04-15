@@ -54,22 +54,21 @@ public class TestUtil {
         .filename(FILE_3)
         .build();
 
-    public static final HearingRecordingDto HEARING_RECORDING_DTO = new HearingRecordingDto(
-        CASE_REFERENCE,
-        "CVP",
-        "123",
-        null,
-        "JC",
-        "LC",
-        RECORDING_REFERENCE,
-        "recording-cvp-uri",
-        "hearing-recording-file-name",
-        "mp4",
-        123456789L,
-        0,
-        "erI2foA30B==",
-        RECORDING_DATETIME
-    );
+    public static final HearingRecordingDto HEARING_RECORDING_DTO = HearingRecordingDto.builder()
+        .caseRef(CASE_REFERENCE)
+        .recordingSource("CVP")
+        .courtLocationCode("LC")
+        .jurisdictionCode("JC")
+        .hearingRoomRef("123")
+        .recordingRef(RECORDING_REFERENCE)
+        .filename("hearing-recording-file-name")
+        .recordingDateTime(RECORDING_DATETIME)
+        .filenameExtension("mp4")
+        .fileSize(123456789L)
+        .segment(0)
+        .cvpFileUrl("recording-cvp-uri")
+        .checkSum("erI2foA30B==")
+        .build();
 
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(
         MediaType.APPLICATION_JSON.getType(),

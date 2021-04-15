@@ -30,5 +30,4 @@ public class HearingRecordingDto {
     @JsonFormat(pattern = "yyyy-MM-dd-HH.mm.ss.SSS")
     @DateTimeFormat(pattern = "yyyy-MM-dd-HH.mm.ss.SSS")
     private LocalDateTime recordingDateTime;
-
 }
