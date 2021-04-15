@@ -34,6 +34,7 @@ public class CaseUpdateScenarios {
     @Test
     public void testCcdCaseUpdate() {
 
+        //TODO - Clarify What is the Purpose of this step??
         RestAssured
             .given()
             .relaxedHTTPSValidation()
@@ -63,5 +64,9 @@ public class CaseUpdateScenarios {
             .post("/segments")
             .then()
             .statusCode(202);
+
+        //TODO - Is there some way that we can verify if the Case as been Updated on the CCD System??
+        //Possibly as an API Look up or so.
+        //If so we should be using those mechanisms to verify
     }
 }

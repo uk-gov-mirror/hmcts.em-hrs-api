@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,12 +14,15 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
-import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 
+import java.util.List;
+import java.util.UUID;
 import javax.inject.Inject;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(classes = {EmTestConfig.class, AuthTokenGeneratorConfiguration.class, ExtendedCcdHelper.class})
@@ -39,11 +43,13 @@ public class GetFileNamesScenarios {
     private String testUrl;
 
     @Test
-    public void testGetFileNames () throws Exception {
+    @Disabled("To be enabled when the Code is ready for Testing...")
+    public void testGetFileNames() throws Exception {
 
+        UUID id = UUID.randomUUID();
         HearingRecordingDto reqBody = extendedCcdHelper.createRecordingSegment(
             "http://dm-store:8080/documents/e486435e-30e8-456c-9d4d-4adffcb50010",
-            "functional-tests/hearing-recording-segment.test",
+            "functional-tests/hearing-recording-segment"+id.toString(),
             ".mp4",
             12L,
             0
@@ -75,7 +81,10 @@ public class GetFileNamesScenarios {
             .get("/folders/functional-tests")
             .then()
             .statusCode(200).log().all();
-        response.extract().body().jsonPath();
-
+        assertEquals("functional-tests",response.extract().body().jsonPath().get("folderName"));
+        List<String> fileNames = response.extract().body().jsonPath().get("filenames");
+        assertTrue(fileNames.stream().anyMatch(s -> {
+            return s.equals("hearing-recording-segment"+id.toString()+"mp4");
+        }));
     }
 }
