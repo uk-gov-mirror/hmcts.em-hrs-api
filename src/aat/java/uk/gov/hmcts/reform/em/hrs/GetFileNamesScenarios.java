@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class GetFileNamesScenarios {
     private String testUrl;
 
     @Test
-    public void test() {
+    public void testGetFileNames () throws Exception {
 
         HearingRecordingDto reqBody = extendedCcdHelper.createRecordingSegment(
             "http://dm-store:8080/documents/e486435e-30e8-456c-9d4d-4adffcb50010",
@@ -59,19 +60,22 @@ public class GetFileNamesScenarios {
             .when()
             .post("/segments")
             .then()
-            .statusCode(202);
+            .statusCode(202).log().all();
 
+        Thread.sleep(3000);
 
-
-        RestAssured
+        ValidatableResponse response = RestAssured
             .given()
+            .header("Authorization", idamHelper.authenticateUser("a@b.com"))
+            .header("ServiceAuthorization", authTokenGenerator.generate())
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get("/folders/functional-tests")
             .then()
-            .statusCode(200);
+            .statusCode(200).log().all();
+        response.extract().body().jsonPath();
 
     }
 }
