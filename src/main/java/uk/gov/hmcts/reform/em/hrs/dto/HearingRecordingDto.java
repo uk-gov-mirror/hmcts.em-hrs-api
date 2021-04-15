@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HearingRecordingDto {
 
+    private String folder;
     private String caseRef;
     private String recordingSource;
     private String hearingRoomRef;

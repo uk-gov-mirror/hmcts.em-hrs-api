@@ -55,7 +55,6 @@ class IngestionServiceImplTest {
     void testShouldIngestWhenHearingRecordingIsNew() {
         doReturn(Optional.empty()).when(recordingRepository).findByRecordingRef(RECORDING_REFERENCE);
 
-        doReturn(TEST_FOLDER.getName()).when(folderService).getFolderNameFromFilePath(any(String.class));
         doReturn(TEST_FOLDER).when(folderService).getFolderByName(TEST_FOLDER.getName());
         doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).createCase(HEARING_RECORDING.getId(), HEARING_RECORDING_DTO);
         doReturn(HEARING_RECORDING).when(recordingRepository).save(any(HearingRecording.class));
@@ -94,5 +93,4 @@ class IngestionServiceImplTest {
             .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
         verifyNoInteractions(snooper);
     }
-
 }

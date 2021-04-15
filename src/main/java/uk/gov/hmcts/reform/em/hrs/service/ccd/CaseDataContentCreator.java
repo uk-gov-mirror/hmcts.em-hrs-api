@@ -40,6 +40,7 @@ public class CaseDataContentCreator {
                                                     final HearingRecordingDto hearingRecordingDto) {
         @SuppressWarnings("unchecked")
         List<CaseRecordingFile> segments = (ArrayList) caseData.getOrDefault("recordingFiles", new ArrayList());
+        //TODO: add segments to caseData when new ArrayList() is used
         boolean segmentAlreadyAdded = segments.stream()
             .map(segment -> segment.getRecordingFile().getFilename())
             .anyMatch(filename -> filename.equals(hearingRecordingDto.getFilename()));

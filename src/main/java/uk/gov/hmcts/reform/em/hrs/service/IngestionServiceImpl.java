@@ -110,9 +110,7 @@ public class IngestionServiceImpl implements IngestionService {
     private HearingRecordingSegment createCaseinCcdAndPersist(final HearingRecordingDto recordingDto) {
         LOGGER.info("creating a new case for recording: {}", recordingDto.getRecordingRef());
 
-
-        String folderName = folderService.getFolderNameFromFilePath(recordingDto.getFilename());
-        Folder folder = folderService.getFolderByName(folderName);
+        Folder folder = folderService.getFolderByName(recordingDto.getFolder());
 
         HearingRecording recording = HearingRecording.builder()
             .folder(folder)

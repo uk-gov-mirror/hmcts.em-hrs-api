@@ -55,6 +55,7 @@ public class TestUtil {
         .build();
 
     public static final HearingRecordingDto HEARING_RECORDING_DTO = HearingRecordingDto.builder()
+        .folder(TEST_FOLDER_NAME)
         .caseRef(CASE_REFERENCE)
         .recordingSource("CVP")
         .courtLocationCode("LC")

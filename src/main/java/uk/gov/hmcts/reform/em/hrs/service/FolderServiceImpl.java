@@ -57,17 +57,6 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public String getFolderNameFromFilePath(@NotNull String path) {
-        int separatorIndex = path.indexOf("/");
-        if (separatorIndex < 0) {
-            throw new RuntimeException("Folder Name must have at least one slash /");
-        }
-        //TODO determine folder name in ingestor instead of here, and pass it in the DTO
-        return path.substring(0, separatorIndex);
-    }
-
-
-    @Override
     public Folder getFolderByName(@NotNull String folderName) {
         Optional<Folder> folder = folderRepository.findByName(folderName);
         if (folder.isEmpty()) {
