@@ -41,16 +41,16 @@ public class CaseUpdateScenarios {
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get("/folders/functional-tests")
+            .get("/folders/audiostream01")
             .then()
             .statusCode(200);
 
-
         JsonNode reqBody = extendedCcdHelper.createRecordingSegment(
-            "http://dm-store:8080/documents/e486435e-30e8-456c-9d4d-4adffcb50010",
-            "functional-tests/hearing-recording-segment",
-            ".mp4",
-            12L,
+            "audiostream01",
+            "http://localhost:10000/devstoreaccount1/cvptestcontainer/audiostream01/audio_test.m4a",
+            "audiostream01/audio_test.m4a",
+            "ma4",
+            226200L,
             0
             );
 

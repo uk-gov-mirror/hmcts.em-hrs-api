@@ -39,19 +39,20 @@ public class CaseDataContentCreator {
     public Map<String, Object> createCaseUpdateData(final Map<String, Object> caseData, final UUID recordingId,
                                                     final HearingRecordingDto hearingRecordingDto) {
         @SuppressWarnings("unchecked")
-        List<CaseRecordingFile> segments = (ArrayList) caseData.getOrDefault("recordingFiles", new ArrayList());
-        //TODO: add segments to caseData when new ArrayList() is used
-        boolean segmentAlreadyAdded = segments.stream()
-            .map(segment -> segment.getRecordingFile().getFilename())
-            .anyMatch(filename -> filename.equals(hearingRecordingDto.getFilename()));
+        List<Map> segmentNodes = (ArrayList) caseData.putIfAbsent("recordingFiles", new ArrayList());
+
+        boolean segmentAlreadyAdded = segmentNodes.stream()
+            .map(segmentNode -> objectMapper.convertValue(segmentNode.get("value"), CaseRecordingFile.class))
+            .map(segment -> segment.getRecordingFile())
+            .anyMatch(recordingFile -> recordingFile.getFilename().equals(hearingRecordingDto.getFilename()));
 
         if (!segmentAlreadyAdded) {
-            segments.add(createSegment(hearingRecordingDto, recordingId));
+            segmentNodes.add(createSegment(hearingRecordingDto, recordingId));
         }
         return caseData;
     }
 
-    private CaseRecordingFile createSegment(HearingRecordingDto hearingRecordingDto, UUID recordingId) {
+    private Map<String, CaseRecordingFile> createSegment(HearingRecordingDto hearingRecordingDto, UUID recordingId) {
 
         String documentUrl = String.format("%s/hearing-recordings/%s/segments/%d",
                                            hearingRecordingDto.getUrlDomain(), recordingId,
@@ -63,11 +64,11 @@ public class CaseDataContentCreator {
             .binaryUrl(documentUrl)
             .build();
 
-        return CaseRecordingFile.builder()
+        return Map.of("value", CaseRecordingFile.builder()
             .recordingFile(recordingFile)
             .segmentNumber(hearingRecordingDto.getSegment())
             .fileSize(hearingRecordingDto.getFileSize())
-            .build();
+            .build());
     }
 
     private String getTimeOfDay(LocalDateTime dateTime) {

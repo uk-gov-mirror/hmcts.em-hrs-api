@@ -21,16 +21,4 @@ public class CaseRecordingFile {
 
     @JsonProperty("fileSize")
     private Long fileSize;
-
-    /**
-     * Add value property to segment to satisfy CCD validation requirements.
-     * @return CCD-compliant recordingSegment
-    */
-    public JsonNode getValue() {
-        ObjectNode segmentValue = JsonNodeFactory.instance.objectNode();
-        segmentValue.set("documentLink", JsonNodeFactory.instance.pojoNode(recordingFile));
-        segmentValue.put("segmentNumber", segmentNumber);
-        segmentValue.put("fileSize", fileSize);
-        return segmentValue;
-    }
 }

@@ -117,7 +117,7 @@ services:
       - service-auth-provider-api
 
   ccd-data-store-api:
-    image: hmctspublic.azurecr.io/ccd/data-store-api:latest
+    image: hmctspublic.azurecr.io/ccd/data-store-api:pr-1450-9d4e387f
     environment:
       DATA_STORE_DB_HOST: shared-database
       DATA_STORE_DB_PORT: 5432
@@ -138,7 +138,8 @@ services:
       ELASTIC_SEARCH_ENABLED: "false"
       ELASTIC_SEARCH_HOSTS: ccd-elasticsearch:9200
       ELASTIC_SEARCH_DATA_NODES_HOSTS: "http://ccd-elasticsearch:9200"
-      CCD_DM_DOMAIN: http://dm-store:8080
+      CCD_DM_DOMAIN: ^https?:\/\/(?:localhost:8080(?::\d+)?)
+      CCD_DOCUMENT_URL_PATTERN: \/hearing-recordings\/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}+\/segments\/[0-9]+
       JAVA_TOOL_OPTIONS: -Xms128m -Xmx512m -XX:MaxPermSize=512m
     ports:
       - 4452:4452

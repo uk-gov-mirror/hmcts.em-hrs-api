@@ -46,8 +46,9 @@ public class ExtendedCcdHelper {
         importDefinitionFile();
     }
 
-    public JsonNode createRecordingSegment(String url, String filename, String fileExt, Long fileSize, int segment) {
+    public JsonNode createRecordingSegment(String folder, String url, String filename, String fileExt, Long fileSize, int segment) {
         return JsonNodeFactory.instance.objectNode()
+            .put("folder", folder)
             .put("recording-ref", "hearing-12-family-probate-morning")
             .put("recording-source","CVP")
             .put("court-location-code","London")

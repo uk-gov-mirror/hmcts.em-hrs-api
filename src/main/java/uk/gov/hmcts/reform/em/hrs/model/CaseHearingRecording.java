@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -43,5 +44,5 @@ public class CaseHearingRecording {
     private String recordingReference;
 
     @JsonProperty("recordingFiles")
-    private List<CaseRecordingFile> recordingFiles;
+    private List<Map<String, CaseRecordingFile>> recordingFiles;
 }
