@@ -125,7 +125,6 @@ public class IngestionServiceImpl implements IngestionService {
 
         recording = recordingRepository.save(recording);
 
-        //create case in ccd, and update database with caseIdd
         final Long caseId = ccdDataStoreApiClient.createCase(recording.getId(), recordingDto);
         recording.setCcdCaseId(caseId);
         recording = recordingRepository.save(recording);

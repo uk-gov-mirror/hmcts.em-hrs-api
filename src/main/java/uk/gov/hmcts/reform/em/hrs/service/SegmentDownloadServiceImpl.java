@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.BlobstoreClient;
 
 import java.io.OutputStream;
+import java.util.UUID;
 
 @Service
 public class SegmentDownloadServiceImpl implements SegmentDownloadService {
@@ -22,10 +23,10 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
     }
 
     @Override
-    public void download(Long caseId, Integer segmentNo, OutputStream outputStream) {
+    public void download(UUID recordingId, Integer segmentNo, OutputStream outputStream) {
 
         HearingRecordingSegment segment = segmentRepository
-            .findByHearingRecordingCcdCaseIdAndRecordingSegment(caseId, segmentNo);
+            .findByHearingRecordingIdAndRecordingSegment(recordingId, segmentNo);
         blobstoreClient.downloadFile(segment.getFilename(), outputStream);
     }
 }

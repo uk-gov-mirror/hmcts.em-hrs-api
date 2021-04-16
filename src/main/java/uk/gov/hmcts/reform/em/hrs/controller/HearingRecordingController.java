@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
+import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
@@ -121,21 +122,21 @@ public class HearingRecordingController {
     }
 
     @GetMapping(
-        path = "/hearing-recordings/{caseId}/segments/{segment}",
+        path = "/hearing-recordings/{recordingId}/segments/{segment}",
         produces = APPLICATION_OCTET_STREAM_VALUE
     )
     @ResponseBody
     @ApiOperation(value = "Get hearing recording file",
         notes = "Return hearing recording file from the specified folder")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording segment")})
-    public ResponseEntity getSegmentBinary(@PathVariable("caseId") Long caseId,
+    public ResponseEntity getSegmentBinary(@PathVariable("recordingId") UUID recordingId,
                                            @PathVariable("segment") Integer segment,
                                            HttpServletResponse response) {
 
-        LOGGER.info("received request to download recording for case ({}) segment ({})", caseId, segment);
+        LOGGER.info("received request to download recording for case ({}) segment ({})", recordingId, segment);
 
         try {
-            downloadService.download(caseId, segment, response.getOutputStream());
+            downloadService.download(recordingId, segment, response.getOutputStream());
         } catch (IOException e) {
             return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
