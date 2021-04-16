@@ -76,11 +76,9 @@ public class IngestionServiceImpl implements IngestionService {
             CompletableFuture
                 .allOf(metadataFuture, blobCopyFuture)
                 .get();
-        } catch (
-            ExecutionException e) {
+        } catch (ExecutionException e) {
             snoop(hearingRecordingDto.getCvpFileUrl(), e);
-        } catch (
-            InterruptedException e) {
+        } catch (InterruptedException e) {
             snoop(hearingRecordingDto.getCvpFileUrl(), e);
             Thread.currentThread().interrupt();
         }

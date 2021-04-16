@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.hrs.componenttests;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.hrs.domain.Folder;
@@ -38,9 +37,10 @@ public class TestUtil {
     public static final String CASE_REFERENCE = "hrs-grant-" + SHAREE_ID;
     public static final LocalDateTime RECORDING_DATETIME = LocalDateTime.now();
     public static final String RECORDING_REFERENCE = "file-1";
-    public static final Folder TEST_FOLDER=Folder.builder().name(TEST_FOLDER_NAME).build();
-
-
+    public static final Folder TEST_FOLDER = Folder.builder().name(TEST_FOLDER_NAME).build();
+    public static final String SERVER_ERROR_MESSAGE = "We have detected a problem and our engineers are working on it."
+        + "\nPlease try again later and thank you for your patience";
+    
     public static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
         .filename(FILE_1)
@@ -159,7 +159,6 @@ public class TestUtil {
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
-        final ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
-        return ow.writeValueAsString(object);
+        return objectMapper.writeValueAsString(object);
     }
 }

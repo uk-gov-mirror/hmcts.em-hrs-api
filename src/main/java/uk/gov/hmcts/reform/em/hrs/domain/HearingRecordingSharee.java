@@ -15,8 +15,6 @@ import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
@@ -24,7 +22,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @Builder
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners(AuditingEntityListener.class)
 public class HearingRecordingSharee {
 
@@ -48,8 +45,11 @@ public class HearingRecordingSharee {
     public HearingRecordingSharee() {
     }
 
-    public HearingRecordingSharee(UUID id, HearingRecording hearingRecording, @NotNull String shareeEmail,
-                                  String sharedByRef, LocalDateTime sharedOn) {
+    public HearingRecordingSharee(final UUID id,
+                                  final HearingRecording hearingRecording,
+                                  final @NotNull String shareeEmail,
+                                  final String sharedByRef,
+                                  final LocalDateTime sharedOn) {
         this.hearingRecording = hearingRecording;
         this.id = id;
         this.shareeEmail = shareeEmail;
@@ -58,12 +58,12 @@ public class HearingRecordingSharee {
     }
 
     public static class HearingRecordingShareeBuilder {
-        public HearingRecordingShareeBuilder hearingRecording(HearingRecording hearingRecording) {
+        public HearingRecordingShareeBuilder hearingRecording(final HearingRecording hearingRecording) {
             this.hearingRecording = hearingRecording;
             return this;
         }
 
-        public HearingRecordingShareeBuilder shareeEmail(String shareeEmail) {
+        public HearingRecordingShareeBuilder shareeEmail(final String shareeEmail) {
             this.shareeEmail = shareeEmail;
             return this;
         }

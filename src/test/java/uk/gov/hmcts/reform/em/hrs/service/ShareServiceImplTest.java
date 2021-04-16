@@ -6,9 +6,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.util.function.Tuples;
+import uk.gov.hmcts.reform.em.hrs.exception.EmailNotificationException;
+import uk.gov.service.notify.NotificationClientException;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.AUTHORIZATION_TOKEN;
@@ -70,5 +74,25 @@ class ShareServiceImplTest {
                                    SHAREE_ID,
                                    SHAREE_EMAIL_ADDRESS,
                                    SHARER_EMAIL_ADDRESS);
+    }
+
+    @Test
+    void testShouldRaiseException() throws Exception {
+        doReturn(Tuples.of(HEARING_RECORDING_WITH_SEGMENTS, SEGMENTS_DOWNLOAD_LINKS))
+            .when(hearingRecordingService)
+            .getDownloadSegmentUris(CCD_CASE_ID);
+        doReturn(HEARING_RECORDING_SHAREE).when(hearingRecordingShareeService)
+            .createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS);
+        doReturn(SHARER_EMAIL_ADDRESS).when(securityService).getUserEmail(AUTHORIZATION_TOKEN);
+        doThrow(NotificationClientException.class).when(notificationService)
+            .sendEmailNotification(CASE_REFERENCE,
+                                   RECORDING_DATETIME,
+                                   RECORDING_SEGMENT_DOWNLOAD_URLS,
+                                   SHAREE_ID,
+                                   SHAREE_EMAIL_ADDRESS,
+                                   SHARER_EMAIL_ADDRESS);
+
+        assertThatExceptionOfType(EmailNotificationException.class)
+            .isThrownBy(() -> underTest.executeNotify(CCD_CASE_ID, SHAREE_EMAIL_ADDRESS, AUTHORIZATION_TOKEN));
     }
 }
