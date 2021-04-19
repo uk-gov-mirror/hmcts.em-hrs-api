@@ -59,7 +59,7 @@ class ShareAndNotifyServiceImplTest {
                                                              SHAREE_EMAIL_ADDRESS,
                                                              SHARER_EMAIL_ADDRESS);
         Set<CaseRecordingFile> segments = Collections.singleton(
-            CaseRecordingFile.builder().recordingFile(CaseDocument.builder().binaryUrl("document-url").build()).build()
+            CaseRecordingFile.builder().caseDocument(CaseDocument.builder().binaryUrl("document-url").build()).build()
         );
         final CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("recipientEmailAddress", SHAREE_EMAIL_ADDRESS,

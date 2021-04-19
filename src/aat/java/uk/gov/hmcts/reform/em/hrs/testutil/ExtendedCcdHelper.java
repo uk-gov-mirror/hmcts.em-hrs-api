@@ -1,14 +1,17 @@
 package uk.gov.hmcts.reform.em.hrs.testutil;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.model.CaseDocument;
+import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefImportApi;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefUserRoleApi;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
@@ -17,8 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import javax.annotation.PostConstruct;
 
 @Service
@@ -92,5 +94,31 @@ public class ExtendedCcdHelper {
     private void createUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
                                          idamHelper.authenticateUser(hrsTester), authTokenGenerator.generate());
+    }
+
+    public Map<String, String> getTokens() {
+        return Map.of("user", idamHelper.authenticateUser(hrsTester),
+                      "userId", idamHelper.getUserId(hrsTester),
+                      "service", authTokenGenerator.generate());
+    }
+
+    public JsonNode getShareRequest() {
+
+        ObjectNode caseDocument = JsonNodeFactory.instance.objectNode()
+            .put("document_filename", "document_filename")
+            .put("document_binary_url", "http://localhost:8080/hearing-recordings/6ac8dc37-d45d-4537-b6ac-149881c85041/segments/0")
+            .put("document_url", "http://localhost:8080/hearing-recordings/6ac8dc37-d45d-4537-b6ac-149881c85041/segments/0");
+
+        ObjectNode caseRecordingFile = JsonNodeFactory.instance.objectNode()
+            .put("fileSize", 123L)
+            .put("segmentNumber", 0)
+            .set("documentLink", caseDocument);
+
+        ArrayNode segments = JsonNodeFactory.instance.arrayNode()
+            .add(JsonNodeFactory.instance.objectNode().set("value", caseRecordingFile));
+        ObjectNode request = JsonNodeFactory.instance.objectNode().set("recordingFiles", segments);
+        request.put("recipientEmailAddress", hrsTester);
+        request.set("recordingFiles", segments);
+        return request;
     }
 }

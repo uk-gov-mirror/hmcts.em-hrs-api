@@ -3,10 +3,12 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
+import uk.gov.hmcts.reform.em.hrs.exception.SegmentDownloadException;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.BlobstoreClient;
 
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -23,10 +25,16 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
     }
 
     @Override
-    public void download(UUID recordingId, Integer segmentNo, OutputStream outputStream) {
+    public void download(UUID recordingId, Integer segmentNo, HttpServletResponse response) {
 
-        HearingRecordingSegment segment = segmentRepository
-            .findByHearingRecordingIdAndRecordingSegment(recordingId, segmentNo);
-        blobstoreClient.downloadFile(segment.getFilename(), outputStream);
+        HearingRecordingSegment segment =
+            segmentRepository.findByHearingRecordingIdAndRecordingSegment(recordingId, segmentNo);
+
+        response.setHeader("Content-Disposition",String.format("attachment; filename=%s", segment.getFilename()));
+        try {
+            blobstoreClient.downloadFile(segment.getFilename(), response.getOutputStream());
+        } catch (IOException e) {
+            throw new SegmentDownloadException(e);
+        }
     }
 }

@@ -14,7 +14,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,9 +44,10 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
         }
 
         @SuppressWarnings("unchecked")
-        List<String> segmentUrls = ((Set<CaseRecordingFile>) caseData.get("recordingFiles")).stream()
-            .map(segment -> segment.getRecordingFile())
-            .map(file -> file.getBinaryUrl())
+        List<String> segmentUrls = ((List<Map>) caseData.get("recordingFiles")).stream()
+            .map(recordingFileNode -> (Map<String, Map>) recordingFileNode.get("value"))
+            .map(recordingFile -> (Map<String, String>) recordingFile.get("documentLink"))
+            .map(caseDocument ->  caseDocument.get("document_url"))
             .collect(Collectors.toList());
 
         final HearingRecording hearingRecording = hearingRecordingRepository.findByCcdCaseId(caseId)

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
@@ -23,9 +24,7 @@ import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
-import uk.gov.service.notify.NotificationClientException;
 
-import java.io.IOException;
 import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
@@ -112,11 +111,15 @@ public class HearingRecordingController {
     })
     public ResponseEntity<Void> shareHearingRecording(
         @RequestHeader("authorization") final String authorisationToken,
-        @RequestBody final CaseDetails caseDetails) throws NotificationClientException {
+        @RequestBody final CallbackRequest request) {
+
+        CaseDetails caseDetails = request.getCaseDetails();
 
         LOGGER.info("received request to share recordings for case ({})", caseDetails.getId());
 
-        shareAndNotifyService.shareAndNotify(caseDetails.getId(), caseDetails.getData(), authorisationToken);
+        shareAndNotifyService.shareAndNotify(caseDetails.getId(),
+                                             caseDetails.getData(),
+                                             authorisationToken);
 
         return ResponseEntity.ok().build();
     }
@@ -130,18 +133,13 @@ public class HearingRecordingController {
         notes = "Return hearing recording file from the specified folder")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording segment")})
     public ResponseEntity getSegmentBinary(@PathVariable("recordingId") UUID recordingId,
-                                           @PathVariable("segment") Integer segment,
+                                           @PathVariable("segment") Integer segmentNo,
                                            HttpServletResponse response) {
 
-        LOGGER.info("received request to download recording for case ({}) segment ({})", recordingId, segment);
+        LOGGER.info("received request to download recording for case ({}) segment ({})", recordingId, segmentNo);
 
-        try {
-            downloadService.download(recordingId, segment, response.getOutputStream());
-        } catch (IOException e) {
-            return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(e.getMessage());
-        }
+        downloadService.download(recordingId, segmentNo, response);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

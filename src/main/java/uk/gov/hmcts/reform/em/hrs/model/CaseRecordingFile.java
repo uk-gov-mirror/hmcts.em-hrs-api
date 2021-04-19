@@ -14,7 +14,7 @@ import lombok.Data;
 public class CaseRecordingFile {
 
     @JsonProperty("documentLink")
-    private CaseDocument recordingFile;
+    private CaseDocument caseDocument;
 
     @JsonProperty("segmentNumber")
     private Integer segmentNumber;

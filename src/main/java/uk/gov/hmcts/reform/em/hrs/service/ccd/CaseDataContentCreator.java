@@ -43,7 +43,7 @@ public class CaseDataContentCreator {
 
         boolean segmentAlreadyAdded = segmentNodes.stream()
             .map(segmentNode -> objectMapper.convertValue(segmentNode.get("value"), CaseRecordingFile.class))
-            .map(segment -> segment.getRecordingFile())
+            .map(segment -> segment.getCaseDocument())
             .anyMatch(recordingFile -> recordingFile.getFilename().equals(hearingRecordingDto.getFilename()));
 
         if (!segmentAlreadyAdded) {
@@ -65,7 +65,7 @@ public class CaseDataContentCreator {
             .build();
 
         return Map.of("value", CaseRecordingFile.builder()
-            .recordingFile(recordingFile)
+            .caseDocument(recordingFile)
             .segmentNumber(hearingRecordingDto.getSegment())
             .fileSize(hearingRecordingDto.getFileSize())
             .build());
