@@ -63,7 +63,8 @@ public class HearingRecordingController {
     @ResponseBody
     @ApiOperation(value = "Get recording file names", notes = "Retrieve recording file names for a given folder")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Names of successfully stored recording files")
+        @ApiResponse(code = 200, message = "Names of successfully stored recording files"),
+        @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public ResponseEntity<RecordingFilenameDto> getFilenames(@PathVariable("name") final String folderName) {
         final RecordingFilenameDto recordingFilenameDto = new RecordingFilenameDto(
@@ -86,7 +87,8 @@ public class HearingRecordingController {
     @ApiOperation(value = "Post hearing recording segment", notes = "Save hearing recording segment")
     @ApiResponses(value = {
         @ApiResponse(code = 202, message = "Request accepted for asynchronous processing"),
-        @ApiResponse(code = 429, message = "Request rejected - too many pending requests")
+        @ApiResponse(code = 429, message = "Request rejected - too many pending requests"),
+        @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public ResponseEntity<Void> createHearingRecording(@RequestBody final HearingRecordingDto hearingRecordingDto) {
         LOGGER.info("received request to create hearing recording ({})", hearingRecordingDto.getRecordingRef());
@@ -108,15 +110,15 @@ public class HearingRecordingController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Return the location of the resource being granted "
             + "access to (the download link)"),
-        @ApiResponse(code = 404, message = "Not Found")
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 500, message = "Internal Server Error")
     })
-    public ResponseEntity<Void> shareHearingRecording(
-        @RequestHeader("authorization") final String authorisationToken,
-        @RequestBody final CaseDetails caseDetails) throws NotificationClientException {
 
-        LOGGER.info("received request to share recordings for case ({})", caseDetails.getId());
+        public ResponseEntity<Void> shareHearingRecording(@RequestHeader("authorization") final String authorisationToken,
+    @RequestBody final CaseDetails caseDetails) {
+        final String shareeEmailAddress = CaseDetailsParser.getShareeEmail(caseDetails.getData());
 
-        shareAndNotifyService.shareAndNotify(caseDetails.getId(), caseDetails.getData(), authorisationToken);
+        shareService.executeNotify(caseDetails.getId(), shareeEmailAddress, authorisationToken);
 
         return ResponseEntity.ok().build();
     }

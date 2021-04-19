@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_ADDRESS;
 
 class ShareesRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
     private static final String EMAIL_ADDRESS = "test@testEmail.com";
@@ -19,12 +20,12 @@ class ShareesRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     void testShouldSaveSharee() {
         final HearingRecordingSharee hearingRecordingSharee = HearingRecordingSharee.builder()
             .hearingRecording(HEARING_RECORDING)
-            .shareeEmail(EMAIL_ADDRESS).build();
+            .shareeEmail(SHAREE_EMAIL_ADDRESS).build();
 
         final HearingRecordingSharee savedSharee = underTest.save(hearingRecordingSharee);
 
         assertThat(savedSharee).satisfies(x -> {
-            assertThat(x.getShareeEmail()).isEqualTo(EMAIL_ADDRESS);
+            assertThat(x.getShareeEmail()).isEqualTo(SHAREE_EMAIL_ADDRESS);
             assertThat(x.getHearingRecording()).isNotNull();
         });
     }
@@ -34,7 +35,7 @@ class ShareesRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
         final LocalDateTime preTest = LocalDateTime.now(Clock.systemDefaultZone());
         final HearingRecordingSharee hearingRecordingSharee = HearingRecordingSharee.builder()
             .hearingRecording(HEARING_RECORDING)
-            .shareeEmail(EMAIL_ADDRESS).build();
+            .shareeEmail(SHAREE_EMAIL_ADDRESS).build();
 
         final HearingRecordingSharee savedSharee = underTest.save(hearingRecordingSharee);
 

@@ -64,7 +64,11 @@ public class FolderServiceImpl implements FolderService {
                 "Folders must explicitly exist, based on GET /folders/(foldername) creating them");//TODO should a
             // folder be created at this point?
         }
-        return folder.get();
+        return folderRepository.findByName(folderName)
+            .orElseThrow(() -> new DatabaseStorageException(
+                             "Folders must explicitly exist, based on GET /folders/(foldername) creating them"
+                         )
+            );//TODO should a folder be created at this point?
     }
 
 

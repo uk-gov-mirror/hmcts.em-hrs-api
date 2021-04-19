@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.inject.Inject;
 import io.restassured.RestAssured;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,10 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
+import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -22,6 +25,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class CaseUpdateScenarios {
+
+    @Inject
+    AuthTokenGenerator authTokenGenerator;
+
+    @Inject
+    private IdamHelper idamHelper;
 
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
@@ -52,7 +61,7 @@ public class CaseUpdateScenarios {
             "ma4",
             226200L,
             0
-            );
+        );
 
         RestAssured
             .given()
@@ -65,4 +74,8 @@ public class CaseUpdateScenarios {
             .then()
             .statusCode(202);
     }
+
+    //TODO - Is there some way that we can verify if the Case as been Updated on the CCD System??
+    //Possibly as an API Look up or so.
+    //If so we should be using those mechanisms to verify
 }
