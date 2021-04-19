@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.util;
 
-
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -13,18 +12,14 @@ class SetUtilsTest {
     private final Set<String> setA = Set.of("", "  ", "b", "c", "d");
     private final Set<String> setB = Set.of("c", "", "  ", "d", "e", "f");
 
-
-
     @Test
     void testIntersectionResultingSetSizeAndValues() {
         final int expectedSize = 4;
         final Set<String> expectedSet = Set.of("c", "d", "", "  ");
         final Set<String> intersection = SetUtils.intersect(setA, setB);
 
-        assertThat(intersection).hasSize(expectedSize);
-        assertThat(intersection).hasSameElementsAs(expectedSet);
+        assertThat(intersection).hasSize(expectedSize).hasSameElementsAs(expectedSet);
     }
-
 
     @Test
     void testIntersectionResultingSetSizeWithNull() {
@@ -51,17 +46,14 @@ class SetUtilsTest {
         assertEquals("setA is marked non-null but is null", exception3.getMessage());
     }
 
-
     @Test
     void testUnionResultingSetSizeAndValues() {
         final int expectedSize = 7;
         final Set<String> expectedSet = Set.of("", "  ", "c", "b", "d", "e", "f");
         final Set<String> intersection = SetUtils.union(setA, setB);
 
-        assertThat(intersection).hasSize(expectedSize);
-        assertThat(intersection).hasSameElementsAs(expectedSet);
+        assertThat(intersection).hasSize(expectedSize).hasSameElementsAs(expectedSet);
     }
-
 
     @Test
     void testUnionResultingSetElementsForNull() {
@@ -87,6 +79,5 @@ class SetUtilsTest {
 
         assertEquals("setB is marked non-null but is null", exception3.getMessage());
     }
-
 
 }

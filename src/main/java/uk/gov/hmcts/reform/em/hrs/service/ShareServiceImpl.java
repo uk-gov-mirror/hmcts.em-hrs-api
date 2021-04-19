@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import reactor.util.function.Tuple2;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
+import uk.gov.hmcts.reform.em.hrs.exception.EmailNotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class ShareServiceImpl implements ShareService {
     @Override
     public void executeNotify(final Long ccdCaseId,
                               final String shareeEmailAddress,
-                              final String authorisationToken) throws NotificationClientException {
+                              final String authorisationToken) {
         final Tuple2<HearingRecording, Set<String>> result = hearingRecordingService.getDownloadSegmentUris(ccdCaseId);
         final HearingRecording hearingRecording = result.getT1();
 
@@ -42,13 +43,17 @@ public class ShareServiceImpl implements ShareService {
 
         final String sharerEmailAddress = securityService.getUserEmail(authorisationToken);
 
-        notificationService.sendEmailNotification(
-            hearingRecording.getCaseRef(),
-            hearingRecording.getCreatedOn(),
-            List.copyOf(result.getT2()),
-            sharee.getId(),
-            shareeEmailAddress,
-            sharerEmailAddress
-        );
+        try {
+            notificationService.sendEmailNotification(
+                hearingRecording.getCaseRef(),
+                hearingRecording.getCreatedOn(),
+                List.copyOf(result.getT2()),
+                sharee.getId(),
+                shareeEmailAddress,
+                sharerEmailAddress
+            );
+        } catch (NotificationClientException e) {
+            throw new EmailNotificationException(e);
+        }
     }
 }
