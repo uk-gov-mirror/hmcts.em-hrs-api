@@ -4,12 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.componenttests.AbstractBaseTest;
 import uk.gov.hmcts.reform.em.hrs.exception.EmailNotificationException;
 import uk.gov.hmcts.reform.em.hrs.exception.HearingRecordingNotFoundException;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
-import uk.gov.hmcts.reform.em.hrs.service.ShareService;
+import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
 import java.util.Map;
@@ -33,7 +34,7 @@ class GlobalExceptionHandlerTest extends AbstractBaseTest {
     private FolderService folderService;
 
     @MockBean
-    private ShareService shareService;
+    private ShareAndNotifyService shareService;
 
     @Inject
     private IngestionQueue ingestionQueue;
@@ -45,16 +46,17 @@ class GlobalExceptionHandlerTest extends AbstractBaseTest {
             "Hearing Recording with CcdCaseId: %s is not be found",
             CCD_CASE_ID
         );
-        final CaseDetails request = CaseDetails.builder()
+        final CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("recipientEmailAddress", SHAREE_EMAIL_ADDRESS))
             .id(CCD_CASE_ID)
             .build();
+        final CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
         doThrow(new HearingRecordingNotFoundException(CCD_CASE_ID)).when(shareService)
-            .executeNotify(CCD_CASE_ID, SHAREE_EMAIL_ADDRESS, AUTHORIZATION_TOKEN);
+            .shareAndNotify(CCD_CASE_ID, caseDetails.getData(), AUTHORIZATION_TOKEN);
 
         final MvcResult mvcResult = mockMvc.perform(post(path)
-                                                        .content(convertObjectToJsonString(request))
+                                                        .content(convertObjectToJsonString(callbackRequest))
                                                         .contentType(APPLICATION_JSON_VALUE)
                                                         .header("Authorization", AUTHORIZATION_TOKEN)
                                                         .header("ServiceAuthorization", SERVICE_AUTHORIZATION_TOKEN))
@@ -66,40 +68,19 @@ class GlobalExceptionHandlerTest extends AbstractBaseTest {
     }
 
     @Test
-    void testShouldReturnBadRequestWithMessageWhenValidationErrorExceptionIsRaised() throws Exception {
-        final String path = "/sharees";
-        final Map<String, Object> data = Map.of("recipientEmailAddress", "bad-email-address");
-        final String expectedMessage = convertObjectToJsonString(data);
-        final CaseDetails request = CaseDetails.builder()
-            .data(data)
-            .id(CCD_CASE_ID)
-            .build();
-
-        final MvcResult mvcResult = mockMvc.perform(post(path)
-                                                        .content(convertObjectToJsonString(request))
-                                                        .contentType(APPLICATION_JSON_VALUE)
-                                                        .header("Authorization", AUTHORIZATION_TOKEN)
-                                                        .header("ServiceAuthorization", SERVICE_AUTHORIZATION_TOKEN))
-            .andExpect(status().isBadRequest())
-            .andExpect(MockMvcResultMatchers.content().string(expectedMessage))
-            .andReturn();
-
-        assertThat(mvcResult).isNotNull();
-    }
-
-    @Test
     void testShouldReturnInternalServerErrorWithMessageWhenNotificationClientExceptionIsRaised() throws Exception {
         final String path = "/sharees";
-        final CaseDetails request = CaseDetails.builder()
+        final CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("recipientEmailAddress", SHAREE_EMAIL_ADDRESS))
             .id(CCD_CASE_ID)
             .build();
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
         doThrow(EmailNotificationException.class).when(shareService)
-            .executeNotify(CCD_CASE_ID, SHAREE_EMAIL_ADDRESS, AUTHORIZATION_TOKEN);
+            .shareAndNotify(CCD_CASE_ID, caseDetails.getData(), AUTHORIZATION_TOKEN);
 
         final MvcResult mvcResult = mockMvc.perform(post(path)
-                                                        .content(convertObjectToJsonString(request))
+                                                        .content(convertObjectToJsonString(callbackRequest))
                                                         .contentType(APPLICATION_JSON_VALUE)
                                                         .header("Authorization", AUTHORIZATION_TOKEN)
                                                         .header("ServiceAuthorization", SERVICE_AUTHORIZATION_TOKEN))

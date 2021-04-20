@@ -18,12 +18,12 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RANDOM_UUID;
 
 @ExtendWith(MockitoExtension.class)
-class HearingRecordingSegmentServiceImplTest {
+class SegmentServiceImplTest {
     @Mock
     private HearingRecordingSegmentRepository segmentRepository;
 
     @InjectMocks
-    private HearingRecordingSegmentServiceImpl underTest;
+    private SegmentServiceImpl underTest;
 
     @Test
     void testFindByRecordingId() {

@@ -12,6 +12,7 @@ import com.devskiller.jfairy.Fairy;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,6 +54,17 @@ public class AzureOperations {
 
     public void uploadToCvpContainer(final String filePath) {
         uploadToContainer(Container.CVP, filePath);
+    }
+
+    public void populateHrsContainer(final String blobName, final String content) {
+        uploadToHrsContainer(blobName, content.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void uploadToHrsContainer(final String blobName, final byte[] data) {
+        final InputStream inStream = new ByteArrayInputStream(data);
+
+        final BlobClient blobClient = hrsBlobContainerClient.getBlobClient(blobName);
+        blobClient.upload(new BufferedInputStream(inStream), data.length);
     }
 
     public void uploadToContainer(final Enum<Container> container, final String filePath) {

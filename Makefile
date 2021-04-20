@@ -11,7 +11,7 @@ liquibase-create-change-log:
 	./gradlew liquibaseDiffChangelog
 
 liquibase-apply-change-log:
-	./gradlew liquibaseDiffChangelog migratePostgresDatabase
+	./gradlew migratePostgresDatabase liquibaseDiffChangelog
 
 #applies database changes if required, and runs spring bootapp
 app-run:

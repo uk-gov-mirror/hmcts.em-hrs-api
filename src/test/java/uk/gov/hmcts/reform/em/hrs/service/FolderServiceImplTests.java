@@ -142,13 +142,4 @@ class FolderServiceImplTests {
     void testShouldThrowExceptionWhenNoFolderInDB() {
         assertThatExceptionOfType(DatabaseStorageException.class).isThrownBy(() -> underTest.getFolderByName("nopath"));
     }
-
-
-    @Test
-    @DisplayName("Should throw exception when bad folder path is given")
-    void testShouldThrowExceptionWhenNoSlashInPath() {
-        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> underTest.getFolderNameFromFilePath(""));
-    }
-
-
 }

@@ -5,7 +5,7 @@
 ## Stop local environment
 
 # Set variables
-COMPOSE_FILE="-f docker-compose-ccd-dependencies.yml"
+COMPOSE_FILE="-f docker-compose-dependencies.yml"
 
 
 docker-compose ${COMPOSE_FILE} down
