@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.hrs;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.restassured.RestAssured;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,10 +78,11 @@ public class CaseUpdateScenarios {
             .statusCode(202);
     }
 
+    @Ignore
     @Test
     public void testDocumentShare() {
         Map<String, String> tokens = extendedCcdHelper.getTokens();
-        Long caseId = 1618928512170287L;
+        Long caseId = 1618932772410938L;
         StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"),
                                                                            caseId.toString(), SHARE_FILES
         );

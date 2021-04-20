@@ -43,7 +43,7 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
         String shareeEmailAddress = caseData.get("recipientEmailAddress").toString();
 
         if (!EmailValidator.isValid(shareeEmailAddress)) {
-            throw new ValidationErrorException("Invalid recipient email address");
+            throw new ValidationErrorException(Map.of("recipientEmailAddress", shareeEmailAddress));
         }
 
         List<String> segmentUrls = caseDataCreator.extractRecordingFiles(caseData).stream()
