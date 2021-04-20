@@ -44,7 +44,7 @@ public class ShareHearingRecordingSceanrios {
     @Value("${test.url}")
     private String testUrl;
 
-    public static final Long CCD_CASE_ID = 1111111L;
+    public static final Long CCD_CASE_ID = 1618842438542059L;
     public static final String SHAREE_EMAIL_ADDRESS = "sharee.tester@test.com";
     public static final String ERROR_SHAREE_EMAIL_ADDRESS = "sharee.testertest.com";
 
@@ -54,15 +54,13 @@ public class ShareHearingRecordingSceanrios {
     }
 
     @Test
-    @Ignore("The CCD Case Id is not Working as part of a Segment Post")
     public void testShareRecording_success_scenario() throws Exception {
 
         final CaseDetails request = CaseDetails.builder()
             .data(Map.of("recipientEmailAddress", SHAREE_EMAIL_ADDRESS))
-            .id(12345L)
+            .id(CCD_CASE_ID)
             .build();
         sendRequest(request,202);
-
     }
 
     @Test
@@ -77,12 +75,11 @@ public class ShareHearingRecordingSceanrios {
     }
 
     @Test
-    @Ignore("The CCD Case Id is not Working as part of a Segment Post")
-    public void testShareRecording_negative_non_existent_email_id() throws Exception {
-
+    public void testShareRecording_negative_non_existent_email_id() throws Exception { // PASSING BECAUSE IT'S RETURNING 500 BUT NOT BECAUSE OF BAD EMAIL
+                                                                                        // IT'S BECAUSE LIKE OTHER TESTS, CASE DETAILS ARE NULL
         final CaseDetails request = CaseDetails.builder()
             .data(Map.of("recipientEmailAddress", ERROR_SHAREE_EMAIL_ADDRESS))
-            .id(11111L)
+            .id(CCD_CASE_ID)
             .build();
         sendRequest(request,500);
     }
