@@ -285,6 +285,10 @@ dependencyManagement {
       entry 'spring-security-web'
     }
 
+    //CVE-2021-29425
+    dependencySet(group: 'commons-io', version: '2.8.0') {
+      entry 'commons-io'
+    }
 
   }
 }
