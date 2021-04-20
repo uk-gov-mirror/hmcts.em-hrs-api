@@ -37,7 +37,7 @@ class BlobstoreClientImplTest {
     @Test
     void testShouldDownloadFile() throws Exception {
         final String filePath = ONE_ITEM_FOLDER + "/" + UUID.randomUUID() + ".txt";
-        azureOperations.uploadToHrsContainer(filePath);
+        azureOperations.populateHrsContainer(filePath, TEST_DATA);
 
         try (final PipedInputStream pipedInput = new PipedInputStream();
              final PipedOutputStream output = new PipedOutputStream(pipedInput)) {
