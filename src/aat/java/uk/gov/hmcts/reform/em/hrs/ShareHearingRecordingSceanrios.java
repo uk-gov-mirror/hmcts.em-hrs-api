@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.hrs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,6 @@ import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
@@ -21,11 +18,6 @@ public class ShareHearingRecordingSceanrios extends BaseTest {
     public static final Long CCD_CASE_ID = 1111111L;
     public static final String SHAREE_EMAIL_ADDRESS = "sharee.tester@test.com";
     public static final String ERROR_SHAREE_EMAIL_ADDRESS = "sharee.testertest.com";
-
-    @Before
-    public void init() {
-        idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
-    }
 
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
@@ -43,7 +35,6 @@ public class ShareHearingRecordingSceanrios extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void testShareRecording_negative_non_exitent_ccd_case_id() throws Exception {
 
         final CaseDetails request = CaseDetails.builder()
