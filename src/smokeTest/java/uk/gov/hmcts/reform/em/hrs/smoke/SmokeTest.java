@@ -6,15 +6,14 @@ import net.thucydides.core.annotations.WithTags;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.smoke.config.AuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
-
-import javax.inject.Inject;
+import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,10 +28,10 @@ public class SmokeTest {
     @Value("${test.url}")
     private String testUrl;
 
-    @Inject
-    AuthTokenGenerator authTokenGenerator;
+    @Autowired
+    private S2sHelper s2sHelper;
 
-    @Inject
+    @Autowired
     private IdamHelper idamHelper;
 
     @BeforeAll
@@ -52,20 +51,6 @@ public class SmokeTest {
                 .then()
                 .statusCode(200).extract().body().asString();
         assertEquals(MESSAGE, response);
-    }
-
-    @Test
-    public void testEndpointUpAnRunning() {
-
-        RestAssured
-            .given()
-            .header("Authorization", idamHelper.authenticateUser("a@b.com"))
-            .header("ServiceAuthorization", authTokenGenerator.generate())
-            .baseUri(testUrl)
-            .when()
-            .get("/folders/testPath")
-            .then()
-            .statusCode(200).extract().body().asString();
     }
 
 }

@@ -74,7 +74,7 @@ idam:
       client:
         baseUrl: ${S2S_BASE_URI:http://localhost:4502}
   s2s-authorised:
-    services: ${S2S_NAMES_WHITELIST:ccd_gw,em_gw,em_hrs_ingestor}
+    services: ${S2S_NAMES_WHITELIST:ccd_gw,em_gw,em_hrs_ingestor,em_hrs_api}
 
 core_case_data:
   api:
@@ -109,3 +109,10 @@ hrs:
     max-size: 10
     queue-capacity: 100
   ingestion-frequency: 1 # how often to call ccd per second
+
+auth:
+  provider:
+    service:
+      client:
+        baseUrl: ${IDAM_S2S_BASE_URI:http://localhost:4502}
+
