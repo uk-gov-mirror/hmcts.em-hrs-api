@@ -24,12 +24,13 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.core.service.Service;
 import uk.gov.hmcts.reform.auth.checker.spring.serviceonly.AuthCheckerServiceOnlyFilter;
+import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -106,12 +107,16 @@ public class SecurityConfiguration {
 
         private JwtAuthenticationConverter jwtAuthenticationConverter;
 
+        private final ServiceAuthFilter serviceAuthFilter;
+
         @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
         private String issuerUri;
 
         @Autowired
-        public ExternalApiSecurityConfigurationAdapter(final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter) {
+        public ExternalApiSecurityConfigurationAdapter(final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter,
+                                                       final ServiceAuthFilter serviceAuthFilter) {
             super();
+            this.serviceAuthFilter = serviceAuthFilter;
             this.jwtAuthenticationConverter = new JwtAuthenticationConverter();
             jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         }
@@ -123,9 +128,14 @@ public class SecurityConfiguration {
                     .formLogin().disable()
                     .logout().disable()
                     .authorizeRequests()
-                    .antMatchers(HttpMethod.GET, "/documents/**").permitAll()
-                    .antMatchers(HttpMethod.POST, "/sharees").permitAll()
-                    .anyRequest().authenticated();
+                    .antMatchers(HttpMethod.GET, "/documents/**").authenticated()
+                    .antMatchers(HttpMethod.POST, "/sharees").authenticated()
+                    .and()
+                    .oauth2ResourceServer()
+                    .jwt()
+                    .and()
+                    .and()
+                    .oauth2Client();
             } catch (Exception e) {
                 LOG.info("Error in ExternalApiSecurityConfigurationAdapter: {}", e);
             }

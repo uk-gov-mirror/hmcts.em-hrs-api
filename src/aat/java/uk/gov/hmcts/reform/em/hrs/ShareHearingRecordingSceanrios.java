@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.hrs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,7 +16,7 @@ import java.util.stream.Stream;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
-public class ShareHearingRecordingSceanrios extends BaseTest{
+public class ShareHearingRecordingSceanrios extends BaseTest {
 
     public static final Long CCD_CASE_ID = 1111111L;
     public static final String SHAREE_EMAIL_ADDRESS = "sharee.tester@test.com";

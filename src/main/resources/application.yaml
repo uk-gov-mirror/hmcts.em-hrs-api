@@ -114,5 +114,5 @@ auth:
   provider:
     service:
       client:
-        baseUrl: ${IDAM_S2S_BASE_URI:http://localhost:4502}
+        baseUrl: ${S2S_BASE_URI:http://localhost:4502}
 

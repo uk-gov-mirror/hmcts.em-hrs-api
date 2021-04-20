@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class CaseUpdateScenarios extends BaseTest{
+public class CaseUpdateScenarios extends BaseTest {
 
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
