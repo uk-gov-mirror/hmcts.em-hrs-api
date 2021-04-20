@@ -31,6 +31,7 @@ public class CaseUpdateScenarios {
     private static final String JURISDICTION = "HRS";
     private static final String CASE_TYPE = "HearingRecordings";
     private static final String SHARE_FILES = "shareFiles";
+    public static final String hrsEmail = "sharee.tester@test.com";
 
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
@@ -89,7 +90,7 @@ public class CaseUpdateScenarios {
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
             .eventToken(startEventResponse.getToken())
-            .data(extendedCcdHelper.getShareRequest()).build();
+            .data(extendedCcdHelper.getShareRequest(hrsEmail)).build();
 
         coreCaseDataApi
             .submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),

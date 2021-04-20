@@ -102,7 +102,7 @@ public class ExtendedCcdHelper {
                       "service", authTokenGenerator.generate());
     }
 
-    public JsonNode getShareRequest() {
+    public JsonNode getShareRequest(String email) {
 
         ObjectNode caseDocument = JsonNodeFactory.instance.objectNode()
             .put("document_filename", "document_filename")
@@ -117,7 +117,7 @@ public class ExtendedCcdHelper {
         ArrayNode segments = JsonNodeFactory.instance.arrayNode()
             .add(JsonNodeFactory.instance.objectNode().set("value", caseRecordingFile));
         ObjectNode request = JsonNodeFactory.instance.objectNode().set("recordingFiles", segments);
-        request.put("recipientEmailAddress", hrsTester);
+        request.put("recipientEmailAddress", email);
         request.set("recordingFiles", segments);
         return request;
     }

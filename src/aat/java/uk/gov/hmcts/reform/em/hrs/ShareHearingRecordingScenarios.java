@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import io.restassured.RestAssured;
@@ -14,8 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.EmTestConfig;
+import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
@@ -28,17 +32,20 @@ import javax.inject.Inject;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(classes = {EmTestConfig.class, CcdAuthTokenGeneratorConfiguration.class, ExtendedCcdHelper.class})
+@SpringBootTest(classes = {EmTestConfig.class, CcdAuthTokenGeneratorConfiguration.class, ExtendedCcdHelper.class, AuthTokenGeneratorConfiguration.class})
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ShareHearingRecordingSceanrios {
+public class ShareHearingRecordingScenarios {
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
 
-    @Inject
+    @Autowired
     AuthTokenGenerator authTokenGenerator;
 
-    @Inject
+    @Autowired
+    private CoreCaseDataApi coreCaseDataApi;
+
+    @Autowired
     private IdamHelper idamHelper;
 
     @Value("${test.url}")
@@ -55,36 +62,39 @@ public class ShareHearingRecordingSceanrios {
 
     @Test
     public void testShareRecording_success_scenario() throws Exception {
-
+        @SuppressWarnings("unchecked")
         final CaseDetails request = CaseDetails.builder()
-            .data(Map.of("recipientEmailAddress", SHAREE_EMAIL_ADDRESS))
+            .data(new ObjectMapper().convertValue(extendedCcdHelper.getShareRequest(SHAREE_EMAIL_ADDRESS), Map.class))
             .id(CCD_CASE_ID)
             .build();
-        sendRequest(request,202);
+
+        CallbackRequest callBack = CallbackRequest.builder().caseDetails(request).build();
+        sendRequest(callBack,202);
     }
 
     @Test
     public void testShareRecording_negative_non_existent_ccd_case_id() throws Exception {
-
+        @SuppressWarnings("unchecked")
         final CaseDetails request = CaseDetails.builder()
-            .data(Map.of("recipientEmailAddress", SHAREE_EMAIL_ADDRESS))
+            .data(new ObjectMapper().convertValue(extendedCcdHelper.getShareRequest(SHAREE_EMAIL_ADDRESS), Map.class))
             .id(11111L)
             .build();
-        sendRequest(request,404);
-
+        CallbackRequest callBack = CallbackRequest.builder().caseDetails(request).build();
+        sendRequest(callBack,404);
     }
 
     @Test
-    public void testShareRecording_negative_non_existent_email_id() throws Exception { // PASSING BECAUSE IT'S RETURNING 500 BUT NOT BECAUSE OF BAD EMAIL
-                                                                                        // IT'S BECAUSE LIKE OTHER TESTS, CASE DETAILS ARE NULL
+    public void testShareRecording_negative_non_existent_email_id() throws Exception {
+        @SuppressWarnings("unchecked")
         final CaseDetails request = CaseDetails.builder()
-            .data(Map.of("recipientEmailAddress", ERROR_SHAREE_EMAIL_ADDRESS))
+            .data(new ObjectMapper().convertValue(extendedCcdHelper.getShareRequest(ERROR_SHAREE_EMAIL_ADDRESS), Map.class))
             .id(CCD_CASE_ID)
             .build();
-        sendRequest(request,500);
+        CallbackRequest callBack = CallbackRequest.builder().caseDetails(request).build();
+        sendRequest(callBack,500);
     }
 
-    private void sendRequest(CaseDetails request,int statusCode) throws IOException {
+    private void sendRequest(CallbackRequest request,int statusCode) throws IOException {
         RestAssured
             .given()
             .header("Authorization", idamHelper.authenticateUser("a@b.com"))
