@@ -48,11 +48,11 @@ public class GetFileNamesScenarios {
         UUID id = UUID.randomUUID();
 
         JsonNode reqBody = extendedCcdHelper.createRecordingSegment(
-            "audiostream01",
-            "http://localhost:10000/devstoreaccount1/cvptestcontainer/audiostream01/audio_test.m4a",
-            "audiostream01/audio_test.m4a",
-            "ma4",
-            226200L,
+            "functional-tests",
+            "http://dm-store:8080/documents/e486435e-30e8-456c-9d4d-4adffcb50010",
+            "functional-tests/hearing-recording-segment"+id.toString(),
+            ".mp4",
+            12L,
             0
         );
 
