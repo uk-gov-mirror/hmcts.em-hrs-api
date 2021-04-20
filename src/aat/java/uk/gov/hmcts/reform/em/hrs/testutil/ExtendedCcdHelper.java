@@ -121,4 +121,8 @@ public class ExtendedCcdHelper {
         request.set("recordingFiles", segments);
         return request;
     }
+
+    public String generateToken(){
+        return authTokenGenerator.generate();
+    }
 }
