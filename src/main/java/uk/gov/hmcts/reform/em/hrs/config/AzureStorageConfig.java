@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Optional;
-
 @Configuration
 public class AzureStorageConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(AzureStorageConfig.class);
@@ -34,16 +32,16 @@ public class AzureStorageConfig {
             .containerName(hrsContainer)
             .buildAsyncClient();
 
-        final boolean containerExists = Optional.ofNullable(blobContainerAsyncClient.exists().block())
-            .orElse(false);
-
-        if (!containerExists) {
-            blobContainerAsyncClient.create()
-                .subscribe(
-                    response -> LOGGER.info("Create {} container completed", hrsContainer),
-                    error -> LOGGER.error("Error while creating container {}::: ", hrsContainer, error)
-                );
-        }
+        blobContainerAsyncClient.exists()
+            .doOnSuccess(x -> {
+                if (!x) {
+                    blobContainerAsyncClient.create()
+                        .subscribe(
+                            response -> LOGGER.info("Create {} container completed", hrsContainer),
+                            error -> LOGGER.error("Error while creating container {}::: ", hrsContainer, error)
+                        );
+                }
+            });
 
         return blobContainerAsyncClient;
     }
