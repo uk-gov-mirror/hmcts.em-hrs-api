@@ -54,9 +54,8 @@ class IngestionServiceImplTest {
     void testShouldIngestWhenHearingRecordingIsNew() {
         doReturn(Optional.empty()).when(recordingRepository).findByRecordingRef(RECORDING_REFERENCE);
 
-        doReturn(TEST_FOLDER.getName()).when(folderService).getFolderNameFromFilePath(any(String.class));
         doReturn(TEST_FOLDER).when(folderService).getFolderByName(TEST_FOLDER.getName());
-        doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).createCase(HEARING_RECORDING_DTO);
+        doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).createCase(HEARING_RECORDING.getId(), HEARING_RECORDING_DTO);
         doReturn(HEARING_RECORDING).when(recordingRepository).save(any(HearingRecording.class));
         doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));
         doNothing().when(hearingRecordingStorage)
@@ -65,7 +64,7 @@ class IngestionServiceImplTest {
         underTest.ingest(HEARING_RECORDING_DTO);
 
         verify(recordingRepository).findByRecordingRef(RECORDING_REFERENCE);
-        verify(ccdDataStoreApiClient).createCase(HEARING_RECORDING_DTO);
+        verify(ccdDataStoreApiClient).createCase(HEARING_RECORDING.getId(), HEARING_RECORDING_DTO);
         verify(recordingRepository, times(2)).save(any(HearingRecording.class));
         verify(segmentRepository).save(any(HearingRecordingSegment.class));
         verify(hearingRecordingStorage)
@@ -77,7 +76,8 @@ class IngestionServiceImplTest {
     void testShouldIngestWhenHearingRecordingExist() {
         doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS)).when(recordingRepository)
             .findByRecordingRef(RECORDING_REFERENCE);
-        doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).updateCaseData(anyLong(), eq(HEARING_RECORDING_DTO));
+        doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient)
+            .updateCaseData(anyLong(), eq(HEARING_RECORDING_WITH_SEGMENTS.getId()), eq(HEARING_RECORDING_DTO));
         doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));
         doNothing().when(hearingRecordingStorage)
             .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
@@ -85,13 +85,14 @@ class IngestionServiceImplTest {
         underTest.ingest(HEARING_RECORDING_DTO);
 
         verify(recordingRepository).findByRecordingRef(RECORDING_REFERENCE);
-        verify(ccdDataStoreApiClient).updateCaseData(anyLong(), eq(HEARING_RECORDING_DTO));
-        verify(ccdDataStoreApiClient, never()).createCase(HEARING_RECORDING_DTO);
+        verify(ccdDataStoreApiClient)
+            .updateCaseData(anyLong(), eq(HEARING_RECORDING_WITH_SEGMENTS.getId()), eq(HEARING_RECORDING_DTO));
+        verify(ccdDataStoreApiClient, never())
+            .createCase(HEARING_RECORDING_WITH_SEGMENTS.getId(), HEARING_RECORDING_DTO);
         verify(recordingRepository, never()).save(any(HearingRecording.class));
         verify(segmentRepository).save(any(HearingRecordingSegment.class));
         verify(hearingRecordingStorage)
             .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
         verifyNoInteractions(snooper);
     }
-
 }

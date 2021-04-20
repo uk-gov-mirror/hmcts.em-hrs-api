@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
 import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.model.CaseDocument;
+import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -40,7 +42,7 @@ public class TestUtil {
     public static final Folder TEST_FOLDER = Folder.builder().name(TEST_FOLDER_NAME).build();
     public static final String SERVER_ERROR_MESSAGE = "We have detected a problem and our engineers are working on it."
         + "\nPlease try again later and thank you for your patience";
-    
+
     public static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
         .filename(FILE_1)
@@ -54,22 +56,22 @@ public class TestUtil {
         .filename(FILE_3)
         .build();
 
-    public static final HearingRecordingDto HEARING_RECORDING_DTO = new HearingRecordingDto(
-        CASE_REFERENCE,
-        "CVP",
-        "123",
-        null,
-        "JC",
-        "LC",
-        RECORDING_REFERENCE,
-        "recording-cvp-uri",
-        "hearing-recording-file-name",
-        "mp4",
-        123456789L,
-        0,
-        "erI2foA30B==",
-        RECORDING_DATETIME
-    );
+    public static final HearingRecordingDto HEARING_RECORDING_DTO = HearingRecordingDto.builder()
+        .folder(TEST_FOLDER_NAME)
+        .caseRef(CASE_REFERENCE)
+        .recordingSource("CVP")
+        .courtLocationCode("LC")
+        .jurisdictionCode("JC")
+        .hearingRoomRef("123")
+        .recordingRef(RECORDING_REFERENCE)
+        .filename("hearing-recording-file-name")
+        .recordingDateTime(RECORDING_DATETIME)
+        .filenameExtension("mp4")
+        .fileSize(123456789L)
+        .segment(0)
+        .cvpFileUrl("recording-cvp-uri")
+        .checkSum("erI2foA30B==")
+        .build();
 
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(
         MediaType.APPLICATION_JSON.getType(),
@@ -145,6 +147,14 @@ public class TestUtil {
 
     public static final HearingRecordingSharee HEARING_RECORDING_SHAREE = HearingRecordingSharee.builder()
         .id(SHAREE_ID)
+        .build();
+
+    public static final CaseRecordingFile CASE_RECORDING_FILE = CaseRecordingFile.builder()
+        .caseDocument(
+            CaseDocument.builder().url("document-url").binaryUrl("document-url").filename("filename").build()
+        )
+        .fileSize(123456789L)
+        .segmentNumber(0)
         .build();
 
     private TestUtil() {

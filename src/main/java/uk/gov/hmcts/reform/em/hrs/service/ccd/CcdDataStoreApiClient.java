@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.SecurityService;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class CcdDataStoreApiClient {
@@ -35,7 +36,7 @@ public class CcdDataStoreApiClient {
         this.coreCaseDataApi = coreCaseDataApi;
     }
 
-    public Long createCase(final HearingRecordingDto hearingRecordingDto) {
+    public Long createCase(final UUID recordingId, final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityService.getTokens();
 
         StartEventResponse startEventResponse =
@@ -44,7 +45,7 @@ public class CcdDataStoreApiClient {
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
             .eventToken(startEventResponse.getToken())
-            .data(caseDataCreator.createCaseStartData(hearingRecordingDto))
+            .data(caseDataCreator.createCaseStartData(hearingRecordingDto, recordingId))
             .build();
 
         CaseDetails caseDetails = coreCaseDataApi
@@ -56,7 +57,7 @@ public class CcdDataStoreApiClient {
         return caseDetails.getId();
     }
 
-    public Long updateCaseData(final Long caseId, final HearingRecordingDto hearingRecordingDto) {
+    public Long updateCaseData(final Long caseId, final UUID recordingId, final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityService.getTokens();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"),
@@ -65,9 +66,9 @@ public class CcdDataStoreApiClient {
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
             .eventToken(startEventResponse.getToken())
-            .data(caseDataCreator.createCaseUpdateData(startEventResponse.getCaseDetails().getData(),
-                                                       hearingRecordingDto))
-            .build();
+            .data(caseDataCreator.createCaseUpdateData(
+                startEventResponse.getCaseDetails().getData(), recordingId, hearingRecordingDto)
+            ).build();
 
         LOGGER.info("updating case({}) with new recording ({})",
                                   caseId, hearingRecordingDto.getRecordingRef());

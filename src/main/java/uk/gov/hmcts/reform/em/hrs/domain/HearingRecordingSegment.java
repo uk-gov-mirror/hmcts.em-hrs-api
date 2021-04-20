@@ -109,8 +109,6 @@ public class HearingRecordingSegment {
 
         setRecordingLengthMins(recordingLengthMins);
         setRecordingSegment(recordingSegment);
-
-
     }
 
     public HearingRecordingSegment() {

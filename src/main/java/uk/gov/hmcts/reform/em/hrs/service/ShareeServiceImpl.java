@@ -10,11 +10,11 @@ import javax.inject.Named;
 
 @Named
 @Transactional
-public class HearingRecordingShareeServiceImpl implements HearingRecordingShareeService {
+public class ShareeServiceImpl implements ShareeService {
     private final ShareesRepository shareesRepository;
 
     @Inject
-    public HearingRecordingShareeServiceImpl(
+    public ShareeServiceImpl(
         final ShareesRepository shareesRepository) {
         this.shareesRepository = shareesRepository;
     }

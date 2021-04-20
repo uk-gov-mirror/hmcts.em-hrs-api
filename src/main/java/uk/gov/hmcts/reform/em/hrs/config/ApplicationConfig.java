@@ -35,6 +35,7 @@ public class ApplicationConfig {
         final Jackson2ObjectMapperBuilder jsonBuilderConfig = new Jackson2ObjectMapperBuilder();
         jsonBuilderConfig.propertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
         jsonBuilderConfig.findModulesViaServiceLoader(true);
+        jsonBuilderConfig.failOnUnknownProperties(false);
 
         return jsonBuilderConfig;
     }
