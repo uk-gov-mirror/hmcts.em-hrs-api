@@ -27,7 +27,7 @@ s2s:
   api:
     url: ${S2S_BASE_URI:http://localhost:4502}
     secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
-    serviceName: ${S2S_SERVICE_NAME:em_hrs_api}
+    serviceName: ${S2S_SERVICE_NAME:em_gw}
     ccdGwSecret: ${FUNCTIONAL_TEST_CCD_GW_SERVICE_SECRET:AAAAAAAAAAAAAAAA}
     ccdGwServiceName: ${CCD_GW_SERVICE_NAME:ccd_gw}
 toggle:
