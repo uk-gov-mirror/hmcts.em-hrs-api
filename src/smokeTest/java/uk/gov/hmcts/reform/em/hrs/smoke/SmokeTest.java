@@ -3,24 +3,17 @@ package uk.gov.hmcts.reform.em.hrs.smoke;
 import io.restassured.RestAssured;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
-import uk.gov.hmcts.reform.em.hrs.smoke.config.AuthTokenGeneratorConfiguration;
-import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
-import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {AuthTokenGeneratorConfiguration.class, EmTestConfig.class})
+@SpringBootTest(classes = EmTestConfig.class)
 @TestPropertySource(value = "classpath:application.yml")
 @WithTags({@WithTag("testType:Smoke")})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SmokeTest {
 
     private static final String MESSAGE = "Welcome to Hearing Recordings Service";
@@ -28,23 +21,13 @@ public class SmokeTest {
     @Value("${test.url}")
     private String testUrl;
 
-    @Autowired
-    private S2sHelper s2sHelper;
-
-    @Autowired
-    private IdamHelper idamHelper;
-
-    @BeforeAll
-    public void initialise() {
-        RestAssured.useRelaxedHTTPSValidation();
-    }
-
     @Test
     public void testHealthEndpoint() {
 
         String response =
             RestAssured
                 .given()
+                .relaxedHTTPSValidation()
                 .baseUri(testUrl)
                 .when()
                 .get("/")
