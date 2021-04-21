@@ -20,6 +20,7 @@ def secrets = [
   's2s-${env}': [
     secret('microservicekey-em-hrs-api', 'S2S_KEY'),
     secret('microservicekey-ccd-gw', 'FUNCTIONAL_TEST_CCD_GW_SERVICE_SECRET'),
+    secret('microservicekey-em-gw', 'FUNCTIONAL_TEST_CLIENT_S2S_TOKEN')
   ],
   'rpa-${env}': [
     secret('oauth2-client-id', 'OAUTH_CLIENT_ID'),
