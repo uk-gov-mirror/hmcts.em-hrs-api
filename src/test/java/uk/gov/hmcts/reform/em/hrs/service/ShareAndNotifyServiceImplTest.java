@@ -33,9 +33,6 @@ class ShareAndNotifyServiceImplTest {
     private CaseDataContentCreator caseDataCreator;
 
     @Mock
-    private SecurityService securityService;
-
-    @Mock
     private NotificationService notificationService;
 
     @InjectMocks
@@ -47,7 +44,6 @@ class ShareAndNotifyServiceImplTest {
             .when(hearingRecordingRepository).findByCcdCaseId(CCD_CASE_ID);
         doReturn(HEARING_RECORDING_SHAREE)
             .when(shareeService).createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS);
-        doReturn(SHARER_EMAIL_ADDRESS).when(securityService).getUserEmail(AUTHORIZATION_TOKEN);
         doNothing()
             .when(notificationService).sendEmailNotification(CASE_REFERENCE,
                                                              RECORDING_DATETIME,
@@ -67,7 +63,6 @@ class ShareAndNotifyServiceImplTest {
         verify(hearingRecordingRepository, times(1)).findByCcdCaseId(CCD_CASE_ID);
         verify(shareeService, times(1))
             .createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS);
-        verify(securityService, times(1)).getUserEmail(AUTHORIZATION_TOKEN);
         verify(notificationService, times(1))
             .sendEmailNotification(CASE_REFERENCE,
                                    RECORDING_DATETIME,
