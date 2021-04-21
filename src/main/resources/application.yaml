@@ -109,3 +109,10 @@ hrs:
     max-size: 10
     queue-capacity: 100
   ingestion-frequency: 1 # how often to call ccd per second
+
+auth:
+  provider:
+    service:
+      client:
+        baseUrl: ${S2S_BASE_URI:http://localhost:4502}
+

@@ -1,33 +1,20 @@
 package uk.gov.hmcts.reform.em.hrs;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.restassured.RestAssured;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.em.EmTestConfig;
-import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(classes = {EmTestConfig.class, CcdAuthTokenGeneratorConfiguration.class, ExtendedCcdHelper.class})
-@TestPropertySource("classpath:application.yml")
-@RunWith(SpringJUnit4ClassRunner.class)
-public class CaseUpdateScenarios {
+public class CaseUpdateScenarios extends BaseTest {
 
     private static final String JURISDICTION = "HRS";
     private static final String CASE_TYPE = "HearingRecordings";
@@ -39,17 +26,10 @@ public class CaseUpdateScenarios {
     @Autowired
     private CoreCaseDataApi coreCaseDataApi;
 
-    @Rule
-    public RetryRule retryRule = new RetryRule(1);
-
-    @Value("${test.url}")
-    private String testUrl;
-
     @Test
     public void testCcdCaseUpdate() {
 
-        RestAssured
-            .given()
+        s2sAuthRequest()
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
@@ -66,8 +46,7 @@ public class CaseUpdateScenarios {
             0
             );
 
-        RestAssured
-            .given()
+        s2sAuthRequest()
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
