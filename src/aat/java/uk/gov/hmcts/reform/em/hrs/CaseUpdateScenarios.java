@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.hrs;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.restassured.RestAssured;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,13 +24,14 @@ import java.util.Map;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(classes = {EmTestConfig.class, CcdAuthTokenGeneratorConfiguration.class, ExtendedCcdHelper.class})
-@TestPropertySource("classpath:application.yml")
+@TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class CaseUpdateScenarios {
 
     private static final String JURISDICTION = "HRS";
     private static final String CASE_TYPE = "HearingRecordings";
     private static final String SHARE_FILES = "shareFiles";
+    public static final String hrsEmail = "sharee.tester@test.com";
 
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
@@ -63,8 +63,9 @@ public class CaseUpdateScenarios {
             "http://localhost:10000/devstoreaccount1/cvptestcontainer/audiostream01/audio_test.m4a",
             "audiostream01/audio_test.m4a",
             "ma4",
+            226200L,
             0
-            );
+        );
 
         RestAssured
             .given()
@@ -78,11 +79,10 @@ public class CaseUpdateScenarios {
             .statusCode(202);
     }
 
-    @Ignore
     @Test
     public void testDocumentShare() {
         Map<String, String> tokens = extendedCcdHelper.getTokens();
-        Long caseId = 1618932772410938L;
+        Long caseId = 1618821731433778L;
         StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"),
                                                                            caseId.toString(), SHARE_FILES
         );
@@ -90,10 +90,12 @@ public class CaseUpdateScenarios {
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
             .eventToken(startEventResponse.getToken())
-            .data(extendedCcdHelper.getShareRequest()).build();
+            .data(extendedCcdHelper.getShareRequest(hrsEmail)).build();
 
         coreCaseDataApi
             .submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
                                       JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData);
     }
+
+
 }

@@ -10,6 +10,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.em.hrs.model.CaseDocument;
+import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefImportApi;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefUserRoleApi;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
@@ -18,9 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.PostConstruct;
 
 @Service
@@ -48,7 +48,7 @@ public class ExtendedCcdHelper {
         importDefinitionFile();
     }
 
-    public JsonNode createRecordingSegment(String folder, String url, String filename, String fileExt, int segment) {
+    public JsonNode createRecordingSegment(String folder, String url, String filename, String fileExt, Long fileSize, int segment) {
         return JsonNodeFactory.instance.objectNode()
             .put("folder", folder)
             .put("recording-ref", "hearing-12-family-probate-morning")
@@ -61,7 +61,7 @@ public class ExtendedCcdHelper {
             .put("cvp-file-url", url)
             .put("filename", filename)
             .put("filename-extension", fileExt)
-            .put("file-size", 226200L)
+            .put("file-size", fileSize)
             .put("segment", segment)
             .put("recording-date-time",
                  LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSS")));
@@ -102,7 +102,7 @@ public class ExtendedCcdHelper {
                       "service", authTokenGenerator.generate());
     }
 
-    public JsonNode getShareRequest() {
+    public JsonNode getShareRequest(String email) {
 
         ObjectNode caseDocument = JsonNodeFactory.instance.objectNode()
             .put("document_filename", "document_filename")
@@ -117,8 +117,12 @@ public class ExtendedCcdHelper {
         ArrayNode segments = JsonNodeFactory.instance.arrayNode()
             .add(JsonNodeFactory.instance.objectNode().set("value", caseRecordingFile));
         ObjectNode request = JsonNodeFactory.instance.objectNode().set("recordingFiles", segments);
-        request.put("recipientEmailAddress", hrsTester);
+        request.put("recipientEmailAddress", email);
         request.set("recordingFiles", segments);
         return request;
+    }
+
+    public String generateToken(){
+        return authTokenGenerator.generate();
     }
 }
