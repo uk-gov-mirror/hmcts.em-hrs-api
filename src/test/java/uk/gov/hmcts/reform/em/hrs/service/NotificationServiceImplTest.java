@@ -52,8 +52,7 @@ class NotificationServiceImplTest {
             RECORDING_DATETIME,
             RECORDING_SEGMENT_DOWNLOAD_URLS,
             SHAREE_ID,
-            SHAREE_EMAIL_ADDRESS,
-            SHARER_EMAIL_ADDRESS
+            SHAREE_EMAIL_ADDRESS
         );
 
         verify(notificationClient, times(1))
@@ -82,8 +81,7 @@ class NotificationServiceImplTest {
                 RECORDING_DATETIME,
                 RECORDING_SEGMENT_DOWNLOAD_URLS,
                 SHAREE_ID,
-                SHAREE_EMAIL_ADDRESS,
-                SHARER_EMAIL_ADDRESS
+                SHAREE_EMAIL_ADDRESS
             ));
         verify(notificationClient, times(1))
             .sendEmail(anyString(),

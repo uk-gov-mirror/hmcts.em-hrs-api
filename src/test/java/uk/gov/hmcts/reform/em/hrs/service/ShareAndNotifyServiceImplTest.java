@@ -53,8 +53,7 @@ class ShareAndNotifyServiceImplTest {
                                                              RECORDING_DATETIME,
                                                              List.copyOf(Collections.singleton("document-url")),
                                                              SHAREE_ID,
-                                                             SHAREE_EMAIL_ADDRESS,
-                                                             SHARER_EMAIL_ADDRESS);
+                                                             SHAREE_EMAIL_ADDRESS);
         final CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("recipientEmailAddress", SHAREE_EMAIL_ADDRESS,
                          "recordingFiles", Collections.singletonList(CASE_RECORDING_FILE)))
@@ -74,7 +73,6 @@ class ShareAndNotifyServiceImplTest {
                                    RECORDING_DATETIME,
                                    List.copyOf(Collections.singleton("document-url")),
                                    SHAREE_ID,
-                                   SHAREE_EMAIL_ADDRESS,
-                                   SHARER_EMAIL_ADDRESS);
+                                   SHAREE_EMAIL_ADDRESS);
     }
 }

@@ -67,8 +67,7 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
                 hearingRecording.getCreatedOn(),
                 List.copyOf(segmentUrls),
                 sharee.getId(),
-                shareeEmailAddress,
-                sharerEmailAddress
+                shareeEmailAddress
             );
         } catch (NotificationClientException e) {
             throw new GovNotifyErrorException(e);

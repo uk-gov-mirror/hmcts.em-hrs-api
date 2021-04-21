@@ -117,7 +117,7 @@ public class ExtendedCcdHelper {
         ArrayNode segments = JsonNodeFactory.instance.arrayNode()
             .add(JsonNodeFactory.instance.objectNode().set("value", caseRecordingFile));
         ObjectNode request = JsonNodeFactory.instance.objectNode().set("recordingFiles", segments);
-        request.put("recipientEmailAddress", hrsTester);
+        request.put("recipientEmailAddress", "taleb.benouaer@hmcts.net");
         request.set("recordingFiles", segments);
         return request;
     }
