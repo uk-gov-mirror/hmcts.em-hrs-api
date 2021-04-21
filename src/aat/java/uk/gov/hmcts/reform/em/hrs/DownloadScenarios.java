@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @SpringBootTest(classes = {EmTestConfig.class, CcdAuthTokenGeneratorConfiguration.class, ExtendedCcdHelper.class, AuthTokenGeneratorConfiguration.class})
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringJUnit4ClassRunner.class)
-public class DownloadScenarios {
+public class DownloadScenarios { // this needs to do soft coded suing the cvp blobstore - make sure segmesnt and recording id match the blobstore file
 
     @Autowired
     AuthTokenGenerator authTokenGenerator;
@@ -39,7 +39,7 @@ public class DownloadScenarios {
     @Value("${test.url}")
     private String testUrl;
 
-    String Recordingid = "b656977b-a7b0-4599-a845-14bf5ab9bf6a"; // make sure it matches the file being copied
+    String Recordingid = "b656977b-a7b0-4599-a845-14bf5ab9bf6a";
     private int segmentNumber = 0;
 
     @Test

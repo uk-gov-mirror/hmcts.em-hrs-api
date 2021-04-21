@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
+import uk.gov.hmcts.reform.em.hrs.testutil.UploadToCVPBlobstore;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 
 import java.util.List;
@@ -45,7 +46,7 @@ public class GetFileNameScenarios {
     @Test
     public void testGetFileNames() throws Exception {
 
-     
+
 // upload file to the cvp blobstore and then use the blobstore url
 
 
