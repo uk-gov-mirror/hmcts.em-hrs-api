@@ -109,6 +109,7 @@ hrs:
     max-size: 10
     queue-capacity: 100
   ingestion-frequency: 1 # how often to call ccd per second
+  allowed-roles: ${ALLOWED_ROLES:caseworker-hrs}
 
 auth:
   provider:
