@@ -35,6 +35,7 @@ public class ShareHearingRecordingSceanrios extends BaseTest {
     }
 
     @Test
+    @Ignore
     public void testShareRecording_negative_non_exitent_ccd_case_id() throws Exception {
 
         final CaseDetails request = CaseDetails.builder()

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import uk.gov.service.notify.NotificationClientApi;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -9,16 +11,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.inject.Inject;
-import javax.inject.Named;
 
-@Named
+@Service
 public class NotificationServiceImpl implements NotificationService {
     private final String templateId;
     private final NotificationClientApi notificationClient;
 
-    @Inject
-    public NotificationServiceImpl(@Value("notify.email.template") final String templateId,
+    @Autowired
+    public NotificationServiceImpl(@Value("${notify.email.template}") final String templateId,
                                    final NotificationClientApi notificationClient) {
         this.templateId = templateId;
         this.notificationClient = notificationClient;
@@ -29,14 +29,12 @@ public class NotificationServiceImpl implements NotificationService {
                                       final LocalDateTime recordingDatetime,
                                       final List<String> recordingSegmentDownloadUrls,
                                       final UUID shareeId,
-                                      final String shareeEmailAddress,
-                                      final String sharerEmailAddress) throws NotificationClientException {
+                                      final String shareeEmailAddress) throws NotificationClientException {
         notificationClient.sendEmail(
             templateId,
             shareeEmailAddress,
             createPersonalisation(caseReference, recordingDatetime, recordingSegmentDownloadUrls),
-            String.format("hrs-grant-%s", shareeId),
-            sharerEmailAddress
+            String.format("hrs-grant-%s", shareeId)
         );
     }
 

@@ -11,6 +11,5 @@ public interface NotificationService {
                                LocalDateTime recordingDatetime,
                                List<String> recordingSegmentDownloadUrls,
                                UUID shareeId,
-                               String shareeEmailAddress,
-                               String sharerEmailAddress) throws NotificationClientException;
+                               String shareeEmailAddress) throws NotificationClientException;
 }

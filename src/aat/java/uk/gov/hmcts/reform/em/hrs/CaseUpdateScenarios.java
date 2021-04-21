@@ -61,7 +61,7 @@ public class CaseUpdateScenarios extends BaseTest {
     @Test
     public void testDocumentShare() {
         Map<String, String> tokens = extendedCcdHelper.getTokens();
-        Long caseId = 1618932772410938L;
+        Long caseId = 1619005282012509L;
         StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"),
                                                                            caseId.toString(), SHARE_FILES
         );
