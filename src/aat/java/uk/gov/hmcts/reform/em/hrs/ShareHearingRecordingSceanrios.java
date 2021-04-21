@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
@@ -58,21 +57,6 @@ public class ShareHearingRecordingSceanrios extends BaseTest {
         sendRequest(request,500);
     }
 
-    @Test
-    public void testDownload() {
-
-        UUID recordingId = UUID.randomUUID();
-        Integer segmentNo = Integer.valueOf(10);
-        String url = "/hearing-recordings/" + recordingId + "/segments/" + segmentNo;
-        authRequest()
-            .relaxedHTTPSValidation()
-            .baseUri(testUrl)
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .get(url)
-            .then()
-            .statusCode(200).log().all();
-    }
     private void sendRequest(CaseDetails request,int statusCode) throws IOException {
         authRequest()
             .relaxedHTTPSValidation()
