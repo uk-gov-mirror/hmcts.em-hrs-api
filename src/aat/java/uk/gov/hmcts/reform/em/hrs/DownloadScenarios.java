@@ -39,7 +39,7 @@ public class DownloadScenarios {
     @Value("${test.url}")
     private String testUrl;
 
-    String Recordingid = "b656977b-a7b0-4599-a845-14bf5ab9bf6a";
+    String Recordingid = "b656977b-a7b0-4599-a845-14bf5ab9bf6a"; // make sure it matches the file being copied
     private int segmentNumber = 0;
 
     @Test
@@ -48,9 +48,9 @@ public class DownloadScenarios {
             .given()
             .header("Authorization", idamHelper.authenticateUser("a@b.com"))
             .header("ServiceAuthorization", authTokenGenerator.generate())
-            .baseUri("http://localhost:8080")
+            .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
-            .get("/documents/hearing-recordings/" + Recordingid + "/segments/" + segmentNumber)
+            .get("/hearing-recordings/" + Recordingid + "/segments/" + segmentNumber)
             .then()
             .statusCode(200).log().all();
     }

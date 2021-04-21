@@ -45,13 +45,15 @@ public class GetFileNameScenarios {
     @Test
     public void testGetFileNames() throws Exception {
 
-        UUID id = UUID.randomUUID();
+     
+// upload file to the cvp blobstore and then use the blobstore url
+
 
         JsonNode reqBody = extendedCcdHelper.createRecordingSegment(
-            "functional-tests",
-            "http://localhost:10000/devstoreaccount1/functional-tests/hearing-recording-segment/functional_test_2.m4a",
-            "functional-tests/hearing-recording-segment"+id.toString(),
-            "ma4",
+            "audiostream01",
+            "http://localhost:10000/devstoreaccount1/cvptestcontainer/audiostream01/download.jpeg",
+            "audiostream01/download.jpeg",
+            "jpeg",
             226200L,
             0
         );
@@ -69,7 +71,7 @@ public class GetFileNameScenarios {
             .then()
             .statusCode(202).log().all();
 
-        Thread.sleep(3000);
+        Thread.sleep(10000);
 
         ValidatableResponse response = RestAssured
             .given()
@@ -79,19 +81,13 @@ public class GetFileNameScenarios {
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get("/folders/functional-tests")
+            .get("/folders/audiostream01")
             .then()
             .statusCode(200).log().all();
 
-        // assertEquals("functional-tests",response.extract().body().jsonPath().get("folder-name"));
-        // JsonNode fileNames = reqBody.findValue("filename");
-        //  System.out.println(fileNames);
-        //response.extract().body().jsonPath().get("filenames");
 
-        //  assertTrue(fileNames.equals("functional-tests/hearing-recording-segment"+id.toString()+".mp4"));
-
-        assertEquals("functional-tests",response.extract().body().jsonPath().get("folder-name"));
+        assertEquals("audiostream01",response.extract().body().jsonPath().get("folder-name"));
         List<String> fileNames = response.extract().body().jsonPath().get("filenames");
-        assertTrue(fileNames.stream().anyMatch(s -> s.equals("hearing-recording-segment" + id.toString() + "mp4")));
+        assertTrue(fileNames.stream().anyMatch(s -> s.equals("audiostream01/download.jpeg")));
     }
 }

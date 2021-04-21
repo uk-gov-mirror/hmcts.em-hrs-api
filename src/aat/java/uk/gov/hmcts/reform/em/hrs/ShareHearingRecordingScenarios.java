@@ -93,7 +93,7 @@ public class ShareHearingRecordingScenarios {
             .id(CCD_CASE_ID)
             .build();
         CallbackRequest callBack = CallbackRequest.builder().caseDetails(request).build();
-        sendRequest(callBack,500);
+        sendRequest(callBack,400);
     }
 
     private void sendRequest(CallbackRequest request,int statusCode) throws IOException {
