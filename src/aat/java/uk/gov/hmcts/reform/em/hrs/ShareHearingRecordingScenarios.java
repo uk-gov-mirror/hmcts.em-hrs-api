@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,6 +62,7 @@ public class ShareHearingRecordingScenarios {
     }
 
     @Test
+    @Disabled("Waiting for integration with gov notify to be completed before test can be run")
     public void testShareRecording_success_scenario() throws Exception {
         @SuppressWarnings("unchecked")
         final CaseDetails request = CaseDetails.builder()

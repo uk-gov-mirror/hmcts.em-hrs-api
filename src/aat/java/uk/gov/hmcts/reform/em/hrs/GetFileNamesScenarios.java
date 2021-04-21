@@ -49,10 +49,10 @@ public class GetFileNamesScenarios {
 
         JsonNode reqBody = extendedCcdHelper.createRecordingSegment(
             "functional-tests",
-            "http://dm-store:8080/documents/e486435e-30e8-456c-9d4d-4adffcb50010",
+            "http://localhost:10000/devstoreaccount1/functional-tests/hearing-recording-segment/functional_test_2.m4a",
             "functional-tests/hearing-recording-segment"+id.toString(),
-            ".mp4",
-            12L,
+            "ma4",
+            226200L,
             0
         );
 
@@ -83,10 +83,16 @@ public class GetFileNamesScenarios {
             .then()
             .statusCode(200).log().all();
 
+       // assertEquals("functional-tests",response.extract().body().jsonPath().get("folder-name"));
+       // JsonNode fileNames = reqBody.findValue("filename");
+      //  System.out.println(fileNames);
+            //response.extract().body().jsonPath().get("filenames");
+
+      //  assertTrue(fileNames.equals("functional-tests/hearing-recording-segment"+id.toString()+".mp4"));
+
         assertEquals("functional-tests",response.extract().body().jsonPath().get("folder-name"));
         List<String> fileNames = response.extract().body().jsonPath().get("filenames");
-
-        assertTrue(fileNames.stream().anyMatch(s -> s.equals("hearing-recording-segment"+id.toString()+"mp4")));
+        assertTrue(fileNames.stream().anyMatch(s -> s.equals("hearing-recording-segment" + id.toString() + "mp4")));
     }
 }
 
