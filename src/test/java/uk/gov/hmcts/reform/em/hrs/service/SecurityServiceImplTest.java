@@ -118,7 +118,7 @@ class SecurityServiceImplTest {
         doReturn(USER_INFO).when(idamClient).getUserInfo(AUTHORIZATION_TOKEN);
 
         final UserInfo userInfo = underTest.getUserInfo(AUTHORIZATION_TOKEN);
-        Assert.assertTrue(userInfo.getRoles().size() == 1);
+        Assert.assertEquals(1,userInfo.getRoles().size());
         verify(idamClient, times(1)).getUserInfo(AUTHORIZATION_TOKEN);
     }
 

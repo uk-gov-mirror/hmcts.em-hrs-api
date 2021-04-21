@@ -10,12 +10,11 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import javax.validation.constraints.NotNull;
 
 @Component
 public class PermissionEvaluatorImpl implements PermissionEvaluator {
@@ -34,10 +33,10 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
                                  @NotNull Object targetDomainObject,
                                  @NotNull Object permissionString) {
 
-        JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+        var jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
         String token = "Bearer " + jwtAuthenticationToken.getToken().getTokenValue();
 
-        UserInfo userInfo = securityService.getUserInfo(token);
+        var userInfo = securityService.getUserInfo(token);
 
         if (CollectionUtils.isNotEmpty(userInfo.getRoles())) {
             Optional<String> userRole = userInfo.getRoles().stream()
@@ -47,7 +46,7 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
                 return true;
             }
         }
-        String emailId = securityService.getUserEmail(token);
+        //String emailId = securityService.getUserEmail(token);
 
         return false;
     }
