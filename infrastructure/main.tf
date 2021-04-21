@@ -156,7 +156,7 @@ module "cvp_storage_account_simulator" {
 
 resource "azurerm_key_vault_secret" "cvp_storage_simulator_connection_string" {
   count = var.env == "aat" ? 1 : 0
-  name = "cvp-storage-connection-string"
+  name = "cvp-storage-simulator-connection-string"
   value = module.cvp_storage_account_simulator.storageaccount_primary_connection_string
   key_vault_id = module.key-vault.key_vault_id
 }
