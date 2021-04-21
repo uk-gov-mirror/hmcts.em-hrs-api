@@ -70,9 +70,9 @@ public class IngestionServiceImpl implements IngestionService {
 
         try {
             CompletableFuture.allOf(metadataFuture, blobCopyFuture).get();
-        } catch (ExecutionException e) {
+        } catch (final ExecutionException e) {
             snoop(hearingRecordingDto.getCvpFileUrl(), e);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             snoop(hearingRecordingDto.getCvpFileUrl(), e);
             Thread.currentThread().interrupt();
         }
@@ -87,6 +87,7 @@ public class IngestionServiceImpl implements IngestionService {
                 recordingDto.getRecordingRef(),
                 recording.getCcdCaseId()
             );
+            return;
             //TODO clean down hearingRecordings where created < yesterday and ccdID is null as part of some process
         }
 
@@ -100,7 +101,7 @@ public class IngestionServiceImpl implements IngestionService {
     private void createCaseinCcdAndPersist(final HearingRecordingDto recordingDto) {
         LOGGER.info("creating a new case for recording: {}", recordingDto.getRecordingRef());
 
-        Folder folder = folderService.getFolderByName(recordingDto.getFolder());
+        final Folder folder = folderService.getFolderByName(recordingDto.getFolder());
 
         HearingRecording recording = HearingRecording.builder()
             .folder(folder)
