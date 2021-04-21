@@ -20,19 +20,16 @@ import java.util.stream.Collectors;
 public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
     private final HearingRecordingRepository hearingRecordingRepository;
     private final ShareeService shareeService;
-    private final SecurityService securityService;
     private final NotificationService notificationService;
     private final CaseDataContentCreator caseDataCreator;
 
     @Autowired
     public ShareAndNotifyServiceImpl(final HearingRecordingRepository hearingRecordingRepository,
                                      final ShareeService shareeService,
-                                     final SecurityService securityService,
                                      final NotificationService notificationService,
                                      final CaseDataContentCreator caseDataCreator) {
         this.hearingRecordingRepository = hearingRecordingRepository;
         this.shareeService = shareeService;
-        this.securityService = securityService;
         this.notificationService = notificationService;
         this.caseDataCreator = caseDataCreator;
     }
@@ -59,16 +56,13 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
             hearingRecording
         );
 
-        final String sharerEmailAddress = securityService.getUserEmail(authorisationToken);
-
         try {
             notificationService.sendEmailNotification(
                 hearingRecording.getCaseRef(),
                 hearingRecording.getCreatedOn(),
                 List.copyOf(segmentUrls),
                 sharee.getId(),
-                shareeEmailAddress,
-                sharerEmailAddress
+                shareeEmailAddress
             );
         } catch (NotificationClientException e) {
             throw new GovNotifyErrorException(e);

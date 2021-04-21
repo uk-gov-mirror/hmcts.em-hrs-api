@@ -22,7 +22,6 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_DATET
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_SEGMENT_DOWNLOAD_URLS;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_ID;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHARER_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.convertObjectToJsonString;
 
 class NotificationServiceImplTest {
@@ -44,24 +43,21 @@ class NotificationServiceImplTest {
             .sendEmail(anyString(),
                        eq(SHAREE_EMAIL_ADDRESS),
                        eq(personalisation),
-                       anyString(),
-                       eq(SHARER_EMAIL_ADDRESS));
+                       anyString());
 
         underTest.sendEmailNotification(
             CASE_REFERENCE,
             RECORDING_DATETIME,
             RECORDING_SEGMENT_DOWNLOAD_URLS,
             SHAREE_ID,
-            SHAREE_EMAIL_ADDRESS,
-            SHARER_EMAIL_ADDRESS
+            SHAREE_EMAIL_ADDRESS
         );
 
         verify(notificationClient, times(1))
             .sendEmail(anyString(),
                        eq(SHAREE_EMAIL_ADDRESS),
                        eq(personalisation),
-                       anyString(),
-                       eq(SHARER_EMAIL_ADDRESS));
+                       anyString());
     }
 
     @Test
@@ -73,8 +69,7 @@ class NotificationServiceImplTest {
             .sendEmail(anyString(),
                        eq(SHAREE_EMAIL_ADDRESS),
                        eq(personalisation),
-                       anyString(),
-                       eq(SHARER_EMAIL_ADDRESS));
+                       anyString());
 
         assertThatExceptionOfType(NotificationClientException.class)
             .isThrownBy(() -> underTest.sendEmailNotification(
@@ -82,15 +77,13 @@ class NotificationServiceImplTest {
                 RECORDING_DATETIME,
                 RECORDING_SEGMENT_DOWNLOAD_URLS,
                 SHAREE_ID,
-                SHAREE_EMAIL_ADDRESS,
-                SHARER_EMAIL_ADDRESS
+                SHAREE_EMAIL_ADDRESS
             ));
         verify(notificationClient, times(1))
             .sendEmail(anyString(),
                        eq(SHAREE_EMAIL_ADDRESS),
                        eq(personalisation),
-                       anyString(),
-                       eq(SHARER_EMAIL_ADDRESS));
+                       anyString());
     }
 
     private Map<String, Object> makePersonalisation() {
