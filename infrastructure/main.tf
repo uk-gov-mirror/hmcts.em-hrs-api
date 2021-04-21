@@ -153,13 +153,15 @@ module "cvp_storage_account_simulator" {
   destroy_me = var.destroy_me
 }
 
-
-resource "azurerm_key_vault_secret" "cvp_storage_simulator_connection_string" {
-  count = var.env == "aat" ? 1 : 0
-  name = "cvp-storage-simulator-connection-string"
-  value = module.cvp_storage_account_simulator.storageaccount_primary_connection_string
-  key_vault_id = module.key-vault.key_vault_id
-}
+//disabled as tf complains about unsupport attribute, when querying module output, despite it being in same
+//format as the primary blob. have manually created it in the keyvault for now.
+//TODO resolve this
+//resource "azurerm_key_vault_secret" "cvp_storage_simulator_connection_string" {
+//  count = var.env == "aat" ? 1 : 0
+//  name = "cvp-storage-simulator-connection-string"
+//  value = module.cvp_storage_account_simulator.storageaccount_primary_connection_string
+//  key_vault_id = module.key-vault.key_vault_id
+//}
 
 
 data "azurerm_key_vault" "s2s_vault" {
