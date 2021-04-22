@@ -10,10 +10,13 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
+import uk.gov.hmcts.reform.em.hrs.repository.ShareesRepository;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import javax.validation.constraints.NotNull;
 
 @Component
@@ -22,18 +25,20 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PermissionEvaluatorImpl.class);
 
     @Value("#{'${hrs.allowed-roles}'.split(',')}")
-    private List<String> allowedRoles;
+    List<String> allowedRoles;
 
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private ShareesRepository shareesRepository;
 
     @Override
     public boolean hasPermission(@NotNull Authentication authentication,
                                  @NotNull Object targetDomainObject,
                                  @NotNull Object permissionString) {
 
-        var jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+        JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
         String token = "Bearer " + jwtAuthenticationToken.getToken().getTokenValue();
 
         var userInfo = securityService.getUserInfo(token);
@@ -46,7 +51,21 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
                 return true;
             }
         }
-        //String emailId = securityService.getUserEmail(token);
+
+        if (targetDomainObject instanceof UUID) {
+            var recordingId = (UUID) targetDomainObject;
+            String shareeEmail = securityService.getUserEmail(token);
+            List<HearingRecordingSharee> hearingRecordingSharees = shareesRepository.findByShareeEmail(shareeEmail);
+            if (CollectionUtils.isNotEmpty(hearingRecordingSharees)) {
+                Optional<HearingRecordingSharee> hearingRecording = hearingRecordingSharees.stream()
+                    .filter(hearingRecordingSharee -> hearingRecordingSharee.getHearingRecording().getId().equals(recordingId))
+                    .findFirst();
+                if (hearingRecording.isPresent()) {
+                    return true;
+                }
+            }
+        }
+
 
         return false;
     }
