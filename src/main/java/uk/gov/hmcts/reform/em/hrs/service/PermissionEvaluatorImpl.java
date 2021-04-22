@@ -38,7 +38,7 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
                                  @NotNull Object targetDomainObject,
                                  @NotNull Object permissionString) {
 
-        JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+        var jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
         String token = "Bearer " + jwtAuthenticationToken.getToken().getTokenValue();
 
         var userInfo = securityService.getUserInfo(token);

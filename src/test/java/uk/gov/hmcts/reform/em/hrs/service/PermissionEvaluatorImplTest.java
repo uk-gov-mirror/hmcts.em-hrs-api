@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.hrs.service;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,11 +14,14 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
 import uk.gov.hmcts.reform.em.hrs.repository.ShareesRepository;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.when;
@@ -47,6 +49,7 @@ public class PermissionEvaluatorImplTest {
         .build();
     private UUID recordingId = UUID.randomUUID();
     private String shareeEmail = "sharee@sharee.com";
+    private List<HearingRecordingSharee> hearingRecordingSharees;
 
     @InjectMocks
     PermissionEvaluatorImpl permissionEvaluator;
@@ -60,6 +63,11 @@ public class PermissionEvaluatorImplTest {
         Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("SCOPE_read");
         authentication = new JwtAuthenticationToken(jwt, authorities);
 
+        HearingRecordingSharee hearingRecordingSharee = new HearingRecordingSharee();
+        HearingRecording hearingRecording = new HearingRecording();
+        hearingRecording.setId(recordingId);
+        hearingRecordingSharee.setHearingRecording(hearingRecording);
+        hearingRecordingSharees = Arrays.asList(hearingRecordingSharee);
     }
 
     @Test
@@ -78,12 +86,27 @@ public class PermissionEvaluatorImplTest {
         Assert.assertFalse(permissionEvaluator.hasPermission(authentication, "", "READ"));
     }
 
-    @Ignore
     @Test
     public void testPermissionOnDownloadShareeSuccess() {
         when(securityService.getUserInfo(Mockito.anyString())).thenReturn(NON_HRS_USER_INFO);
         ReflectionTestUtils.setField(permissionEvaluator, "allowedRoles", Arrays.asList("caseworker-hrs"));
         when(securityService.getUserEmail(Mockito.anyString())).thenReturn(shareeEmail);
-        Assert.assertTrue(permissionEvaluator.hasPermission(authentication, "", "READ"));
+        when(shareesRepository.findByShareeEmail(Mockito.anyString())).thenReturn(hearingRecordingSharees);
+        Assert.assertTrue(permissionEvaluator.hasPermission(authentication, recordingId, "READ"));
+    }
+
+    @Test
+    public void testPermissionOnDownloadShareeFailure() {
+        when(securityService.getUserInfo(Mockito.anyString())).thenReturn(NON_HRS_USER_INFO);
+        ReflectionTestUtils.setField(permissionEvaluator, "allowedRoles", Arrays.asList("caseworker-hrs"));
+        when(securityService.getUserEmail(Mockito.anyString())).thenReturn(shareeEmail);
+        when(shareesRepository.findByShareeEmail(Mockito.anyString())).thenReturn(hearingRecordingSharees);
+        Assert.assertFalse(permissionEvaluator.hasPermission(authentication, UUID.randomUUID(), "READ"));
+    }
+
+    @Test
+    public void testPermissionOnDownloadFailure() {
+        Assert.assertFalse(permissionEvaluator.hasPermission(authentication, UUID.randomUUID(),
+            "uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadServiceImpl","READ"));
     }
 }
