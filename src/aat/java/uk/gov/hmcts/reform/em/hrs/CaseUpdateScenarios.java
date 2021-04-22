@@ -19,6 +19,8 @@ public class CaseUpdateScenarios extends BaseTest {
     private static final String JURISDICTION = "HRS";
     private static final String CASE_TYPE = "HearingRecordings";
     private static final String SHARE_FILES = "shareFiles";
+    private static final String FOLDER = "audiostream02";
+    private static final String RECORDING_REF = "audiostream02/audio_test.m4a";
 
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
@@ -34,14 +36,14 @@ public class CaseUpdateScenarios extends BaseTest {
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get("/folders/audiostream01")
+            .get(String.format("/folders/%s", FOLDER))
             .then()
             .statusCode(200);
 
         JsonNode reqBody = extendedCcdHelper.createRecordingSegment(
-            "audiostream01",
-            "http://localhost:10000/devstoreaccount1/cvptestcontainer/audiostream01/audio_test.m4a",
-            "audiostream01/audio_test.m4a",
+            FOLDER,
+            String.format("http://localhost:10000/devstoreaccount1/cvptestcontainer/%s", RECORDING_REF),
+            RECORDING_REF,
             "ma4",
             0
             );
@@ -61,7 +63,14 @@ public class CaseUpdateScenarios extends BaseTest {
     @Test
     public void testDocumentShare() {
         Map<String, String> tokens = extendedCcdHelper.getTokens();
-        Long caseId = 1619005282012509L;
+        Map<String, String> searchCriteria = Map.of("case.recordingReference", RECORDING_REF);
+        Long caseId = coreCaseDataApi
+            .searchForCaseworker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
+                                 JURISDICTION, CASE_TYPE, searchCriteria)
+            .stream().findAny()
+            .map(caseDetails -> caseDetails.getId())
+            .orElse(1619005282012509L);
+
         StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"),
                                                                            caseId.toString(), SHARE_FILES
         );
