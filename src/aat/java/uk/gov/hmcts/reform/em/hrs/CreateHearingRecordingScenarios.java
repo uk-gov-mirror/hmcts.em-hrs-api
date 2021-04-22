@@ -112,7 +112,7 @@ public class CreateHearingRecordingScenarios {
     public void testCreate1010HearingRecordings() throws Exception {
 
         UUID id = UUID.randomUUID();
-        int n = 1100;
+        int n = 1009;
 
         for (int i = 0; i < n; i++) {
             System.out.println(i);

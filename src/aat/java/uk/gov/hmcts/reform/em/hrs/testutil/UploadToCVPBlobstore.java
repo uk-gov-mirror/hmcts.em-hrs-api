@@ -22,19 +22,25 @@ public class UploadToCVPBlobstore {
         BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString("DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1").buildClient();
 
         //Create a unique name for the container
-        String containerName = "cvptestcontainer-2";
+        String containerName = "cvptestcontainer";
+        BlobContainerClient containerClient;
 
         // Create the container and return a container client object
-        BlobContainerClient containerClient = blobServiceClient.createBlobContainer(containerName);
-
+        if (blobServiceClient.getBlobContainerClient(containerName).exists() == true) {
+             containerClient = blobServiceClient.getBlobContainerClient(containerName);
+        }
+        else
+        {
+             containerClient = blobServiceClient.createBlobContainer(containerName);
+        }
 
     // Create a local file in the ./data/ directory for uploading and downloading
-        String localPath = "./audiostream01";
-        String fileName = "quickstart.txt";
-        File localFile = new File(localPath + fileName);
+    //    String localPath = "./functional-tests-1";
+        String fileName = "functional-tests-1/quickstart.txt";
+        File localFile = new File( fileName);
 
 // Write text to the file
-        FileWriter writer = new FileWriter(localPath + fileName, true);
+        FileWriter writer = new FileWriter(fileName, true);
         writer.write("Hello, World!");
         writer.close();
 
@@ -44,7 +50,9 @@ public class UploadToCVPBlobstore {
         System.out.println("\nUploading to Blob storage as blob:\n\t" + blobClient.getBlobUrl());
 
 // Upload the blob
-        blobClient.uploadFromFile(localPath + fileName);
+        if (blobClient.exists() == false) {
+            blobClient.uploadFromFile(fileName);
+        }
     }
 
 

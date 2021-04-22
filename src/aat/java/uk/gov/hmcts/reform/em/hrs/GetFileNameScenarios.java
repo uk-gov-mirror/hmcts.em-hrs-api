@@ -46,12 +46,12 @@ public class GetFileNameScenarios {
     @Test
     public void testGetFileNames() throws Exception {  // This test works locally if you comment out lines 48 and 49 and sett up the req body with a file in your local blobstore
     UploadToCVPBlobstore upload = new UploadToCVPBlobstore();
-    upload.uploadBlob();
+    upload.uploadBlob(); // this code works globally but the folder is being created with an empty name which the code is then struggling to pick up - once folder name is set it should work well
 
         JsonNode reqBody = extendedCcdHelper.createRecordingSegment(
-            "/",
-            "http://localhost:10000/devstoreaccount1/cvptestcontainer-2/quickstart.txt",
-            "/quickstart.txt",
+            "/functional-tests-1",
+            "http://localhost:10000/devstoreaccount1/cvptestcontainer/functional-tests-1/quickstart.txt",
+            "functional-tests-1/quickstart.txt",
             "txt",
             226200L,
             0
@@ -70,7 +70,7 @@ public class GetFileNameScenarios {
             .then()
             .statusCode(202).log().all();
 
-        Thread.sleep(30000);
+        Thread.sleep(50000);
 
         ValidatableResponse response = RestAssured
             .given()
@@ -80,13 +80,13 @@ public class GetFileNameScenarios {
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get("/")
+            .get("/functional-tests-1")
             .then()
             .statusCode(200).log().all();
 
-
-        assertEquals("/",response.extract().body().jsonPath().get("folder-name"));
+        System.out.println(response.extract().body().asString());
+        assertEquals("functional-tests-1",response.extract().body().jsonPath().get("folder-name"));
         List<String> fileNames = response.extract().body().jsonPath().get("filenames");
-        assertTrue(fileNames.stream().anyMatch(s -> s.equals("/quickstart.txt")));
+        assertTrue(fileNames.stream().anyMatch(s -> s.equals("functional-tests-1/quickstart.txt")));
     }
 }
