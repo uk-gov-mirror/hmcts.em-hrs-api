@@ -16,13 +16,13 @@ public class UploadToCVPBlobstore {
  //   https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-java?tabs=powershell
 
 
-    public static void uploadBlob() throws IOException {
+    public void uploadBlob() throws IOException {
 
         // Create a BlobServiceClient object which will be used to create a container client
         BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString("DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:10000/devstoreaccount1").buildClient();
 
         //Create a unique name for the container
-        String containerName = "cvptestcontainer" + java.util.UUID.randomUUID();
+        String containerName = "cvptestcontainer-2";
 
         // Create the container and return a container client object
         BlobContainerClient containerClient = blobServiceClient.createBlobContainer(containerName);
@@ -30,7 +30,7 @@ public class UploadToCVPBlobstore {
 
     // Create a local file in the ./data/ directory for uploading and downloading
         String localPath = "./audiostream01";
-        String fileName = "quickstart" + java.util.UUID.randomUUID() + ".txt";
+        String fileName = "quickstart.txt";
         File localFile = new File(localPath + fileName);
 
 // Write text to the file
@@ -47,7 +47,5 @@ public class UploadToCVPBlobstore {
         blobClient.uploadFromFile(localPath + fileName);
     }
 
-    public static void main(String[] args) throws IOException {
-uploadBlob();
-    }
+
 }

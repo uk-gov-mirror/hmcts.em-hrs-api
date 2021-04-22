@@ -112,7 +112,7 @@ public class CreateHearingRecordingScenarios {
     public void testCreate1010HearingRecordings() throws Exception {
 
         UUID id = UUID.randomUUID();
-        int n = 1001;
+        int n = 1100;
 
         for (int i = 0; i < n; i++) {
             System.out.println(i);
@@ -139,7 +139,6 @@ public class CreateHearingRecordingScenarios {
                 .then()
                 .statusCode(202).log().all();
 
-            Thread.sleep(3000);
         }
 
         n = 10;
@@ -166,9 +165,8 @@ public class CreateHearingRecordingScenarios {
                 .when()
                 .post("/segments")
                 .then()
-                .statusCode(429).log().all();
+                .statusCode(202).log().all();
 
-            Thread.sleep(3000);
         }
     }
 }

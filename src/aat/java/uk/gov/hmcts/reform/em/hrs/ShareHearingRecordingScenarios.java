@@ -52,7 +52,7 @@ public class ShareHearingRecordingScenarios {
     @Value("${test.url}")
     private String testUrl;
 
-    public static final Long CCD_CASE_ID = 1618842438542059L;
+    public static final Long CCD_CASE_ID = 1618842438542059L; // look at Talebs share scenario to see how to soft code this for jenkins - https://github.com/hmcts/em-hrs-api/pull/150
     public static final String SHAREE_EMAIL_ADDRESS = "sharee.tester@test.com";
     public static final String ERROR_SHAREE_EMAIL_ADDRESS = "sharee.testertest.com";
 

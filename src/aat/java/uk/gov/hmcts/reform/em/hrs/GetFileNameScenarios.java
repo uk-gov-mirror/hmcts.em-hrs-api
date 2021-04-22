@@ -44,17 +44,15 @@ public class GetFileNameScenarios {
     private String testUrl;
 
     @Test
-    public void testGetFileNames() throws Exception {
-
-
-// upload file to the cvp blobstore and then use the blobstore url
-
+    public void testGetFileNames() throws Exception {  // This test works locally if you comment out lines 48 and 49 and sett up the req body with a file in your local blobstore
+    UploadToCVPBlobstore upload = new UploadToCVPBlobstore();
+    upload.uploadBlob();
 
         JsonNode reqBody = extendedCcdHelper.createRecordingSegment(
-            "audiostream01",
-            "http://localhost:10000/devstoreaccount1/cvptestcontainer/audiostream01/download.jpeg",
-            "audiostream01/download.jpeg",
-            "jpeg",
+            "/",
+            "http://localhost:10000/devstoreaccount1/cvptestcontainer-2/quickstart.txt",
+            "/quickstart.txt",
+            "txt",
             226200L,
             0
         );
@@ -72,7 +70,7 @@ public class GetFileNameScenarios {
             .then()
             .statusCode(202).log().all();
 
-        Thread.sleep(10000);
+        Thread.sleep(30000);
 
         ValidatableResponse response = RestAssured
             .given()
@@ -82,13 +80,13 @@ public class GetFileNameScenarios {
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get("/folders/audiostream01")
+            .get("/")
             .then()
             .statusCode(200).log().all();
 
 
-        assertEquals("audiostream01",response.extract().body().jsonPath().get("folder-name"));
+        assertEquals("/",response.extract().body().jsonPath().get("folder-name"));
         List<String> fileNames = response.extract().body().jsonPath().get("filenames");
-        assertTrue(fileNames.stream().anyMatch(s -> s.equals("audiostream01/download.jpeg")));
+        assertTrue(fileNames.stream().anyMatch(s -> s.equals("/quickstart.txt")));
     }
 }

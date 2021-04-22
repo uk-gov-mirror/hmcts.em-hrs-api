@@ -39,7 +39,7 @@ public class DownloadScenarios { // this needs to do soft coded suing the cvp bl
     @Value("${test.url}")
     private String testUrl;
 
-    String Recordingid = "b656977b-a7b0-4599-a845-14bf5ab9bf6a";
+    String Recordingid = "b656977b-a7b0-4599-a845-14bf5ab9bf6a"; // this also works locally but needs to be set up to work through jenkins using the blobstore
     private int segmentNumber = 0;
 
     @Test
