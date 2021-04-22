@@ -3,14 +3,17 @@ package uk.gov.hmcts.reform.em.hrs;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -33,7 +36,7 @@ public class CaseUpdateScenarios extends BaseTest {
     private String cvpContainerUrl;
 
     @Test
-    public void testCcdCaseUpdate() {
+    public void testCcdCaseUpdate() throws InterruptedException {
 
         s2sAuthRequest()
             .relaxedHTTPSValidation()
@@ -62,17 +65,19 @@ public class CaseUpdateScenarios extends BaseTest {
             .post("/segments")
             .then()
             .statusCode(202);
+
+        Thread.sleep(60000L);
+
+        List<CaseDetails> results = extendedCcdHelper.searchForCase(RECORDING_REF);
+        Assertions.assertFalse(results.isEmpty());
     }
 
     @Ignore
     @Test
     public void testDocumentShare() {
         Map<String, String> tokens = extendedCcdHelper.getTokens();
-        Map<String, String> searchCriteria = Map.of("case.recordingReference", RECORDING_REF);
-        Long caseId = coreCaseDataApi
-            .searchForCaseworker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
-                                 JURISDICTION, CASE_TYPE, searchCriteria)
-            .stream().findAny()
+        Long caseId = extendedCcdHelper.searchForCase(RECORDING_REF)
+            .stream().findFirst()
             .map(caseDetails -> caseDetails.getId())
             .orElse(1619005282012509L);
 
