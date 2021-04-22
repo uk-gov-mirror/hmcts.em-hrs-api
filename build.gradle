@@ -81,6 +81,9 @@ sourceSets {
 
     resources.srcDir file('src/smokeTest/resources')
   }
+  test {
+    java.srcDir 'src/test/java'
+  }
 }
 
 /***********************************************************************************************************************
