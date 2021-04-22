@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
@@ -19,14 +20,17 @@ public class CaseUpdateScenarios extends BaseTest {
     private static final String JURISDICTION = "HRS";
     private static final String CASE_TYPE = "HearingRecordings";
     private static final String SHARE_FILES = "shareFiles";
-    private static final String FOLDER = "audiostream02";
-    private static final String RECORDING_REF = "audiostream02/audio_test.m4a";
+    private static final String FOLDER = "audiostream999000";
+    private static final String RECORDING_REF = "audiostream999000/FM-0111-testfile200M_2020-01-01-11.11.11.123-UTC_0.mp4";
 
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
 
     @Autowired
     private CoreCaseDataApi coreCaseDataApi;
+
+    @Value("${azure.storage.cvp.container-url}")
+    private String cvpContainerUrl;
 
     @Test
     public void testCcdCaseUpdate() {
@@ -42,10 +46,11 @@ public class CaseUpdateScenarios extends BaseTest {
 
         JsonNode reqBody = extendedCcdHelper.createRecordingSegment(
             FOLDER,
-            String.format("http://localhost:10000/devstoreaccount1/cvptestcontainer/%s", RECORDING_REF),
+            cvpContainerUrl + RECORDING_REF,
             RECORDING_REF,
-            "ma4",
-            0
+            "mp4",
+            0,
+            "2020-01-01-11.11.11.123"
             );
 
         s2sAuthRequest()
@@ -72,8 +77,7 @@ public class CaseUpdateScenarios extends BaseTest {
             .orElse(1619005282012509L);
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"),
-                                                                           caseId.toString(), SHARE_FILES
-        );
+                                                                           caseId.toString(), SHARE_FILES);
 
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())

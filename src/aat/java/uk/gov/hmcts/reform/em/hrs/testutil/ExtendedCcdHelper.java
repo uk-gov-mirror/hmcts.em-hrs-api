@@ -48,7 +48,8 @@ public class ExtendedCcdHelper {
         importDefinitionFile();
     }
 
-    public JsonNode createRecordingSegment(String folder, String url, String filename, String fileExt, int segment) {
+    public JsonNode createRecordingSegment(String folder, String url, String filename, String fileExt,
+                                           int segment, String recordingTime) {
         return JsonNodeFactory.instance.objectNode()
             .put("folder", folder)
             .put("recording-ref", filename)
@@ -63,8 +64,7 @@ public class ExtendedCcdHelper {
             .put("filename-extension", fileExt)
             .put("file-size", 226200L)
             .put("segment", segment)
-            .put("recording-date-time",
-                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSS")));
+            .put("recording-date-time", recordingTime);
     }
 
     private void importDefinitionFile() throws IOException {
