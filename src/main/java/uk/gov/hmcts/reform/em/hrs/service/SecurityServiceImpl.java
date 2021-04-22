@@ -3,10 +3,11 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Map;
 
 @Named
 public class SecurityServiceImpl implements SecurityService {
@@ -58,5 +59,10 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public String getUserEmail(String userAuthorization) {
         return idamClient.getUserDetails(userAuthorization).getEmail();
+    }
+
+    @Override
+    public UserInfo getUserInfo(String jwtToken) {
+        return idamClient.getUserInfo(jwtToken);
     }
 }

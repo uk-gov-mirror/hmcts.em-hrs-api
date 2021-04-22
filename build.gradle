@@ -81,6 +81,9 @@ sourceSets {
 
     resources.srcDir file('src/smokeTest/resources')
   }
+  test {
+    java.srcDir 'src/test/java'
+  }
 }
 
 /***********************************************************************************************************************
@@ -184,16 +187,8 @@ def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/domain/**',
   '**uk/gov/hmcts/reform/em/hrs/exception/**',
   '**uk/gov/hmcts/reform/em/hrs/service/ccd/**',
-  '**uk/gov/hmcts/reform/em/hrs/appinsights/**'
+  '**uk/gov/hmcts/reform/em/hrs/service/PermissionEvaluatorImpl*',
 ]
-
-jacocoTestReport {
-  afterEvaluate {
-    classDirectories.setFrom(files(classDirectories.files.collect {
-      fileTree(dir: it, exclude: coverageExclusionList)
-    }))
-  }
-}
 
 project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
 
@@ -337,7 +332,8 @@ dependencies {
 
   compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
   compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
-
+  implementation group: "commons-validator", name: "commons-validator", version: "1.7"
+  
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
   implementation group: 'org.springframework.security', name: 'spring-security-web', version: versions.springSecurity
@@ -509,7 +505,7 @@ dependencies {
  **********************************************************************************************************************/
 
 test {
-  failFast = true
+  useJUnitPlatform()
 }
 
 bootJar {
