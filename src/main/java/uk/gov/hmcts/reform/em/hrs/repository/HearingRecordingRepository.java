@@ -25,5 +25,5 @@ public interface HearingRecordingRepository extends PagingAndSortingRepository<H
 
     Optional<HearingRecording> findByIdAndDeleted(UUID uuid, boolean deleted);
 
-        List<HearingRecording> findByFolder(String folderName);
+    List<HearingRecording> findByFolder(String folderName);
 }

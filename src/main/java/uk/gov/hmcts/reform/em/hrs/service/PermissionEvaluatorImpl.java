@@ -55,9 +55,9 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
         if (targetDomainObject instanceof UUID) {
             var recordingId = (UUID) targetDomainObject;
             String shareeEmail = securityService.getUserEmail(token);
-            List<HearingRecordingSharee> hearingRecordingSharees = shareesRepository.findByShareeEmail(shareeEmail);
-            if (CollectionUtils.isNotEmpty(hearingRecordingSharees)) {
-                Optional<HearingRecordingSharee> hearingRecording = hearingRecordingSharees.stream()
+            List<HearingRecordingSharee> sharedRecordings = shareesRepository.findByShareeEmail(shareeEmail);
+            if (CollectionUtils.isNotEmpty(sharedRecordings)) {
+                Optional<HearingRecordingSharee> hearingRecording = sharedRecordings.stream()
                     .filter(hearingRecordingSharee -> hearingRecordingSharee.getHearingRecording().getId().equals(recordingId))
                     .findFirst();
                 if (hearingRecording.isPresent()) {
