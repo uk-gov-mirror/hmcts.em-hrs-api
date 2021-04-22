@@ -10,14 +10,14 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefImportApi;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefUserRoleApi;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +25,9 @@ import javax.annotation.PostConstruct;
 
 @Service
 public class ExtendedCcdHelper {
+
+    private static final String JURISDICTION = "HRS";
+    private static final String CASE_TYPE = "HearingRecordings";
 
     @Autowired
     private IdamHelper idamHelper;
@@ -39,6 +42,9 @@ public class ExtendedCcdHelper {
     @Autowired
     private CcdDefUserRoleApi ccdDefUserRoleApi;
 
+    @Autowired
+    private CoreCaseDataApi coreCaseDataApi;
+
     private String hrsTester = "hrs.test.user@hmcts.net";
     private List<String> hrTesterRoles = Arrays.asList("caseworker", "caseworker-hrs", "ccd-import");
 
@@ -48,10 +54,11 @@ public class ExtendedCcdHelper {
         importDefinitionFile();
     }
 
-    public JsonNode createRecordingSegment(String folder, String url, String filename, String fileExt, int segment) {
+    public JsonNode createRecordingSegment(String folder, String url, String filename, String fileExt,
+                                           int segment, String recordingTime) {
         return JsonNodeFactory.instance.objectNode()
             .put("folder", folder)
-            .put("recording-ref", "hearing-12-family-probate-morning")
+            .put("recording-ref", filename)
             .put("recording-source","CVP")
             .put("court-location-code","London")
             .put("service-code","PROBATE")
@@ -63,8 +70,7 @@ public class ExtendedCcdHelper {
             .put("filename-extension", fileExt)
             .put("file-size", 226200L)
             .put("segment", segment)
-            .put("recording-date-time",
-                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSS")));
+            .put("recording-date-time", recordingTime);
     }
 
     private void importDefinitionFile() throws IOException {
@@ -117,8 +123,16 @@ public class ExtendedCcdHelper {
         ArrayNode segments = JsonNodeFactory.instance.arrayNode()
             .add(JsonNodeFactory.instance.objectNode().set("value", caseRecordingFile));
         ObjectNode request = JsonNodeFactory.instance.objectNode().set("recordingFiles", segments);
-        request.put("recipientEmailAddress", "taleb.benouaer@hmcts.net");
+        request.put("recipientEmailAddress", hrsTester);
         request.set("recordingFiles", segments);
         return request;
+    }
+
+    public List<CaseDetails> searchForCase(String recordingRef) {
+        Map<String, String> tokens = getTokens();
+        Map<String, String> searchCriteria = Map.of("case.recordingReference", recordingRef);
+        return coreCaseDataApi
+            .searchForCaseworker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
+                                 JURISDICTION, CASE_TYPE, searchCriteria);
     }
 }

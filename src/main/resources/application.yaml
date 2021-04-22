@@ -99,7 +99,7 @@ app-insights:
 
 #Below values are examples and needs to updated with correct values
 notify:
-  apiKey: ${NOTIFICATION_API_KEY:test_key-86d79f79-5045-4df2-87d1-6b7d87b41f6b-a703ea6c-9869-42a7-aaa8-38c98a0cc044}
+  apiKey: ${NOTIFICATION_API_KEY:testsimulation-86d79f79-5045-4df2-87d1-6b7d87b41f6b-561aeb25-fb94-49ff-9a60-7864f19e3a4c}
   email.template: 1e10b560-4a3f-49a7-81f7-c3c6eceab455
 
 hrs:

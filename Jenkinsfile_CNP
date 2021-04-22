@@ -40,7 +40,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
   ]
 }
 
-// Vars for Kubernetes
+// Vars for Kubernetes Endpoints
 env.IDAM_API_BASE_URI = 'https://idam-api.aat.platform.hmcts.net'
 env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'
 env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
@@ -48,6 +48,8 @@ env.CCD_DATA_API_URL = 'http://ccd-data-store-api-aat.service.core-compute-aat.i
 env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.internal'
 env.IDAM_REDIRECT_URI = 'https://em-hrs-api-aat.service.core-compute-aat.internal/oauth2/callback'
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
+//env.CVP_CONTAINER_URL = 'https://emhrscvpaat.blob.core.windows.net/recordings/'
+env.CVP_CONTAINER_URL = 'https://emhrsapiaat.blob.core.windows.net/em-hrs-api-aat/'
 
 def vaultOverrides = [
   'preview' : 'aat',
