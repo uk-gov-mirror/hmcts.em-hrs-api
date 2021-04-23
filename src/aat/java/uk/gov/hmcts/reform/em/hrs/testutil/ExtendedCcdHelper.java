@@ -1,40 +1,30 @@
 package uk.gov.hmcts.reform.em.hrs.testutil;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefImportApi;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefUserRoleApi;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import javax.annotation.PostConstruct;
 
 @Service
 public class ExtendedCcdHelper {
-
-    private static final String JURISDICTION = "HRS";
-    private static final String CASE_TYPE = "HearingRecordings";
 
     @Autowired
     private IdamHelper idamHelper;
 
     @Qualifier("ccdAuthTokenGenerator")
     @Autowired
-    private AuthTokenGenerator authTokenGenerator;
+    private AuthTokenGenerator ccdAuthTokenGenerator;
 
     @Autowired
     private CcdDefImportApi ccdDefImportApi;
@@ -42,35 +32,17 @@ public class ExtendedCcdHelper {
     @Autowired
     private CcdDefUserRoleApi ccdDefUserRoleApi;
 
-    @Autowired
-    private CoreCaseDataApi coreCaseDataApi;
+    @Value("${ccd-def.file}")
+    protected String ccdDefinitionFile;
 
-    private String hrsTester = "hrs.test.user@hmcts.net";
-    private List<String> hrTesterRoles = Arrays.asList("caseworker", "caseworker-hrs", "ccd-import");
+
+    public static String HRS_TESTER = "hrs.test.user@hmcts.net";
+    public static List<String> HRS_TESTER_ROLES = List.of("caseworker", "caseworker-hrs", "ccd-import");
 
     @PostConstruct
     public void init() throws Exception {
-        initHrsTestUser();
+        idamHelper.createUser(HRS_TESTER, HRS_TESTER_ROLES);
         importDefinitionFile();
-    }
-
-    public JsonNode createRecordingSegment(String folder, String url, String filename, String fileExt,
-                                           int segment, String recordingTime) {
-        return JsonNodeFactory.instance.objectNode()
-            .put("folder", folder)
-            .put("recording-ref", filename)
-            .put("recording-source","CVP")
-            .put("court-location-code","London")
-            .put("service-code","PROBATE")
-            .put("hearing-room-ref","12")
-            .put("jurisdiction-code","HRS")
-            .put("case-ref","hearing-12-family-probate-morning")
-            .put("cvp-file-url", url)
-            .put("filename", filename)
-            .put("filename-extension", fileExt)
-            .put("file-size", 226200L)
-            .put("segment", segment)
-            .put("recording-date-time", recordingTime);
     }
 
     private void importDefinitionFile() throws IOException {
@@ -84,55 +56,16 @@ public class ExtendedCcdHelper {
             "application/octet-stream",
             getHrsDefinitionFile());
 
-        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(hrsTester),
-                                             authTokenGenerator.generate(), multipartFile);
-
-    }
-
-    public void initHrsTestUser() {
-        idamHelper.createUser(hrsTester, hrTesterRoles);
+        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(HRS_TESTER),
+                                             ccdAuthTokenGenerator.generate(), multipartFile);
     }
 
     private InputStream getHrsDefinitionFile() {
-        return ClassLoader.getSystemResourceAsStream("CCD_CVP_v.03.xlsx");
+        return ClassLoader.getSystemResourceAsStream(ccdDefinitionFile);
     }
 
     private void createUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
-                                         idamHelper.authenticateUser(hrsTester), authTokenGenerator.generate());
-    }
-
-    public Map<String, String> getTokens() {
-        return Map.of("user", idamHelper.authenticateUser(hrsTester),
-                      "userId", idamHelper.getUserId(hrsTester),
-                      "service", authTokenGenerator.generate());
-    }
-
-    public JsonNode getShareRequest() {
-
-        ObjectNode caseDocument = JsonNodeFactory.instance.objectNode()
-            .put("document_filename", "document_filename")
-            .put("document_binary_url", "http://localhost:8080/hearing-recordings/6ac8dc37-d45d-4537-b6ac-149881c85041/segments/0")
-            .put("document_url", "http://localhost:8080/hearing-recordings/6ac8dc37-d45d-4537-b6ac-149881c85041/segments/0");
-
-        ObjectNode caseRecordingFile = JsonNodeFactory.instance.objectNode()
-            .put("fileSize", 123L)
-            .put("segmentNumber", 0)
-            .set("documentLink", caseDocument);
-
-        ArrayNode segments = JsonNodeFactory.instance.arrayNode()
-            .add(JsonNodeFactory.instance.objectNode().set("value", caseRecordingFile));
-        ObjectNode request = JsonNodeFactory.instance.objectNode().set("recordingFiles", segments);
-        request.put("recipientEmailAddress", hrsTester);
-        request.set("recordingFiles", segments);
-        return request;
-    }
-
-    public List<CaseDetails> searchForCase(String recordingRef) {
-        Map<String, String> tokens = getTokens();
-        Map<String, String> searchCriteria = Map.of("case.recordingReference", recordingRef);
-        return coreCaseDataApi
-            .searchForCaseworker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
-                                 JURISDICTION, CASE_TYPE, searchCriteria);
+                                         idamHelper.authenticateUser(HRS_TESTER), ccdAuthTokenGenerator.generate());
     }
 }
