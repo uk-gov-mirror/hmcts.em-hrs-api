@@ -112,7 +112,7 @@ public class IngestionServiceImpl implements IngestionService {
             .hearingSource(recordingDto.getRecordingSource())
             .jurisdictionCode(recordingDto.getJurisdictionCode())
             .serviceCode(recordingDto.getServiceCode())
-            .createdOn(recordingDto.getRecordingDateTime())//TODO: is this the correct time to set here
+            .createdOn(recordingDto.getRecordingDateTime())
             .build();
 
         recording = recordingRepository.save(recording);
