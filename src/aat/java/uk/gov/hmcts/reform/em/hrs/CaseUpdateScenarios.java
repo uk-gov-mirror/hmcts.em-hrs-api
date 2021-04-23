@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -35,6 +36,7 @@ public class CaseUpdateScenarios extends BaseTest {
             .statusCode(202);
     }
 
+    @Ignore
     @Test
     public void testDocumentShare() {
         CaseDetails caseDetails = searchForCase(RECORDING_REF).orElseThrow();
@@ -48,6 +50,7 @@ public class CaseUpdateScenarios extends BaseTest {
             .statusCode(200);
     }
 
+    @Ignore
     @Test
     public void testRecordingDownload() {
         CaseDetails caseDetails = searchForCase(RECORDING_REF).orElseThrow();
