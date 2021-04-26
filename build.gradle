@@ -188,6 +188,7 @@ def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/exception/**',
   '**uk/gov/hmcts/reform/em/hrs/service/ccd/**',
   '**uk/gov/hmcts/reform/em/hrs/service/PermissionEvaluatorImpl*',
+  '**uk/gov/hmcts/reform/em/hrs/service/IngestionServiceImpl*',
 ]
 
 project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
