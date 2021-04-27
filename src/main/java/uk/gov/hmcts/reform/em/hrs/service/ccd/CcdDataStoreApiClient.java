@@ -71,11 +71,10 @@ public class CcdDataStoreApiClient {
 
         LOGGER.info("updating case({}) with new recording ({})", caseId, hearingRecordingDto.getRecordingRef());
 
-        Long id = coreCaseDataApi
+        return coreCaseDataApi
             .submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
                                       JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData
             )
             .getId();
-        return id;
     }
 }

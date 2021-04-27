@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.model.CaseDocument;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class CaseDataContentCreator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CaseDataContentCreator.class);
 
     private final ObjectMapper objectMapper;
 
@@ -78,6 +82,8 @@ public class CaseDataContentCreator {
         String documentUrl = String.format("%s/hearing-recordings/%s/segments/%d",
                                            hearingRecordingDto.getUrlDomain(), recordingId,
                                            hearingRecordingDto.getSegment());
+
+        LOGGER.info("creating recording segment with url({})", documentUrl);
 
         CaseDocument recordingFile = CaseDocument.builder()
             .filename(hearingRecordingDto.getFilename())
