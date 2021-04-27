@@ -27,9 +27,7 @@ def secrets = [
     secret('show-oauth2-token', 'IDAM_CLIENT_OAUTH_SECRET')
   ],
   'em-hrs-api-${env}': [
-      secret('cvp-storage-connection-string', 'CVP_STORAGE_CONNECTION_STRING'),
-      secret('idam-system-user-name', 'HRS_SYSTEM_USER'),
-      secret('idam-system-user-password', 'HRS_SYSTEM_USER_PASSWORD')
+      secret('cvp-storage-connection-string', 'CVP_STORAGE_CONNECTION_STRING')
    ]
 ]
 
