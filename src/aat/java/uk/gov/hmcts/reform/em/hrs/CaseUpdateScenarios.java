@@ -10,8 +10,8 @@ import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
 
 public class CaseUpdateScenarios extends BaseTest {
 
-    private static final String FOLDER = "audiostream999111";
-    private static final String RECORDING_REF = "audiostream999222/FM-0111-testfile200M_2020-01-01-11.11.11.123-UTC_0.mp4";
+    private static final String FOLDER = "audiostream101";
+    private static final String RECORDING_REF = "audiostream101/FM-0111-testfile200M_2020-01-01-11.11.11.123-UTC_0.mp4";
 
     @Value("${azure.storage.cvp.container-url}")
     private String cvpContainerUrl;
@@ -42,10 +42,6 @@ public class CaseUpdateScenarios extends BaseTest {
         CaseDetails caseDetails = searchForCase(RECORDING_REF).orElseThrow();
 
         shareRecording("sharee@email.com", caseDetails)
-            .then()
-            .statusCode(200);
-
-        downloadRecording("sharee@email.com", caseDetails.getData())
             .then()
             .statusCode(200);
     }
