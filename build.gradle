@@ -1,14 +1,11 @@
 plugins {
   id 'application'
   id 'checkstyle'
-  id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-  id 'org.springframework.boot' version '2.3.4.RELEASE'
+  id 'org.springframework.boot' version '2.4.5'
   id 'uk.gov.hmcts.java' version '0.12.8'
   id 'com.github.ben-manes.versions' version '0.36.0'
-// NOTE version 0.38 is suspected to be the cause of
-  // the intermittant failure with module metadata. TO BE CONFIRMED!!
   id 'org.sonarqube' version '3.1.1'
   id 'org.liquibase.gradle' version '2.0.4'
   id 'groovy'
@@ -159,16 +156,6 @@ checkstyle {
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
-pmd {
-  toolVersion = "6.30.0"
-  ignoreFailures = true
-  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
-  reportsDir = file("$project.buildDir/reports/pmd")
-  // https://github.com/pmd/pmd/issues/876
-  ruleSets = []
-  ruleSetFiles = files("config/pmd/ruleset.xml")
-}
-
 jacocoTestReport {
   executionData(test, integration)
   reports {
@@ -297,11 +284,10 @@ repositories {
 }
 
 def versions = [
-  lombok             : '1.18.10',
-  reformLogging      : '5.1.5',
-  springBoot         : springBoot.class.package.implementationVersion,
+  lombok             : '1.18.20',
+  reformLogging      : '5.1.7',
   springfoxSwagger   : '2.9.2',
-  postgresql         : '42.2.13',
+  postgresql         : '42.2.20',
   pact_version       : '3.6.15',
   restAssured        : '4.2.0',
   serenity           : '2.3.12',
@@ -309,7 +295,7 @@ def versions = [
   serenityreporter   : '2.3.12',
   junit              : '5.7.0',
   junitPlatform      : '1.7.1',
-  springSecurity     : '5.3.8.RELEASE'
+  springSecurity     : '5.4.6'
 ]
 
 ext.libraries = [
@@ -344,18 +330,13 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-
-// TODO springboot starter (deprecated) this excludes the following jars, but the spring boot template does not
-//  implementation ("uk.gov.hmcts.reform:properties-volume-spring-boot-starter:0.1.0"){
-//    exclude group: 'org.springframework.cloud' , module : 'spring-cloud-context'
-//    exclude group: 'org.springframework.boot' , module: 'spring-boot-starter-web'
-//  }
-
-  compileOnly 'org.projectlombok:lombok:1.18.20'
+  
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation "ch.qos.logback:logback-classic:1.2.3"
 
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.2'
   implementation "org.springframework.boot:spring-boot-starter-actuator"
   implementation "org.springframework.boot:spring-boot-starter-aop"
   implementation "org.springframework.boot:spring-boot-starter-json"
@@ -363,19 +344,16 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-web"
   implementation "org.springframework.boot:spring-boot-starter-security"
 
-  implementation "uk.gov.hmcts.reform:properties-volume-spring-boot-starter:0.1.0"
-  //injects secret properties into container from azure vault TODO deprecated in favour of spring config tree
-
 //hmcts autho
-  implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.5.5'
-  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
+  implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
+  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
   implementation(group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4') {
     exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
   }
 
 
 //hmcts ccd
-  implementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.5'
+  implementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
 
 //hmcts logging
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
@@ -384,10 +362,10 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
 //hmcts resilience
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.8.RELEASE'
 
 //gov notify email service
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
 //rest clients
   implementation "com.squareup.okhttp3:okhttp:4.9.1"
@@ -494,7 +472,7 @@ dependencies {
   contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
   contractTestImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.2.0'
 
-  contractTestCompileOnly 'org.projectlombok:lombok:1.18.12'
+  contractTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   contractTestImplementation "ch.qos.logback:logback-classic:1.2.3"
 
   contractTestImplementation sourceSets.main.runtimeClasspath
