@@ -5,6 +5,7 @@ import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +48,11 @@ public class AzureStorageConfig {
 
             DefaultAzureCredential credential = new DefaultAzureCredentialBuilder().build();
             blobContainerAsyncClientBuilder.credential(credential);
+        } else {
+            LOGGER.info("****************************");
+            LOGGER.info("Not a CVP endpoint - cvpConnectionString(8): {} ", StringUtils.left(cvpConnectionString, 8));
+            LOGGER.info("****************************");
+
         }
 
 
