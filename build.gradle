@@ -286,7 +286,7 @@ dependencies {
   compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
   compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
   implementation group: "commons-validator", name: "commons-validator", version: "1.7"
-  
+
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
   implementation group: 'org.springframework.security', name: 'spring-security-web', version: versions.springSecurity
@@ -296,7 +296,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  
+
   compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation "ch.qos.logback:logback-classic:1.2.3"
 
@@ -342,6 +342,7 @@ dependencies {
 
 //azure components
   implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.10.2'
+  implementation group: 'com.azure', name: 'azure-identity', version: '1.2.3'
 
   // Job scheduling
   implementation group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.2'
