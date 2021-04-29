@@ -176,6 +176,6 @@ public abstract class BaseTest {
             .put("filename-extension", fileExt)
             .put("file-size", 226200L)
             .put("segment", segment)
-            .put("recording-date-time", recordingTime);
+            .put("recording-date", recordingTime);
     }
 }

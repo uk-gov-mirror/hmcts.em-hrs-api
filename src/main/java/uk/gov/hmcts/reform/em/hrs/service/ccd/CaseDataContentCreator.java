@@ -11,11 +11,7 @@ import uk.gov.hmcts.reform.em.hrs.model.CaseHearingRecording;
 import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -31,12 +27,16 @@ public class CaseDataContentCreator {
 
     public JsonNode createCaseStartData(final HearingRecordingDto hearingRecordingDto, final UUID recordingId) {
 
+
         CaseHearingRecording recording = CaseHearingRecording.builder()
             .recordingFiles(Collections.singletonList(
                 Map.of("value", createSegment(hearingRecordingDto, recordingId))
             ))
-            .recordingDateTime(hearingRecordingDto.getRecordingDateTime())
-            .recordingTimeOfDay(getTimeOfDay(hearingRecordingDto.getRecordingDateTime()))
+            .recordingDate(
+                Optional.ofNullable(hearingRecordingDto.getRecordingDateTime())
+                    .map(LocalDateTime::toLocalDate).orElse(null)
+            )
+            .recordingTimeOfDay(getRecordingTimeOfDay(hearingRecordingDto))
             .hearingSource(hearingRecordingDto.getRecordingSource())
             .hearingRoomRef(hearingRecordingDto.getHearingRoomRef())
             .serviceCode(hearingRecordingDto.getServiceCode())
@@ -98,7 +98,8 @@ public class CaseDataContentCreator {
             .build();
     }
 
-    private String getTimeOfDay(LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.getHour() < 12 ? "AM" : "PM" : null;
+    private String getRecordingTimeOfDay(HearingRecordingDto hearingRecordingDto) {
+        return Optional.ofNullable(hearingRecordingDto.getRecordingDateTime())
+            .map(dateTime -> dateTime.getHour() < 12 ? "AM" : "PM").orElse("");
     }
 }
