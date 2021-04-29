@@ -43,7 +43,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public String getUserToken() {
         LOGGER.info("retrieving access token with these credentials ({}/{})",
-                    systemUsername, systemUserPassword.substring(4).concat("*****"));
+                    systemUsername, systemUserPassword.substring(0, 4).concat("*****"));
         return idamClient.getAccessToken(systemUsername, systemUserPassword);
     }
 
