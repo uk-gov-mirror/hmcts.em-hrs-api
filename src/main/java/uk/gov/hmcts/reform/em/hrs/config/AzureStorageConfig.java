@@ -91,9 +91,7 @@ public class AzureStorageConfig {
     public BlobContainerClient provideCvpBlobContainerClient() {
         BlobContainerClientBuilder b = new BlobContainerClientBuilder()
             .containerName(cvpContainer);
-
-
-        //TODO may not need to use managed identity for client as it used to work without
+        
         if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
             LOGGER.info("****************************");
             LOGGER.info("Using Managed Identity For Cvp Client (For SAS Token Generation)");
