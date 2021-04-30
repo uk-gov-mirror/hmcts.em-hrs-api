@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver;
 
 import java.util.Optional;
 
@@ -40,7 +41,7 @@ public class AzureStorageConfig {
 
 
         //TODO may not need to use managed identity for client as it used to work without
-        if (isACvpEndpointUrl()) {
+        if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
             LOGGER.info("****************************");
             LOGGER.info("Using Managed Identity For HRS Async Client");
             LOGGER.info("cvp end point: {}", cvpConnectionString);
@@ -76,11 +77,6 @@ public class AzureStorageConfig {
         return blobContainerAsyncClient;
     }
 
-    private boolean isACvpEndpointUrl() {
-        boolean isACvpEndpointUrl =
-            cvpConnectionString.contains("cvprecordings") && !cvpConnectionString.contains("AccountName");
-        return isACvpEndpointUrl;
-    }
 
     @Bean("HrsBlobContainerClient")
     public BlobContainerClient provideBlobContainerClient() {
@@ -94,12 +90,11 @@ public class AzureStorageConfig {
     @Bean("CvpBlobContainerClient")
     public BlobContainerClient provideCvpBlobContainerClient() {
         BlobContainerClientBuilder b = new BlobContainerClientBuilder()
-            .containerName(cvpContainer)
-            .connectionString(cvpConnectionString);
+            .containerName(cvpContainer);
 
 
         //TODO may not need to use managed identity for client as it used to work without
-        if (isACvpEndpointUrl()) {
+        if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
             LOGGER.info("****************************");
             LOGGER.info("Using Managed Identity For Cvp Client (For SAS Token Generation)");
             LOGGER.info("cvp end point: {}", cvpConnectionString);
@@ -109,8 +104,10 @@ public class AzureStorageConfig {
             LOGGER.info("****************************");
 
             DefaultAzureCredential credential = new DefaultAzureCredentialBuilder().build();
+            b.endpoint(cvpConnectionString);
             b.credential(credential);
         } else {
+            b.connectionString(cvpConnectionString);
             LOGGER.info("****************************");
             LOGGER.info(
                 "Not a real CVP endpoint - cvpConnectionString(60): {} ",

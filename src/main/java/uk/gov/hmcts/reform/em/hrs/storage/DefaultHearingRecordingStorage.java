@@ -15,6 +15,8 @@ import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
 import java.time.Duration;
@@ -35,15 +37,19 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private final BlobContainerClient cvpBlobContainerClient;
     private final Snooper snooper;
 
+    private final String cvpConnectionString;
+
     @Inject
     public DefaultHearingRecordingStorage(final BlobContainerAsyncClient hrsContainerAsyncClient,
                                           final @Named("HrsBlobContainerClient") BlobContainerClient hrsContainerClient,
                                           final @Named("CvpBlobContainerClient") BlobContainerClient cvpContainerClient,
-                                          final Snooper snooper) {
+                                          final Snooper snooper,
+                                          @Value("${azure.storage.cvp.connection-string}") String cvpConnectionString) {
         this.hrsBlobContainerAsyncClient = hrsContainerAsyncClient;
         this.hrsBlobContainerClient = hrsContainerClient;
         this.cvpBlobContainerClient = cvpContainerClient;
         this.snooper = snooper;
+        this.cvpConnectionString = cvpConnectionString;
     }
 
     @Override
@@ -64,10 +70,15 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     }
 
     @Override
-    public void copyRecording(final String sourceUri, final String filename) {
-        LOGGER.info("About to copy recording, generating sasToken");
-        String sasToken = generateReadSASForCVP(filename);
-        final BlobBeginCopyOptions blobBeginCopyOptions = new BlobBeginCopyOptions(sourceUri + "?" + sasToken);
+    public void copyRecording(String sourceUri, final String filename) {
+        if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
+
+            LOGGER.info("About to copy recording, generating sasToken");
+            String sasToken = generateReadSASForCVP(filename);
+            sourceUri = sourceUri + "?" + sasToken;
+        }
+
+        final BlobBeginCopyOptions blobBeginCopyOptions = new BlobBeginCopyOptions(sourceUri);
 
         final BlobAsyncClient destBlobAsyncClient = hrsBlobContainerAsyncClient.getBlobAsyncClient(filename);
         destBlobAsyncClient.beginCopy(blobBeginCopyOptions)
@@ -83,9 +94,8 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private String generateReadSASForCVP(String fileName) {
         BlobServiceClient blobServiceClient = cvpBlobContainerClient.getServiceClient();
 
-        //TODO consider optimising user key delegation usage to be hourly or daily with a lazy cache
-
-        // get User Delegation Key
+        // get User Delegation Key - TODO consider optimising user key delegation usage to be hourly or daily with a
+        //  lazy cache
         LOGGER.info("Getting User Delegation Key");
         OffsetDateTime delegationKeyStartTime = OffsetDateTime.now().minusMinutes(15);
         OffsetDateTime delegationKeyExpiryTime = OffsetDateTime.now().plusMinutes(15);
