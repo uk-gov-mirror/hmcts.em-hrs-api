@@ -21,27 +21,29 @@ public class AzureStorageConfig {
     @Value("${azure.storage.hrs.connection-string}")
     private String hrsConnectionString;
 
-    @Value("${azure.storage.cvp.connection-string}")
-    private String cvpConnectionString;
-
     @Value("${azure.storage.hrs.blob-container-reference}")
     private String hrsContainer;
 
+    @Value("${azure.storage.cvp.connection-string}")
+    private String cvpConnectionString;
+
+    @Value("${azure.storage.cvp.blob-container-reference}")
+    private String cvpContainer;
+
+
     @Bean
-    public BlobContainerAsyncClient provideBlobContainerAsyncClient() {
+    public BlobContainerAsyncClient provideHRSBlobContainerAsyncClient() {
 
         BlobContainerClientBuilder blobContainerAsyncClientBuilder = new BlobContainerClientBuilder()
             .connectionString(hrsConnectionString)
             .containerName(hrsContainer);
 
-        boolean isACvpEndpointUrl =
-            cvpConnectionString.contains("cvprecordings") && !cvpConnectionString.contains("AccountName");
 
-        if (isACvpEndpointUrl) {
+        //TODO may not need to use managed identity for client as it used to work without
+        if (isACvpEndpointUrl()) {
             LOGGER.info("****************************");
-            LOGGER.info("Using Managed Identity");
+            LOGGER.info("Using Managed Identity For HRS Async Client");
             LOGGER.info("cvp end point: {}", cvpConnectionString);
-            LOGGER.info("cvp container name: n/a inferred from sourceUrl");
             LOGGER.info(
                 "Building client with default credential builder / managed identity");
             LOGGER.info("****************************");
@@ -50,7 +52,10 @@ public class AzureStorageConfig {
             blobContainerAsyncClientBuilder.credential(credential);
         } else {
             LOGGER.info("****************************");
-            LOGGER.info("Not a CVP endpoint - cvpConnectionString(60): {} ", StringUtils.left(cvpConnectionString, 60));
+            LOGGER.info(
+                "Not a real CVP endpoint - cvpConnectionString(60): {} ",
+                StringUtils.left(cvpConnectionString, 60)
+            );
             LOGGER.info("****************************");
 
         }
@@ -71,12 +76,52 @@ public class AzureStorageConfig {
         return blobContainerAsyncClient;
     }
 
+    private boolean isACvpEndpointUrl() {
+        boolean isACvpEndpointUrl =
+            cvpConnectionString.contains("cvprecordings") && !cvpConnectionString.contains("AccountName");
+        return isACvpEndpointUrl;
+    }
+
     @Bean("HrsBlobContainerClient")
     public BlobContainerClient provideBlobContainerClient() {
         return new BlobContainerClientBuilder()
             .connectionString(hrsConnectionString)
             .containerName(hrsContainer)
             .buildClient();
+    }
+
+
+    @Bean("CvpBlobContainerClient")
+    public BlobContainerClient provideCvpBlobContainerClient() {
+        BlobContainerClientBuilder b = new BlobContainerClientBuilder()
+            .containerName(cvpContainer)
+            .connectionString(cvpConnectionString);
+
+
+        //TODO may not need to use managed identity for client as it used to work without
+        if (isACvpEndpointUrl()) {
+            LOGGER.info("****************************");
+            LOGGER.info("Using Managed Identity For Cvp Client (For SAS Token Generation)");
+            LOGGER.info("cvp end point: {}", cvpConnectionString);
+            LOGGER.info("cvp container: {}", cvpContainer);
+            LOGGER.info(
+                "Building client with default credential builder / managed identity");
+            LOGGER.info("****************************");
+
+            DefaultAzureCredential credential = new DefaultAzureCredentialBuilder().build();
+            b.credential(credential);
+        } else {
+            LOGGER.info("****************************");
+            LOGGER.info(
+                "Not a real CVP endpoint - cvpConnectionString(60): {} ",
+                StringUtils.left(cvpConnectionString, 60)
+            );
+            LOGGER.info("****************************");
+
+        }
+
+
+        return b.buildClient();
     }
 
 }

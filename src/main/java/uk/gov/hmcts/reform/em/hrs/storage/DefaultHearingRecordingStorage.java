@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.em.hrs.storage;
 
 import com.azure.core.http.rest.PagedIterable;
-import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobAsyncClient;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
@@ -15,6 +13,8 @@ import com.azure.storage.blob.models.UserDelegationKey;
 import com.azure.storage.blob.options.BlobBeginCopyOptions;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
 import java.time.Duration;
@@ -26,17 +26,23 @@ import javax.inject.Named;
 
 @Named
 public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHearingRecordingStorage.class);
+
+
     private static final int BLOB_LIST_TIMEOUT = 5;
     private final BlobContainerAsyncClient hrsBlobContainerAsyncClient;
     private final BlobContainerClient hrsBlobContainerClient;
+    private final BlobContainerClient cvpBlobContainerClient;
     private final Snooper snooper;
 
     @Inject
     public DefaultHearingRecordingStorage(final BlobContainerAsyncClient hrsContainerAsyncClient,
                                           final @Named("HrsBlobContainerClient") BlobContainerClient hrsContainerClient,
+                                          final @Named("CvpBlobContainerClient") BlobContainerClient cvpContainerClient,
                                           final Snooper snooper) {
         this.hrsBlobContainerAsyncClient = hrsContainerAsyncClient;
         this.hrsBlobContainerClient = hrsContainerClient;
+        this.cvpBlobContainerClient = cvpContainerClient;
         this.snooper = snooper;
     }
 
@@ -59,10 +65,9 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
     @Override
     public void copyRecording(final String sourceUri, final String filename) {
-        final BlobBeginCopyOptions blobBeginCopyOptions = new BlobBeginCopyOptions(sourceUri);
-
-        //        BlobBeginCopySourceRequestConditions s=new BlobBeginCopySourceRequestConditions();
-        //        blobBeginCopyOptions.setSourceRequestConditions(s);
+        LOGGER.info("About to copy recording, generating sasToken");
+        String sasToken = generateReadSASForCVP(filename);
+        final BlobBeginCopyOptions blobBeginCopyOptions = new BlobBeginCopyOptions(sourceUri + "?" + sasToken);
 
         final BlobAsyncClient destBlobAsyncClient = hrsBlobContainerAsyncClient.getBlobAsyncClient(filename);
         destBlobAsyncClient.beginCopy(blobBeginCopyOptions)
@@ -75,42 +80,32 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     }
 
 
-    public void temp() {
+    private String generateReadSASForCVP(String fileName) {
+        BlobServiceClient blobServiceClient = cvpBlobContainerClient.getServiceClient();
 
-        //somehow we need to get a SAS token from the CVP file source URL, and then append it the sourceURism as per
-        // below example
+        //TODO consider optimising user key delegation usage to be hourly or daily with a lazy cache
 
-        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-            .endpoint("https://<>.blob.core.windows.net/")
-            .credential(new DefaultAzureCredentialBuilder().build())
-            .buildClient();
         // get User Delegation Key
-        OffsetDateTime delegationKeyStartTime = OffsetDateTime.now();
-        OffsetDateTime delegationKeyExpiryTime = OffsetDateTime.now().plusDays(7);
+        LOGGER.info("Getting User Delegation Key");
+        OffsetDateTime delegationKeyStartTime = OffsetDateTime.now().minusMinutes(15);
+        OffsetDateTime delegationKeyExpiryTime = OffsetDateTime.now().plusMinutes(15);
         UserDelegationKey
             key = blobServiceClient.getUserDelegationKey(delegationKeyStartTime, delegationKeyExpiryTime);
 
-        BlobContainerClient sourceContainerClient = blobServiceClient.getBlobContainerClient("test");
+        //get SAS String for blobfile
+        LOGGER.info("get SAS String for blobfile: {}", fileName);
 
-
-        BlobClient sourceBlob = sourceContainerClient.getBlobClient("test.mp3");
+        BlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(fileName);
         // generate sas token
-        OffsetDateTime expiryTime = OffsetDateTime.now().plusDays(1);
+        OffsetDateTime expiryTime = OffsetDateTime.now().plusMinutes(15);
         BlobSasPermission permission = new BlobSasPermission().setReadPermission(true);
 
         BlobServiceSasSignatureValues myValues = new BlobServiceSasSignatureValues(expiryTime, permission)
             .setStartTime(OffsetDateTime.now());
         String sas = sourceBlob.generateUserDelegationSas(myValues, key);
 
-        // copy
-        BlobServiceClient desServiceClient = new BlobServiceClientBuilder()
-            .endpoint("https://<>.blob.core.windows.net/")
-            .credential(new DefaultAzureCredentialBuilder().build())
-            .buildClient();
-        BlobContainerClient desContainerClient = blobServiceClient.getBlobContainerClient("test");
-        String res = desContainerClient.getBlobClient("test.mp3")
-            .copyFromUrl(sourceBlob.getBlobUrl() + "?" + sas);
-        System.out.println(res);
+        return sas;
+
 
     }
 
