@@ -33,7 +33,7 @@ public class AzureStorageConfig {
 
 
     @Bean
-    public BlobContainerAsyncClient provideHRSBlobContainerAsyncClient() {
+    public BlobContainerAsyncClient provideBlobContainerAsyncClient() {
 
         BlobContainerClientBuilder blobContainerAsyncClientBuilder = new BlobContainerClientBuilder()
             .connectionString(hrsConnectionString)
@@ -91,7 +91,7 @@ public class AzureStorageConfig {
     public BlobContainerClient provideCvpBlobContainerClient() {
         BlobContainerClientBuilder b = new BlobContainerClientBuilder()
             .containerName(cvpContainer);
-        
+
         if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
             LOGGER.info("****************************");
             LOGGER.info("Using Managed Identity For Cvp Client (For SAS Token Generation)");
