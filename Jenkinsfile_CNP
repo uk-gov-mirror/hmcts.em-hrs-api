@@ -28,6 +28,10 @@ def secrets = [
   ],
   'em-hrs-api-${env}': [
       secret('cvp-storage-connection-string', 'CVP_STORAGE_CONNECTION_STRING')
+      secret('cvp-storage-container-name', 'CVP_STORAGE_CONTAINER_NAME')
+      secret('notification-api-key', 'NOTIFICATION_API_KEY')
+      secret('idam-system-user-name', 'HRS_SYSTEM_USER')
+      secret('idam-system-user-password', 'HRS_SYSTEM_USER_PASSWORD')
    ]
 ]
 
