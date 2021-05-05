@@ -83,6 +83,11 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
             LOGGER.info("Generating sasToken");
             String sasToken = generateReadSASForCVP(filename);
             sourceUri = sourceUri + "?" + sasToken;
+
+
+            LOGGER.info("overwriting URL with hardcoded prefix to overcome / to %2f encoding...");
+
+            sourceUri = "https://cvprecordingsstgsa.blob.core.windows.net/recordings/" + filename + "?" + sasToken;
         }
 
         LOGGER.info("Source URI {}", sourceUri);
@@ -119,14 +124,14 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
         // get User Delegation Key - TODO consider optimising user key delegation usage to be hourly or daily with a
         //  lazy cache
-        LOGGER.info("Getting User Delegation Key");
+        LOGGER.info("Getting User Delegation Key using BlobServiceClient");
         OffsetDateTime delegationKeyStartTime = OffsetDateTime.now().minusMinutes(15);
         OffsetDateTime delegationKeyExpiryTime = OffsetDateTime.now().plusMinutes(15);
         UserDelegationKey
             key = blobServiceClient.getUserDelegationKey(delegationKeyStartTime, delegationKeyExpiryTime);
 
         //get SAS String for blobfile
-        LOGGER.info("get SAS String for blobfile: {}", fileName);
+        LOGGER.info("get SAS String using BlobClient for blobfile: {}", fileName);
 
         BlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(fileName);
         // generate sas token
