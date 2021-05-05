@@ -139,7 +139,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
         BlobSasPermission permission = new BlobSasPermission().setReadPermission(true).setListPermission(true);
 
         BlobServiceSasSignatureValues myValues = new BlobServiceSasSignatureValues(expiryTime, permission)
-            .setStartTime(OffsetDateTime.now());
+            .setStartTime(OffsetDateTime.now().minusMinutes(95));
         String sas = sourceBlob.generateUserDelegationSas(myValues, key);
 
         return sas;
