@@ -124,9 +124,9 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
         // get User Delegation Key - TODO consider optimising user key delegation usage to be hourly or daily with a
         //  lazy cache
-        LOGGER.info("Getting User Delegation Key using BlobServiceClient");
-        OffsetDateTime delegationKeyStartTime = OffsetDateTime.now().minusMinutes(15);
-        OffsetDateTime delegationKeyExpiryTime = OffsetDateTime.now().plusMinutes(15);
+        LOGGER.info("Getting User Delegation Key using BlobServiceClient with long offset times");
+        OffsetDateTime delegationKeyStartTime = OffsetDateTime.now().minusMinutes(95);
+        OffsetDateTime delegationKeyExpiryTime = OffsetDateTime.now().plusMinutes(95);
         UserDelegationKey
             key = blobServiceClient.getUserDelegationKey(delegationKeyStartTime, delegationKeyExpiryTime);
 
@@ -135,8 +135,8 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
         BlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(fileName);
         // generate sas token
-        OffsetDateTime expiryTime = OffsetDateTime.now().plusMinutes(15);
-        BlobSasPermission permission = new BlobSasPermission().setReadPermission(true);
+        OffsetDateTime expiryTime = OffsetDateTime.now().plusMinutes(95);
+        BlobSasPermission permission = new BlobSasPermission().setReadPermission(true).setListPermission(true);
 
         BlobServiceSasSignatureValues myValues = new BlobServiceSasSignatureValues(expiryTime, permission)
             .setStartTime(OffsetDateTime.now());
