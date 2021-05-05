@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.em.hrs.storage;
 
 import com.azure.core.http.rest.PagedIterable;
+import com.azure.identity.DefaultAzureCredential;
+import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobAsyncClient;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
@@ -99,7 +102,20 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
 
     private String generateReadSASForCVP(String fileName) {
+
+        LOGGER.info("Attempting to generate SAS");
+
         BlobServiceClient blobServiceClient = cvpBlobContainerClient.getServiceClient();
+
+        if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
+            LOGGER.info("Getting a fresh MI token for Blob Service Client");
+            BlobServiceClientBuilder builder = new BlobServiceClientBuilder();
+
+            DefaultAzureCredential credential = new DefaultAzureCredentialBuilder().build();
+            builder.endpoint(cvpConnectionString);
+            builder.credential(credential);
+            blobServiceClient = builder.buildClient();
+        }
 
         // get User Delegation Key - TODO consider optimising user key delegation usage to be hourly or daily with a
         //  lazy cache
