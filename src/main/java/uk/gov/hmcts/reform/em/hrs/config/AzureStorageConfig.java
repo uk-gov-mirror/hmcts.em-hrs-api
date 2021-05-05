@@ -50,7 +50,10 @@ public class AzureStorageConfig {
             blobContainerAsyncClientBuilder.credential(credential);
         } else {
             LOGGER.info("****************************");
-            LOGGER.info("Not a CVP endpoint - cvpConnectionString(60): {} ", StringUtils.left(cvpConnectionString, 60));
+            LOGGER.info(
+                "Not a known CVP endpoint - cvpConnectionString(60): {} ",
+                StringUtils.left(cvpConnectionString, 60)
+            );
             LOGGER.info("****************************");
 
         }
