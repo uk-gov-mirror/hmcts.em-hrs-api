@@ -94,7 +94,7 @@ public class AzureStorageConfig {
 
         if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
             LOGGER.info("****************************");
-            LOGGER.info("Using Managed Identity For Cvp Client (For SAS Token Generation)");
+            LOGGER.info("Using Managed Identity For Cvp Blob Container Client (For SAS Token Generation)");
             LOGGER.info("cvp end point: {}", cvpConnectionString);
             LOGGER.info("cvp container: {}", cvpContainer);
             LOGGER.info(
@@ -108,7 +108,7 @@ public class AzureStorageConfig {
             b.connectionString(cvpConnectionString);
             LOGGER.info("****************************");
             LOGGER.info(
-                "Not a real CVP endpoint - cvpConnectionString(60): {} ",
+                "This is not a real CVP endpoint - cvpConnectionString(60): {} ",
                 StringUtils.left(cvpConnectionString, 60)
             );
             LOGGER.info("****************************");

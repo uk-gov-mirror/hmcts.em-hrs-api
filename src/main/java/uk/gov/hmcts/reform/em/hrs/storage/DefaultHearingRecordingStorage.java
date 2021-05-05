@@ -71,14 +71,21 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
     @Override
     public void copyRecording(String sourceUri, final String filename) {
+        LOGGER.info("**************************************");
+        LOGGER.info("**************************************");
+        LOGGER.info("**************************************");
+        LOGGER.info("About to Copy Recording for filename {}", filename);
         if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
 
-            LOGGER.info("About to copy recording, generating sasToken");
+            LOGGER.info("Generating sasToken");
             String sasToken = generateReadSASForCVP(filename);
             sourceUri = sourceUri + "?" + sasToken;
         }
 
+        LOGGER.info("Source URI {}", sourceUri);
+
         final BlobBeginCopyOptions blobBeginCopyOptions = new BlobBeginCopyOptions(sourceUri);
+
 
         final BlobAsyncClient destBlobAsyncClient = hrsBlobContainerAsyncClient.getBlobAsyncClient(filename);
         destBlobAsyncClient.beginCopy(blobBeginCopyOptions)
