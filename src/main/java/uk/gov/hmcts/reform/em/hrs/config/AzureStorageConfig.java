@@ -40,26 +40,30 @@ public class AzureStorageConfig {
             .containerName(hrsContainer);
 
 
-        //TODO may not need to use managed identity for client as it used to work without
-        if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
-            LOGGER.info("****************************");
-            LOGGER.info("Known CVP Endpoint - Using Managed Identity For HRS Async Client");
-            LOGGER.info("cvp end point: {}", cvpConnectionString);
-            LOGGER.info(
-                "Building client with default credential builder / managed identity");
-            LOGGER.info("****************************");
+        LOGGER.info("****************************");
+        LOGGER.info("NOT ASSIGNING MI TO ASYNC COPIER");
+        LOGGER.info("****************************");
 
-            DefaultAzureCredential credential = new DefaultAzureCredentialBuilder().build();
-            blobContainerAsyncClientBuilder.credential(credential);
-        } else {
-            LOGGER.info("****************************");
-            LOGGER.info(
-                "This is not a known CVP endpoint - cvpConnectionString(60): {} ",
-                StringUtils.left(cvpConnectionString, 60)
-            );
-            LOGGER.info("****************************");
-
-        }
+        //        //TODO may not need to use managed identity for client as it used to work without
+        //        if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
+        //            LOGGER.info("****************************");
+        //            LOGGER.info("Known CVP Endpoint - Using Managed Identity For HRS Async Client");
+        //            LOGGER.info("cvp end point: {}", cvpConnectionString);
+        //            LOGGER.info(
+        //                "Building client with default credential builder / managed identity");
+        //            LOGGER.info("****************************");
+        //
+        //            DefaultAzureCredential credential = new DefaultAzureCredentialBuilder().build();
+        //            blobContainerAsyncClientBuilder.credential(credential);
+        //        } else {
+        //            LOGGER.info("****************************");
+        //            LOGGER.info(
+        //                "This is not a known CVP endpoint - cvpConnectionString(60): {} ",
+        //                StringUtils.left(cvpConnectionString, 60)
+        //            );
+        //            LOGGER.info("****************************");
+        //
+        //        }
 
 
         final BlobContainerAsyncClient blobContainerAsyncClient = blobContainerAsyncClientBuilder.buildAsyncClient();
