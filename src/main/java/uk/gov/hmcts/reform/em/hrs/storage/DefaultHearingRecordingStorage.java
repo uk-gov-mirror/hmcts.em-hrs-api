@@ -16,12 +16,17 @@ import com.azure.storage.blob.models.UserDelegationKey;
 import com.azure.storage.blob.options.BlobBeginCopyOptions;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
+import com.azure.storage.blob.specialized.BlockBlobClient;
+import com.gc.iotools.stream.os.OutputStreamToInputStream;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -74,6 +79,29 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
     @Override
     public void copyRecording(String sourceUri, final String filename) {
+
+        //original async client logic:
+
+        //copyViaAsyncBlobOptionSourceUriMethod(sourceUri, filename);
+
+
+        LOGGER.info("**************************************");
+        LOGGER.info("Copying via stream from source blob to destination blob");
+        LOGGER.info("Source URI:{}", sourceUri);
+        LOGGER.info("Filename:{}", filename);
+        LOGGER.info("**************************************");
+        LOGGER.info("cvpBlobContainerClient.getBlobContainerName():{}", cvpBlobContainerClient.getBlobContainerName());
+        LOGGER.info("hrsBlobContainerClient.getBlobContainerName():{}", hrsBlobContainerClient.getBlobContainerName());
+
+
+        copyViaUrl(sourceUri, filename);
+
+        copyViaStream(filename);
+
+    }
+
+    @NotNull
+    private String copyViaAsyncBlobOptionSourceUriMethod(String sourceUri, String filename) {
         LOGGER.info("**************************************");
         LOGGER.info("**************************************");
         LOGGER.info("**************************************");
@@ -87,7 +115,8 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
             LOGGER.info("overwriting URL with hardcoded prefix to overcome / to %2f encoding...");
 
-            sourceUri = "https://cvprecordingsstgsa.blob.core.windows.net/recordings/" + filename + "?" + sasToken;
+            sourceUri = "https://cvprecordingsstgsa.blob.core.windows.net/recordings/" + filename + "?" +
+                sasToken;
         }
 
         LOGGER.info("Source URI {}", sourceUri);
@@ -103,6 +132,76 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
                 y -> snooper.snoop(String.format("File %s copied failed:: %s", filename, y.getMessage())),
                 () -> snooper.snoop(String.format("File %s copied successfully", filename))
             );
+        return sourceUri;
+    }
+
+    private void copyViaUrl(String sourceUri, String filename) {
+        BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
+
+        if (!destinationBlobClient.exists()) {
+
+            if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
+
+                LOGGER.info("Generating sasToken");
+                String sasToken = generateReadSASForCVP(filename);
+                sourceUri = sourceUri + "?" + sasToken;
+
+
+                LOGGER.info("overwriting URL with hardcoded prefix to overcome / to %2f encoding...");
+
+                sourceUri = "https://cvprecordingsstgsa.blob.core.windows.net/recordings/" + filename + "?" +
+                    sasToken;
+            }
+
+
+            LOGGER.info("############## Trying copy from URL");
+            try {
+                destinationBlobClient.copyFromUrl(sourceUri);
+            } catch (Exception e) {
+                LOGGER.info("exception {}", e);
+            }
+
+
+        }
+    }
+
+    private void copyViaStream(String filename) {
+        LOGGER.info("############## Trying copy as stream");
+
+        BlockBlobClient sourceBlobClient = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
+
+
+        BlockBlobClient destinationUploadBlobClient =
+            hrsBlobContainerClient.getBlobClient(filename + ".uploaded").getBlockBlobClient();
+
+        if (!destinationUploadBlobClient.exists()) {
+
+
+            // prototype for copying as stream....however this will require streaming to disk, and then uploading
+            //as upload requires length parameter and sttream to stream does not support mark/reset
+            //                OutputStream outputStream;
+            //                sourceBlobClient.download(outputStream);
+
+            long sourceSize = sourceBlobClient.getProperties().getBlobSize();
+
+
+            try (final OutputStreamToInputStream output = new OutputStreamToInputStream() {
+                @Override
+                protected String doRead(final InputStream input) throws Exception {
+                    destinationUploadBlobClient.upload(new BufferedInputStream(input), sourceSize);
+                    return "h";
+
+                }
+            }) {
+
+                sourceBlobClient.download(output);
+
+            } catch (Exception e) {
+
+            }
+
+
+        }
     }
 
 
