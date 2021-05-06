@@ -173,7 +173,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
 
         BlockBlobClient destinationUploadBlobClient =
-            hrsBlobContainerClient.getBlobClient(filename + ".uploaded").getBlockBlobClient();
+            hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
 
         if (!destinationUploadBlobClient.exists()) {
 
