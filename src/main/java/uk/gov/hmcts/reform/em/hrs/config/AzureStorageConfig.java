@@ -93,8 +93,8 @@ public class AzureStorageConfig {
 
     @Bean("CvpBlobContainerClient")
     public BlobContainerClient provideCvpBlobContainerClient() {
-        BlobContainerClientBuilder b = new BlobContainerClientBuilder()
-            .containerName(cvpContainer);
+        BlobContainerClientBuilder b = new BlobContainerClientBuilder();
+
 
         if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
             LOGGER.info("****************************");
@@ -107,9 +107,11 @@ public class AzureStorageConfig {
 
             DefaultAzureCredential credential = new DefaultAzureCredentialBuilder().build();
             b.endpoint(cvpConnectionString);
+            b.containerName(cvpContainer);
             b.credential(credential);
         } else {
             b.connectionString(cvpConnectionString);
+            b.containerName(cvpContainer);
             LOGGER.info("****************************");
             LOGGER.info(
                 "This is not a real CVP endpoint - cvpConnectionString(60): {} ",

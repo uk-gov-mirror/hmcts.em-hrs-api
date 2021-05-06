@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.hrs.storage;
 import com.azure.core.http.rest.PagedIterable;
 import com.azure.identity.DefaultAzureCredential;
 import com.azure.identity.DefaultAzureCredentialBuilder;
-import com.azure.storage.blob.BlobAsyncClient;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobContainerClient;
@@ -13,14 +12,13 @@ import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.blob.models.UserDelegationKey;
-import com.azure.storage.blob.options.BlobBeginCopyOptions;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
+import com.azure.storage.blob.specialized.BlockBlobClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver;
-import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -32,13 +30,11 @@ import javax.inject.Named;
 @Named
 public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHearingRecordingStorage.class);
-
-
     private static final int BLOB_LIST_TIMEOUT = 5;
     private final BlobContainerAsyncClient hrsBlobContainerAsyncClient;
     private final BlobContainerClient hrsBlobContainerClient;
     private final BlobContainerClient cvpBlobContainerClient;
-    private final Snooper snooper;
+
 
     private final String cvpConnectionString;
 
@@ -46,12 +42,11 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     public DefaultHearingRecordingStorage(final BlobContainerAsyncClient hrsContainerAsyncClient,
                                           final @Named("HrsBlobContainerClient") BlobContainerClient hrsContainerClient,
                                           final @Named("CvpBlobContainerClient") BlobContainerClient cvpContainerClient,
-                                          final Snooper snooper,
+
                                           @Value("${azure.storage.cvp.connection-string}") String cvpConnectionString) {
         this.hrsBlobContainerAsyncClient = hrsContainerAsyncClient;
         this.hrsBlobContainerClient = hrsContainerClient;
         this.cvpBlobContainerClient = cvpContainerClient;
-        this.snooper = snooper;
         this.cvpConnectionString = cvpConnectionString;
     }
 
@@ -74,41 +69,54 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
     @Override
     public void copyRecording(String sourceUri, final String filename) {
+
+
         LOGGER.info("**************************************");
+        LOGGER.info("Copying Recording");
+        LOGGER.info("Source URI:{}", sourceUri);
+        LOGGER.info("Filename:{}", filename);
         LOGGER.info("**************************************");
-        LOGGER.info("**************************************");
-        LOGGER.info("About to Copy Recording for filename {}", filename);
-        if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
-
-            LOGGER.info("Generating sasToken");
-            String sasToken = generateReadSASForCVP(filename);
-            sourceUri = sourceUri + "?" + sasToken;
+        LOGGER.info("cvpBlobContainerClient.getBlobContainerName():{}", cvpBlobContainerClient.getBlobContainerName());
+        LOGGER.info("hrsBlobContainerClient.getBlobContainerName():{}", hrsBlobContainerClient.getBlobContainerName());
 
 
-            LOGGER.info("overwriting URL with hardcoded prefix to overcome / to %2f encoding...");
+        copyViaUrl(sourceUri, filename);//may be limited to 256mb
 
-            sourceUri = "https://cvprecordingsstgsa.blob.core.windows.net/recordings/" + filename + "?" + sasToken;
+    }
+
+
+    private void copyViaUrl(String sourceUri, String filename) {
+        BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
+
+        LOGGER.info("############## Trying copy from URL");
+
+        //TODO should we compare md5sum of destination as well or
+        // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
+        if (!destinationBlobClient.exists()) {
+
+            if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
+
+                LOGGER.info("Generating sasToken");
+                String sasToken = generateReadSASForCVP(filename);
+                sourceUri = sourceUri + "?" + sasToken;
+            }
+
+
+            try {
+                destinationBlobClient.copyFromUrl(sourceUri);
+            } catch (Exception e) {
+                LOGGER.info("Destination Blob Copy exception {}", e);
+                //TODO should we try and clean up the destination blob? can it be partially present?
+            }
+
+
         }
-
-        LOGGER.info("Source URI {}", sourceUri);
-
-        final BlobBeginCopyOptions blobBeginCopyOptions = new BlobBeginCopyOptions(sourceUri);
-
-
-        final BlobAsyncClient destBlobAsyncClient = hrsBlobContainerAsyncClient.getBlobAsyncClient(filename);
-        destBlobAsyncClient.beginCopy(blobBeginCopyOptions)
-            .subscribe(
-                x -> {
-                },
-                y -> snooper.snoop(String.format("File %s copied failed:: %s", filename, y.getMessage())),
-                () -> snooper.snoop(String.format("File %s copied successfully", filename))
-            );
     }
 
 
     private String generateReadSASForCVP(String fileName) {
 
-        LOGGER.info("Attempting to generate SAS");
+        LOGGER.info("Attempting to generate SAS for contaienr name {}", cvpBlobContainerClient.getBlobContainerName());
 
         BlobServiceClient blobServiceClient = cvpBlobContainerClient.getServiceClient();
 
@@ -117,6 +125,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
             BlobServiceClientBuilder builder = new BlobServiceClientBuilder();
 
             DefaultAzureCredential credential = new DefaultAzureCredentialBuilder().build();
+
             builder.endpoint(cvpConnectionString);
             builder.credential(credential);
             blobServiceClient = builder.buildClient();
