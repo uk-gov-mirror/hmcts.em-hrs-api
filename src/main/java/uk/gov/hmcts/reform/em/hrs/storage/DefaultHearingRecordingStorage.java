@@ -31,7 +31,6 @@ import javax.inject.Named;
 public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHearingRecordingStorage.class);
     private static final int BLOB_LIST_TIMEOUT = 5;
-    private static final int alternator = 0;
     private final BlobContainerAsyncClient hrsBlobContainerAsyncClient;
     private final BlobContainerClient hrsBlobContainerClient;
     private final BlobContainerClient cvpBlobContainerClient;
