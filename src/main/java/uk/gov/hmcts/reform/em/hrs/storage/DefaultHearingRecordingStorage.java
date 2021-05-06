@@ -38,7 +38,7 @@ import javax.inject.Named;
 public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHearingRecordingStorage.class);
     private static final int BLOB_LIST_TIMEOUT = 5;
-    private static int alternator = 0;
+    private static final int alternator = 0;
     private final BlobContainerAsyncClient hrsBlobContainerAsyncClient;
     private final BlobContainerClient hrsBlobContainerClient;
     private final BlobContainerClient cvpBlobContainerClient;
@@ -85,18 +85,18 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
 
         LOGGER.info("**************************************");
-        LOGGER.info("Copying via stream from source blob to destination blob");
+        LOGGER.info("Copying Recording");
         LOGGER.info("Source URI:{}", sourceUri);
         LOGGER.info("Filename:{}", filename);
         LOGGER.info("**************************************");
         LOGGER.info("cvpBlobContainerClient.getBlobContainerName():{}", cvpBlobContainerClient.getBlobContainerName());
         LOGGER.info("hrsBlobContainerClient.getBlobContainerName():{}", hrsBlobContainerClient.getBlobContainerName());
 
-        if (alternator++ % 2 == 0) {//hack to test both methods in perftest enviro
-            copyViaUrl(sourceUri, filename);
-        } else {
-            copyViaStream(filename);
-        }
+        //        if (alternator++ % 2 == 0) {//hack to test both methods in perftest enviro
+        copyViaUrl(sourceUri, filename);//may be limited to 256mb
+        //        } else {
+        //            copyViaStream(filename);
+        //        }
 
     }
 
@@ -149,10 +149,11 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
                 sourceUri = sourceUri + "?" + sasToken;
 
 
-                LOGGER.info("overwriting URL with hardcoded prefix to overcome / to %2f encoding...");
-
-                sourceUri = "https://cvprecordingsstgsa.blob.core.windows.net/recordings/" + filename + "?" +
-                    sasToken;
+                //                LOGGER.info("overwriting URL with hardcoded prefix to overcome / to %2f encoding...");
+                //
+                //                sourceUri = "https://cvprecordingsstgsa.blob.core.windows.net/recordings/" +
+                //                filename + "?" +
+                //                    sasToken;
             }
 
 
@@ -160,6 +161,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
                 destinationBlobClient.copyFromUrl(sourceUri);
             } catch (Exception e) {
                 LOGGER.info("exception {}", e);
+                //TODO should we try and clean up the destination blob? can it be partially present?
             }
 
 
