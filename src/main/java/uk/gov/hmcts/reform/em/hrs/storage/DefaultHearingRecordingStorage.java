@@ -37,9 +37,8 @@ import javax.inject.Named;
 @Named
 public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHearingRecordingStorage.class);
-
-
     private static final int BLOB_LIST_TIMEOUT = 5;
+    private static int alternator = 0;
     private final BlobContainerAsyncClient hrsBlobContainerAsyncClient;
     private final BlobContainerClient hrsBlobContainerClient;
     private final BlobContainerClient cvpBlobContainerClient;
@@ -93,10 +92,11 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
         LOGGER.info("cvpBlobContainerClient.getBlobContainerName():{}", cvpBlobContainerClient.getBlobContainerName());
         LOGGER.info("hrsBlobContainerClient.getBlobContainerName():{}", hrsBlobContainerClient.getBlobContainerName());
 
-
-        copyViaUrl(sourceUri, filename);
-
-        copyViaStream(filename);
+        if (alternator++ % 2 == 0) {//hack to test both methods in perftest enviro
+            copyViaUrl(sourceUri, filename);
+        } else {
+            copyViaStream(filename);
+        }
 
     }
 
@@ -105,7 +105,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
         LOGGER.info("**************************************");
         LOGGER.info("**************************************");
         LOGGER.info("**************************************");
-        LOGGER.info("About to Copy Recording for filename {}", filename);
+        LOGGER.info("About to copyViaAsyncBlobOptionSourceUriMethod for filename {}", filename);
         if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
 
             LOGGER.info("Generating sasToken");
@@ -138,6 +138,8 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private void copyViaUrl(String sourceUri, String filename) {
         BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
 
+        LOGGER.info("############## Trying copy from URL");
+
         if (!destinationBlobClient.exists()) {
 
             if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
@@ -154,7 +156,6 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
             }
 
 
-            LOGGER.info("############## Trying copy from URL");
             try {
                 destinationBlobClient.copyFromUrl(sourceUri);
             } catch (Exception e) {
@@ -207,7 +208,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
     private String generateReadSASForCVP(String fileName) {
 
-        LOGGER.info("Attempting to generate SAS");
+        LOGGER.info("Attempting to generate SAS for contaienr name {}", cvpBlobContainerClient.getBlobContainerName());
 
         BlobServiceClient blobServiceClient = cvpBlobContainerClient.getServiceClient();
 
@@ -216,6 +217,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
             BlobServiceClientBuilder builder = new BlobServiceClientBuilder();
 
             DefaultAzureCredential credential = new DefaultAzureCredentialBuilder().build();
+
             builder.endpoint(cvpConnectionString);
             builder.credential(credential);
             blobServiceClient = builder.buildClient();
