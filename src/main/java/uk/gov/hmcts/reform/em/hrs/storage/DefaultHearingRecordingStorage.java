@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.em.hrs.storage;
 
 import com.azure.core.http.rest.PagedIterable;
+import com.azure.core.util.polling.PollResponse;
+import com.azure.core.util.polling.SyncPoller;
 import com.azure.identity.DefaultAzureCredential;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobClient;
@@ -8,6 +10,7 @@ import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.models.BlobCopyInfo;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
@@ -103,7 +106,11 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
 
             try {
-                destinationBlobClient.copyFromUrl(sourceUri);
+
+                SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
+                PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
+
+                //                destinationBlobClient.copyFromUrl(sourceUri);
             } catch (Exception e) {
                 LOGGER.info("Destination Blob Copy exception {}", e);
                 //TODO should we try and clean up the destination blob? can it be partially present?
@@ -155,6 +162,17 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
 
     }
+
+
+    //    private SyncPoller<BlobCopyInfo, Void> beginCopy(String sourceUrl, Duration pollInterval) {
+    //        return beginCopy(sourceUrl,
+    //                         null,
+    //                         null,
+    //                         null,
+    //                         null,
+    //                         null, pollInterval
+    //        );
+    //    }
 
 
 }
