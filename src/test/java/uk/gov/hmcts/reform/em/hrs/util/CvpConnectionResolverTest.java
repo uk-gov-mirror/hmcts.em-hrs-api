@@ -9,13 +9,15 @@ import static uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver.isACvpEndpoi
 public class CvpConnectionResolverTest {
     @Test
     public void testIsACvpEndpointUrl() {
+        //SECURITY NOTICE The below connection string / account key contains no sensitive information, and is derived
+        //from the publicly known developer key - https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string
         assertFalse(isACvpEndpointUrl(
             "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;"
-                + "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;"
+                + "AccountKey=ACTUALKEYNOTNEEDEDFORTHISTEST"
                 + "BlobEndpoint=http://localhost:10000/devstoreaccount1"));
         assertFalse(isACvpEndpointUrl(
             "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;"
-                + "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;"
+                + "AccountKey=ACTUALKEYNOTNEEDEDFORTHISTEST"
                 + "BlobEndpoint=https://cvprecordingssboxsa.blob.core.windows.net/"));
         assertFalse(isACvpEndpointUrl("https://hrsendpoint.blob.core.windows.net/"));
 
