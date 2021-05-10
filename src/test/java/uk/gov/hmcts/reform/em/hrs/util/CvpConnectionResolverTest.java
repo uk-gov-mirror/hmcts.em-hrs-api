@@ -9,7 +9,8 @@ import static uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver.isACvpEndpoi
 public class CvpConnectionResolverTest {
     @Test
     public void testIsACvpEndpointUrl() {
-        //SECURITY NOTICE The below connection string / account key contains no sensitive information
+        //SECURITY NOTICE The below connection string / account key contains no sensitive information, and is derived
+        //from the publicly known developer key - https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string
         assertFalse(isACvpEndpointUrl(
             "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;"
                 + "AccountKey=ACTUALKEYNOTNEEDEDFORTHISTEST"

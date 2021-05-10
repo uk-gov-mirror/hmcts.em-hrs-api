@@ -110,7 +110,6 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
                 SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
                 PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
 
-                //                destinationBlobClient.copyFromUrl(sourceUri);
             } catch (Exception e) {
                 LOGGER.info("Destination Blob Copy exception {}", e);
                 //TODO should we try and clean up the destination blob? can it be partially present?
@@ -162,17 +161,5 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
 
     }
-
-
-    //    private SyncPoller<BlobCopyInfo, Void> beginCopy(String sourceUrl, Duration pollInterval) {
-    //        return beginCopy(sourceUrl,
-    //                         null,
-    //                         null,
-    //                         null,
-    //                         null,
-    //                         null, pollInterval
-    //        );
-    //    }
-
 
 }
