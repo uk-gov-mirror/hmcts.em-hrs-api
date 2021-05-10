@@ -42,7 +42,7 @@ public class CaseDataContentCreator {
             .serviceCode(hearingRecordingDto.getServiceCode())
             .jurisdictionCode(hearingRecordingDto.getJurisdictionCode())
             .courtLocationCode(hearingRecordingDto.getCourtLocationCode())
-            .recordingReference(hearingRecordingDto.getRecordingRef())
+            .caseReference(hearingRecordingDto.getCaseRef())
             .build();
         return objectMapper.convertValue(recording, JsonNode.class);
     }
