@@ -91,11 +91,12 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private void copyViaUrl(String sourceUri, String filename) {
         BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
 
-        LOGGER.info("############## Trying copy from URL");
+        LOGGER.info("############## Trying copy from URL for file {}", filename);
 
         //TODO should we compare md5sum of destination as well or
         // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
         if (!destinationBlobClient.exists()) {
+            LOGGER.info("############## File does not exist in target blobstore {}", filename);
 
             if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
 
@@ -109,6 +110,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
                 SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
                 PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
+                LOGGER.info("File copy completed for {} with status {}", sourceUri, poll.getStatus());
 
             } catch (Exception e) {
                 LOGGER.info("Destination Blob Copy exception {}", e);
@@ -116,7 +118,10 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
             }
 
 
+        } else {
+            LOGGER.info("############## File already exists in target blobstore {}", filename);
         }
+
     }
 
 
