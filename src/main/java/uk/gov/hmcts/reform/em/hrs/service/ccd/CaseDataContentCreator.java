@@ -27,7 +27,6 @@ public class CaseDataContentCreator {
 
     public JsonNode createCaseStartData(final HearingRecordingDto hearingRecordingDto, final UUID recordingId) {
 
-
         CaseHearingRecording recording = CaseHearingRecording.builder()
             .recordingFiles(Collections.singletonList(
                 Map.of("value", createSegment(hearingRecordingDto, recordingId))
@@ -42,7 +41,7 @@ public class CaseDataContentCreator {
             .serviceCode(hearingRecordingDto.getServiceCode())
             .jurisdictionCode(hearingRecordingDto.getJurisdictionCode())
             .courtLocationCode(hearingRecordingDto.getCourtLocationCode())
-            .caseReference(hearingRecordingDto.getCaseRef())
+            .recordingReference(hearingRecordingDto.getCaseRef())
             .build();
         return objectMapper.convertValue(recording, JsonNode.class);
     }
@@ -99,6 +98,7 @@ public class CaseDataContentCreator {
     }
 
     private String getRecordingTimeOfDay(HearingRecordingDto hearingRecordingDto) {
+        LOGGER.info("setting time of day from recording time ({}))", hearingRecordingDto.getRecordingDateTime());
         return Optional.ofNullable(hearingRecordingDto.getRecordingDateTime())
             .map(dateTime -> dateTime.getHour() < 12 ? "AM" : "PM").orElse("");
     }
