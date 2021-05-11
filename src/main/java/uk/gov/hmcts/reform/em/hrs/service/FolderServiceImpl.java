@@ -50,7 +50,7 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public Set<String> getStoredFiles(String folderName) {
         deleteStaledJobs();
-        deleteStaleCCDExportAttempts();
+        deleteStaleCcdUploadAttempts();
 
         Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
 
@@ -63,7 +63,7 @@ public class FolderServiceImpl implements FolderService {
         return getCompletedAndInProgressFiles(optionalFolder.get());
     }
 
-    private void deleteStaleCCDExportAttempts() {
+    private void deleteStaleCcdUploadAttempts() {
 
         LocalDateTime yesterday = LocalDateTime.now(Clock.systemUTC()).minusHours(24);
         hearingRecordingRepository.deleteStaleRecordsWithNullCCD(yesterday);
