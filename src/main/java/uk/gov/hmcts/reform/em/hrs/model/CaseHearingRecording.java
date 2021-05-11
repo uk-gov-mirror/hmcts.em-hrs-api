@@ -39,8 +39,8 @@ public class CaseHearingRecording {
     @JsonProperty("courtLocationCode")
     private String courtLocationCode;
 
-    @JsonProperty("caseReference")
-    private String caseReference;
+    @JsonProperty("recordingReference")
+    private String recordingReference;
 
     @JsonProperty("recordingFiles")
     private List<Map<String, CaseRecordingFile>> recordingFiles;
