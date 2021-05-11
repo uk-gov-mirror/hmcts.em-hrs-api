@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs.repository;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -28,6 +29,7 @@ public interface HearingRecordingRepository extends PagingAndSortingRepository<H
 
     List<HearingRecording> findByFolder(String folderName);
 
+    @Modifying
     @Query("delete from HearingRecording s where s.createdOn < :#{#createddate} and s.ccdCaseId is null")
     void deleteStaleRecordsWithNullCCD(@Param("createddate") LocalDateTime createddate);
 }
