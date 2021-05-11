@@ -115,6 +115,10 @@ echo "ccd-data-store-api_1    | 2021-04-11T10:54:38.861 INFO  [main] o.s.d.r.c.D
 echo ""
 read -p "Press the ENTER key to continue"
 
+echo "uploading test file until this is done as part of the tests"
+az storage blob upload -f README.md -c cvptestcontainer -n audiostream115/FM-0111-testfile200M_2020-01-01-11.11.11.123-UTC_0.mp4 --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1"
+
+
 docker-compose ${COMPOSE_FILE} logs -f
 
 
