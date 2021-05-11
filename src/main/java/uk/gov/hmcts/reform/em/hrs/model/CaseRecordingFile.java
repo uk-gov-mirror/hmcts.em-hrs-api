@@ -18,7 +18,7 @@ public class CaseRecordingFile {
     private CaseDocument caseDocument;
 
     @JsonProperty("segmentNumber")
-    private String segmentNumber;
+    private int segmentNumber;
 
     @JsonProperty("fileSize")
     private Long fileSize;

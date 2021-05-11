@@ -154,7 +154,7 @@ public class TestUtil {
             CaseDocument.builder().url("document-url").binaryUrl("document-url").filename("filename").build()
         )
         .fileSize(123456789L)
-        .segmentNumber("0")
+        .segmentNumber(0)
         .build();
 
     private TestUtil() {
