@@ -41,7 +41,9 @@ public class AzureStorageConfig {
 
 
         LOGGER.info("****************************");
-        LOGGER.info("NOT ASSIGNING MI TO ASYNC COPIER");
+        LOGGER.info("Container settings:");
+        LOGGER.info("hrsContainer: {}", hrsContainer);
+        LOGGER.info("cvpContainer: {}", cvpContainer);
         LOGGER.info("****************************");
 
         //        //TODO may not need to use managed identity for client as it used to work without
