@@ -161,7 +161,7 @@ public abstract class BaseTest {
     }
 
     protected JsonNode createRecordingSegment(String folder, String url, String filename, String fileExt,
-                                           int segment, String recordingTime) {
+                                           int segment, String recordingTime, String caseRef) {
         return JsonNodeFactory.instance.objectNode()
             .put("folder", folder)
             .put("recording-ref", filename)
@@ -170,7 +170,7 @@ public abstract class BaseTest {
             .put("service-code","PROBATE")
             .put("hearing-room-ref","12")
             .put("jurisdiction-code","HRS")
-            .put("case-ref","hearing-12-family-probate-morning")
+            .put("case-ref", caseRef)
             .put("cvp-file-url", url)
             .put("filename", filename)
             .put("filename-extension", fileExt)
