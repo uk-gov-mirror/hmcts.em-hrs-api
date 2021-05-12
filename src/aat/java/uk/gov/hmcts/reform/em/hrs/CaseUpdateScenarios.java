@@ -34,6 +34,7 @@ public class CaseUpdateScenarios extends BaseTest {
             .statusCode(202);
     }
 
+    @Ignore
     @Test
     public void testDocumentShare() {
         CaseDetails caseDetails = searchForCase(CASE_REF).orElseThrow();
