@@ -54,6 +54,8 @@ class SecurityServiceImplTest {
         .roles(Arrays.asList("caseworker-hrs"))
         .build();
     private static final String SERVICE_NAME = "TestService";
+    public static final String DUMMY_NAME = "dummyName";
+    public static final String HRS_INGESTOR = "hrsIngestor";
 
     @Mock
     MockHttpServletRequest request;
@@ -154,9 +156,21 @@ class SecurityServiceImplTest {
     }
 
     @Test
+    void testGetCurrentlyAuthenticatedServiceNameNullRequest() {
+        RequestContextHolder.setRequestAttributes(null);
+        Assert.assertEquals(DUMMY_NAME, underTest.getCurrentlyAuthenticatedServiceName());
+
+    }
+    @Test
     void testGetAuditUserEmail() {
         doReturn(AUTHORIZATION_TOKEN).when(request).getHeader(SecurityServiceImpl.USER_AUTH);
         doReturn(USER_DETAILS).when(idamClient).getUserDetails(AUTHORIZATION_TOKEN);
         Assert.assertEquals(SHARER_EMAIL_ADDRESS, underTest.getAuditUserEmail());
+    }
+
+    @Test
+    void testGetAuditUserEmailNullRequest() {
+        RequestContextHolder.setRequestAttributes(null);
+        Assert.assertEquals(HRS_INGESTOR, underTest.getAuditUserEmail());
     }
 }
