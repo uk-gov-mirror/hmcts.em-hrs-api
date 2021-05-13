@@ -96,6 +96,9 @@ public class SecurityServiceImpl implements SecurityService {
     public String getCurrentlyAuthenticatedServiceName() {
 
         HttpServletRequest request = getCurrentRequest();
+        if (Objects.isNull(request)) {
+            return DUMMY_NAME;
+        }
         String s2sToken = request.getHeader(SERVICE_AUTH);
         if (StringUtils.isBlank(s2sToken)) {
             return DUMMY_NAME;
