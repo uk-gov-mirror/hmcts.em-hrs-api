@@ -6,7 +6,10 @@ import uk.gov.hmcts.reform.em.hrs.domain.AuditActions;
 import uk.gov.hmcts.reform.em.hrs.domain.AuditEntry;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingAuditEntry;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegmentAuditEntry;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingAuditEntryRepository;
+import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentAuditEntryRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -17,9 +20,11 @@ public class AuditEntryService {
     @Autowired
     private HearingRecordingAuditEntryRepository hearingRecordingAuditEntryRepository;
 
+    @Autowired
+    private HearingRecordingSegmentAuditEntryRepository hearingRecordingSegmentAuditEntryRepository;
 
     @Autowired
-    private SecurityUtilService securityUtilService;
+    private SecurityService securityService;
 
     public List<HearingRecordingAuditEntry> findHearingRecordingAudits(HearingRecording hearingRecording) {
         return hearingRecordingAuditEntryRepository.findByHearingRecordingOrderByEventDateTimeAsc(hearingRecording);
@@ -30,8 +35,8 @@ public class AuditEntryService {
         return createAndSaveEntry(
             hearingRecording,
             action,
-            securityUtilService.getUserId(),
-            securityUtilService.getCurrentlyAuthenticatedServiceName());
+            securityService.getAuditUserEmail(),
+            securityService.getCurrentlyAuthenticatedServiceName());
     }
 
     public HearingRecordingAuditEntry createAndSaveEntry(HearingRecording hearingRecording,
@@ -45,7 +50,26 @@ public class AuditEntryService {
         return hearingRecordingAuditEntry;
     }
 
-    //TODO review if this commonCode is applicable in this project, as its only used once so far.
+    public HearingRecordingSegmentAuditEntry createAndSaveEntry(HearingRecordingSegment hearingRecordingSegment,
+                                                         AuditActions action) {
+        return createAndSaveEntry(
+            hearingRecordingSegment,
+            action,
+            securityService.getAuditUserEmail(),
+            securityService.getCurrentlyAuthenticatedServiceName());
+    }
+
+    public HearingRecordingSegmentAuditEntry createAndSaveEntry(HearingRecordingSegment hearingRecordingSegment,
+                                                         AuditActions action,
+                                                         String username,
+                                                         String serviceName) {
+        HearingRecordingSegmentAuditEntry hearingRecordingSegmentAuditEntry = new HearingRecordingSegmentAuditEntry();
+        populateCommonFields(hearingRecordingSegmentAuditEntry, action, username, serviceName);
+        hearingRecordingSegmentAuditEntry.setHearingRecordingSegment(hearingRecordingSegment);
+        hearingRecordingSegmentAuditEntryRepository.save(hearingRecordingSegmentAuditEntry);
+        return hearingRecordingSegmentAuditEntry;
+    }
+
     private void populateCommonFields(AuditEntry auditEntry,
                                       AuditActions action,
                                       String username,

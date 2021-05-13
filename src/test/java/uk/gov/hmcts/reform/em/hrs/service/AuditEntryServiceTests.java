@@ -29,13 +29,13 @@ public class AuditEntryServiceTests {
     @Mock
     private HearingRecordingAuditEntryRepository hearingRecordingAuditEntryRepository;
     @Mock
-    private SecurityUtilService securityUtilService;
+    private SecurityService securityService;
 
     @Test
     public void testCreateAndSaveEntryForHearingRecording() {
 
-        when(securityUtilService.getUserId()).thenReturn("x");
-        when(securityUtilService.getCurrentlyAuthenticatedServiceName()).thenReturn("s");
+        when(securityService.getAuditUserEmail()).thenReturn("x");
+        when(securityService.getCurrentlyAuthenticatedServiceName()).thenReturn("s");
 
         HearingRecordingAuditEntry entry = auditEntryService.createAndSaveEntry(
             new HearingRecording(),
