@@ -35,13 +35,16 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
         HearingRecordingSegment segment =
             segmentRepository.findByHearingRecordingIdAndRecordingSegment(recordingId, segmentNo);
 
-        auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_OK);
+        auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_REQUESTED);
 
         response.setHeader("Content-Disposition",String.format("attachment; filename=%s", segment.getFilename()));
         try {
             blobstoreClient.downloadFile(segment.getFilename(), response.getOutputStream());
         } catch (IOException e) {
+            auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_FAIL);
             throw new SegmentDownloadException(e);
         }
+
+        auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_OK);
     }
 }
