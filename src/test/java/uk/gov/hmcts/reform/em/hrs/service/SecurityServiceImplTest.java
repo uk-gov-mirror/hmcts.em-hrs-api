@@ -161,6 +161,7 @@ class SecurityServiceImplTest {
         Assert.assertEquals(DUMMY_NAME, underTest.getCurrentlyAuthenticatedServiceName());
 
     }
+
     @Test
     void testGetAuditUserEmail() {
         doReturn(AUTHORIZATION_TOKEN).when(request).getHeader(SecurityServiceImpl.USER_AUTH);
