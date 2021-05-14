@@ -13,6 +13,7 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobCopyInfo;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
+import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.blob.models.UserDelegationKey;
 import com.azure.storage.blob.sas.BlobSasPermission;
@@ -108,12 +109,17 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
             try {
 
+                BlockBlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
+                LOGGER.info("sourceBlob.exists() {}", sourceBlob.exists());
+
                 SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
                 PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
                 LOGGER.info("File copy completed for {} with status {}", sourceUri, poll.getStatus());
-
+            } catch (
+                BlobStorageException be) {
+                LOGGER.info("Blob Copy exception code {}, message{}", be.getErrorCode(), be.getMessage());
             } catch (Exception e) {
-                LOGGER.info("Destination Blob Copy exception {}", e);
+                LOGGER.info("Unhandled Blob Copy exception {}", e.getMessage());
                 //TODO should we try and clean up the destination blob? can it be partially present?
             }
 
