@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.task.TaskRejectedException;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -11,7 +8,6 @@ import javax.annotation.Nonnull;
 public enum IngestionQueue {
     INSTANCE;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IngestionQueue.class);
     private LinkedBlockingQueue<HearingRecordingDto> queue;
 
     public static Builder builder() {
@@ -23,19 +19,7 @@ public enum IngestionQueue {
     }
 
     public boolean offer(final HearingRecordingDto dto) {
-
-        try {
-            return queue.offer(dto);
-        } catch (TaskRejectedException taskRejectedException) {
-            //queue.offer supposedly wraps this issue - but lots of exceptions got logged during some tests when blob
-            //store was not connected properly
-            LOGGER.info("Task Rejected: {}", taskRejectedException.getMessage());
-            return false;
-        } catch (Exception e) {
-            LOGGER.info("Exception offering task to queue: {}", e.getMessage());
-            return false;
-        }
-
+        return queue.offer(dto);
     }
 
     public HearingRecordingDto poll() {
