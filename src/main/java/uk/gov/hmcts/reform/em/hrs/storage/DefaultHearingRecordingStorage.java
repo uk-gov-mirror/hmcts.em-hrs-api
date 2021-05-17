@@ -115,8 +115,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
                 SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
                 PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
                 LOGGER.info("File copy completed for {} with status {}", sourceUri, poll.getStatus());
-            } catch (
-                BlobStorageException be) {
+            } catch (BlobStorageException be) {
                 LOGGER.info("Blob Copy exception code {}, message{}", be.getErrorCode(), be.getMessage());
             } catch (Exception e) {
                 LOGGER.info("Unhandled Blob Copy exception {}", e.getMessage());

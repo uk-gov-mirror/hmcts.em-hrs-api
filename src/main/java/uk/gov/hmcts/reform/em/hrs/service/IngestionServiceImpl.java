@@ -144,9 +144,8 @@ public class IngestionServiceImpl implements IngestionService {
             //the recording has already been persisted by another cluster - do not proceed as waiting for CCD id
             LOGGER
                 .info(
-                    "create case Hearing Recording already exists in database, not persisting recording, nor segment " +
-                        "at this " +
-                        "time");
+                    "create case Hearing Recording already exists in database, not persisting recording, nor segment "
+                        + "at this time");
         } catch (Exception e) {
             LOGGER.info(
                 "create case Unhandled Exception segment already added to DB ({}) to case({})",
