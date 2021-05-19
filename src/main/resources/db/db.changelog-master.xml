@@ -355,4 +355,10 @@
     <changeSet author="yogeshhullatti (generated)" id="1620747888713-2">
         <addForeignKeyConstraint baseColumnNames="hearing_recording_sharee_id" baseTableName="audit_entry" constraintName="FK11roef3nv0wewk2yswnogf0nx" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="hearing_recording_sharee" validate="true"/>
     </changeSet>
+    <changeSet author="paul (generated)" id="1621441343520-1">
+        <addUniqueConstraint columnNames="folder_id, recording_ref" constraintName="UKi1x8kh9td60heuhk1frv8gvck" tableName="hearing_recording"/>
+    </changeSet>
+    <changeSet author="paul (generated)" id="1621441343520-2">
+        <dropUniqueConstraint constraintName="uc_hearing_recordingrecording_ref_col" tableName="hearing_recording"/>
+    </changeSet>
 </databaseChangeLog>
