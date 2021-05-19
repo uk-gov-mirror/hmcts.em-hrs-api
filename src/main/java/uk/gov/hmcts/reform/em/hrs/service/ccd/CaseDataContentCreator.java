@@ -92,7 +92,7 @@ public class CaseDataContentCreator {
 
         return CaseRecordingFile.builder()
             .caseDocument(recordingFile)
-            .segmentNumber(hearingRecordingDto.getSegment())
+            .segmentNumber(String.valueOf(hearingRecordingDto.getSegment()))
             .fileSize(hearingRecordingDto.getFileSize())
             .build();
     }
