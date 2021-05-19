@@ -149,10 +149,9 @@ class SecurityServiceImplTest {
 
     @Test
     void testGetCurrentlyAuthenticatedServiceName() {
-        doReturn("X").when(request).getHeader(SecurityServiceImpl.SERVICE_AUTH);
+        doReturn("Xxxxxxxxxxxxxxxxxx").when(request).getHeader(SecurityServiceImpl.SERVICE_AUTH);
         doReturn(SERVICE_NAME).when(authTokenValidator).getServiceName(Mockito.anyString());
         Assert.assertEquals(SERVICE_NAME, underTest.getCurrentlyAuthenticatedServiceName());
-
     }
 
     @Test

@@ -30,7 +30,7 @@ public class CaseUpdateScenarios extends BaseTest {
             .statusCode(202);
     }
 
-    //@Ignore
+    @Ignore
     @Test
     public void testDocumentShare() {
         CaseDetails caseDetails = searchForCase(CASE_REF).orElseThrow();
@@ -40,7 +40,7 @@ public class CaseUpdateScenarios extends BaseTest {
             .statusCode(200);
     }
 
-//    @Ignore
+    @Ignore
     @Test
     public void testRecordingDownload() {
         CaseDetails caseDetails = searchForCase(CASE_REF).orElseThrow();

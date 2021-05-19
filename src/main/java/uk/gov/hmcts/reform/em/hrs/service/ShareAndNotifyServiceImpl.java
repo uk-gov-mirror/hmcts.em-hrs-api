@@ -23,19 +23,19 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
     private final ShareeService shareeService;
     private final NotificationService notificationService;
     private final CaseDataContentCreator caseDataCreator;
-    private final String xuiUrl;
+    private final String xuiDomain;
 
     @Autowired
     public ShareAndNotifyServiceImpl(final HearingRecordingRepository hearingRecordingRepository,
                                      final ShareeService shareeService,
                                      final NotificationService notificationService,
                                      final CaseDataContentCreator caseDataCreator,
-                                     @Value("${xui.api.url}") final String xuiUrl) {
+                                     @Value("${xui.api.url}") final String xuiDomain) {
         this.hearingRecordingRepository = hearingRecordingRepository;
         this.shareeService = shareeService;
         this.notificationService = notificationService;
         this.caseDataCreator = caseDataCreator;
-        this.xuiUrl = xuiUrl;
+        this.xuiDomain = xuiDomain;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
             .map(caseDocument ->  caseDocument.getBinaryUrl())
             .map(url -> {
                 String downloadPath = url.substring(url.indexOf("/hearing-recordings"));
-                return xuiUrl + downloadPath;
+                return xuiDomain + downloadPath;
             })
             .collect(Collectors.toList());
 
