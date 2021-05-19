@@ -97,14 +97,16 @@ public class SecurityServiceImpl implements SecurityService {
 
         HttpServletRequest request = getCurrentRequest();
         if (Objects.isNull(request)) {
+            LOGGER.warn("Using dummy serviceName because request is null");
             return DUMMY_NAME;
         }
         String s2sToken = request.getHeader(SERVICE_AUTH);
         if (StringUtils.isBlank(s2sToken)) {
+            LOGGER.warn("Using dummy serviceName because token is blank");
             return DUMMY_NAME;
         }
+        LOGGER.info("Using token ({}) to get serviceName", s2sToken.substring(0, 15));
         return getServiceName(BEARER + s2sToken);
-
     }
 
     @Override

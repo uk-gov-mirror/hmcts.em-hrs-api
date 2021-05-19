@@ -5,18 +5,16 @@ import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
 
 public class CaseUpdateScenarios extends BaseTest {
 
-    private static final String FOLDER = "audiostream001";
-    private static final String JURISDICTION_CODE = "FM";
-    private static final String LOCATION_CODE = "0112";
-    private static final String CVP_CASE_ID = "testfile200M";
-    private static final String CASE_REF = getCaseRef(JURISDICTION_CODE, LOCATION_CODE, CVP_CASE_ID);
+    private static final String FOLDER = "functionaltest001";
+    private static final String JURISDICTION_CODE = "FT";
+    private static final String LOCATION_CODE = "0116";
+    private static final String CASE_REF = "functionalTestFile200M";
+    private static final String RECORDING_TIME = "2020-05-17-12.12.11.123";
+    //functionaltest001/FT-0111-functionalTestFile200M_2020-05-17-12.12.11.123-UTC_0.mp4
 
     @Test
     public void testCcdCaseUpdate() {
@@ -24,17 +22,15 @@ public class CaseUpdateScenarios extends BaseTest {
             .then()
             .statusCode(200);
 
-        String recordingTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSS"));
-
-        JsonNode reqBody = createRecordingSegment(FOLDER, JURISDICTION_CODE, LOCATION_CODE, CVP_CASE_ID,
-                                                  recordingTime, 0, "mp4");
+        JsonNode reqBody = createRecordingSegment(FOLDER, JURISDICTION_CODE, LOCATION_CODE, CASE_REF,
+                                                  RECORDING_TIME, 0, "mp4");
 
         postRecordingSegment(reqBody)
             .then()
             .statusCode(202);
     }
 
-    @Ignore
+    //@Ignore
     @Test
     public void testDocumentShare() {
         CaseDetails caseDetails = searchForCase(CASE_REF).orElseThrow();
@@ -44,7 +40,7 @@ public class CaseUpdateScenarios extends BaseTest {
             .statusCode(200);
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void testRecordingDownload() {
         CaseDetails caseDetails = searchForCase(CASE_REF).orElseThrow();

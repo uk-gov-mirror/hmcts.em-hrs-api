@@ -164,11 +164,10 @@ public abstract class BaseTest {
     }
 
     protected JsonNode createRecordingSegment(String folder,
-                                              String jurisdictionCode, String locationCode, String cvpCaseId,
+                                              String jurisdictionCode, String locationCode, String caseRef,
                                               String recordingTime, int segment, String fileExt) {
-        String caseRef = getCaseRef(jurisdictionCode, locationCode, cvpCaseId);
-        String recordingRef = folder + "/" + caseRef + "_" + recordingTime;
-        String filename = recordingRef + "_" + segment + "." + fileExt;
+        String recordingRef = folder + "/" + jurisdictionCode + "-" + locationCode + "-" + caseRef + "_" + recordingTime;
+        String filename = recordingRef + "-UTC_" + segment + "." + fileExt;
         return JsonNodeFactory.instance.objectNode()
             .put("folder", folder)
             .put("recording-ref", recordingRef)
@@ -184,9 +183,5 @@ public abstract class BaseTest {
             .put("file-size", 226200L)
             .put("segment", segment)
             .put("recording-date-time", recordingTime);
-    }
-
-    protected static String getCaseRef(String jurisdictionCode, String locationCode, String cvpCaseId) {
-        return jurisdictionCode + "-" + locationCode + "-" + cvpCaseId;
     }
 }
