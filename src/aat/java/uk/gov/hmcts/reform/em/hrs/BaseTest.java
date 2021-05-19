@@ -47,6 +47,7 @@ public abstract class BaseTest {
 
     protected static final String JURISDICTION = "HRS";
     protected static final String CASE_TYPE = "HearingRecordings";
+    protected static final String BEARER = "Bearer ";
 
     protected String idamAuth;
     protected String s2sAuth;
@@ -76,8 +77,8 @@ public abstract class BaseTest {
     @PostConstruct
     public void init() {
         SerenityRest.useRelaxedHTTPSValidation();
-        idamAuth = idamHelper.authenticateUser(HRS_TESTER);
-        s2sAuth = s2sHelper.getS2sToken();
+        idamAuth = BEARER + idamHelper.authenticateUser(HRS_TESTER);
+        s2sAuth = BEARER + s2sHelper.getS2sToken();
         userId = idamHelper.getUserId(HRS_TESTER);
     }
 

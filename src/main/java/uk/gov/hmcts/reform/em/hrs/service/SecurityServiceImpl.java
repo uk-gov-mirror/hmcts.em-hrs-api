@@ -27,7 +27,6 @@ public class SecurityServiceImpl implements SecurityService {
     public static final String HRS_INGESTOR = "hrsIngestor";
     public static final String SERVICE_AUTH = "serviceauthorization";
     public static final String USER_AUTH = "authorization";
-    public static final String BEARER = "Bearer ";
 
     private final IdamClient idamClient;
     private final AuthTokenGenerator authTokenGenerator;
@@ -106,7 +105,7 @@ public class SecurityServiceImpl implements SecurityService {
             return DUMMY_NAME;
         }
         LOGGER.info("Using token ({}) to get serviceName", s2sToken.substring(0, 15));
-        return getServiceName(BEARER + s2sToken);
+        return getServiceName(s2sToken);
     }
 
     @Override
