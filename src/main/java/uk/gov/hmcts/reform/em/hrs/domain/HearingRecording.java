@@ -27,6 +27,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 
 @Entity
@@ -34,6 +36,9 @@ import javax.persistence.OneToMany;
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"folder_id", "recordingRef"})
+})
 public class HearingRecording {
 
     @Id
@@ -79,7 +84,6 @@ public class HearingRecording {
     private Map<String, String> metadata;
 
     private LocalDateTime ttl;
-    @Column(unique = true)
     private String recordingRef;
     private String caseRef;
     private String hearingLocationCode;
