@@ -69,7 +69,7 @@ public class IngestionServiceImpl implements IngestionService {
                             final HearingRecordingDto recordingDto) {
         if (recording.getCcdCaseId() == null) {
             LOGGER.info(
-                "Recording Ref {} in folder {}, has noccd id, case still being created in CCD or has been rejected",
+                "Recording Ref {} in folder {}, has no ccd id, case still being created in CCD or has been rejected",
                 recordingDto.getRecordingRef(),
                 recordingDto.getFolder()
             );
@@ -84,22 +84,26 @@ public class IngestionServiceImpl implements IngestionService {
         );
 
 
-        ccdDataStoreApiClient.updateCaseData(recording.getCcdCaseId(), recording.getId(), recordingDto);
+        Long caseDetailsId =
+            ccdDataStoreApiClient.updateCaseData(recording.getCcdCaseId(), recording.getId(), recordingDto);
+
+        LOGGER.info("Case Details (id {}) updated successfully", caseDetailsId);
 
         try {
             HearingRecordingSegment segment = createSegment(recording, recordingDto);
             segmentRepository.save(segment);
 
         } catch (ConstraintViolationException e) {
+            //TODO this is not caught as the sql is a multie step / tranasction so throws a batch exception which has
+            //potentially multiple exceptions. Consider catching these or improving the messaging.
             LOGGER.info(
                 "updateCase ConstraintViolationException segment already added to DB (ref {}) to case(ccdid {})",
                 recordingDto.getRecordingRef(),
                 recording.getCcdCaseId()
             );
-
         } catch (Exception e) {
             LOGGER.info(
-                "updateCase Unhandled Exception segment whilst trying to added to DB (ref {}) to case(ccdid {})",
+                "segment not added to database, probably duplicate entry (ref {}) to case(ccdid {})",
                 recordingDto.getRecordingRef(),
                 recording.getCcdCaseId()
             );
