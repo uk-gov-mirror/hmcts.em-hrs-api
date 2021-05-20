@@ -106,8 +106,8 @@ public class CcdDataStoreApiClient {
             .retryIfResult(Predicates.<Long>isNull())
             .retryIfExceptionOfType(IOException.class)//TODO determine the expected CCD exception thrown here
             .retryIfRuntimeException()
-            .withWaitStrategy(WaitStrategies.fibonacciWait(100, 2, TimeUnit.MINUTES))
-            .withStopStrategy(StopStrategies.stopAfterAttempt(3))
+            .withWaitStrategy(WaitStrategies.fibonacciWait(2000, 2, TimeUnit.MINUTES))
+            .withStopStrategy(StopStrategies.stopAfterAttempt(5))
             .build();
         try {
             caseDetailsId = retryer.call(callable);
