@@ -18,8 +18,6 @@ import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Service
 @Transactional
@@ -52,34 +50,18 @@ public class IngestionServiceImpl implements IngestionService {
     @Async("HrsAsyncExecutor")
     public void ingest(final HearingRecordingDto hearingRecordingDto) {
 
-        final CompletableFuture<Void> metadataFuture = CompletableFuture.runAsync(() -> {
-            LOGGER.info("request to create/update case with new hearing recording");
+        hearingRecordingStorage
+            .copyRecording(hearingRecordingDto.getCvpFileUrl(), hearingRecordingDto.getFilename());
 
-            final Optional<HearingRecording> optionalHearingRecording =
-                recordingRepository.findByRecordingRefAndFolderName(
-                    hearingRecordingDto.getRecordingRef(), hearingRecordingDto.getFolder()
-                );
-
-            optionalHearingRecording.ifPresentOrElse(
-                hearingRecording -> updateCase(hearingRecording, hearingRecordingDto),
-                () -> createCaseinCcdAndPersist(hearingRecordingDto)
+        final Optional<HearingRecording> checkHearingRecording =
+            recordingRepository.findByRecordingRefAndFolderName(
+                hearingRecordingDto.getRecordingRef(), hearingRecordingDto.getFolder()
             );
-        });
 
-        final CompletableFuture<Void> blobCopyFuture = CompletableFuture.runAsync(
-            () -> hearingRecordingStorage.copyRecording(
-                hearingRecordingDto.getCvpFileUrl(),
-                hearingRecordingDto.getFilename()
-            ));
-
-        try {
-            CompletableFuture.allOf(metadataFuture, blobCopyFuture).get();
-        } catch (final ExecutionException e) {
-            snoop(hearingRecordingDto.getCvpFileUrl(), e);
-        } catch (final InterruptedException e) {
-            snoop(hearingRecordingDto.getCvpFileUrl(), e);
-            Thread.currentThread().interrupt();
-        }
+        checkHearingRecording.ifPresentOrElse(
+            hearingRecording -> updateCase(hearingRecording, hearingRecordingDto),
+            () -> createCaseinCcdAndPersist(hearingRecordingDto)
+        );
 
     }
 
@@ -95,10 +77,11 @@ public class IngestionServiceImpl implements IngestionService {
             return;
         }
 
-        LOGGER.info("adding  recording ref ({}) in folder {} to case ccd id ({})",
-                    recordingDto.getRecordingRef(),
-                    recordingDto.getFolder(),
-                    recording.getCcdCaseId()
+        LOGGER.info(
+            "adding  recording (ref {}) in folder {} to case (ccdid {})",
+            recordingDto.getRecordingRef(),
+            recordingDto.getFolder(),
+            recording.getCcdCaseId()
         );
 
 
@@ -110,14 +93,14 @@ public class IngestionServiceImpl implements IngestionService {
 
         } catch (ConstraintViolationException e) {
             LOGGER.info(
-                "updateCase ConstraintViolationException segment already added to DB ({}) to case({})",
+                "updateCase ConstraintViolationException segment already added to DB (ref {}) to case(ccdid {})",
                 recordingDto.getRecordingRef(),
                 recording.getCcdCaseId()
             );
 
         } catch (Exception e) {
             LOGGER.info(
-                "updateCase Unhandled Exception segment already added to DB ({}) to case({})",
+                "updateCase Unhandled Exception segment whilst trying to added to DB (ref {}) to case(ccdid {})",
                 recordingDto.getRecordingRef(),
                 recording.getCcdCaseId()
             );
@@ -154,7 +137,7 @@ public class IngestionServiceImpl implements IngestionService {
                         + "at this time");
         } catch (Exception e) {
             LOGGER.info(
-                "create case Unhandled Exception segment already added to DB ({}) to case({})",
+                "create case Unhandled Exception whilst adding segment to DB (ref {}) to case(ccdid {})",
                 recordingDto.getRecordingRef(),
                 recording.getCcdCaseId()
             );
