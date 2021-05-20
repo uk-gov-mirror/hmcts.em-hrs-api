@@ -69,8 +69,7 @@ public class IngestionServiceImpl implements IngestionService {
                             final HearingRecordingDto recordingDto) {
         if (recording.getCcdCaseId() == null) {
             LOGGER.info(
-                "Recording Ref {} in folder {}, does not have a ccd id, case still being created in CCD or has been " +
-                    "rejected",
+                "Recording Ref {} in folder {}, has noccd id, case still being created in CCD or has been rejected",
                 recordingDto.getRecordingRef(),
                 recordingDto.getFolder()
             );
