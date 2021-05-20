@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
-import com.github.rholder.retry.RetryException;
 import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
@@ -15,13 +14,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.exception.CcdUploadException;
 import uk.gov.hmcts.reform.em.hrs.service.SecurityService;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -112,12 +111,9 @@ public class CcdDataStoreApiClient {
             .build();
         try {
             caseDetailsId = retryer.call(callable);
-        } catch (RetryException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new CcdUploadException("Failed to upload to CCD " + e.getMessage(), e);
         }
-
 
         return caseDetailsId;
     }
