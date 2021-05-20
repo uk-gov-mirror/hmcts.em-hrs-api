@@ -69,7 +69,10 @@ public class CcdDataStoreApiClient {
                 startEventResponse.getCaseDetails().getData(), recordingId, hearingRecordingDto)
             ).build();
 
-        LOGGER.info("updating ccd case({}) with new recording ({})", caseId, hearingRecordingDto.getRecordingRef());
+        LOGGER.info("updating ccd case (id {}) with new recording (ref {})",
+                    caseId,
+                    hearingRecordingDto.getRecordingRef()
+        );
 
         return coreCaseDataApi
             .submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),

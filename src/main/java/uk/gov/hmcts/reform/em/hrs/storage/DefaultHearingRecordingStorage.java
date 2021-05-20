@@ -74,22 +74,6 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     @Override
     public void copyRecording(String sourceUri, final String filename) {
 
-
-        LOGGER.info("**************************************");
-        LOGGER.info("Copying Recording");
-        LOGGER.info("Source URI:{}", sourceUri);
-        LOGGER.info("Filename:{}", filename);
-        LOGGER.info("**************************************");
-        LOGGER.info("cvpBlobContainerClient.getBlobContainerName():{}", cvpBlobContainerClient.getBlobContainerName());
-        LOGGER.info("hrsBlobContainerClient.getBlobContainerName():{}", hrsBlobContainerClient.getBlobContainerName());
-
-
-        copyViaUrl(sourceUri, filename);//may be limited to 256mb
-
-    }
-
-
-    private void copyViaUrl(String sourceUri, String filename) {
         BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
 
         LOGGER.info("############## Trying copy from URL for file {}", filename);

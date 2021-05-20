@@ -55,9 +55,10 @@ public class IngestionServiceImpl implements IngestionService {
         final CompletableFuture<Void> metadataFuture = CompletableFuture.runAsync(() -> {
             LOGGER.info("request to create/update case with new hearing recording");
 
-            final Optional<HearingRecording> optionalHearingRecording = recordingRepository.findByRecordingRef(
-                hearingRecordingDto.getRecordingRef()
-            );
+            final Optional<HearingRecording> optionalHearingRecording =
+                recordingRepository.findByRecordingRefAndFolderName(
+                    hearingRecordingDto.getRecordingRef(), hearingRecordingDto.getFolder()
+                );
 
             optionalHearingRecording.ifPresentOrElse(
                 hearingRecording -> updateCase(hearingRecording, hearingRecordingDto),
@@ -86,14 +87,19 @@ public class IngestionServiceImpl implements IngestionService {
                             final HearingRecordingDto recordingDto) {
         if (recording.getCcdCaseId() == null) {
             LOGGER.info(
-                "Case still being created in CCD for recording ({}) to case({})",
+                "Recording Ref {} in folder {}, does not have a ccd id, case still being created in CCD or has been " +
+                    "rejected",
                 recordingDto.getRecordingRef(),
-                recording.getCcdCaseId()
+                recordingDto.getFolder()
             );
             return;
         }
 
-        LOGGER.info("adding  recording ({}) to case({})", recordingDto.getRecordingRef(), recording.getCcdCaseId());
+        LOGGER.info("adding  recording ref ({}) in folder {} to case ccd id ({})",
+                    recordingDto.getRecordingRef(),
+                    recordingDto.getFolder(),
+                    recording.getCcdCaseId()
+        );
 
 
         ccdDataStoreApiClient.updateCaseData(recording.getCcdCaseId(), recording.getId(), recordingDto);
