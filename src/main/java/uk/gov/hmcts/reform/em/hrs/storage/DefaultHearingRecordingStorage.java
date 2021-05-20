@@ -22,6 +22,7 @@ import com.azure.storage.blob.specialized.BlockBlobClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import uk.gov.hmcts.reform.em.hrs.exception.BlobCopyException;
 import uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver;
 
 import java.time.Duration;
@@ -76,16 +77,12 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
         BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
 
-        LOGGER.info("############## Trying copy from URL for file {}", filename);
+        LOGGER.info("############## Trying copy from URL for sourceUri {}", sourceUri);
 
         //TODO should we compare md5sum of destination as well or
         // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
         if (!destinationBlobClient.exists()) {
-            LOGGER.info("############## File does not exist in target blobstore {}", filename);
-
             if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
-
-                LOGGER.info("Generating sasToken");
                 String sasToken = generateReadSASForCVP(filename);
                 sourceUri = sourceUri + "?" + sasToken;
             }
@@ -94,21 +91,24 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
             try {
 
                 BlockBlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
-                LOGGER.info("sourceBlob.exists() {}", sourceBlob.exists());
+                LOGGER.debug("sourceBlob.exists() {}", sourceBlob.exists());
 
                 SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
                 PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
                 LOGGER.info("File copy completed for {} with status {}", sourceUri, poll.getStatus());
             } catch (BlobStorageException be) {
-                LOGGER.info("Blob Copy exception code {}, message{}", be.getErrorCode(), be.getMessage());
+                LOGGER.info("Blob Copy BlobStorageException code {}, message{}", be.getErrorCode(), be.getMessage());
+                throw new BlobCopyException(be.getMessage(), be);
+                //TODO should we try and clean up the destination blob? can it be partially present?
             } catch (Exception e) {
-                LOGGER.info("Unhandled Blob Copy exception {}", e.getMessage());
+                LOGGER.info("Unhandled Exception during Blob Copy {}", e.getMessage());
+                throw new BlobCopyException(e.getMessage(), e);
                 //TODO should we try and clean up the destination blob? can it be partially present?
             }
 
 
         } else {
-            LOGGER.info("############## File already exists in target blobstore {}", filename);
+            LOGGER.info("############## target blobstore already has file: {}", filename);
         }
 
     }
@@ -116,7 +116,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
     private String generateReadSASForCVP(String fileName) {
 
-        LOGGER.info("Attempting to generate SAS for contaienr name {}", cvpBlobContainerClient.getBlobContainerName());
+        LOGGER.debug("Attempting to generate SAS for container name {}", cvpBlobContainerClient.getBlobContainerName());
 
         BlobServiceClient blobServiceClient = cvpBlobContainerClient.getServiceClient();
 
