@@ -66,8 +66,9 @@ public class CcdDataStoreApiClient {
         return caseDetails.getId();
     }
 
-    public Long updateCaseData(final Long caseId, final UUID recordingId,
-                               final HearingRecordingDto hearingRecordingDto) {
+
+    public synchronized Long updateCaseData(final Long caseId, final UUID recordingId,
+                                            final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityService.getTokens();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"),
