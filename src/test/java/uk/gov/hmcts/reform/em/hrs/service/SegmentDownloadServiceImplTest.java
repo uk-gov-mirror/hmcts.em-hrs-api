@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import com.azure.storage.blob.models.BlobProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -59,6 +60,13 @@ class SegmentDownloadServiceImplTest {
 
     @Test
     void testDownload() throws IOException {
+        BlobProperties blobProperties = new BlobProperties(
+            null, null, null, 1234L, "video/mp4",null,
+            null, null, null, null,null,
+            null, null, null, null,null, null, null,
+            null, null,null, null, null,
+            null, null,null, null, null,
+            null, null, null);
 
         doReturn(segment).when(segmentRepository).findByHearingRecordingIdAndRecordingSegment(RECORDING_ID, SEGMENT_NO);
         doReturn(outputStream).when(response).getOutputStream();
@@ -66,6 +74,7 @@ class SegmentDownloadServiceImplTest {
             .when(auditEntryService).createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_REQUESTED);
         doReturn(hearingRecordingSegmentAuditEntry)
             .when(auditEntryService).createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_OK);
+        doReturn(blobProperties).when(blobstoreClient).getBlobProperties(segment.getFilename());
         doNothing().when(blobstoreClient).downloadFile(segment.getFilename(), outputStream);
 
         segmentDownloadService.download(RECORDING_ID, SEGMENT_NO, response);
