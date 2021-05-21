@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import com.azure.storage.blob.models.BlobProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.domain.AuditActions;
@@ -15,6 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class SegmentDownloadServiceImpl implements SegmentDownloadService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SegmentDownloadServiceImpl.class);
 
     private final HearingRecordingSegmentRepository segmentRepository;
     private final BlobstoreClient blobstoreClient;
@@ -37,7 +43,18 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
 
         auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_REQUESTED);
 
-        response.setHeader("Content-Disposition",String.format("attachment; filename=%s", segment.getFilename()));
+        BlobProperties blobProperties = blobstoreClient.getBlobProperties(segment.getFilename());
+
+        LOGGER.info(
+            "downloading blob with the following properties: [filenmae: {}, content-type: {}, content-length: {}]",
+            segment.getFilename(), blobProperties.getContentType(), blobProperties.getBlobSize()
+        );
+
+        response.setHeader(
+            HttpHeaders.CONTENT_DISPOSITION,String.format("attachment; filename=%s", segment.getFilename())
+        );
+        response.setHeader(HttpHeaders.CONTENT_TYPE, blobProperties.getContentType());
+        response.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(blobProperties.getBlobSize()));
         try {
             blobstoreClient.downloadFile(segment.getFilename(), response.getOutputStream());
         } catch (IOException e) {
