@@ -58,7 +58,7 @@ class SegmentDownloadServiceImplTest {
     }
 
     @Test
-    void testGetSegmentDetails() {
+    void testGetDownloadInfo() {
         BlobProperties blobProperties = new BlobProperties(
             null, null, null, 1234L, "video/mp4",null,
             null, null, null, null,null,
