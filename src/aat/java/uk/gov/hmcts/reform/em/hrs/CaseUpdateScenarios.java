@@ -1,9 +1,15 @@
 package uk.gov.hmcts.reform.em.hrs;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.StandardCopyOption;
 
 import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
 
@@ -44,11 +50,18 @@ public class CaseUpdateScenarios extends BaseTest {
 
     @Ignore
     @Test
-    public void testRecordingDownload() {
+    public void testRecordingDownload() throws IOException {
         CaseDetails caseDetails = searchForCase(CASE_REF).orElseThrow();
 
-        downloadRecording(HRS_TESTER, caseDetails.getData())
-            .then()
-            .statusCode(200);
+        InputStream downloadInputStream = downloadRecording(HRS_TESTER, caseDetails.getData()).asInputStream();
+
+        File targetFile = new File("FT-0111-testfile200M_2020-01-01-11.11.11.123-UTC_0.mp4");
+
+        java.nio.file.Files.copy(
+            downloadInputStream,
+            targetFile.toPath(),
+            StandardCopyOption.REPLACE_EXISTING);
+
+        IOUtils.close(downloadInputStream);
     }
 }
