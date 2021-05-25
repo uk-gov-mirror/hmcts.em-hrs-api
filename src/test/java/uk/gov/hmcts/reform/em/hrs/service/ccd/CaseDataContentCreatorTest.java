@@ -40,6 +40,7 @@ class CaseDataContentCreatorTest {
             .recordingDateTime(LocalDateTime.parse(dateString, formatter))
             .jurisdictionCode("FM")
             .urlDomain("http://xui.com")
+            .fileSize(123456789L)
             .segment(0)
             .build();
 
