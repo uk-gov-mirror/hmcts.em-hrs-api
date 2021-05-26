@@ -54,7 +54,7 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         }
 
 
-        String rangeHeader = request.getHeader(HttpHeaders.RANGE);
+        String rangeHeader = request.getHeader("range");
         if (rangeHeader == null) {
             LOGGER.info("Range Header is null");
 
@@ -99,7 +99,7 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
         LOGGER.info("Range header provided {}", filename);
 
-        String rangeHeader = request.getHeader(HttpHeaders.RANGE);
+        String rangeHeader = request.getHeader("range");
         LOGGER.info("Range requested: {}", rangeHeader);
 
         Long length = fileSize;
