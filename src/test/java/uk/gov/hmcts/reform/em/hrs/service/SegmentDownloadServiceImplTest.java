@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.em.hrs.storage.BlobstoreClient;
 
 import java.util.UUID;
 import javax.inject.Inject;
-import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.mockito.Mockito.doNothing;
@@ -24,32 +24,26 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest(classes = {SegmentDownloadServiceImpl.class})
 class SegmentDownloadServiceImplTest {
 
-    @MockBean
-    private HearingRecordingSegmentRepository segmentRepository;
-
-    @MockBean
-    private BlobstoreClient blobstoreClient;
-
-    @MockBean
-    private AuditEntryService auditEntryService;
-
-    @MockBean
-    private HttpServletResponse response;
-
-    @MockBean
-    private ServletOutputStream outputStream;
-
-    @MockBean
-    private HearingRecordingSegmentAuditEntry hearingRecordingSegmentAuditEntry;
-
-    private HearingRecordingSegment segment;
-
-    @Inject
-    private SegmentDownloadServiceImpl segmentDownloadService;
-
     private static final UUID RECORDING_ID = UUID.randomUUID();
     private static final Integer SEGMENT_NO = Integer.valueOf(10);
-
+    @MockBean
+    private HearingRecordingSegmentRepository segmentRepository;
+    @MockBean
+    private BlobstoreClient blobstoreClient;
+    @MockBean
+    private AuditEntryService auditEntryService;
+    //
+    //    @MockBean
+    //    private ServletOutputStream outputStream;
+    @MockBean
+    private HttpServletRequest request;
+    @MockBean
+    private HttpServletResponse response;
+    @MockBean
+    private HearingRecordingSegmentAuditEntry hearingRecordingSegmentAuditEntry;
+    private HearingRecordingSegment segment;
+    @Inject
+    private SegmentDownloadServiceImpl segmentDownloadService;
 
     @BeforeEach
     void before() {
@@ -87,13 +81,13 @@ class SegmentDownloadServiceImplTest {
         doReturn(segment).when(segmentRepository).findByFilename(segment.getFilename());
         doReturn(hearingRecordingSegmentAuditEntry)
             .when(auditEntryService).createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_OK);
-        doNothing().when(blobstoreClient).downloadFile(segment.getFilename(), outputStream);
+        doNothing().when(blobstoreClient).downloadFile(segment.getFilename(), request, response);
 
-        segmentDownloadService.download(segment.getFilename(), outputStream);
+        segmentDownloadService.download(segment.getFilename(), request, response);
 
         verify(segmentRepository, times(1))
             .findByFilename(segment.getFilename());
-        verify(blobstoreClient, times(1)).downloadFile(segment.getFilename(), outputStream);
+        verify(blobstoreClient, times(1)).downloadFile(segment.getFilename(), request, response);
         verify(auditEntryService, times(1))
             .createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_OK);
     }

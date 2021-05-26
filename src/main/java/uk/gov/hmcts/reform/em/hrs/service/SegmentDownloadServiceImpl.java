@@ -11,9 +11,10 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.BlobstoreClient;
 
-import java.io.OutputStream;
 import java.util.Map;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class SegmentDownloadServiceImpl implements SegmentDownloadService {
@@ -22,7 +23,7 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
 
     private final HearingRecordingSegmentRepository segmentRepository;
     private final BlobstoreClient blobstoreClient;
-    private AuditEntryService auditEntryService;
+    private final AuditEntryService auditEntryService;
 
     @Autowired
     public SegmentDownloadServiceImpl(HearingRecordingSegmentRepository segmentRepository,
@@ -57,9 +58,10 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
 
     @Override
     @PreAuthorize("hasPermission(#recordingId,'READ')")
-    public void download(String filename, OutputStream responseOutputStream) {
+    public void download(String filename, HttpServletRequest request,
+                         HttpServletResponse response) {
 
-        blobstoreClient.downloadFile(filename, responseOutputStream);
+        blobstoreClient.downloadFile(filename, request, response);
 
         HearingRecordingSegment segment = segmentRepository.findByFilename(filename);
 

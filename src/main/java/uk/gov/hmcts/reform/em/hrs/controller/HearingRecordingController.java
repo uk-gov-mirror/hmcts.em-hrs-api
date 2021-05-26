@@ -27,9 +27,9 @@ import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
@@ -144,6 +144,7 @@ public class HearingRecordingController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording segment")})
     public ResponseEntity getSegmentBinary(@PathVariable("recordingId") UUID recordingId,
                                            @PathVariable("segment") Integer segmentNo,
+                                           HttpServletRequest request,
                                            HttpServletResponse response) {
 
         LOGGER.info("received request to download recording for case ({}) segment ({})", recordingId, segmentNo);
@@ -156,8 +157,8 @@ public class HearingRecordingController {
         response.setHeader(HttpHeaders.CONTENT_LENGTH, segmentDetails.get("contentLength"));
 
         try {
-            downloadService.download(segmentDetails.get("filename"), response.getOutputStream());
-        } catch (IOException e) {
+            downloadService.download(segmentDetails.get("filename"), request, response);
+        } catch (Exception e) {
             throw new SegmentDownloadException(e);
         }
         return new ResponseEntity<>(HttpStatus.OK);
