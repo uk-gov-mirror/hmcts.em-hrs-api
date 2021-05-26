@@ -119,22 +119,24 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         // Range headers can request a multipart range but this is not to be supported yet
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
         // Take only first requested range and process it
-        String part = rangeHeader.substring(6).split(",")[0].trim();
+        String byteRange = rangeHeader.substring(6).split(",")[0].trim();
 
-        BlobRange b = processPart(part, length, response);
+        BlobRange blobRange = setContentRangeHeadersAndGenerateBlobRange(byteRange, length, response);
 
-        if (b.getOffset() == 0 && b.getCount() > length) {
+
+        if (blobRange.getOffset() == 0 && blobRange.getCount() > length) {
+            LOGGER.info("Offset =0 and b count > length {}", filename);
             loadFullBlob(filename, blobClient, response);
             return;
         }
 
         response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
 
-        LOGGER.info("Processing blob range: {}", b.toString());
+        LOGGER.info("Processing blob range: {}", blobRange.toString());
         blockBlobClient(filename.toString())
             .downloadWithResponse(
                 response.getOutputStream(),
-                b,
+                blobRange,
                 new DownloadRetryOptions().setMaxRetryRequests(5),
                 null,
                 false,
@@ -143,30 +145,32 @@ public class BlobstoreClientImpl implements BlobstoreClient {
             );
     }
 
-    private BlobRange processPart(String part, Long length, HttpServletResponse response) {
-        long start = subLong(part, 0, part.indexOf('-'));
-        long end = subLong(part, part.indexOf('-') + 1, part.length());
+    private BlobRange setContentRangeHeadersAndGenerateBlobRange(String part, Long length,
+                                                                 HttpServletResponse response) {
+        long byteRangeStart = extractLongFromSubstring(part, 0, part.indexOf('-'));
+        long byteRangeEnd = extractLongFromSubstring(part, part.indexOf('-') + 1, part.length());
 
-        if (start == -1) {
-            start = length - end;
-            end = length;
-        } else if (end == -1 || end > length) {
-            end = length;
+        if (byteRangeStart == -1) {
+            byteRangeStart = length - byteRangeEnd;
+            byteRangeEnd = length;
+        } else if (byteRangeEnd == -1 || byteRangeEnd > length) {
+            byteRangeEnd = length;
         }
 
         // Check if Range is syntactically valid. If not, then return 416.
-        if (start > end) {
+        if (byteRangeStart > byteRangeEnd) {
+            LOGGER.info("Invalid Range Request ");
             throw new InvalidRangeRequestException(response, length);
         }
 
-        long rangeByteCount = (end - start) + 2;
-        response.setHeader(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + length);
+        long rangeByteCount = (byteRangeEnd - byteRangeStart) + 2;
+        response.setHeader(HttpHeaders.CONTENT_RANGE, "bytes " + byteRangeStart + "-" + byteRangeEnd + "/" + length);
         response.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(rangeByteCount - 1));
 
-        return new BlobRange(start, rangeByteCount);
+        return new BlobRange(byteRangeStart, rangeByteCount);
     }
 
-    private long subLong(String value, int beginIndex, int endIndex) {
+    private long extractLongFromSubstring(String value, int beginIndex, int endIndex) {
         String substring = value.substring(beginIndex, endIndex);
         return (substring.length() > 0) ? Long.parseLong(substring) : -1;
     }
