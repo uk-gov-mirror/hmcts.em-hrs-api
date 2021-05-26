@@ -47,7 +47,8 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
             Enumeration<String> headerValues = request.getHeaders(headerName);
             while (headerValues.hasMoreElements()) {
-                LOGGER.info("Values: {}", headerValues);
+                String headerValue = headerValues.nextElement();
+                LOGGER.info("Values: {}", headerValue);
             }
 
         }
