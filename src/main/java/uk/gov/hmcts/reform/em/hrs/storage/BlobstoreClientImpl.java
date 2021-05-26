@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.hrs.exception.InvalidRangeRequestException;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -37,14 +38,33 @@ public class BlobstoreClientImpl implements BlobstoreClient {
                              final HttpServletResponse response) {
         final BlockBlobClient blobClient = blobContainerClient.getBlobClient(filename).getBlockBlobClient();
 
-        if (request.getHeader(HttpHeaders.RANGE) == null) {
+
+        Enumeration<String> headerNames = request.getHeaderNames();
+
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            LOGGER.info("HeaderName: {}", headerName);
+
+            Enumeration<String> headerValues = request.getHeaders(headerName);
+            while (headerValues.hasMoreElements()) {
+                LOGGER.info("Values: {}", headerValues);
+            }
+
+        }
+
+
+        String rangeHeader = request.getHeader(HttpHeaders.RANGE);
+        if (rangeHeader == null) {
+            LOGGER.info("Range Header is null");
+
             try {
-                //                blobClient.download(response.getOutputStream());
                 loadFullBlob(filename, blobClient, response);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
+            LOGGER.info("Range Header is not null, value: {}", rangeHeader);
+
             try {
                 final long fileSize = blobClient.getProperties().getBlobSize();
                 loadPartialBlob(filename, fileSize, blobClient, request, response);
@@ -64,11 +84,11 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
     private void loadFullBlob(String filename, BlockBlobClient blobClient, HttpServletResponse response)
         throws IOException {
-        LOGGER.info("No Range header provided; returning entire document {}", filename);
+        LOGGER.info("Loading Full Blob{}", filename);
 
         blobClient.download(response.getOutputStream());
 
-        LOGGER.info("Reading document version {} from Azure Blob Storage: OK", filename);
+        LOGGER.info("Reading Blob from Azure Blob Storage: OK {}", filename);
     }
 
 
@@ -76,10 +96,10 @@ public class BlobstoreClientImpl implements BlobstoreClient {
                                  HttpServletRequest request,
                                  HttpServletResponse response) throws IOException {
 
-        LOGGER.debug("Range header provided {}", filename);
+        LOGGER.info("Range header provided {}", filename);
 
         String rangeHeader = request.getHeader(HttpHeaders.RANGE);
-        LOGGER.debug("Range requested: {}", rangeHeader);
+        LOGGER.info("Range requested: {}", rangeHeader);
 
         Long length = fileSize;
 
@@ -109,7 +129,7 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
         response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
 
-        LOGGER.debug("Processing blob range: {}", b.toString());
+        LOGGER.info("Processing blob range: {}", b.toString());
         blockBlobClient(filename.toString())
             .downloadWithResponse(
                 response.getOutputStream(),
