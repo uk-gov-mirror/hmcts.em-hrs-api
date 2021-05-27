@@ -17,7 +17,13 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.*;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CASE_REFERENCE;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_DATE;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_SEGMENT_DOWNLOAD_URLS;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_TIMEOFDAY;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_ID;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.convertObjectToJsonString;
 
 class NotificationServiceImplTest {
     private static final String EMAIL_TEMPLATE_ID = "1e10b560-4a3f-49a7-81f7-c3c6eceab455";
