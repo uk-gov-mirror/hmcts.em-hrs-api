@@ -17,12 +17,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CASE_REFERENCE;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_DATETIME;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_SEGMENT_DOWNLOAD_URLS;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_ID;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.*;
 
 class NotificationServiceImplTest {
     private static final String EMAIL_TEMPLATE_ID = "1e10b560-4a3f-49a7-81f7-c3c6eceab455";
@@ -46,11 +41,9 @@ class NotificationServiceImplTest {
                        anyString());
 
         underTest.sendEmailNotification(
-            CASE_REFERENCE,
-            RECORDING_DATETIME,
-            RECORDING_SEGMENT_DOWNLOAD_URLS,
-            SHAREE_ID,
-            SHAREE_EMAIL_ADDRESS
+            CASE_REFERENCE, RECORDING_SEGMENT_DOWNLOAD_URLS,
+            RECORDING_DATE, RECORDING_TIMEOFDAY,
+            SHAREE_ID, SHAREE_EMAIL_ADDRESS
         );
 
         verify(notificationClient, times(1))
@@ -72,18 +65,13 @@ class NotificationServiceImplTest {
                        anyString());
 
         assertThatExceptionOfType(NotificationClientException.class)
-            .isThrownBy(() -> underTest.sendEmailNotification(
-                CASE_REFERENCE,
-                RECORDING_DATETIME,
-                RECORDING_SEGMENT_DOWNLOAD_URLS,
-                SHAREE_ID,
-                SHAREE_EMAIL_ADDRESS
-            ));
+            .isThrownBy(
+                () -> underTest.sendEmailNotification(CASE_REFERENCE, RECORDING_SEGMENT_DOWNLOAD_URLS,
+                                                      RECORDING_DATE, RECORDING_TIMEOFDAY,
+                                                      SHAREE_ID, SHAREE_EMAIL_ADDRESS)
+            );
         verify(notificationClient, times(1))
-            .sendEmail(anyString(),
-                       eq(SHAREE_EMAIL_ADDRESS),
-                       eq(personalisation),
-                       anyString());
+            .sendEmail(anyString(), eq(SHAREE_EMAIL_ADDRESS), eq(personalisation), anyString());
     }
 
     private Map<String, Object> makePersonalisation() {
@@ -111,7 +99,6 @@ class NotificationServiceImplTest {
                 )
             )
         );
-
         return new SendEmailResponse(emailResponseString);
     }
 }
