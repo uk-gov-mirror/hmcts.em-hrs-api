@@ -59,8 +59,8 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
             try {
                 loadFullBlob(filename, blobClient, response);
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                LOGGER.warn("Exception: {}", e);
             }
         } else {
             LOGGER.info("Range Header is not null, value: {}", rangeHeader);
@@ -82,10 +82,10 @@ public class BlobstoreClientImpl implements BlobstoreClient {
     }
 
 
-    private void loadFullBlob(String filename, BlockBlobClient blobClient, HttpServletResponse response)
+    private void bloadFullBlob(String filename, BlockBlobClient blobClient, HttpServletResponse response)
         throws IOException {
 
-        LOGGER.info("Responding with Error", filename);
+        LOGGER.info("Not downloading blob, responding with Error", filename);
 
         response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
 

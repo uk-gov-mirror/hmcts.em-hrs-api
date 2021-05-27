@@ -40,7 +40,7 @@ public class AzureStorageConfig {
             .containerName(hrsContainer);
 
         LOGGER.info("****************************");
-        LOGGER.info("PAUL LABEL: May27 5.40pm");
+        LOGGER.info("PAUL LABEL: May27 11:10pm");
         LOGGER.info("****************************");
         LOGGER.info("Container settings:");
         LOGGER.info("hrsContainer: {}", hrsContainer);

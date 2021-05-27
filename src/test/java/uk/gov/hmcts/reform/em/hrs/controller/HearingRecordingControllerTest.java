@@ -202,7 +202,7 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
             .download(eq(filename), any(HttpServletRequest.class), any(HttpServletResponse.class));
 
         mockMvc.perform(get(String.format("/hearing-recordings/%s/segments/%d", recordingId, 0)))
-            .andExpect(status().isInternalServerError())
+            .andExpect(status().isBadGateway())
             .andReturn();
     }
 

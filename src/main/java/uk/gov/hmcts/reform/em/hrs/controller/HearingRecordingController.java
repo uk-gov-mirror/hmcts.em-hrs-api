@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
-import uk.gov.hmcts.reform.em.hrs.exception.SegmentDownloadException;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
@@ -159,7 +158,8 @@ public class HearingRecordingController {
         try {
             downloadService.download(segmentDetails.get("filename"), request, response);
         } catch (Exception e) {
-            throw new SegmentDownloadException(e);
+            LOGGER.warn("Download exception {}", e);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);//catching client abort
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
