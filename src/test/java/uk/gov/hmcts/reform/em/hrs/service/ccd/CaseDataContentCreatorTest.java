@@ -59,7 +59,7 @@ class CaseDataContentCreatorTest {
         caseData.put("courtLocationCode", "CRY");
         caseData.put("recordingReference", "testFile200Mb");
 
-        CaseHearingRecording caseHearingRecording = underTest.getCaseRecoringObject(caseData);
+        CaseHearingRecording caseHearingRecording = underTest.getCaseRecordingObject(caseData);
 
         assertEquals("001", caseHearingRecording.getHearingRoomRef());
     }

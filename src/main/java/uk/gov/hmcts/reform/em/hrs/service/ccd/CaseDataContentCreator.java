@@ -53,7 +53,7 @@ public class CaseDataContentCreator {
     public JsonNode createCaseUpdateData(final Map<String, Object> caseData, final UUID recordingId,
                                                     final HearingRecordingDto hearingRecordingDto) {
 
-        CaseHearingRecording caseRecording = getCaseRecoringObject(caseData);
+        CaseHearingRecording caseRecording = getCaseRecordingObject(caseData);
 
         boolean segmentNotYetAdded = extractCaseDocuments(caseRecording).stream()
             .noneMatch(caseDocument -> caseDocument.getFilename().equals(hearingRecordingDto.getFilename()));
@@ -64,7 +64,7 @@ public class CaseDataContentCreator {
         return objectMapper.convertValue(caseRecording, JsonNode.class);
     }
 
-    public CaseHearingRecording getCaseRecoringObject(final Map<String, Object> caseData) {
+    public CaseHearingRecording getCaseRecordingObject(final Map<String, Object> caseData) {
         return objectMapper.convertValue(caseData, CaseHearingRecording.class);
     }
 

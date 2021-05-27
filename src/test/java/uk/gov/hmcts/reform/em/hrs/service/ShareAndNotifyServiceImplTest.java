@@ -53,7 +53,7 @@ class ShareAndNotifyServiceImplTest {
             .recordingDate(RECORDING_DATE)
             .recordingTimeOfDay(RECORDING_TIMEOFDAY)
             .recordingFiles(Collections.singletonList(Map.of("value", CASE_RECORDING_FILE))).build();
-        doReturn(caseData).when(caseDataCreator).getCaseRecoringObject(Map.of("case", "data"));
+        doReturn(caseData).when(caseDataCreator).getCaseRecordingObject(Map.of("case", "data"));
         doReturn(List.of(
             CaseDocument.builder().binaryUrl("http://em-hrs-api.com/hearing-recordings/1234/segments/0").build()
         )).when(caseDataCreator).extractCaseDocuments(caseData);

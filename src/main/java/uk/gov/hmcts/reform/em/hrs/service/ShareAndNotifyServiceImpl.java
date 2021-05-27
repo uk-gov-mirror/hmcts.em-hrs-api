@@ -42,7 +42,7 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
     @Override
     public void shareAndNotify(final Long caseId, Map<String, Object> caseDataMap, final String authorisationToken) {
 
-        CaseHearingRecording caseData = caseDataCreator.getCaseRecoringObject(caseDataMap);
+        CaseHearingRecording caseData = caseDataCreator.getCaseRecordingObject(caseDataMap);
 
         if (!EmailValidator.isValid(caseData.getShareeEmail())) {
             throw new ValidationErrorException(Map.of("recipientEmailAddress", caseData.getShareeEmail()));
