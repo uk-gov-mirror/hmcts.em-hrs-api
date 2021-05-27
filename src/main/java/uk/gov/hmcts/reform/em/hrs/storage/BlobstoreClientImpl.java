@@ -84,11 +84,15 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
     private void loadFullBlob(String filename, BlockBlobClient blobClient, HttpServletResponse response)
         throws IOException {
-        LOGGER.info("Loading Full Blob{}", filename);
 
-        blobClient.download(response.getOutputStream());
+        LOGGER.info("Responding with Error", filename);
 
-        LOGGER.info("Reading Blob from Azure Blob Storage: OK {}", filename);
+        response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
+
+        //        LOGGER.info("Loading Full Blob{}", filename);
+        //        //blobClient.download(response.getOutputStream());
+        //
+        //        LOGGER.info("Reading Blob from Azure Blob Storage: OK {}", filename);
     }
 
 
