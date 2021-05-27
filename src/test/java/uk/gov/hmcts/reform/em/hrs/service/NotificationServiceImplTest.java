@@ -75,9 +75,9 @@ class NotificationServiceImplTest {
     }
 
     private Map<String, Object> makePersonalisation() {
-        final String pattern = "DD-MMM-YYYY HH-MM";
+        final String pattern = "dd-MMM-yyyy";
         final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
-        final String formattedRecordingDateTime = dateTimeFormatter.format(RECORDING_DATETIME);
+        final String formattedRecordingDateTime = dateTimeFormatter.format(RECORDING_DATE) + " " + RECORDING_TIMEOFDAY;
 
         return Map.of("case_reference", CASE_REFERENCE,
                       "hearing_recording_datetime", formattedRecordingDateTime,

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.em.hrs.model.CaseDocument;
 import uk.gov.hmcts.reform.em.hrs.model.CaseHearingRecording;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CaseDataContentCreator;
@@ -47,6 +47,16 @@ class ShareAndNotifyServiceImplTest {
 
     @Test
     void testShouldSendNotificationSuccessfully() throws Exception {
+        CaseHearingRecording caseData = CaseHearingRecording.builder()
+            .shareeEmail(SHAREE_EMAIL_ADDRESS)
+            .recordingReference(CASE_REFERENCE)
+            .recordingDate(RECORDING_DATE)
+            .recordingTimeOfDay(RECORDING_TIMEOFDAY)
+            .recordingFiles(Collections.singletonList(Map.of("value", CASE_RECORDING_FILE))).build();
+        doReturn(caseData).when(caseDataCreator).getCaseRecoringObject(Map.of("case", "data"));
+        doReturn(List.of(
+            CaseDocument.builder().binaryUrl("http://em-hrs-api.com/hearing-recordings/1234/segments/0").build()
+        )).when(caseDataCreator).extractCaseDocuments(caseData);
         doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS))
             .when(hearingRecordingRepository).findByCcdCaseId(CCD_CASE_ID);
         doReturn(HEARING_RECORDING_SHAREE)
@@ -58,15 +68,8 @@ class ShareAndNotifyServiceImplTest {
                 RECORDING_DATE, RECORDING_TIMEOFDAY,
                 SHAREE_ID, SHAREE_EMAIL_ADDRESS
             );
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .id(CCD_CASE_ID)
-            .build();
-        doReturn(CaseHearingRecording.builder()
-                     .shareeEmail(SHAREE_EMAIL_ADDRESS)
-                     .recordingFiles(Collections.singletonList(Map.of("value", CASE_RECORDING_FILE))).build())
-            .when(caseDataCreator).getCaseRecoringObject(caseDetails.getData());
 
-        underTest.shareAndNotify(CCD_CASE_ID, caseDetails.getData(), AUTHORIZATION_TOKEN);
+        underTest.shareAndNotify(CCD_CASE_ID, Map.of("case", "data"), AUTHORIZATION_TOKEN);
 
         verify(hearingRecordingRepository, times(1)).findByCcdCaseId(CCD_CASE_ID);
         verify(shareeService, times(1))
