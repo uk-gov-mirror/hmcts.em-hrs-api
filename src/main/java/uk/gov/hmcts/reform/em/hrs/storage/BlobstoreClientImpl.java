@@ -164,9 +164,15 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         }
 
         long rangeByteCount = (byteRangeEnd - byteRangeStart) + 2;
-        response.setHeader(HttpHeaders.CONTENT_RANGE, "bytes " + byteRangeStart + "-" + byteRangeEnd + "/" + length);
-        response.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(rangeByteCount - 1));
+        String contentRangeResponse = "bytes " + byteRangeStart + "-" + byteRangeEnd + "/" + length;
+        String contentLengthResponse = String.valueOf(rangeByteCount - 1);
 
+        LOGGER.info("Calc Blob Values: blobStart {}, blobEnd {}", byteRangeStart, rangeByteCount);
+        LOGGER.info("Calc Header Values: range {}, length {}", contentRangeResponse, contentLengthResponse);
+
+
+        response.setHeader(HttpHeaders.CONTENT_RANGE, contentRangeResponse);
+        response.setHeader(HttpHeaders.CONTENT_LENGTH, contentLengthResponse);
         return new BlobRange(byteRangeStart, rangeByteCount);
     }
 
