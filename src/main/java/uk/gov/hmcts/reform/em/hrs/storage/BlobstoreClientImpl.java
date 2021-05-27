@@ -43,12 +43,11 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            LOGGER.info("HeaderName: {}", headerName);
 
             Enumeration<String> headerValues = request.getHeaders(headerName);
             while (headerValues.hasMoreElements()) {
                 String headerValue = headerValues.nextElement();
-                LOGGER.info("Values: {}", headerValue);
+                LOGGER.info("HeaderName , Values: {} , {}", headerName, headerValue);
             }
 
         }
@@ -163,17 +162,17 @@ public class BlobstoreClientImpl implements BlobstoreClient {
             throw new InvalidRangeRequestException(response, length);
         }
 
-        long rangeByteCount = (byteRangeEnd - byteRangeStart) + 2;
+        long byteRangeLength = (byteRangeEnd - byteRangeStart) + 1;
         String contentRangeResponse = "bytes " + byteRangeStart + "-" + byteRangeEnd + "/" + length;
-        String contentLengthResponse = String.valueOf(rangeByteCount - 1);
+        String contentLengthResponse = String.valueOf(byteRangeLength);
 
-        LOGGER.info("Calc Blob Values: blobStart {}, blobEnd {}", byteRangeStart, rangeByteCount);
+        LOGGER.info("Calc Blob Values: blobStart {}, blobLength {}", byteRangeStart, byteRangeLength);
         LOGGER.info("Calc Header Values: range {}, length {}", contentRangeResponse, contentLengthResponse);
 
 
         response.setHeader(HttpHeaders.CONTENT_RANGE, contentRangeResponse);
         response.setHeader(HttpHeaders.CONTENT_LENGTH, contentLengthResponse);
-        return new BlobRange(byteRangeStart, rangeByteCount);
+        return new BlobRange(byteRangeStart, byteRangeLength);
     }
 
     private long extractLongFromSubstring(String value, int beginIndex, int endIndex) {
