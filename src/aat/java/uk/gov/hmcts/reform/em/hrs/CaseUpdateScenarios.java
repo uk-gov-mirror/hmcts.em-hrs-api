@@ -16,13 +16,13 @@ import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
 public class CaseUpdateScenarios extends BaseTest {
 
     private static final String FOLDER = "functionaltest001";
-    private static final String JURISDICTION_CODE = "FT";
+    private static final String JURISDICTION_CODE = "TRB";
     private static final String LOCATION_CODE = "0111";
     private static final String CASE_REF = "testfile200M";
-    private static final String RECORDING_TIME = "2020-01-01-11.11.11.123";
-    private static final int SEGMENT = 0;
+    private static final String RECORDING_TIME = "2020-05-27-10.10.00.000";
+    private static final int SEGMENT = 2;
     private static final String FILE_EXT = "mp4";
-    //functionaltest001/FT-0111-testfile200M_2020-01-01-11.11.11.123-UTC_0.mp4
+    //functionaltest001/TRB-0111-testfile200M_2020-05-27-10.10.00.000-UTC_2.mp4
 
     @Test
     public void testCcdCaseUpdate() {
