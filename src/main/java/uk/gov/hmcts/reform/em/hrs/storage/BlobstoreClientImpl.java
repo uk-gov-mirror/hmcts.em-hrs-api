@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.hrs.exception.InvalidRangeRequestException;
 
@@ -105,9 +106,8 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         LOGGER.info("Range requested: {}", rangeHeader);
 
 
-        LOGGER.info("Not Processing range, sending error instead:");
-        response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
-
+        LOGGER.info("Not Processing range, nor sending error - just returning partial content and not sending blob");
+        response.setStatus(HttpStatus.PARTIAL_CONTENT.value());//NOTE this is not lowercase
 
         //        Long length = fileSize;
         //
