@@ -82,10 +82,13 @@ public class BlobstoreClientImpl implements BlobstoreClient {
     }
 
 
-    private void bloadFullBlob(String filename, BlockBlobClient blobClient, HttpServletResponse response)
+    private void loadFullBlob(String filename, BlockBlobClient blobClient, HttpServletResponse response)
         throws IOException {
 
-        LOGGER.info("Not downloading blob, responding with Error", filename);
+        LOGGER.info(
+            "Not downloading blob, responding with Error",
+            filename
+        );//this means ONLY partial requests are honoured
 
         response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
 
