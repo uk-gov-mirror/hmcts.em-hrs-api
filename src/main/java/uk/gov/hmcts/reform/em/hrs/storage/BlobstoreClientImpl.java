@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs.storage;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.BlobRange;
+import com.azure.storage.blob.models.DownloadRetryOptions;
 import com.azure.storage.blob.specialized.BlockBlobClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.reform.em.hrs.exception.InvalidRangeRequestException;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -82,16 +85,8 @@ public class BlobstoreClientImpl implements BlobstoreClient {
     private void loadFullBlob(String filename, BlockBlobClient blobClient, HttpServletResponse response)
         throws IOException {
 
-        //        LOGGER.info(
-        //            "Not downloading blob, responding with Error",
-        //            filename
-        //        );//this means ONLY partial requests are honoured
-        //
-        //        response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        //
         LOGGER.info("Loading Full Blob{}", filename);
         blobClient.download(response.getOutputStream());
-
         LOGGER.info("Reading Blob from Azure Blob Storage: OK {}", filename);
     }
 
@@ -109,75 +104,73 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         LOGGER.info("Not Processing range, nor sending error - just returning partial content and not sending blob");
         response.setStatus(HttpStatus.PARTIAL_CONTENT.value());//NOTE this is not lowercase
 
-        //        Long length = fileSize;
-        //
-        //        String patternString = "^bytes=\\d*-\\d*";
-        //
-        //        Pattern pattern = Pattern.compile(patternString);
-        //
-        //        Matcher matcher = pattern.matcher(rangeHeader);
-        //
-        //        if (!matcher.matches()) {
-        //            throw new InvalidRangeRequestException(response, length);
-        //        }
-        //
-        //        response.setBufferSize(DEFAULT_BUFFER_SIZE);
-        //
-        //        // Range headers can request a multipart range but this is not to be supported yet
-        //        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
-        //        // Take only first requested range and process it
-        //        String byteRange = rangeHeader.substring(6).split(",")[0].trim();
-        //
-        //        BlobRange blobRange = setContentRangeHeadersAndGenerateBlobRange(byteRange, length, response);
-        //
-        //
-        //        if (blobRange.getOffset() == 0 && blobRange.getCount() > length) {
-        //            LOGGER.info("Offset =0 and b count > length {}", filename);
-        //            loadFullBlob(filename, blobClient, response);
-        //            return;
-        //        }
-        //
-        //        response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
-        //
+
+        String patternString = "^bytes=\\d*-\\d*";
+
+        Pattern pattern = Pattern.compile(patternString);
+
+        Matcher matcher = pattern.matcher(rangeHeader);
+
+        if (!matcher.matches()) {
+            throw new InvalidRangeRequestException(response, fileSize);
+        }
+
+        response.setBufferSize(DEFAULT_BUFFER_SIZE);
+
+        // Range headers can request a multipart range but this is not to be supported yet
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
+        // Take only first requested range and process it
+        String byteRange = rangeHeader.substring(6).split(",")[0].trim();
+
+        BlobRange blobRange = setContentRangeHeadersAndGenerateBlobRange(byteRange, fileSize, response);
 
 
-        //        LOGGER.info("Processing blob range: {}", blobRange.toString());
-        //        blockBlobClient(filename.toString())
-        //            .downloadWithResponse(
-        //                response.getOutputStream(),
-        //                blobRange,
-        //                new DownloadRetryOptions().setMaxRetryRequests(5),
-        //                null,
-        //                false,
-        //                null,
-        //                null
-        //            );
+        if (blobRange.getOffset() == 0 && blobRange.getCount() > fileSize) {
+            LOGGER.info("Offset =0 and b count > fileSize {}", filename);
+            loadFullBlob(filename, blobClient, response);
+            return;
+        }
+
+        response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
+
+
+        LOGGER.info("Processing blob range: {}", blobRange.toString());
+        blockBlobClient(filename.toString())
+            .downloadWithResponse(
+                response.getOutputStream(),
+                blobRange,
+                new DownloadRetryOptions().setMaxRetryRequests(5),
+                null,
+                false,
+                null,
+                null
+            );
     }
 
-    private BlobRange setContentRangeHeadersAndGenerateBlobRange(String part, Long length,
+    private BlobRange setContentRangeHeadersAndGenerateBlobRange(String part, Long fileSize,
                                                                  HttpServletResponse response) {
         long byteRangeStart = extractLongFromSubstring(part, 0, part.indexOf('-'));
         long byteRangeEnd = extractLongFromSubstring(part, part.indexOf('-') + 1, part.length());
 
         if (byteRangeStart == -1) {
-            byteRangeStart = length - byteRangeEnd;
-            byteRangeEnd = length;
-        } else if (byteRangeEnd == -1 || byteRangeEnd > length) {
-            byteRangeEnd = length;
+            byteRangeStart = fileSize - byteRangeEnd;
+            byteRangeEnd = fileSize;
+        } else if (byteRangeEnd == -1 || byteRangeEnd > fileSize) {
+            byteRangeEnd = fileSize;
         }
 
         // Check if Range is syntactically valid. If not, then return 416.
         if (byteRangeStart > byteRangeEnd) {
             LOGGER.info("Invalid Range Request ");
-            throw new InvalidRangeRequestException(response, length);
+            throw new InvalidRangeRequestException(response, fileSize);
         }
 
         long byteRangeLength = (byteRangeEnd - byteRangeStart) + 1;
-        String contentRangeResponse = "bytes " + byteRangeStart + "-" + byteRangeEnd + "/" + length;
+        String contentRangeResponse = "bytes " + byteRangeStart + "-" + byteRangeEnd + "/" + fileSize;
         String contentLengthResponse = String.valueOf(byteRangeLength);
 
         LOGGER.info("Calc Blob Values: blobStart {}, blobLength {}", byteRangeStart, byteRangeLength);
-        LOGGER.info("Calc Header Values: range {}, length {}", contentRangeResponse, contentLengthResponse);
+        LOGGER.info("Calc Header Values: range {}, fileSize {}", contentRangeResponse, contentLengthResponse);
 
 
         response.setHeader(HttpHeaders.CONTENT_RANGE, contentRangeResponse);
