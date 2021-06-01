@@ -160,7 +160,7 @@ public class HearingRecordingController {
         try {
             downloadService.download(segmentDetails.get("filename"), request, response);
         } catch (Exception e) {
-            LOGGER.warn("Download exception {}", e);
+            LOGGER.warn("Download exception {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);//catching client abort
         }
         return new ResponseEntity<>(HttpStatus.OK);

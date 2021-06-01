@@ -138,7 +138,10 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
 
 
-        LOGGER.info("Processing blob range: {}", blobRange.toString());
+        LOGGER.info(
+            "Processing blob range headers and attaching client outputstream to azure storage output stream: {}",
+            blobRange.toString()
+        );
         blockBlobClient(filename.toString())
             .downloadWithResponse(
                 response.getOutputStream(),
