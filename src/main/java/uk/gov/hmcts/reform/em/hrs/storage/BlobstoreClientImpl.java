@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.em.hrs.exception.InvalidRangeRequestException;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -60,16 +61,18 @@ public class BlobstoreClientImpl implements BlobstoreClient {
             try {
                 loadFullBlob(filename, blobClient, response);
             } catch (Exception e) {
-                LOGGER.warn("Exception: {}", e);
+                LOGGER.warn("Full blob download Exception is: {}", e);
             }
         } else {
             LOGGER.info("Range Header is not null, value: {}", rangeHeader);
 
             try {
+                LOGGER.info("Loading Partial Range");
                 final long fileSize = blobClient.getProperties().getBlobSize();
                 loadPartialBlob(filename, fileSize, blobClient, request, response);
+                LOGGER.info("Completed Partial Range");
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("Error in downloading partial range {}", e);
             }
         }
 
@@ -85,9 +88,11 @@ public class BlobstoreClientImpl implements BlobstoreClient {
     private void loadFullBlob(String filename, BlockBlobClient blobClient, HttpServletResponse response)
         throws IOException {
 
-        LOGGER.info("Loading Full Blob{}", filename);
+        LOGGER.info("Loading Full Blob {}", filename);
+
+        response.setHeader(HttpHeaders.ACCEPT_RANGES.toLowerCase(Locale.ROOT), "bytes");
         blobClient.download(response.getOutputStream());
-        LOGGER.info("Reading Blob from Azure Blob Storage: OK {}", filename);
+        LOGGER.info("Loading Full Blob Method end {}", filename);
     }
 
 
@@ -101,8 +106,7 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         LOGGER.info("Range requested: {}", rangeHeader);
 
 
-        LOGGER.info("Not Processing range, nor sending error - just returning partial content and not sending blob");
-        response.setStatus(HttpStatus.PARTIAL_CONTENT.value());//NOTE this is not lowercase
+        response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
 
 
         String patternString = "^bytes=\\d*-\\d*";
@@ -126,7 +130,7 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
 
         if (blobRange.getOffset() == 0 && blobRange.getCount() > fileSize) {
-            LOGGER.info("Offset =0 and b count > fileSize {}", filename);
+            LOGGER.info("WILL HAVE TO LOAD FULL BLOB, as Offset =0 and b count > fileSize {}", filename);
             loadFullBlob(filename, blobClient, response);
             return;
         }
@@ -161,7 +165,7 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
         // Check if Range is syntactically valid. If not, then return 416.
         if (byteRangeStart > byteRangeEnd) {
-            LOGGER.info("Invalid Range Request ");
+            LOGGER.info("Invalid Range Request, start is greater than en ");
             throw new InvalidRangeRequestException(response, fileSize);
         }
 
@@ -173,8 +177,9 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         LOGGER.info("Calc Header Values: range {}, fileSize {}", contentRangeResponse, contentLengthResponse);
 
 
-        response.setHeader(HttpHeaders.CONTENT_RANGE, contentRangeResponse);
-        response.setHeader(HttpHeaders.CONTENT_LENGTH, contentLengthResponse);
+        response.setHeader(HttpHeaders.ACCEPT_RANGES.toLowerCase(Locale.ROOT), "bytes");
+        response.setHeader(HttpHeaders.CONTENT_RANGE.toLowerCase(Locale.ROOT), contentRangeResponse);
+        response.setHeader(HttpHeaders.CONTENT_LENGTH.toLowerCase(Locale.ROOT), contentLengthResponse);
         return new BlobRange(byteRangeStart, byteRangeLength);
     }
 
