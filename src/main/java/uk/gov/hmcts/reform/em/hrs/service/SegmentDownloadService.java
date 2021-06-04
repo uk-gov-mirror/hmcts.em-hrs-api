@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -9,5 +10,5 @@ public interface SegmentDownloadService {
 
     Map<String, String> getDownloadInfo(UUID recordingId, Integer segmentNo);
 
-    void download(String filename, HttpServletRequest request, HttpServletResponse response);
+    void download(String filename, HttpServletRequest request, HttpServletResponse response) throws IOException;
 }

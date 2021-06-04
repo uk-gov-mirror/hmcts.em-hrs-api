@@ -149,19 +149,23 @@ public class HearingRecordingController {
         LOGGER.info("received request to download recording for case ({}) segment ({})", recordingId, segmentNo);
 
         Map<String, String> segmentDetails = downloadService.getDownloadInfo(recordingId, segmentNo);
-        response.setHeader(
-            HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s", segmentDetails.get("filename"))
-        );
+        String filename = segmentDetails.get("filename");
 
         response.setHeader(HttpHeaders.CONTENT_TYPE, segmentDetails.get("contentType"));
-        response.setHeader(HttpHeaders.CONTENT_LENGTH, segmentDetails.get("contentLength"));
+        response.setHeader(
+            HttpHeaders.CONTENT_LENGTH,
+            segmentDetails.get("contentLength")
+        );//will be overriden if partial request
+
 
         try {
-            downloadService.download(segmentDetails.get("filename"), request, response);
+            downloadService.download(filename, request, response);
         } catch (Exception e) {
             LOGGER.warn("Download exception {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);//catching client abort
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 }

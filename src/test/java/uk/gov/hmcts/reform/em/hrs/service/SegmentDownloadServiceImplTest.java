@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
 import com.azure.storage.blob.models.BlobProperties;
+import com.azure.storage.blob.models.BlobRange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegmentAuditEntry;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.BlobstoreClient;
 
+import java.io.IOException;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -32,13 +34,12 @@ class SegmentDownloadServiceImplTest {
     private BlobstoreClient blobstoreClient;
     @MockBean
     private AuditEntryService auditEntryService;
-    //
-    //    @MockBean
-    //    private ServletOutputStream outputStream;
+
     @MockBean
     private HttpServletRequest request;
     @MockBean
     private HttpServletResponse response;
+
     @MockBean
     private HearingRecordingSegmentAuditEntry hearingRecordingSegmentAuditEntry;
     private HearingRecordingSegment segment;
@@ -76,18 +77,20 @@ class SegmentDownloadServiceImplTest {
     }
 
     @Test
-    void testDownload() {
+    void testDownload() throws IOException {
+
+        BlobRange blobRange = null;//new BlobRange(0, 1l);
 
         doReturn(segment).when(segmentRepository).findByFilename(segment.getFilename());
         doReturn(hearingRecordingSegmentAuditEntry)
             .when(auditEntryService).createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_OK);
-        doNothing().when(blobstoreClient).downloadFile(segment.getFilename(), request, response);
+        doNothing().when(blobstoreClient).downloadFile(segment.getFilename(), null, null);
 
         segmentDownloadService.download(segment.getFilename(), request, response);
 
         verify(segmentRepository, times(1))
             .findByFilename(segment.getFilename());
-        verify(blobstoreClient, times(1)).downloadFile(segment.getFilename(), request, response);
+        verify(blobstoreClient, times(1)).downloadFile(segment.getFilename(), null, null);
         verify(auditEntryService, times(1))
             .createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_OK);
     }
