@@ -76,7 +76,7 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
         );
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
 
-        //        logHttpHeaders(request);//keep during early life support
+        logHttpHeaders(request);//keep during early life support
 
         String rangeHeader = getHTTPHeaderCaseSafe(request, HttpHeaders.RANGE);
         LOGGER.info("Range header for filename {} = ", filename, rangeHeader);
@@ -104,7 +104,7 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
             // Take only first requested range and process it
             String byteRange = rangeHeader.substring(6).split(",")[0].trim();
 
-            blobRange = setContentRangeHeadersAndGenerateBlobRange(byteRange, fileSize, response);
+            blobRange = validateAndGenerateBlobRange(byteRange, fileSize, response);
 
 
             Long blobRangeCount = blobRange.getCount();
@@ -161,8 +161,19 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
     }
 
 
-    private BlobRange setContentRangeHeadersAndGenerateBlobRange(String part, Long fileSize,
-                                                                 HttpServletResponse response) {
+    private BlobRange validateAndGenerateBlobRange(String part, Long fileSize,
+                                                   HttpServletResponse response) {
+
+        //        .107 INFO [http-nio-8080-exec-4] u.g.h.reform.em.hrs.storage.BlobstoreClientImpl Range requested:
+        //        bytes=25165824-33554431}}
+        //{{ 2021-06-01T15:21:46.107 INFO [http-nio-8080-exec-4] u.g.h.reform.em.hrs.storage.BlobstoreClientImpl Calc
+        // Blob Values: blobStart 25165824, blobLength 8388608}}
+        //    {{ 2021-06-01T15:21:46.107 INFO [http-nio-8080-exec-4] u.g.h.reform.em.hrs.storage.BlobstoreClientImpl
+        //    Calc Header Values: range bytes 25165824-33554431/200724364, fileSize 8388608}}
+        //    {{ 2021-06-01T15:21:46.107 INFO [http-nio-8080-exec-4] u.g.h.reform.em.hrs.storage.BlobstoreClientImpl
+        //    Processing blob range: bytes=25165824-33554431}}
+
+
         //part example = "25165824-33554431"
         long byteRangeStart = extractLongFromSubstring(part, 0, part.indexOf('-'));
         long byteRangeEnd = extractLongFromSubstring(part, part.indexOf('-') + 1, part.length());
@@ -170,8 +181,8 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
         if (byteRangeStart == -1) {
             byteRangeStart = fileSize - byteRangeEnd;
             byteRangeEnd = fileSize;
-        } else if (byteRangeEnd == -1 || byteRangeEnd > fileSize) {
-            byteRangeEnd = fileSize;
+        } else if (byteRangeEnd == -1 || byteRangeEnd >= fileSize) {
+            byteRangeEnd = fileSize - 1;
         }
 
         // Check if Range is syntactically valid. If not, then return 416.
