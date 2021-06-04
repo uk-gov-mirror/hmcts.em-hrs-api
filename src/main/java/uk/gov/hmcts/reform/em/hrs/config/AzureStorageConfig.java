@@ -39,9 +39,6 @@ public class AzureStorageConfig {
             .connectionString(hrsConnectionString)
             .containerName(hrsContainer);
 
-        LOGGER.info("****************************");
-        LOGGER.info("PAUL LABEL: June01 12.30-1pm");
-        LOGGER.info("****************************");
         LOGGER.info("Container settings:");
         LOGGER.info("hrsContainer: {}", hrsContainer);
         LOGGER.info("cvpContainer: {}", cvpContainer);

@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -155,7 +154,7 @@ public class HearingRecordingController {
         );
 
         response.setHeader(HttpHeaders.CONTENT_TYPE, segmentDetails.get("contentType"));
-        response.setHeader(HttpHeaders.CONTENT_LENGTH.toLowerCase(Locale.ROOT), segmentDetails.get("contentLength"));
+        response.setHeader(HttpHeaders.CONTENT_LENGTH, segmentDetails.get("contentLength"));
 
         try {
             downloadService.download(segmentDetails.get("filename"), request, response);

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.em.hrs.exception.InvalidRangeRequestException;
 
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +53,7 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         }
 
 
-        String rangeHeader = request.getHeader("range");
+        String rangeHeader = getHTTPHeaderCaseSafe(request, HttpHeaders.RANGE);
         if (rangeHeader == null) {
             LOGGER.info("Range Header is null");
 
@@ -79,6 +78,16 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
     }
 
+    //non frontdoor environments (ie DEMO do not use front door, and may use TitleCase header names)
+    //front door environments use lowercase header names
+    private String getHTTPHeaderCaseSafe(HttpServletRequest request, String header) {
+        String anyCase = request.getHeader(header);
+        if (anyCase == null) {
+            anyCase = request.getHeader(header.toLowerCase());
+        }
+        return anyCase;
+    }
+
     @Override
     public BlobProperties getBlobProperties(final String filename) {
         return blobContainerClient.getBlobClient(filename).getProperties();
@@ -90,7 +99,7 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
         LOGGER.info("Loading Full Blob {}", filename);
 
-        response.setHeader(HttpHeaders.ACCEPT_RANGES.toLowerCase(Locale.ROOT), "bytes");
+        response.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
         blobClient.download(response.getOutputStream());
         LOGGER.info("Loading Full Blob Method end {}", filename);
     }
@@ -102,7 +111,7 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
         LOGGER.info("Range header provided {}", filename);
 
-        String rangeHeader = request.getHeader("range");
+        String rangeHeader = getHTTPHeaderCaseSafe(request, HttpHeaders.RANGE);
         LOGGER.info("Range requested: {}", rangeHeader);
 
 
@@ -138,7 +147,7 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
 
 
-        LOGGER.info(
+        LOGGER.debug(
             "Processing blob range headers and attaching client outputstream to azure storage output stream: {}",
             blobRange.toString()
         );
@@ -176,13 +185,13 @@ public class BlobstoreClientImpl implements BlobstoreClient {
         String contentRangeResponse = "bytes " + byteRangeStart + "-" + byteRangeEnd + "/" + fileSize;
         String contentLengthResponse = String.valueOf(byteRangeLength);
 
-        LOGGER.info("Calc Blob Values: blobStart {}, blobLength {}", byteRangeStart, byteRangeLength);
-        LOGGER.info("Calc Header Values: range {}, fileSize {}", contentRangeResponse, contentLengthResponse);
+        LOGGER.debug("Calc Blob Values: blobStart {}, blobLength {}", byteRangeStart, byteRangeLength);
+        LOGGER.debug("Calc Header Values: range {}, fileSize {}", contentRangeResponse, contentLengthResponse);
 
 
-        response.setHeader(HttpHeaders.ACCEPT_RANGES.toLowerCase(Locale.ROOT), "bytes");
-        response.setHeader(HttpHeaders.CONTENT_RANGE.toLowerCase(Locale.ROOT), contentRangeResponse);
-        response.setHeader(HttpHeaders.CONTENT_LENGTH.toLowerCase(Locale.ROOT), contentLengthResponse);
+        response.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
+        response.setHeader(HttpHeaders.CONTENT_RANGE, contentRangeResponse);
+        response.setHeader(HttpHeaders.CONTENT_LENGTH, contentLengthResponse);
         return new BlobRange(byteRangeStart, byteRangeLength);
     }
 
