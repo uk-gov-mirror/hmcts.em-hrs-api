@@ -21,15 +21,14 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
-import uk.gov.hmcts.reform.em.hrs.exception.SegmentDownloadException;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
@@ -144,22 +143,29 @@ public class HearingRecordingController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording segment")})
     public ResponseEntity getSegmentBinary(@PathVariable("recordingId") UUID recordingId,
                                            @PathVariable("segment") Integer segmentNo,
+                                           HttpServletRequest request,
                                            HttpServletResponse response) {
 
         LOGGER.info("received request to download recording for case ({}) segment ({})", recordingId, segmentNo);
 
         Map<String, String> segmentDetails = downloadService.getDownloadInfo(recordingId, segmentNo);
-        response.setHeader(
-            HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s", segmentDetails.get("filename"))
-        );
+        String filename = segmentDetails.get("filename");
+
         response.setHeader(HttpHeaders.CONTENT_TYPE, segmentDetails.get("contentType"));
-        response.setHeader(HttpHeaders.CONTENT_LENGTH, segmentDetails.get("contentLength"));
+        response.setHeader(
+            HttpHeaders.CONTENT_LENGTH,
+            segmentDetails.get("contentLength")
+        );//will be overriden if partial request
+
 
         try {
-            downloadService.download(segmentDetails.get("filename"), response.getOutputStream());
-        } catch (IOException e) {
-            throw new SegmentDownloadException(e);
+            downloadService.download(filename, request, response);
+        } catch (Exception e) {
+            LOGGER.warn("Download exception {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);//catching client abort
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 }

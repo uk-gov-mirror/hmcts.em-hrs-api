@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
-import java.io.OutputStream;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -24,6 +23,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -178,7 +179,8 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
             "contentType", "video/mp4"
         );
         doReturn(downloadInfo).when(downloadService).getDownloadInfo(recordingId, 0);
-        doNothing().when(downloadService).download(eq(filename), any(OutputStream.class));
+        doNothing().when(downloadService)
+            .download(eq(filename), any(HttpServletRequest.class), any(HttpServletResponse.class));
 
         mockMvc.perform(get(String.format("/hearing-recordings/%s/segments/%d", recordingId, 0)))
             .andExpect(status().isOk())
@@ -196,7 +198,8 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
         );
         doReturn(downloadInfo).when(downloadService).getDownloadInfo(recordingId, 0);
         doThrow(new SegmentDownloadException("failed download"))
-            .when(downloadService).download(eq(filename), any(OutputStream.class));
+            .when(downloadService)
+            .download(eq(filename), any(HttpServletRequest.class), any(HttpServletResponse.class));
 
         mockMvc.perform(get(String.format("/hearing-recordings/%s/segments/%d", recordingId, 0)))
             .andExpect(status().isInternalServerError())
