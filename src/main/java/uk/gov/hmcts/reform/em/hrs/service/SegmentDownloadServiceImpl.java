@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -14,13 +15,13 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.exception.InvalidRangeRequestException;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 import uk.gov.hmcts.reform.em.hrs.storage.BlobstoreClient;
+import uk.gov.hmcts.reform.em.hrs.util.HttpHeaderProcessor;
+import uk.gov.hmcts.reform.em.hrs.util.debug.HttpHeadersLogging;
 
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -76,53 +77,47 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
         );
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
 
-        logHttpHeaders(request);//keep during early life support
+        HttpHeadersLogging.logHttpHeaders(request);//keep during early life support
 
-        String rangeHeader = getHTTPHeaderCaseSafe(request, HttpHeaders.RANGE);
+        String rangeHeader = HttpHeaderProcessor.getHttpHeaderByCaseSensitiveAndLowerCase(request, HttpHeaders.RANGE);
         LOGGER.info("Range header for filename {} = ", filename, rangeHeader);
 
         BlobRange blobRange = null;
         if (rangeHeader != null) {
             long fileSize = blobstoreClient.getFileSize(filename);
-            response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
+            try {
+                response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
 
+                // Range headers can request a multipart range but this is not to be supported yet
+                // https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
+                // Will only accept 1 range first requested range and process it
+                List<HttpRange> byteRanges = HttpRange.parseRanges(rangeHeader);
+                HttpRange firstByteRange = byteRanges.get(0);
 
-            String patternString = "^bytes=\\d*-\\d*";
+                long byteRangeStart = firstByteRange.getRangeStart(fileSize);
+                long byteRangeEnd = firstByteRange.getRangeEnd(fileSize);
+                long byteRangeCount = (byteRangeEnd - byteRangeStart) + 1;
 
-            Pattern pattern = Pattern.compile(patternString);
+                blobRange = new BlobRange(byteRangeStart, byteRangeCount);
 
-            Matcher matcher = pattern.matcher(rangeHeader);
+                String contentRangeResponse = "bytes " + byteRangeStart + "-" + byteRangeEnd + "/" + fileSize;
 
-            if (!matcher.matches()) {
+                response.setHeader(HttpHeaders.CONTENT_RANGE, contentRangeResponse);
+                response.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(byteRangeCount));
 
+                LOGGER.debug(
+                    "Calc Blob Values: blobStart {}, blobLength {}",
+                    blobRange.getOffset(),
+                    blobRange.getCount()
+                );
+                LOGGER.debug(
+                    "Calc Http Header Values: CONTENT_RANGE {}, CONTENT_LENGTH {}",
+                    request.getHeader(HttpHeaders.CONTENT_RANGE),
+                    request.getHeader(HttpHeaders.CONTENT_LENGTH)
+                );
+            } catch (Exception e) {
                 throw new InvalidRangeRequestException(response, fileSize);
             }
-
-
-            // Range headers can request a multipart range but this is not to be supported yet
-            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
-            // Take only first requested range and process it
-            String byteRange = rangeHeader.substring(6).split(",")[0].trim();
-
-            blobRange = validateAndGenerateBlobRange(byteRange, fileSize, response);
-
-
-            Long blobRangeCount = blobRange.getCount();
-            long blobRangeOffset = blobRange.getOffset();
-            long blobRangeEndInclusive = blobRangeCount - 1;
-
-            String contentRangeResponse = "bytes " + blobRangeOffset + "-" + blobRangeEndInclusive + "/" + fileSize;
-
-            response.setHeader(HttpHeaders.CONTENT_RANGE, contentRangeResponse);
-            response.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(blobRangeCount));
-
-            LOGGER.debug("Calc Blob Values: blobStart {}, blobLength {}", blobRangeOffset, blobRangeCount);
-            LOGGER.debug(
-                "Calc Http Header Values: CONTENT_RANGE {}, CONTENT_LENGTH {}",
-                request.getHeader(HttpHeaders.CONTENT_RANGE),
-                request.getHeader(HttpHeaders.CONTENT_LENGTH)
-            );
-
         }
 
 
@@ -134,78 +129,4 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
 
     }
 
-    private void logHttpHeaders(HttpServletRequest request) {
-        Enumeration<String> headerNames = request.getHeaderNames();
-
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-
-            Enumeration<String> headerValues = request.getHeaders(headerName);
-            while (headerValues.hasMoreElements()) {
-                String headerValue = headerValues.nextElement();
-                LOGGER.info("HeaderName , Values: {} , {}", headerName, headerValue);
-            }
-        }
-
-    }
-
-
-    //non frontdoor environments (ie DEMO do not use front door, and may use TitleCase header names)
-    //front door environments use lowercase header names
-    private String getHTTPHeaderCaseSafe(HttpServletRequest request, String header) {
-        String anyCase = request.getHeader(header);
-        if (anyCase == null) {
-            anyCase = request.getHeader(header.toLowerCase());
-        }
-        return anyCase;
-    }
-
-
-    private BlobRange validateAndGenerateBlobRange(String part, Long fileSize,
-                                                   HttpServletResponse response) {
-
-        //        .107 INFO [http-nio-8080-exec-4] u.g.h.reform.em.hrs.storage.BlobstoreClientImpl Range requested:
-        //        bytes=25165824-33554431}}
-        //{{ 2021-06-01T15:21:46.107 INFO [http-nio-8080-exec-4] u.g.h.reform.em.hrs.storage.BlobstoreClientImpl Calc
-        // Blob Values: blobStart 25165824, blobLength 8388608}}
-        //    {{ 2021-06-01T15:21:46.107 INFO [http-nio-8080-exec-4] u.g.h.reform.em.hrs.storage.BlobstoreClientImpl
-        //    Calc Header Values: range bytes 25165824-33554431/200724364, fileSize 8388608}}
-        //    {{ 2021-06-01T15:21:46.107 INFO [http-nio-8080-exec-4] u.g.h.reform.em.hrs.storage.BlobstoreClientImpl
-        //    Processing blob range: bytes=25165824-33554431}}
-
-
-        //part example = "25165824-33554431"
-        long byteRangeStart = extractLongFromSubstring(part, 0, part.indexOf('-'));
-        long byteRangeEnd = extractLongFromSubstring(part, part.indexOf('-') + 1, part.length());
-
-        if (byteRangeStart == -1) {
-            byteRangeStart = fileSize - byteRangeEnd;
-            byteRangeEnd = fileSize;
-        } else if (byteRangeEnd == -1 || byteRangeEnd >= fileSize) {
-            byteRangeEnd = fileSize - 1;
-        }
-
-        // Check if Range is syntactically valid. If not, then return 416.
-        if (byteRangeStart > byteRangeEnd) {
-            LOGGER.info("Invalid Range Request, start is greater than en ");
-            throw new InvalidRangeRequestException(response, fileSize);
-        }
-
-        long byteRangeCount = (byteRangeEnd - byteRangeStart) + 1;
-        BlobRange blobRange = new BlobRange(byteRangeStart, byteRangeCount);
-
-
-        if (blobRange.getOffset() == 0 && blobRange.getCount() > fileSize) {
-            LOGGER.info("WILL HAVE TO LOAD FULL BLOB, as Offset =0 and blobrange count > fileSize");
-            return null;
-        }
-
-
-        return blobRange;
-    }
-
-    private long extractLongFromSubstring(String value, int beginIndex, int endIndex) {
-        String substring = value.substring(beginIndex, endIndex);
-        return (substring.length() > 0) ? Long.parseLong(substring) : -1;
-    }
 }

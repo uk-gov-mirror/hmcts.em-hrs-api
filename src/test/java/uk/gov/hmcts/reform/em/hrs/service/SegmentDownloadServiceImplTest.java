@@ -73,12 +73,13 @@ class SegmentDownloadServiceImplTest {
     @Test
     void testGetDownloadInfo() {
         BlobProperties blobProperties = new BlobProperties(
-            null, null, null, 1234L, "video/mp4",null,
-            null, null, null, null,null,
-            null, null, null, null,null, null, null,
-            null, null,null, null, null,
-            null, null,null, null, null,
-            null, null, null);
+            null, null, null, 1234L, "video/mp4", null,
+            null, null, null, null, null,
+            null, null, null, null, null, null, null,
+            null, null, null, null, null,
+            null, null, null, null, null,
+            null, null, null
+        );
 
         doReturn(segment).when(segmentRepository).findByHearingRecordingIdAndRecordingSegment(RECORDING_ID, SEGMENT_NO);
         doReturn(hearingRecordingSegmentAuditEntry)
