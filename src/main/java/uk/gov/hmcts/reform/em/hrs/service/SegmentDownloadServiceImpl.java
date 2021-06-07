@@ -80,7 +80,7 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
         HttpHeadersLogging.logHttpHeaders(request);//keep during early life support
 
         String rangeHeader = HttpHeaderProcessor.getHttpHeaderByCaseSensitiveAndLowerCase(request, HttpHeaders.RANGE);
-        LOGGER.info("Range header for filename {} = ", filename, rangeHeader);
+        LOGGER.info("Range header for filename {} = {}", filename, rangeHeader);
 
         BlobRange blobRange = null;
         if (rangeHeader != null) {
