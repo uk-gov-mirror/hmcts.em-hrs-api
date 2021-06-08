@@ -41,7 +41,7 @@ public class AuditEntryService {
     @Autowired
     private AuditLogFormatter auditLogFormatter;
 
-    void logOnly(String caseId, AuditActions action) {
+    void logOnly(Long caseId, AuditActions action) {
         var entry = new LogOnlyAuditEntry();
         populateCommonFields(
             entry,
@@ -61,7 +61,7 @@ public class AuditEntryService {
                                                          AuditActions action) {
         var entry = new HearingRecordingAuditEntry(hearingRecording);
 
-        String caseId = hearingRecording.getCcdCaseId().toString();
+        Long caseId = hearingRecording.getCcdCaseId();
         populateCommonFields(
             entry,
             action,
@@ -79,7 +79,7 @@ public class AuditEntryService {
 
         var entry = new HearingRecordingSegmentAuditEntry(hearingRecordingSegment);
 
-        String caseId = hearingRecordingSegment.getHearingRecording().getCcdCaseId().toString();
+        Long caseId = hearingRecordingSegment.getHearingRecording().getCcdCaseId();
         populateCommonFields(
             entry,
             action,
@@ -96,7 +96,7 @@ public class AuditEntryService {
                                                                AuditActions action) {
 
         var entry = new HearingRecordingShareeAuditEntry(hearingRecordingSharee);
-        String caseId = hearingRecordingSharee.getHearingRecording().getCcdCaseId().toString();
+        Long caseId = hearingRecordingSharee.getHearingRecording().getCcdCaseId();
 
         populateCommonFields(
             entry,
@@ -112,7 +112,7 @@ public class AuditEntryService {
     //helpers
     private void populateCommonFields(AuditEntry auditEntry,
                                       AuditActions action,
-                                      String caseId) {
+                                      Long caseId) {
 
 
         auditEntry.setAction(action);

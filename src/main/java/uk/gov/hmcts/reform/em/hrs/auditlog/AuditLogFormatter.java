@@ -35,6 +35,10 @@ public class AuditLogFormatter {
         return isNotBlank(value) ? COMMA + label + COLON + value : "";
     }
 
+    private String getPair(String label, Long value) {
+        return value != null ? COMMA + label + COLON + value : "";
+    }
+
     private String getFirstPair(String label, Date value) {
         LocalDateTime java8Date = value.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         String formattedDate = java8Date.format(ISO_LOCAL_DATE_TIME);

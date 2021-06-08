@@ -49,7 +49,7 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
         CaseHearingRecording caseData = caseDataCreator.getCaseRecordingObject(caseDataMap);
 
         if (!EmailValidator.isValid(caseData.getShareeEmail())) {
-            auditEntryService.logOnly(caseId.toString(), AuditActions.SHARE_GRANT_FAIL);
+            auditEntryService.logOnly(caseId, AuditActions.SHARE_GRANT_FAIL);
             throw new ValidationErrorException(Map.of("recipientEmailAddress", caseData.getShareeEmail()));
         }
 
@@ -73,9 +73,9 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
                                                       caseData.getRecordingDate(), caseData.getRecordingTimeOfDay(),
                                                       sharee.getId(), caseData.getShareeEmail()
             );
-            auditEntryService.logOnly(caseId.toString(), AuditActions.NOTIFY_OK);
+            auditEntryService.logOnly(caseId, AuditActions.NOTIFY_OK);
         } catch (NotificationClientException e) {
-            auditEntryService.logOnly(caseId.toString(), AuditActions.NOTIFY_FAIL);
+            auditEntryService.logOnly(caseId, AuditActions.NOTIFY_FAIL);
             throw new GovNotifyErrorException(e);
         }
     }
