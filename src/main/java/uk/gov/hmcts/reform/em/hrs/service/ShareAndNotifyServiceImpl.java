@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.hrs.domain.AuditActions;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
 import uk.gov.hmcts.reform.em.hrs.exception.GovNotifyErrorException;
@@ -25,18 +26,21 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
     private final NotificationService notificationService;
     private final CaseDataContentCreator caseDataCreator;
     private final String xuiDomain;
+    private final AuditEntryService auditEntryService;
 
     @Autowired
     public ShareAndNotifyServiceImpl(final HearingRecordingRepository hearingRecordingRepository,
                                      final ShareeService shareeService,
                                      final NotificationService notificationService,
                                      final CaseDataContentCreator caseDataCreator,
-                                     @Value("${xui.api.url}") final String xuiDomain) {
+                                     @Value("${xui.api.url}") final String xuiDomain,
+                                     AuditEntryService auditEntryService) {
         this.hearingRecordingRepository = hearingRecordingRepository;
         this.shareeService = shareeService;
         this.notificationService = notificationService;
         this.caseDataCreator = caseDataCreator;
         this.xuiDomain = xuiDomain;
+        this.auditEntryService = auditEntryService;
     }
 
     @Override
@@ -45,6 +49,7 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
         CaseHearingRecording caseData = caseDataCreator.getCaseRecordingObject(caseDataMap);
 
         if (!EmailValidator.isValid(caseData.getShareeEmail())) {
+            auditEntryService.logOnly(caseId.toString(), AuditActions.SHARE_GRANT_FAIL);
             throw new ValidationErrorException(Map.of("recipientEmailAddress", caseData.getShareeEmail()));
         }
 
@@ -60,12 +65,17 @@ public class ShareAndNotifyServiceImpl implements ShareAndNotifyService {
             .orElseThrow(() -> new HearingRecordingNotFoundException(caseId));
 
         final HearingRecordingSharee sharee = shareeService.createAndSaveEntry(caseData.getShareeEmail(), recording);
+        auditEntryService.createAndSaveEntry(sharee, AuditActions.SHARE_GRANT_OK);
+
 
         try {
             notificationService.sendEmailNotification(recording.getCaseRef(), List.copyOf(segmentUrls),
                                                       caseData.getRecordingDate(), caseData.getRecordingTimeOfDay(),
-                                                      sharee.getId(), caseData.getShareeEmail());
+                                                      sharee.getId(), caseData.getShareeEmail()
+            );
+            auditEntryService.logOnly(caseId.toString(), AuditActions.NOTIFY_OK);
         } catch (NotificationClientException e) {
+            auditEntryService.logOnly(caseId.toString(), AuditActions.NOTIFY_FAIL);
             throw new GovNotifyErrorException(e);
         }
     }

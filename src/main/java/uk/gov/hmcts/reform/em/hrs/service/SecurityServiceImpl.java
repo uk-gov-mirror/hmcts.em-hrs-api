@@ -21,13 +21,11 @@ import javax.servlet.http.HttpServletRequest;
 @Named
 public class SecurityServiceImpl implements SecurityService {
 
+    static final String DUMMY_NAME = "dummyName";
+    static final String SERVICE_AUTH = "serviceauthorization";
+    static final String USER_AUTH = "authorization";
+    private static final String HRS_INGESTOR = "hrsIngestor";
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityServiceImpl.class);
-
-    public static final String DUMMY_NAME = "dummyName";
-    public static final String HRS_INGESTOR = "hrsIngestor";
-    public static final String SERVICE_AUTH = "serviceauthorization";
-    public static final String USER_AUTH = "authorization";
-
     private final IdamClient idamClient;
     private final AuthTokenGenerator authTokenGenerator;
     private final AuthTokenValidator authTokenValidator;
@@ -87,7 +85,7 @@ public class SecurityServiceImpl implements SecurityService {
         return idamClient.getUserInfo(jwtToken);
     }
 
-    public String getServiceName(final String token) {
+    private String getServiceName(final String token) {
         return authTokenValidator.getServiceName(token);
     }
 
@@ -117,6 +115,15 @@ public class SecurityServiceImpl implements SecurityService {
         String jwt = request.getHeader(USER_AUTH);
 
         return getUserEmail(jwt);
+    }
+
+    @Override
+    public String getClientIp() {
+        HttpServletRequest request = getCurrentRequest();
+        if (Objects.isNull(request)) {
+            return null;
+        }
+        return request.getHeader("x-azure-clientip");
     }
 
     private HttpServletRequest getCurrentRequest() {

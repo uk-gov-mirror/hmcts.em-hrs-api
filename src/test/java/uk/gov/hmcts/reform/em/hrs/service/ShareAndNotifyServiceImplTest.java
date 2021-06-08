@@ -36,13 +36,15 @@ class ShareAndNotifyServiceImplTest {
     private final HearingRecordingRepository hearingRecordingRepository = mock(HearingRecordingRepository.class);
     private final CaseDataContentCreator caseDataCreator = mock(CaseDataContentCreator.class);
     private final NotificationService notificationService = mock(NotificationService.class);
+    private final AuditEntryService auditEntryService = mock(AuditEntryService.class);
 
     private final ShareAndNotifyServiceImpl underTest = new ShareAndNotifyServiceImpl(
         hearingRecordingRepository,
         shareeService,
         notificationService,
         caseDataCreator,
-        "https://xui.domain"
+        "https://xui.domain",
+        auditEntryService
     );
 
     @Test

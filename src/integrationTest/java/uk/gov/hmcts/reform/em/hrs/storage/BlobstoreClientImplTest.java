@@ -56,7 +56,7 @@ class BlobstoreClientImplTest {
         try (final PipedInputStream pipedInput = new PipedInputStream();
              final PipedOutputStream output = new PipedOutputStream(pipedInput)) {
 
-            blobRange = new BlobRange(0, 3l);
+            blobRange = new BlobRange(0, 3L);
             underTest.downloadFile(filePath, blobRange, output);
 
             assertThat(pipedInput).satisfies(this::assertPartialStreamContent);

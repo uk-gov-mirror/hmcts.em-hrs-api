@@ -1,13 +1,16 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.em.hrs.auditlog.AuditLogFormatter;
 import uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil;
 import uk.gov.hmcts.reform.em.hrs.domain.AuditActions;
+import uk.gov.hmcts.reform.em.hrs.domain.AuditEntry;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingAuditEntry;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
@@ -27,8 +30,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class AuditEntryServiceTests {
 
+    private static final String USER_EMAIL = "email@hmcts.net.internal";
+    private static final String SERVICE_NAME = "SUT";
+    private static final String CLIENT_IP = "127.0.0.1";
     @InjectMocks
+    private
     AuditEntryService auditEntryService;
+
     @Mock
     private HearingRecordingAuditEntryRepository hearingRecordingAuditEntryRepository;
     @Mock
@@ -36,21 +44,18 @@ public class AuditEntryServiceTests {
     @Mock
     private HearingRecordingSegmentAuditEntryRepository hearingRecordingSegmentAuditEntryRepository;
 
-    @Test
-    public void testCreateAndSaveEntryForHearingRecording() {
+    private HearingRecording hearingRecording;
+    private HearingRecordingSegment hearingRecordingSegment;
 
-        when(securityService.getAuditUserEmail()).thenReturn("x");
-        when(securityService.getCurrentlyAuthenticatedServiceName()).thenReturn("s");
+    @Mock
+    private AuditLogFormatter auditLogFormatter;
 
-        HearingRecordingAuditEntry entry = auditEntryService.createAndSaveEntry(
-            new HearingRecording(),
-            AuditActions.DATA_LIFECYCLE_CREATED
-        );
-
-        Assertions.assertEquals("x", entry.getUsername());
-        Assertions.assertEquals("s", entry.getServiceName());
-
-        verify(hearingRecordingAuditEntryRepository, times(1)).save(any(HearingRecordingAuditEntry.class));
+    @BeforeEach
+    void prepare() {
+        hearingRecording = new HearingRecording();
+        hearingRecording.setCcdCaseId(1234L);
+        hearingRecordingSegment = new HearingRecordingSegment();
+        hearingRecordingSegment.setHearingRecording(hearingRecording);
     }
 
     @Test
@@ -63,20 +68,53 @@ public class AuditEntryServiceTests {
         Assertions.assertEquals(1, entries.size());
     }
 
+
+    @Test
+    public void testCreateAndSaveEntryForHearingRecording() {
+
+        prepareMockSecurityService();
+
+        HearingRecordingAuditEntry entry = auditEntryService.createAndSaveEntry(
+            hearingRecording,
+            AuditActions.DATA_LIFECYCLE_CREATED
+        );
+
+        assertSecurityServiceValues(entry);
+        verify(hearingRecordingAuditEntryRepository, times(1)).save(any(HearingRecordingAuditEntry.class));
+        verify(auditLogFormatter, times(1)).format(any(AuditEntry.class));
+    }
+
+
     @Test
     public void testCreateAndSaveEntryForHearingRecordingSegment() {
 
-        when(securityService.getAuditUserEmail()).thenReturn("x");
-        when(securityService.getCurrentlyAuthenticatedServiceName()).thenReturn("s");
+        prepareMockSecurityService();
 
         HearingRecordingSegmentAuditEntry entry = auditEntryService.createAndSaveEntry(
-            new HearingRecordingSegment(),
+            hearingRecordingSegment,
             AuditActions.USER_DOWNLOAD_REQUESTED
         );
 
-        Assertions.assertEquals("x", entry.getUsername());
-        Assertions.assertEquals("s", entry.getServiceName());
+        assertSecurityServiceValues(entry);
 
-        verify(hearingRecordingSegmentAuditEntryRepository, times(1)).save(any(HearingRecordingSegmentAuditEntry.class));
+        verify(hearingRecordingSegmentAuditEntryRepository, times(1))
+            .save(any(HearingRecordingSegmentAuditEntry.class));
+
     }
+
+
+    private void prepareMockSecurityService() {
+        when(securityService.getAuditUserEmail()).thenReturn(USER_EMAIL);
+        when(securityService.getCurrentlyAuthenticatedServiceName()).thenReturn(SERVICE_NAME);
+        when(securityService.getClientIp()).thenReturn(CLIENT_IP);
+    }
+
+
+    private void assertSecurityServiceValues(AuditEntry entry) {
+        Assertions.assertEquals(USER_EMAIL, entry.getUsername());
+        Assertions.assertEquals(SERVICE_NAME, entry.getServiceName());
+        Assertions.assertEquals(CLIENT_IP, entry.getIpAddress());
+    }
+
+
 }
