@@ -50,28 +50,6 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
         return segment;
     }
 
-    //
-    //    @Override
-    //    @PreAuthorize("hasPermission(#recordingId,'READ')")
-    //    //TODO unable to log user download attempt in hearing controller, if validating access here...also only
-    //     filename is
-    //    // used which is available in the segment details obtained in hearing controller
-    //    public Map<String, String> getDownloadInfo(UUID recordingId, Integer segmentNo) {
-    //
-    //        HearingRecordingSegment segment =
-    //            segmentRepository.findByHearingRecordingIdAndRecordingSegment(recordingId, segmentNo);
-    //
-    //        BlobProperties blobProperties = blobstoreClient.getBlobProperties(segment.getFilename());
-    //
-    //        return Map.of(
-    //            "filename", segment.getFilename(),
-    //            "caseId", segment.getHearingRecording().getCcdCaseId().toString(),
-    //            "contentType", blobProperties.getContentType(),
-    //            //            "fileSize", blobProperties.getBlobSize(),
-    //            "contentLength", String.valueOf(blobProperties.getBlobSize())
-    //        );
-    //    }
-
     @Override
     @PreAuthorize("hasPermission(#recordingId,'READ')")
     public void download(HearingRecordingSegment segment, HttpServletRequest request,

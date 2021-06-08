@@ -75,31 +75,6 @@ class SegmentDownloadServiceImplTest {
         segment.setHearingRecording(hr);
     }
 
-    //    @Test
-    //    void testGetDownloadInfo() {
-    //        BlobProperties blobProperties = new BlobProperties(
-    //            null, null, null, 1234L, "video/mp4", null,
-    //            null, null, null, null, null,
-    //            null, null, null, null, null, null, null,
-    //            null, null, null, null, null,
-    //            null, null, null, null, null,
-    //            null, null, null
-    //        );
-    //
-    //        doReturn(segment).when(segmentRepository).findByHearingRecordingIdAndRecordingSegment(RECORDING_ID,
-    //        SEGMENT_NO);
-    //        doReturn(hearingRecordingSegmentAuditEntry)
-    //            .when(auditEntryService).createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_REQUESTED);
-    //        doReturn(blobProperties).when(blobstoreClient).getBlobProperties(segment.getFilename());
-    //
-    //        //        segmentDownloadService.getDownloadInfo(RECORDING_ID, SEGMENT_NO);
-    //
-    //        verify(segmentRepository, times(1))
-    //            .findByHearingRecordingIdAndRecordingSegment(RECORDING_ID, SEGMENT_NO);
-    //
-    //        verify(blobstoreClient, times(1)).getBlobProperties(segment.getFilename());
-    //    }
-
     @Test
     void testDownload() throws IOException {
 

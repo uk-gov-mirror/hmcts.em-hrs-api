@@ -11,7 +11,6 @@ public interface SegmentDownloadService {
 
     HearingRecordingSegment fetchSegmentByRecordingIdAndSegmentNumber(UUID recordingId, Integer segmentNo);
 
-    //    Map<String, String> getDownloadInfo(UUID recordingId, Integer segmentNo);
 
     void download(HearingRecordingSegment segment, HttpServletRequest request,
                   HttpServletResponse response) throws IOException;
