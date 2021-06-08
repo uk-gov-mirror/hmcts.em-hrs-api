@@ -23,10 +23,10 @@ public class AuditLogFormatter {
         return new StringBuilder(TAG)
             .append(" ")
             .append(getFirstPair("dateTime", entry.getEventDateTime()))
-            .append(getPair("", entry.getAction().toString()))
-            .append(getPair("", entry.getIpAddress()))
-            .append(getPair("", entry.getServiceName()))
-            .append(getPair("", entry.getUsername()))
+            .append(getPair("action", entry.getAction().toString()))
+            .append(getPair("clientIp", entry.getIpAddress()))
+            .append(getPair("service", entry.getServiceName()))
+            .append(getPair("user", entry.getUsername()))
             .append(getPair("caseId", entry.getCaseId()))
             .toString();
     }
