@@ -59,8 +59,7 @@ public class AuditEntryService {
 
     public HearingRecordingAuditEntry createAndSaveEntry(HearingRecording hearingRecording,
                                                          AuditActions action) {
-        var entry = new HearingRecordingAuditEntry();
-        entry.setHearingRecording(hearingRecording);
+        var entry = new HearingRecordingAuditEntry(hearingRecording);
 
         String caseId = hearingRecording.getCcdCaseId().toString();
         populateCommonFields(
