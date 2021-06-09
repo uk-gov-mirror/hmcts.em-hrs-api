@@ -22,12 +22,4 @@
     <cve>CVE-2021-22112</cve>
   </suppress>
 
-  <suppress>
-    <notes>
-      temporary exclusion to allow build of EM-3582
-    </notes>
-    <cve>CVE-2021-22118</cve>
-  </suppress>
-
-
 </suppressions>
