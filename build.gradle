@@ -281,10 +281,10 @@ dependencyManagement {
 }
 
 repositories {
-  maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
   //TODO confirm this should be the primary maven repo (it is in dm store and em stictching)
   mavenCentral()
   jcenter()
+  maven { url 'https://jitpack.io' }
 }
 
 def versions = [
@@ -428,7 +428,7 @@ dependencies {
     exclude group: 'com.vaadin.external.google', module: 'android-json'
   }
 
-  functionalTestImplementation 'uk.gov.hmcts.reform:em-test-helper:1.18.1', withoutStuff
+  functionalTestImplementation 'com.github.hmcts:em-test-helper:1.18.2'
   functionalTestImplementation 'net.serenity-bdd:serenity-rest-assured:2.3.4', withoutStuff
 
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
@@ -448,7 +448,7 @@ dependencies {
   smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
   smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
   smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-  smokeTestImplementation "uk.gov.hmcts.reform:em-test-helper:1.18.1"
+  smokeTestImplementation 'com.github.hmcts:em-test-helper:1.18.2'
 
 /***********************************************************************************************************************
  * TEST SOURCE SETS
