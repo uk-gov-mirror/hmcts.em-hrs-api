@@ -219,7 +219,7 @@ public abstract class BaseTest {
             .put("recording-date-time", recordingTime);
     }
 
-    protected JsonNode getSegmentPayload(final String fileName) {
+    protected JsonNode createSegmentPayload(final String fileName) {
         return createRecordingSegment(
             FOLDER,
             JURISDICTION,

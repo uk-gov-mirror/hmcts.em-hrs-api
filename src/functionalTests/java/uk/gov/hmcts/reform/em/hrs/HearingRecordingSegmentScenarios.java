@@ -37,7 +37,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
 
     @Test
     public void shouldCreateHearingRecordingSegment() throws Exception {
-        final JsonNode segmentPayload = getSegmentPayload(fileName);
+        final JsonNode segmentPayload = createSegmentPayload(fileName);
 
         postRecordingSegment(segmentPayload)
             .then()
