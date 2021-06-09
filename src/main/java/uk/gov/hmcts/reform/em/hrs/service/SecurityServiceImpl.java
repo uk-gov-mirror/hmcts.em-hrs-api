@@ -26,6 +26,7 @@ public class SecurityServiceImpl implements SecurityService {
     static final String USER_AUTH = "authorization";
     private static final String HRS_INGESTOR = "hrsIngestor";
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityServiceImpl.class);
+    public static final String CLIENTIP = "x-azure-clientip";
     private final IdamClient idamClient;
     private final AuthTokenGenerator authTokenGenerator;
     private final AuthTokenValidator authTokenValidator;
@@ -123,7 +124,7 @@ public class SecurityServiceImpl implements SecurityService {
         if (Objects.isNull(request)) {
             return null;
         }
-        return request.getHeader("x-azure-clientip");
+        return request.getHeader(CLIENTIP);
     }
 
     private HttpServletRequest getCurrentRequest() {
