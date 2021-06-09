@@ -150,9 +150,8 @@ public class HearingRecordingController {
                                            HttpServletRequest request,
                                            HttpServletResponse response) {
         try {
-            HearingRecordingSegment segment =
-                segmentDownloadService.fetchSegmentByRecordingIdAndSegmentNumber(recordingId, segmentNo);
-
+            //TODO this should return a 403 if its not in database
+            HearingRecordingSegment segment = segmentDownloadService.fetchSegmentByRecordingIdAndSegmentNumber(recordingId, segmentNo);
             segmentDownloadService.download(segment, request, response);
         } catch (Exception e) {
             LOGGER.warn(

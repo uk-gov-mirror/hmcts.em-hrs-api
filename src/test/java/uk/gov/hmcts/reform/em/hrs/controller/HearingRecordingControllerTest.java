@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
 import net.javacrumbs.jsonunit.core.Option;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MvcResult;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegmentAuditEntry;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.exception.SegmentDownloadException;
+import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 import uk.gov.hmcts.reform.em.hrs.service.AuditEntryService;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
@@ -58,20 +58,17 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.convertObjectTo
 class HearingRecordingControllerTest extends AbstractBaseTest {
     private static final String TEST_FOLDER = "folder-1";
     @MockBean
+    HearingRecordingSegmentRepository segmentRepository;
+    @MockBean
     private FolderService folderService;
-
     @MockBean
     private ShareAndNotifyService shareAndNotifyService;
-
     @MockBean
-    private SegmentDownloadService downloadService;
-
+    private SegmentDownloadService segmentDownloadService;
     @Inject
     private IngestionQueue ingestionQueue;
-
     @MockBean
     private AuditEntryService auditEntryService;
-
     @MockBean
     private HearingRecordingSegmentAuditEntry hearingRecordingSegmentAuditEntry;
 
@@ -184,7 +181,7 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     void testShouldDownloadSegment() throws Exception {
         UUID recordingId = UUID.randomUUID();
 
-        doNothing().when(downloadService)
+        doNothing().when(segmentDownloadService)
             .download(
                 any(HearingRecordingSegment.class),
                 any(HttpServletRequest.class),
@@ -205,13 +202,14 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     }
 
     @Test
-    @Disabled("Controller returning 200 code since adding audit logging and addition of getSegment in hearing "
-        + "controller.")
-    void testShouldThrowSegmentDownloadException() throws Exception {
+    void testShouldHandleSegmentDownloadException() throws Exception {
         UUID recordingId = UUID.randomUUID();
 
+        HearingRecordingSegment segment = new HearingRecordingSegment();
+        doReturn(segment).when(segmentDownloadService).fetchSegmentByRecordingIdAndSegmentNumber(any(), any());
+
         doThrow(new SegmentDownloadException("failed download"))
-            .when(downloadService)
+            .when(segmentDownloadService)
             .download(
                 any(HearingRecordingSegment.class),
                 any(HttpServletRequest.class),
@@ -222,6 +220,22 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
             .andExpect(status().isInternalServerError())
             .andReturn();
     }
+
+    @Test
+    void testShouldHandleSegmentFetchException() throws Exception {
+        UUID recordingId = UUID.randomUUID();
+
+        doThrow(RuntimeException.class)
+            .when(segmentDownloadService)
+            .fetchSegmentByRecordingIdAndSegmentNumber(
+                any(), any()
+            );
+
+        mockMvc.perform(get(String.format("/hearing-recordings/%s/segments/%d", recordingId, 0)))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+    }
+
 
     private void clogJobQueue() {
         IntStream.rangeClosed(1, INGESTION_QUEUE_SIZE + 10)
