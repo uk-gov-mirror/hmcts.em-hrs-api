@@ -15,8 +15,11 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingAuditEntry;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegmentAuditEntry;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingShareeAuditEntry;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingAuditEntryRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentAuditEntryRepository;
+import uk.gov.hmcts.reform.em.hrs.repository.ShareesAuditEntryRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,14 +41,17 @@ public class AuditEntryServiceTests {
     AuditEntryService auditEntryService;
 
     @Mock
-    private HearingRecordingAuditEntryRepository hearingRecordingAuditEntryRepository;
-    @Mock
     private SecurityService securityService;
     @Mock
+    private HearingRecordingAuditEntryRepository hearingRecordingAuditEntryRepository;
+    @Mock
     private HearingRecordingSegmentAuditEntryRepository hearingRecordingSegmentAuditEntryRepository;
+    @Mock
+    private ShareesAuditEntryRepository shareesAuditEntryRepository;
 
     private HearingRecording hearingRecording;
     private HearingRecordingSegment hearingRecordingSegment;
+    private HearingRecordingSharee hearingRecordingSharee;
 
     @Mock
     private AuditLogFormatter auditLogFormatter;
@@ -56,6 +62,9 @@ public class AuditEntryServiceTests {
         hearingRecording.setCcdCaseId(1234L);
         hearingRecordingSegment = new HearingRecordingSegment();
         hearingRecordingSegment.setHearingRecording(hearingRecording);
+        hearingRecordingSharee = new HearingRecordingSharee();
+        hearingRecordingSharee.setHearingRecording(hearingRecording);
+
     }
 
     @Test
@@ -71,7 +80,6 @@ public class AuditEntryServiceTests {
 
     @Test
     public void testCreateAndSaveEntryForHearingRecording() {
-
         prepareMockSecurityService();
 
         HearingRecordingAuditEntry entry = auditEntryService.createAndSaveEntry(
@@ -80,14 +88,13 @@ public class AuditEntryServiceTests {
         );
 
         assertSecurityServiceValues(entry);
+        assertLogFormatterInvoked();
         verify(hearingRecordingAuditEntryRepository, times(1)).save(any(HearingRecordingAuditEntry.class));
-        verify(auditLogFormatter, times(1)).format(any(AuditEntry.class));
     }
 
 
     @Test
     public void testCreateAndSaveEntryForHearingRecordingSegment() {
-
         prepareMockSecurityService();
 
         HearingRecordingSegmentAuditEntry entry = auditEntryService.createAndSaveEntry(
@@ -96,10 +103,38 @@ public class AuditEntryServiceTests {
         );
 
         assertSecurityServiceValues(entry);
-
+        assertLogFormatterInvoked();
         verify(hearingRecordingSegmentAuditEntryRepository, times(1))
             .save(any(HearingRecordingSegmentAuditEntry.class));
+    }
 
+    @Test
+    public void testCreateAndSaveEntryForHearingRecordingSharee() {
+        prepareMockSecurityService();
+
+        HearingRecordingShareeAuditEntry entry = auditEntryService.createAndSaveEntry(
+            hearingRecordingSharee,
+            AuditActions.SHARE_GRANT_OK
+        );
+
+        assertSecurityServiceValues(entry);
+        assertLogFormatterInvoked();
+
+        verify(shareesAuditEntryRepository, times(1))
+            .save(any(HearingRecordingShareeAuditEntry.class));
+
+    }
+
+    @Test
+    public void testLogsForNonEntity() {
+        prepareMockSecurityService();
+
+        auditEntryService.logOnly(
+            1234L,
+            AuditActions.NOTIFY_OK
+        );
+
+        assertLogFormatterInvoked();
     }
 
 
@@ -116,5 +151,8 @@ public class AuditEntryServiceTests {
         Assertions.assertEquals(CLIENT_IP, entry.getIpAddress());
     }
 
+    private void assertLogFormatterInvoked() {
+        verify(auditLogFormatter, times(1)).format(any(AuditEntry.class));
+    }
 
 }
