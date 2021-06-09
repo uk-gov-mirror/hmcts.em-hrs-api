@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.hrs;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -37,7 +36,6 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
         testUtil.deleteFileFromCvpContainer(FOLDER);
     }
 
-    @Ignore
     @Test
     public void anUserWithCaseWorkerHrsRoleShouldBeAbleToDownloadHearingRecordings() throws Exception {
         final JsonNode segmentPayload = getSegmentPayload(fileName);
@@ -63,7 +61,6 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
         assertThat(actualFileSize, is(expectedFileSize));
     }
 
-    @Ignore
     @Test
     public void anUserWithCaseWorkerRoleShouldNotBeAbleToDownloadHearingRecordings() throws Exception {
         final JsonNode segmentPayload = getSegmentPayload(fileName);
@@ -93,7 +90,6 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
 
     }
 
-    @Ignore
     @Test
     public void anUserWithCitizenRoleShouldNotBeAbleToDownloadHearingRecordings() throws Exception {
         final JsonNode segmentPayload = getSegmentPayload(fileName);

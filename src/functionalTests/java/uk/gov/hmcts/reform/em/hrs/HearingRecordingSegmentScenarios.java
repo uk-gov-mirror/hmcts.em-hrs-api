@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.em.hrs;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
@@ -29,13 +29,12 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
     }
 
-//    @After
-//    public void clear() {
-//        testUtil.deleteFileFromHrsContainer(FOLDER);
-//        testUtil.deleteFileFromCvpContainer(FOLDER);
-//    }
+    @After
+    public void clear() {
+        testUtil.deleteFileFromHrsContainer(FOLDER);
+        testUtil.deleteFileFromCvpContainer(FOLDER);
+    }
 
-    @Ignore
     @Test
     public void shouldCreateHearingRecordingSegment() throws Exception {
         final JsonNode segmentPayload = getSegmentPayload(fileName);
@@ -55,7 +54,6 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .body("filenames", contains(fileName));
     }
 
-    @Ignore
     @Test
     public void shouldCreateFolderWhenDoesNotExistAndReturnEmptyFileNames() {
         final String nonExistentFolder = "audiostream000000";

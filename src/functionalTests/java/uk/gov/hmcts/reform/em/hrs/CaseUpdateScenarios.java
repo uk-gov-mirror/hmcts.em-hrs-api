@@ -39,6 +39,7 @@ public class CaseUpdateScenarios extends BaseTest {
             .statusCode(202);
     }
 
+    @Ignore
     @Test
     public void testDocumentShare() throws InterruptedException {
         getFilenames(FOLDER).statusCode(200);
