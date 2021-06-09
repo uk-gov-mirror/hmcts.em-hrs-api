@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -11,6 +12,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.when;
 
 @TestPropertySource(properties = "hrs.allowed-roles.value=[caseworker-hrs]")
 @SpringBootTest(classes = {PermissionEvaluatorImpl.class})
+@ExtendWith(SpringExtension.class)
 public class PermissionEvaluatorImplTest {
 
     @MockBean

@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import com.azure.storage.blob.models.BlobRange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.hrs.domain.AuditActions;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
@@ -36,6 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {SegmentDownloadServiceImpl.class})
+@ExtendWith(SpringExtension.class)
 class SegmentDownloadServiceImplTest {
 
     private static final UUID RECORDING_ID = UUID.randomUUID();
