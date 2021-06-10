@@ -36,16 +36,19 @@ public class AuditEntryServiceTests {
     private static final String USER_EMAIL = "email@hmcts.net.internal";
     private static final String SERVICE_NAME = "SUT";
     private static final String CLIENT_IP = "127.0.0.1";
+
     @InjectMocks
-    private
-    AuditEntryService auditEntryService;
+    private AuditEntryService auditEntryService;
 
     @Mock
     private SecurityService securityService;
+
     @Mock
     private HearingRecordingAuditEntryRepository hearingRecordingAuditEntryRepository;
+
     @Mock
     private HearingRecordingSegmentAuditEntryRepository hearingRecordingSegmentAuditEntryRepository;
+
     @Mock
     private ShareesAuditEntryRepository shareesAuditEntryRepository;
 

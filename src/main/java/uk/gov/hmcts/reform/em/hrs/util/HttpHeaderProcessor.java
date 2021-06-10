@@ -2,7 +2,8 @@ package uk.gov.hmcts.reform.em.hrs.util;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class HttpHeaderProcessor {//non frontdoor environments (ie DEMO do not use front door, and may use TitleCase header names)
+//non frontdoor environments (ie DEMO do not use front door, and may use TitleCase header names)
+public class HttpHeaderProcessor {
 
     //front door environments use lowercase header names
     public static String getHttpHeaderByCaseSensitiveAndLowerCase(HttpServletRequest request,

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.storage;
 
-import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.BlobRange;
 
 import java.io.OutputStream;

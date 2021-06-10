@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import com.azure.storage.blob.models.BlobRange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,7 +21,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,9 +35,6 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {SegmentDownloadServiceImpl.class})
 class SegmentDownloadServiceImplTest {
-
-    private static final UUID RECORDING_ID = UUID.randomUUID();
-    private static final Integer SEGMENT_NO = Integer.valueOf(10);
 
     @MockBean
     private HearingRecordingSegmentRepository segmentRepository;
@@ -93,7 +88,6 @@ class SegmentDownloadServiceImplTest {
         segmentDownloadService.download(segment, request, response);
 
         verify(blobstoreClient, times(1)).downloadFile(segment.getFilename(), null, null);
-
     }
 
     @Test
@@ -119,14 +113,12 @@ class SegmentDownloadServiceImplTest {
 
     @Test
     public void loadsRangedBlobTooLargeRangeHeader() throws IOException {
-
         when(request.getHeader(HttpHeaders.RANGE)).thenReturn("bytes=0-1023");
         when(request.getHeaderNames()).thenReturn(generateEmptyHeaders());
         when(blobstoreClient.fetchBlobInfo(any())).thenReturn(new BlobInfo(1000L, null));
         segmentDownloadService.download(segment, request, response);
 
-        Mockito.verify(response, Mockito.times(1)).
-            setStatus(HttpStatus.PARTIAL_CONTENT.value());
+        Mockito.verify(response, Mockito.times(1)).setStatus(HttpStatus.PARTIAL_CONTENT.value());
         //TODO verification needed....if the blob range is larger than the file, then the whole file is returned
         //should the status be partial content or not? given it is the complete content vs was a range request...
         Mockito.verify(response, Mockito.times(1)).setHeader(HttpHeaders.CONTENT_RANGE, "bytes 0-999/1000");

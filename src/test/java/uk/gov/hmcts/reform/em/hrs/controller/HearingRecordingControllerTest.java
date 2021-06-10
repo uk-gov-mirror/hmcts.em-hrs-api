@@ -61,16 +61,22 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
 
     @MockBean
     HearingRecordingSegmentRepository segmentRepository;
+
     @MockBean
     private FolderService folderService;
+
     @MockBean
     private ShareAndNotifyService shareAndNotifyService;
+
     @MockBean
     private SegmentDownloadService segmentDownloadService;
+
     @Inject
     private IngestionQueue ingestionQueue;
+
     @MockBean
     private AuditEntryService auditEntryService;
+
     @MockBean
     private HearingRecordingSegmentAuditEntry hearingRecordingSegmentAuditEntry;
 
@@ -141,7 +147,6 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     @Test
     void testShouldNotExceedOneSecond() throws Exception {
         final String path = "/segments";
-
         final Instant start = Instant.now(Clock.systemDefaultZone());
 
         mockMvc.perform(post(path)
@@ -182,40 +187,28 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     @Test
     void testShouldDownloadSegment() throws Exception {
         UUID recordingId = UUID.randomUUID();
-
         doNothing().when(segmentDownloadService)
             .download(
-                any(HearingRecordingSegment.class),
-                any(HttpServletRequest.class),
-                any(HttpServletResponse.class)
+                any(HearingRecordingSegment.class), any(HttpServletRequest.class), any(HttpServletResponse.class)
             );
-
-
         doReturn(hearingRecordingSegmentAuditEntry)
             .when(auditEntryService)
             .createAndSaveEntry(any(HearingRecordingSegment.class), eq(AuditActions.USER_DOWNLOAD_OK));
 
-
         mockMvc.perform(get(String.format("/hearing-recordings/%s/segments/%d", recordingId, 0)))
             .andExpect(status().isOk())
             .andReturn();
-
-
     }
 
     @Test
     void testShouldHandleSegmentDownloadException() throws Exception {
         UUID recordingId = UUID.randomUUID();
-
         HearingRecordingSegment segment = new HearingRecordingSegment();
         doReturn(segment).when(segmentDownloadService).fetchSegmentByRecordingIdAndSegmentNumber(any(), any());
-
         doThrow(new SegmentDownloadException("failed download"))
             .when(segmentDownloadService)
             .download(
-                any(HearingRecordingSegment.class),
-                any(HttpServletRequest.class),
-                any(HttpServletResponse.class)
+                any(HearingRecordingSegment.class), any(HttpServletRequest.class), any(HttpServletResponse.class)
             );
 
         mockMvc.perform(get(String.format("/hearing-recordings/%s/segments/%d", recordingId, 0)))
@@ -226,18 +219,13 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     @Test
     void testShouldHandleSegmentFetchException() throws Exception {
         UUID recordingId = UUID.randomUUID();
-
-        doThrow(RuntimeException.class)
-            .when(segmentDownloadService)
-            .fetchSegmentByRecordingIdAndSegmentNumber(
-                any(), any()
-            );
+        doThrow(RuntimeException.class).when(segmentDownloadService)
+            .fetchSegmentByRecordingIdAndSegmentNumber(any(), any());
 
         mockMvc.perform(get(String.format("/hearing-recordings/%s/segments/%d", recordingId, 0)))
             .andExpect(status().isInternalServerError())
             .andReturn();
     }
-
 
     private void clogJobQueue() {
         IntStream.rangeClosed(1, INGESTION_QUEUE_SIZE + 10)
