@@ -56,7 +56,9 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_AD
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.convertObjectToJsonString;
 
 class HearingRecordingControllerTest extends AbstractBaseTest {
+
     private static final String TEST_FOLDER = "folder-1";
+
     @MockBean
     HearingRecordingSegmentRepository segmentRepository;
     @MockBean

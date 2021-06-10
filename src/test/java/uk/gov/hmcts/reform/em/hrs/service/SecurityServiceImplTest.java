@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.em.hrs.service.SecurityServiceImpl.CLIENTIP;
 @SpringBootTest(classes = {SecurityServiceImpl.class},
     properties = {"idam.system-user.username=SystemUser", "idam.system-user.password=SystemPassword"})
 class SecurityServiceImplTest {
+
     private static final String DUMMY_NAME = "dummyName";
     private static final String HRS_INGESTOR = "hrsIngestor";
     private static final String SYSTEM_USER = "SystemUser";
@@ -47,15 +48,19 @@ class SecurityServiceImplTest {
         .roles(Arrays.asList("caseworker-hrs"))
         .build();
     private static final String SERVICE_NAME = "TestService";
+
     @Mock
-    private
-    MockHttpServletRequest request;
+    private MockHttpServletRequest request;
+
     @MockBean
     private IdamClient idamClient;
+
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
+
     @MockBean
     private AuthTokenValidator authTokenValidator;
+
     @Inject
     private SecurityServiceImpl underTest;
 

@@ -137,13 +137,11 @@ public class AuditEntryServiceTests {
         assertLogFormatterInvoked();
     }
 
-
     private void prepareMockSecurityService() {
         when(securityService.getAuditUserEmail()).thenReturn(USER_EMAIL);
         when(securityService.getCurrentlyAuthenticatedServiceName()).thenReturn(SERVICE_NAME);
         when(securityService.getClientIp()).thenReturn(CLIENT_IP);
     }
-
 
     private void assertSecurityServiceValues(AuditEntry entry) {
         Assertions.assertEquals(USER_EMAIL, entry.getUsername());
@@ -154,5 +152,4 @@ public class AuditEntryServiceTests {
     private void assertLogFormatterInvoked() {
         verify(auditLogFormatter, times(1)).format(any(AuditEntry.class));
     }
-
 }
