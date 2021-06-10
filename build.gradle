@@ -149,23 +149,22 @@ task runAndPublishConsumerPactTests(type: Test) {
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
 
-  project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
-  }
-
-  pact {
-    publish {
-      pactDirectory = 'pacts'
-      pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-      version = project.pactVersion
-    }
-  }
 }
 
 runAndPublishConsumerPactTests.dependsOn contract
 runAndPublishConsumerPactTests.finalizedBy pactPublish
 
+project.ext {
+  pactVersion = getCheckedOutGitCommitHash()
+}
 
+pact {
+  publish {
+    pactDirectory = 'pacts'
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    version = project.pactVersion
+  }
+}
 
 
 /***********************************************************************************************************************
