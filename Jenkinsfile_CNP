@@ -128,9 +128,9 @@ withPipeline(type, product, component) {
       ]
     }
 
-    enablePactAs([
-        AppPipelineDsl.PactRoles.CONSUMER
-       ])
+//    enablePactAs([
+//        AppPipelineDsl.PactRoles.CONSUMER
+//       ])
 
     after('contract:aat') {
       publishHTML target: [
@@ -251,4 +251,10 @@ withPipeline(type, product, component) {
     ]
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
   }
+
+  onMaster()
+    {
+      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    }
+
 }
