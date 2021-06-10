@@ -135,16 +135,6 @@ withPipeline(type, product, component) {
 //        AppPipelineDsl.PactRoles.CONSUMER
 //       ])
 
-  after('contract:aat') {
-    publishHTML target: [
-      allowMissing         : true,
-      alwaysLinkToLastBuild: true,
-      keepAll              : true,
-      reportDir            : "build/reports/tests/contract",
-      reportFiles          : "index.html",
-      reportName           : "HRS API Contract Test Report"
-    ]
-  }
 
   after('smoketest:aat') {
     publishHTML target: [
@@ -245,9 +235,26 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
   }
 
-  onMaster()
-    {
-      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
+  after('pactconsumerVerification:preview') {
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/contract",
+      reportFiles          : "index.html",
+      reportName           : "HRS API Contract Test Report"
+    ]
+  }
+
+  after('pactconsumerVerification:aat') {
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/contract",
+      reportFiles          : "index.html",
+      reportName           : "HRS API Contract Test Report"
+    ]
+  }
 
 }
