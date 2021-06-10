@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
-import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.BlobRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +13,13 @@ import uk.gov.hmcts.reform.em.hrs.domain.AuditActions;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.exception.InvalidRangeRequestException;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
+import uk.gov.hmcts.reform.em.hrs.storage.BlobInfo;
 import uk.gov.hmcts.reform.em.hrs.storage.BlobstoreClient;
 import uk.gov.hmcts.reform.em.hrs.util.HttpHeaderProcessor;
 import uk.gov.hmcts.reform.em.hrs.util.debug.HttpHeadersLogging;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -43,48 +42,43 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
         this.auditEntryService = auditEntryService;
     }
 
+
     @Override
-    @PreAuthorize("hasPermission(#recordingId,'READ')")
-    public Map<String, String> getDownloadInfo(UUID recordingId, Integer segmentNo) {
+    public HearingRecordingSegment fetchSegmentByRecordingIdAndSegmentNumber(UUID recordingId, Integer segmentNo) {
 
         HearingRecordingSegment segment =
             segmentRepository.findByHearingRecordingIdAndRecordingSegment(recordingId, segmentNo);
-
-        auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_REQUESTED);
-
-        BlobProperties blobProperties = blobstoreClient.getBlobProperties(segment.getFilename());
-
-        LOGGER.info(
-            "downloading blob with the following properties: [filenmae: {}, content-type: {}, content-length: {}]",
-            segment.getFilename(), blobProperties.getContentType(), blobProperties.getBlobSize()
-        );
-
-        return Map.of(
-            "filename", segment.getFilename(),
-            "contentType", blobProperties.getContentType(),
-            "contentLength", String.valueOf(blobProperties.getBlobSize())
-        );
+        return segment;
     }
 
     @Override
     @PreAuthorize("hasPermission(#recordingId,'READ')")
-    public void download(String filename, HttpServletRequest request,
+    public void download(HearingRecordingSegment segment, HttpServletRequest request,
                          HttpServletResponse response) throws IOException {
 
+        auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_REQUESTED);
+
+        String filename = segment.getFilename();
+        BlobInfo blobInfo = blobstoreClient.fetchBlobInfo(filename);
+        long fileSize = blobInfo.getFileSize();
+        String contentType = blobInfo.getContentType();
+        String attachmentFilename = String.format("attachment; filename=%s", filename);
+
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, attachmentFilename);
+        response.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
         response.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
-        response.setHeader(
-            HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=%s", filename)
-        );
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
 
-        HttpHeadersLogging.logHttpHeaders(request);//keep during early life support
+        HttpHeadersLogging
+            .logHttpHeaders(request);//keep during early life support to assist with any range or other issues.
 
         String rangeHeader = HttpHeaderProcessor.getHttpHeaderByCaseSensitiveAndLowerCase(request, HttpHeaders.RANGE);
         LOGGER.info("Range header for filename {} = {}", filename, rangeHeader);
 
         BlobRange blobRange = null;
-        if (rangeHeader != null) {
-            long fileSize = blobstoreClient.getFileSize(filename);
+        if (rangeHeader == null) {
+            response.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileSize));
+        } else {
             try {
                 response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
 
@@ -116,17 +110,14 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
                     request.getHeader(HttpHeaders.CONTENT_LENGTH)
                 );
             } catch (Exception e) {
+                auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_FAIL);
                 throw new InvalidRangeRequestException(response, fileSize);
             }
         }
 
-
         ServletOutputStream outputStream = response.getOutputStream();
-
         blobstoreClient.downloadFile(filename, blobRange, outputStream);
-        HearingRecordingSegment segment = segmentRepository.findByFilename(filename);
         auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_OK);
-
     }
 
 }

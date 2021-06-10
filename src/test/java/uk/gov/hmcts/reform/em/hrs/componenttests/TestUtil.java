@@ -35,6 +35,7 @@ public class TestUtil {
     public static final String SERVICE_AUTHORIZATION_TOKEN = "xxxxxxxxxxxxxxxx";
     public static final Long CCD_CASE_ID = 1234L;
     public static final String SHAREE_EMAIL_ADDRESS = "sharee.tester@test.com";
+    public static final String SHAREE_BAD_EMAIL_ADDRESS = "sharee.testertest.com";
     public static final String SHARER_EMAIL_ADDRESS = "sharer.tester@test.com";
     public static final UUID SHAREE_ID = UUID.randomUUID();
     public static final String CASE_REFERENCE = "hrs-grant-" + SHAREE_ID;

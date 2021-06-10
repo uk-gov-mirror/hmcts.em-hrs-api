@@ -28,20 +28,13 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SERVICE_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHARER_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.em.hrs.service.SecurityServiceImpl.CLIENTIP;
 
 @SpringBootTest(classes = {SecurityServiceImpl.class},
     properties = {"idam.system-user.username=SystemUser", "idam.system-user.password=SystemPassword"})
 class SecurityServiceImplTest {
-    @MockBean
-    private IdamClient idamClient;
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
-    @MockBean
-    private AuthTokenValidator authTokenValidator;
-
-    @Inject
-    private SecurityServiceImpl underTest;
-
+    private static final String DUMMY_NAME = "dummyName";
+    private static final String HRS_INGESTOR = "hrsIngestor";
     private static final String SYSTEM_USER = "SystemUser";
     private static final String SYSTEM_USER_PASSWORD = "SystemPassword";
     private static final String USER_ID = UUID.randomUUID().toString();
@@ -54,11 +47,17 @@ class SecurityServiceImplTest {
         .roles(Arrays.asList("caseworker-hrs"))
         .build();
     private static final String SERVICE_NAME = "TestService";
-    public static final String DUMMY_NAME = "dummyName";
-    public static final String HRS_INGESTOR = "hrsIngestor";
-
     @Mock
+    private
     MockHttpServletRequest request;
+    @MockBean
+    private IdamClient idamClient;
+    @MockBean
+    private AuthTokenGenerator authTokenGenerator;
+    @MockBean
+    private AuthTokenValidator authTokenValidator;
+    @Inject
+    private SecurityServiceImpl underTest;
 
     @BeforeEach
     public void before() {
@@ -173,4 +172,18 @@ class SecurityServiceImplTest {
         RequestContextHolder.setRequestAttributes(null);
         Assert.assertEquals(HRS_INGESTOR, underTest.getAuditUserEmail());
     }
+
+    @Test
+    void testGetClientIpNullRequest() {
+        RequestContextHolder.setRequestAttributes(null);
+        Assert.assertEquals(null, underTest.getClientIp());
+    }
+
+    @Test
+    void testGetClientIp() {
+        doReturn("127.0.0.1").when(request).getHeader(CLIENTIP);
+        Assert.assertEquals("127.0.0.1", underTest.getClientIp());
+    }
+
+
 }
