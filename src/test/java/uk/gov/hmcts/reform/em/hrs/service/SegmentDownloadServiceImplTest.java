@@ -38,7 +38,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {SegmentDownloadServiceImpl.class})
-@ExtendWith(SpringExtension.class)
 class SegmentDownloadServiceImplTest {
 
     private static final UUID RECORDING_ID = UUID.randomUUID();

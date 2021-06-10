@@ -3,13 +3,11 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -34,7 +32,6 @@ import static uk.gov.hmcts.reform.em.hrs.service.SecurityServiceImpl.CLIENTIP;
 
 @SpringBootTest(classes = {SecurityServiceImpl.class},
     properties = {"idam.system-user.username=SystemUser", "idam.system-user.password=SystemPassword"})
-@ExtendWith(SpringExtension.class)
 class SecurityServiceImplTest {
     private static final String DUMMY_NAME = "dummyName";
     private static final String HRS_INGESTOR = "hrsIngestor";

@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.em.hrs.config.security.JwtGrantedAuthoritiesConverter
 import javax.inject.Inject;
 
 @SpringBootTest(classes = {TestApplicationConfig.class, TestSecurityConfiguration.class, TestAzureStorageConfig.class})
-@ExtendWith({MockitoExtension.class, SpringExtension.class})
+@ExtendWith({MockitoExtension.class})
 public abstract class AbstractBaseTest extends AbstractDataSourceTest {
 
     @Inject
