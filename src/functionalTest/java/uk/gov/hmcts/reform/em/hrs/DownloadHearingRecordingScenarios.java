@@ -37,7 +37,6 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
         testUtil.deleteFileFromCvpContainer(FOLDER);
     }
 
-    @Ignore
     @Test
     public void anUserWithCaseWorkerHrsRoleShouldBeAbleToDownloadHearingRecordings() throws Exception {
         final JsonNode segmentPayload = createSegmentPayload(fileName);
@@ -63,7 +62,6 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
         assertThat(actualFileSize, is(expectedFileSize));
     }
 
-    @Ignore
     @Test
     public void anUserWithCaseWorkerRoleShouldNotBeAbleToDownloadHearingRecordings() throws Exception {
         final JsonNode segmentPayload = createSegmentPayload(fileName);
@@ -93,7 +91,6 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
 
     }
 
-    @Ignore
     @Test
     public void anUserWithCitizenRoleShouldNotBeAbleToDownloadHearingRecordings() throws Exception {
         final JsonNode segmentPayload = createSegmentPayload(fileName);
