@@ -116,14 +116,14 @@ task functional(type: Test) {
 }
 
 task contract(type: Test) {
+  group = 'Delivery pipeline'
   description = "Runs contract tests"
-  group = "Verification"
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
   include "uk/gov/hmcts/reform/em/hrs/consumer/**"
   systemProperty 'pact.rootDir', "pacts"
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-  failFast = true
+ // failFast = true
 }
 
 task integration(type: Test) {
@@ -148,25 +148,10 @@ task runAndPublishConsumerPactTests(type: Test) {
   logger.lifecycle("Runs pact Tests")
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
-
-  project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
-  }
-
-  pact {
-    publish {
-      pactDirectory = 'pacts'
-      pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-      version = project.pactVersion
-    }
-  }
 }
 
 runAndPublishConsumerPactTests.dependsOn contract
 runAndPublishConsumerPactTests.finalizedBy pactPublish
-
-
-
 
 /***********************************************************************************************************************
  * Code Checks
@@ -550,7 +535,6 @@ dependencies {
 /***********************************************************************************************************************
  * Adhoc
  **********************************************************************************************************************/
-
 test {
   useJUnitPlatform()
 }
