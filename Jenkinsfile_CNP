@@ -77,10 +77,10 @@ withPipeline(type, product, component) {
     }
   }
 
-  onMaster()
-    {
+ // onMaster()
+   // {
       enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
+   // }
 
   after('test') {
 
@@ -92,7 +92,7 @@ withPipeline(type, product, component) {
       reportFiles          : "index.html",
       reportName           : "HRS API Contract Tests Report"
     ]
-    
+
   publishHTML target: [
         allowMissing         : true,
         alwaysLinkToLastBuild: true,
