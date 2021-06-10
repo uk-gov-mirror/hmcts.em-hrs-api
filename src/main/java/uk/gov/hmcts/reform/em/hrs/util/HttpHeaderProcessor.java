@@ -6,12 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 public class HttpHeaderProcessor {
 
     //front door environments use lowercase header names
-    public static String getHttpHeaderByCaseSensitiveAndLowerCase(HttpServletRequest request,
-                                                                  String headerNameGivenCase) {
-        String headerName = request.getHeader(headerNameGivenCase);
-        if (headerName == null) {
-            headerName = request.getHeader(headerNameGivenCase.toLowerCase());
+    public static String getHttpHeaderByCaseSensitiveAndLowerCase(HttpServletRequest request, String headerName) {
+        String headerValue = request.getHeader(headerName);
+        if (headerValue == null) {
+            headerValue = request.getHeader(headerName.toLowerCase());
         }
-        return headerName;
+        return headerValue;
     }
 }
