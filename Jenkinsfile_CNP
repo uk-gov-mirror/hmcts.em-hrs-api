@@ -1,4 +1,5 @@
 #!groovy
+import uk.gov.hmcts.contino.AppPipelineDsl
 properties([
   [
     $class       : 'GithubProjectProperty',
@@ -77,10 +78,10 @@ withPipeline(type, product, component) {
  //   }
   }
 
-  onMaster()
-    {
+  //onMaster()
+   // {
   enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
+   // }
 
   after('test') {
 
