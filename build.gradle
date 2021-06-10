@@ -115,16 +115,6 @@ task functional(type: Test) {
   include "uk/gov/hmcts/reform/em/hrs/**"
 }
 
-task contract(type: Test) {
-  description = "Runs contract tests"
-  group = "Verification"
-  testClassesDirs = sourceSets.contractTest.output.classesDirs
-  classpath = sourceSets.contractTest.runtimeClasspath
-  include "uk/gov/hmcts/reform/em/hrs/consumer/**"
-  systemProperty 'pact.rootDir', "pacts"
-  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-  failFast = true
-}
 
 task integration(type: Test) {
   description = "Runs integration tests"
@@ -144,28 +134,14 @@ task smoke(type: Test) {
 
 }
 
-task runAndPublishConsumerPactTests(type: Test) {
-  logger.lifecycle("Runs pact Tests + should publish")
-  testClassesDirs = sourceSets.contractTest.output.classesDirs
-  classpath = sourceSets.contractTest.runtimeClasspath
-
-}
-
-runAndPublishConsumerPactTests.dependsOn contract
-runAndPublishConsumerPactTests.finalizedBy pactPublish
-
-project.ext {
-  pactVersion = getCheckedOutGitCommitHash()
-}
-
-pact {
-  publish {
-    pactDirectory = 'pacts'
-    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-    version = project.pactVersion
-  }
-}
-
+//task runAndPublishConsumerPactTests(type: Test) {
+//  logger.lifecycle("Runs pact Tests")
+//  testClassesDirs = sourceSets.contractTest.output.classesDirs
+//  classpath = sourceSets.contractTest.runtimeClasspath
+//}
+//
+//runAndPublishConsumerPactTests.dependsOn contract
+//runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 /***********************************************************************************************************************
  * Code Checks
@@ -550,87 +526,87 @@ dependencies {
  * Adhoc
  **********************************************************************************************************************/
 
-  test {
-    useJUnitPlatform()
+test {
+  useJUnitPlatform()
+}
+
+bootJar {
+  getArchiveFileName().set(provider {
+    'em-hrs-api.jar'
+  })
+
+  manifest {
+    attributes('Implementation-Version': project.version.toString())
   }
+}
 
-  bootJar {
-    getArchiveFileName().set(provider {
-      'em-hrs-api.jar'
-    })
+wrapper {
+  distributionType = Wrapper.DistributionType.ALL
+}
 
-    manifest {
-      attributes('Implementation-Version': project.version.toString())
-    }
+task contract(type: Test) {
+  group = 'Delivery pipeline'
+  description = 'Runs the consumer Pact tests'
+  useJUnitPlatform()
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  include "uk/gov/hmcts/reform/em/hrs/consumer/**"
+  systemProperty 'pact.rootDir', "pacts"
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+}
+
+task runAndPublishConsumerPactTests(type: Test){
+  logger.lifecycle("Runs pact Tests")
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+
+}
+
+runAndPublishConsumerPactTests.dependsOn contract
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+project.ext {
+  pactVersion = getCheckedOutGitCommitHash()
+}
+
+def getCheckedOutGitCommitHash() {
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+serenity {
+  reports = ["single-page-html"]
+}
+
+pact {
+  publish {
+    pactDirectory = 'pacts'
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    version = project.pactVersion
   }
+}
 
-  wrapper {
-    distributionType = Wrapper.DistributionType.ALL
-  }
+compileJava.dependsOn processResources
 
-  task contract(type: Test) {
-    group = 'Delivery pipeline'
-    description = 'Runs the consumer Pact tests'
-    useJUnitPlatform()
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
-    include "uk/gov/hmcts/reform/em/hrs/consumer/**"
-    systemProperty 'pact.rootDir', "pacts"
-    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-  }
-
-  task runAndPublishConsumerPactTests(type: Test){
-    logger.lifecycle("Runs pact Tests")
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
-
-  }
-
-  runAndPublishConsumerPactTests.dependsOn contract
-
-  runAndPublishConsumerPactTests.finalizedBy pactPublish
-
-  project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
-  }
-
-  def getCheckedOutGitCommitHash() {
-    'git rev-parse --verify --short HEAD'.execute().text.trim()
-  }
-
-  serenity {
-    reports = ["single-page-html"]
-  }
-
-  pact {
-    publish {
-      pactDirectory = 'pacts'
-      pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-      version = project.pactVersion
-    }
-  }
-
-  compileJava.dependsOn processResources
-
-  pitest {
-    targetClasses = ['uk.gov.hmcts.reform.em.hrs.util.*', 'uk.gov.hmcts.reform.em.hrs.service.*', 'uk.gov.hmcts.reform.em.hrs.controller.*', 'uk.gov.hmcts.reform.em.hrs.repository.*', 'uk.gov.hmcts.reform.em.hrs.storage.*']
-    targetTests = ['uk.gov.hmcts.reform.em.hrs.util.*', 'uk.gov.hmcts.reform.em.hrs.service.*', 'uk.gov.hmcts.reform.em.hrs.controller.*', 'uk.gov.hmcts.reform.em.hrs.repository.*', 'uk.gov.hmcts.reform.em.hrs.storage.*']
-    //excludedClasses = ['uk.gov.hmcts.reform.em.hrs.service.SecurityServiceImplTest']
-    //targetClasses = ['uk.gov.hmcts.reform.em.hrs.util.*']
-    //targetTests = ['uk.gov.hmcts.reform.em.hrs.util.*']
-    enableDefaultIncrementalAnalysis = true
-    historyInputLocation = 'build/reports/pitest/fastermutationtesting'
-    historyOutputLocation = 'build/reports/pitest/fastermutationtestingoutput'
-    threads = 15
-    testSourceSets = [sourceSets.test, sourceSets.integrationTest]
-    mainSourceSets = [sourceSets.main]
-    fileExtensionsToFilter.addAll('xml', 'json')
-    outputFormats = ['XML', 'HTML', 'CSV']
-    mutationThreshold = 0
-    coverageThreshold = 0
-    maxMutationsPerClass = 15
-    jvmArgs = ['-Xms1G', '-Xmx3G']
-    timestampedReports = false
-    failWhenNoMutations = false
-    detectInlinedCode = true
-  }
+pitest {
+  targetClasses = ['uk.gov.hmcts.reform.em.hrs.util.*', 'uk.gov.hmcts.reform.em.hrs.service.*', 'uk.gov.hmcts.reform.em.hrs.controller.*', 'uk.gov.hmcts.reform.em.hrs.repository.*', 'uk.gov.hmcts.reform.em.hrs.storage.*']
+  targetTests = ['uk.gov.hmcts.reform.em.hrs.util.*', 'uk.gov.hmcts.reform.em.hrs.service.*', 'uk.gov.hmcts.reform.em.hrs.controller.*', 'uk.gov.hmcts.reform.em.hrs.repository.*', 'uk.gov.hmcts.reform.em.hrs.storage.*']
+  //excludedClasses = ['uk.gov.hmcts.reform.em.hrs.service.SecurityServiceImplTest']
+  //targetClasses = ['uk.gov.hmcts.reform.em.hrs.util.*']
+  //targetTests = ['uk.gov.hmcts.reform.em.hrs.util.*']
+  enableDefaultIncrementalAnalysis = true
+  historyInputLocation = 'build/reports/pitest/fastermutationtesting'
+  historyOutputLocation = 'build/reports/pitest/fastermutationtestingoutput'
+  threads = 15
+  testSourceSets = [sourceSets.test, sourceSets.integrationTest]
+  mainSourceSets = [sourceSets.main]
+  fileExtensionsToFilter.addAll('xml', 'json')
+  outputFormats = ['XML', 'HTML', 'CSV']
+  mutationThreshold = 0
+  coverageThreshold = 0
+  maxMutationsPerClass = 15
+  jvmArgs = ['-Xms1G', '-Xmx3G']
+  timestampedReports = false
+  failWhenNoMutations = false
+  detectInlinedCode = true
+}
