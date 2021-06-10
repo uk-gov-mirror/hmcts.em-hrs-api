@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.hrs;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
