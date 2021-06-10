@@ -143,7 +143,47 @@ task smoke(type: Test) {
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 
 }
+task contract(type: Test) {
+  group = 'Delivery pipeline'
+  description = 'Runs the consumer Pact tests'
+  useJUnitPlatform()
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  include "uk/gov/hmcts/reform/em/hrs/consumer/**"
+  systemProperty 'pact.rootDir', "pacts"
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+}
 
+task runAndPublishConsumerPactTests(type: Test){
+  logger.lifecycle("Runs pact Tests")
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  logger.lifecycle("done published")
+}
+
+runAndPublishConsumerPactTests.dependsOn contract
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+project.ext {
+  pactVersion = getCheckedOutGitCommitHash()
+}
+
+def getCheckedOutGitCommitHash() {
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+serenity {
+  reports = ["single-page-html"]
+}
+
+pact {
+  publish {
+    pactDirectory = 'pacts'
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    version = project.pactVersion
+  }
+}
 //task runAndPublishConsumerPactTests(type: Test) {
 //  logger.lifecycle("Runs pact Tests")
 //  testClassesDirs = sourceSets.contractTest.output.classesDirs
