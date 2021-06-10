@@ -145,7 +145,7 @@ task smoke(type: Test) {
 }
 
 task runAndPublishConsumerPactTests(type: Test) {
-  logger.lifecycle("Runs pact Tests")
+  logger.lifecycle("Runs pact Tests + should publish")
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
 
