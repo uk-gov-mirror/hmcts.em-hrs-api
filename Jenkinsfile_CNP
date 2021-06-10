@@ -78,7 +78,8 @@ withPipeline(type, product, component) {
             curl https://raw.githubusercontent.com/hmcts/reform-api-docs/master/bin/publish-swagger-docs.sh > publish-swagger-docs.sh
             sh ./publish-swagger-docs.sh
              '''
-
+    }
+  }
       publishHTML target: [
         allowMissing         : true,
         alwaysLinkToLastBuild: true,
@@ -239,6 +240,4 @@ withPipeline(type, product, component) {
       steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
-  }
 
-}
