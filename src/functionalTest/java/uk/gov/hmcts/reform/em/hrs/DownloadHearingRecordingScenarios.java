@@ -88,7 +88,6 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
         final int actualFileSize = downloadedFileBytes.length;
         assertThat(actualFileSize, is(not(0)));
         assertThat(actualFileSize, is(expectedFileSize));
-
     }
 
     @Test
