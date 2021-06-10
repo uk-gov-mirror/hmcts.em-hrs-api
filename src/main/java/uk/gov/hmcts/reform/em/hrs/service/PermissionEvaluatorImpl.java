@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 @Component
@@ -43,11 +44,14 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
 
         var userInfo = securityService.getUserInfo(token);
 
+        LOGGER.info("User with roles ({}) attempting to access recording", userInfo.getRoles());
+
         if (CollectionUtils.isNotEmpty(userInfo.getRoles())) {
             Optional<String> userRole = userInfo.getRoles().stream()
-                                            .filter(role -> allowedRoles.contains(role))
-                                            .findFirst();
+                .filter(role -> allowedRoles.contains(role))
+                .findFirst();
             if (userRole.isPresent()) {
+                LOGGER.info("User granted access with allowed role ({})", userRole);
                 return true;
             }
         }
@@ -55,12 +59,20 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
         if (targetDomainObject instanceof UUID) {
             var recordingId = (UUID) targetDomainObject;
             String shareeEmail = securityService.getUserEmail(token);
+            LOGGER.info("User attempting to access recording with email ({})", shareeEmail);
             List<HearingRecordingSharee> sharedRecordings = shareesRepository.findByShareeEmail(shareeEmail);
+            LOGGER.info(
+                "recordings that are shared with the user: ({})",
+                sharedRecordings.stream()
+                    .map(recording -> recording.getHearingRecording().getCaseRef())
+                    .collect(Collectors.toList())
+            );
             if (CollectionUtils.isNotEmpty(sharedRecordings)) {
                 Optional<HearingRecordingSharee> hearingRecording = sharedRecordings.stream()
                     .filter(hearingRecordingSharee -> hearingRecordingSharee.getHearingRecording().getId().equals(recordingId))
                     .findFirst();
                 if (hearingRecording.isPresent()) {
+                    LOGGER.info("User granted access through shared email ({})", shareeEmail);
                     return true;
                 }
             }
