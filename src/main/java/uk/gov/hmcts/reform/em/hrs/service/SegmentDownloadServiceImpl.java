@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.em.hrs.domain.AuditActions;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.exception.InvalidRangeRequestException;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
+import uk.gov.hmcts.reform.em.hrs.storage.BlobInfo;
 import uk.gov.hmcts.reform.em.hrs.storage.BlobstoreClient;
 import uk.gov.hmcts.reform.em.hrs.util.HttpHeaderProcessor;
 import uk.gov.hmcts.reform.em.hrs.util.debug.HttpHeadersLogging;
@@ -56,12 +57,15 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
                          HttpServletResponse response) throws IOException {
 
         auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_REQUESTED);
-        String filename = segment.getFilename();
 
+        String filename = segment.getFilename();
+        BlobInfo blobInfo = blobstoreClient.fetchBlobInfo(filename);
+        long fileSize = blobInfo.getFileSize();
+        String contentType = blobInfo.getContentType();
         String attachmentFilename = String.format("attachment; filename=%s", filename);
 
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, attachmentFilename);
-
+        response.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
         response.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
 
@@ -72,8 +76,9 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
         LOGGER.info("Range header for filename {} = {}", filename, rangeHeader);
 
         BlobRange blobRange = null;
-        if (rangeHeader != null) {
-            long fileSize = blobstoreClient.getFileSize(filename);
+        if (rangeHeader == null) {
+            response.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileSize));
+        } else {
             try {
                 response.setStatus(HttpStatus.PARTIAL_CONTENT.value());
 

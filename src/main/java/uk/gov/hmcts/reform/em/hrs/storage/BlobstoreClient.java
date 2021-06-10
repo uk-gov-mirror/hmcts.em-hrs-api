@@ -7,9 +7,7 @@ import java.io.OutputStream;
 
 public interface BlobstoreClient {
 
-    long getFileSize(String filename);
+    BlobInfo fetchBlobInfo(String filename);
 
     void downloadFile(String filename, BlobRange blobRange, final OutputStream outputStream);
-
-    BlobProperties getBlobProperties(final String filename);
 }

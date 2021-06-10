@@ -27,16 +27,13 @@ public class BlobstoreClientImpl implements BlobstoreClient {
 
 
     @Override
-    public long getFileSize(String filename) {
+    public BlobInfo fetchBlobInfo(String filename) {
         final BlockBlobClient blobClient = blobContainerClient.getBlobClient(filename).getBlockBlobClient();
         final long fileSize = blobClient.getProperties().getBlobSize();
-        return fileSize;
+        final String contentType = blobClient.getProperties().getContentType();
+        return new BlobInfo(fileSize,contentType);
     }
 
-    @Override
-    public BlobProperties getBlobProperties(final String filename) {
-        return blobContainerClient.getBlobClient(filename).getProperties();
-    }
 
 
     @Override
