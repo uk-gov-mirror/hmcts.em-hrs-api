@@ -65,6 +65,11 @@ withPipeline(type, product, component) {
   enableDbMigration('em-hrs-api')
   overrideVaultEnvironments(vaultOverrides)
   loadVaultSecrets(secrets)
+  
+  onMaster()
+    {
+      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    }
 
   onMaster {
     after('test') {
@@ -168,10 +173,7 @@ withPipeline(type, product, component) {
     }
   }
 
-  onMaster()
-    {
-      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
+
 
   after('test') {
     publishHTML target: [
