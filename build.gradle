@@ -115,16 +115,16 @@ task functional(type: Test) {
   include "uk/gov/hmcts/reform/em/hrs/**"
 }
 
-task contract(type: Test) {
-  group = 'Delivery pipeline'
-  description = "Runs contract tests"
-  testClassesDirs = sourceSets.contractTest.output.classesDirs
-  classpath = sourceSets.contractTest.runtimeClasspath
-  include "uk/gov/hmcts/reform/em/hrs/consumer/**"
-  systemProperty 'pact.rootDir', "pacts"
-  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
- // failFast = true
-}
+//task contract(type: Test) {
+//  group = 'Delivery pipeline'
+//  description = "Runs contract tests"
+//  testClassesDirs = sourceSets.contractTest.output.classesDirs
+//  classpath = sourceSets.contractTest.runtimeClasspath
+//  include "uk/gov/hmcts/reform/em/hrs/consumer/**"
+//  systemProperty 'pact.rootDir', "pacts"
+//  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+// // failFast = true
+//}
 
 task integration(type: Test) {
   description = "Runs integration tests"
@@ -144,14 +144,14 @@ task smoke(type: Test) {
 
 }
 
-task runAndPublishConsumerPactTests(type: Test) {
-  logger.lifecycle("Runs pact Tests")
-  testClassesDirs = sourceSets.contractTest.output.classesDirs
-  classpath = sourceSets.contractTest.runtimeClasspath
-}
-
-runAndPublishConsumerPactTests.dependsOn contract
-runAndPublishConsumerPactTests.finalizedBy pactPublish
+//task runAndPublishConsumerPactTests(type: Test) {
+//  logger.lifecycle("Runs pact Tests")
+//  testClassesDirs = sourceSets.contractTest.output.classesDirs
+//  classpath = sourceSets.contractTest.runtimeClasspath
+//}
+//
+//runAndPublishConsumerPactTests.dependsOn contract
+//runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 /***********************************************************************************************************************
  * Code Checks
@@ -241,6 +241,7 @@ dependencyManagement {
       entry 'guava'
     }
 
+
     //CVE-2020-15824, CVE-2020-29582
     dependencySet(group: 'org.jetbrains.kotlin', version: '1.5.0-M1') {
       entry 'kotlin'
@@ -312,6 +313,9 @@ repositories {
 }
 
 def versions = [
+  serenity           : '2.3.13',
+  serenityreporter   : '2.3.13',
+  serenityRestAssured : '2.3.4',
   lombok             : '1.18.20',
   reformLogging      : '5.1.7',
   springfoxSwagger   : '2.9.2',
@@ -435,6 +439,12 @@ dependencies {
 
   liquibaseRuntime sourceSets.main.compileClasspath
   liquibaseRuntime sourceSets.main.output
+
+  testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
+  testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
+  testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+  testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+  testCompile group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
 
 /***********************************************************************************************************************
  * TEST DEPENDENCIES
