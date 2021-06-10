@@ -37,16 +37,16 @@ mainClassName = 'uk.gov.hmcts.reform.em.hrs.Application'
  **********************************************************************************************************************/
 
 sourceSets {
-  //functionalTests typically run on AAT environment only. Includes tests to real external endpoints.
+  //functional tests typically run on AAT environment only. Includes tests to real external endpoints.
   //if running locally, need the relevant docker containers to test against
   //if need to run any locally, then the specific test(s) should be specified
   functionalTest {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
-      srcDir file('src/functionalTests/java')
+      srcDir file('src/functionalTest/java')
     }
-    resources.srcDir file('src/functionalTests/resources')
+    resources.srcDir file('src/functionalTest/resources')
   }
 
   //integrationTest typically tests with mocked external endpoints (so can run locally without dependencies)
