@@ -36,16 +36,19 @@ public class AuditEntryServiceTests {
     private static final String USER_EMAIL = "email@hmcts.net.internal";
     private static final String SERVICE_NAME = "SUT";
     private static final String CLIENT_IP = "127.0.0.1";
+
     @InjectMocks
-    private
-    AuditEntryService auditEntryService;
+    private AuditEntryService auditEntryService;
 
     @Mock
     private SecurityService securityService;
+
     @Mock
     private HearingRecordingAuditEntryRepository hearingRecordingAuditEntryRepository;
+
     @Mock
     private HearingRecordingSegmentAuditEntryRepository hearingRecordingSegmentAuditEntryRepository;
+
     @Mock
     private ShareesAuditEntryRepository shareesAuditEntryRepository;
 
@@ -137,13 +140,11 @@ public class AuditEntryServiceTests {
         assertLogFormatterInvoked();
     }
 
-
     private void prepareMockSecurityService() {
         when(securityService.getAuditUserEmail()).thenReturn(USER_EMAIL);
         when(securityService.getCurrentlyAuthenticatedServiceName()).thenReturn(SERVICE_NAME);
         when(securityService.getClientIp()).thenReturn(CLIENT_IP);
     }
-
 
     private void assertSecurityServiceValues(AuditEntry entry) {
         Assertions.assertEquals(USER_EMAIL, entry.getUsername());
@@ -154,5 +155,4 @@ public class AuditEntryServiceTests {
     private void assertLogFormatterInvoked() {
         verify(auditLogFormatter, times(1)).format(any(AuditEntry.class));
     }
-
 }

@@ -12,7 +12,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 class AuditLogFormatterTest {
+
     private final AuditLogFormatter alf = new AuditLogFormatter();
+    private final int numberOfFieldsInAuditEntryClass = 7;//including ID - here to catch if class is extended, but not formatter
 
     @Test
     public void shouldFormatAuditEntryWithNoValuesPopulated() {
@@ -24,7 +26,6 @@ class AuditLogFormatterTest {
 
     @Test
     public void shouldFormatAuditEntryWithAllValuesPopulated() throws ParseException {
-        int numberOfFieldsInAuditEntryClass = 7;//including ID - here to catch if class is extended, but not formatter
         DateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
         Date now = format.parse("9/06/2021 08:52:52.422");
         AuditEntry entry = new LogOnlyAuditEntry();
