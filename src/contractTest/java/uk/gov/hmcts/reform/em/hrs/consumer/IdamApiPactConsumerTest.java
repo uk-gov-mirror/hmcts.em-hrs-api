@@ -33,9 +33,9 @@ import java.util.TreeMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("contract")
-@SpringBootTest(classes = {Application.class})
+//@SpringBootTest(classes = {Application.class})
 @ExtendWith(PactConsumerTestExt.class)
-@ExtendWith(SpringExtension.class)
+//@ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class IdamApiPactConsumerTest {
 
