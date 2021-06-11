@@ -76,7 +76,7 @@ public class IdamApiPactConsumerTest {
             .toPact();
     }
 
-    
+
     @Test
     @PactTestFor(pactMethod = "executeGetIdamAccessTokenAndGet200")
     public void should_post_to_token_endpoint_and_receive_access_token_with_200_response(MockServer mockServer)

@@ -1,12 +1,15 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import com.azure.storage.blob.models.BlobRange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.hrs.domain.AuditActions;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
@@ -21,6 +24,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,18 +40,17 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {SegmentDownloadServiceImpl.class})
 class SegmentDownloadServiceImplTest {
 
+    private static final UUID RECORDING_ID = UUID.randomUUID();
+    private static final Integer SEGMENT_NO = Integer.valueOf(10);
     @MockBean
     private HearingRecordingSegmentRepository segmentRepository;
-
     @MockBean
     private BlobstoreClient blobstoreClient;
-
     @MockBean
     private AuditEntryService auditEntryService;
 
     @MockBean
     private HttpServletRequest request;
-
     @MockBean
     private HttpServletResponse response;
 
@@ -77,6 +80,10 @@ class SegmentDownloadServiceImplTest {
 
     @Test
     void testDownload() throws IOException {
+
+
+        BlobRange blobRange = null;//new BlobRange(0, 1l);
+
         doReturn(segment).when(segmentRepository).findByFilename(segment.getFilename());
         when(blobstoreClient.fetchBlobInfo(any())).thenReturn(new BlobInfo(1000L, null));
         doReturn(hearingRecordingSegmentAuditEntry)
@@ -88,22 +95,24 @@ class SegmentDownloadServiceImplTest {
         segmentDownloadService.download(segment, request, response);
 
         verify(blobstoreClient, times(1)).downloadFile(segment.getFilename(), null, null);
+
     }
 
     @Test
     public void loadsRangedBlobInvalidRangeHeaderStart() {
-        assertThrows(InvalidRangeRequestException.class, () -> {
+        Exception exception = assertThrows(InvalidRangeRequestException.class, () -> {
             when(request.getHeader(HttpHeaders.RANGE)).thenReturn("bytes=A-Z");
             when(request.getHeaderNames()).thenReturn(generateEmptyHeaders());
             when(blobstoreClient.fetchBlobInfo(any())).thenReturn(new BlobInfo(1000L, null));
 
             segmentDownloadService.download(segment, request, response);
         });
+
     }
 
     @Test
     public void loadsRangedBlobInvalidRangeHeaderStartGreaterThanEnd() {
-        assertThrows(InvalidRangeRequestException.class, () -> {
+        Exception exception = assertThrows(InvalidRangeRequestException.class, () -> {
             when(request.getHeader(HttpHeaders.RANGE)).thenReturn("bytes=1023-0");
             when(request.getHeaderNames()).thenReturn(generateEmptyHeaders());
             when(blobstoreClient.fetchBlobInfo(any())).thenReturn(new BlobInfo(1000L, null));
@@ -113,12 +122,14 @@ class SegmentDownloadServiceImplTest {
 
     @Test
     public void loadsRangedBlobTooLargeRangeHeader() throws IOException {
+
         when(request.getHeader(HttpHeaders.RANGE)).thenReturn("bytes=0-1023");
         when(request.getHeaderNames()).thenReturn(generateEmptyHeaders());
         when(blobstoreClient.fetchBlobInfo(any())).thenReturn(new BlobInfo(1000L, null));
         segmentDownloadService.download(segment, request, response);
 
-        Mockito.verify(response, Mockito.times(1)).setStatus(HttpStatus.PARTIAL_CONTENT.value());
+        Mockito.verify(response, Mockito.times(1)).
+            setStatus(HttpStatus.PARTIAL_CONTENT.value());
         //TODO verification needed....if the blob range is larger than the file, then the whole file is returned
         //should the status be partial content or not? given it is the complete content vs was a range request...
         Mockito.verify(response, Mockito.times(1)).setHeader(HttpHeaders.CONTENT_RANGE, "bytes 0-999/1000");
@@ -132,9 +143,7 @@ class SegmentDownloadServiceImplTest {
         when(blobstoreClient.fetchBlobInfo(any())).thenReturn(new BlobInfo(2000L, null));
         segmentDownloadService.download(segment, request, response);
         Mockito.verify(response, Mockito.times(1)).setStatus(HttpStatus.PARTIAL_CONTENT.value());
-        Mockito.verify(response, Mockito.times(1))
-            .setHeader(HttpHeaders.CONTENT_RANGE, "bytes 0-1023/2000");
-        Mockito.verify(response, Mockito.times(1))
-            .setHeader(HttpHeaders.CONTENT_LENGTH, "1024");
+        Mockito.verify(response, Mockito.times(1)).setHeader(HttpHeaders.CONTENT_RANGE, "bytes 0-1023/2000");
+        Mockito.verify(response, Mockito.times(1)).setHeader(HttpHeaders.CONTENT_LENGTH, "1024");
     }
 }
