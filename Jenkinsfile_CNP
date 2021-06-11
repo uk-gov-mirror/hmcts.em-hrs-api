@@ -129,16 +129,6 @@ withPipeline(type, product, component) {
         reportFiles          : "index.html",
         reportName           : "HRS API Unit Tests Report"
       ]
-
-     publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/tests/contract",
-        reportFiles          : "index.html",
-        reportName           : "HRS API Contract Tests Report"
-      ]
-
     }
 
 
