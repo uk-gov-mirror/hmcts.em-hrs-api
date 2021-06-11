@@ -76,7 +76,7 @@ public class IdamApiPactConsumerTest {
             .toPact();
     }
 
-    @Ignore
+    
     @Test
     @PactTestFor(pactMethod = "executeGetIdamAccessTokenAndGet200")
     public void should_post_to_token_endpoint_and_receive_access_token_with_200_response(MockServer mockServer)
@@ -133,7 +133,7 @@ public class IdamApiPactConsumerTest {
             .toPact();
     }
 
-    @Ignore
+
     @Test
     @PactTestFor(pactMethod = "executeGetUserDetailsAndGet200")
     public void should_get_user_details_with_access_token(MockServer mockServer) throws JSONException {
