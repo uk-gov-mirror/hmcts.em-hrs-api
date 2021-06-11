@@ -10,6 +10,7 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
 import uk.gov.hmcts.reform.em.hrs.repository.ShareesRepository;
 
@@ -36,7 +37,7 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
 
     @Override
     public boolean hasPermission(@NotNull Authentication authentication,
-                                 @NotNull Object targetDomainObject,
+                                 @NotNull Object segment,
                                  @NotNull Object permissionString) {
 
         var jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
@@ -56,20 +57,20 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
             }
         }
 
-        if (targetDomainObject instanceof UUID) {
-            var recordingId = (UUID) targetDomainObject;
+        if (segment instanceof HearingRecordingSegment) {
+            UUID recordingId = ((HearingRecordingSegment) segment).getHearingRecording().getId();
             String shareeEmail = securityService.getUserEmail(token);
             LOGGER.info("User attempting to access recording with email ({})", shareeEmail);
             List<HearingRecordingSharee> sharedRecordings = shareesRepository.findByShareeEmail(shareeEmail);
             LOGGER.info(
                 "recordings that are shared with the user: ({})",
                 sharedRecordings.stream()
-                    .map(recording -> recording.getHearingRecording().getCaseRef())
+                    .map(sharedRecording -> sharedRecording.getHearingRecording().getCaseRef())
                     .collect(Collectors.toList())
             );
             if (CollectionUtils.isNotEmpty(sharedRecordings)) {
                 Optional<HearingRecordingSharee> hearingRecording = sharedRecordings.stream()
-                    .filter(hearingRecordingSharee -> hearingRecordingSharee.getHearingRecording().getId().equals(recordingId))
+                    .filter(sharedRecording -> sharedRecording.getHearingRecording().getId().equals(recordingId))
                     .findFirst();
                 if (hearingRecording.isPresent()) {
                     LOGGER.info("User granted access through shared email ({})", shareeEmail);

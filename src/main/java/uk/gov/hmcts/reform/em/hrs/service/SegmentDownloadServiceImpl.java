@@ -52,7 +52,7 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
     }
 
     @Override
-    @PreAuthorize("hasPermission(#recordingId,'READ')")
+    @PreAuthorize("hasPermission(#segment,'READ')")
     public void download(HearingRecordingSegment segment, HttpServletRequest request,
                          HttpServletResponse response) throws IOException {
 
