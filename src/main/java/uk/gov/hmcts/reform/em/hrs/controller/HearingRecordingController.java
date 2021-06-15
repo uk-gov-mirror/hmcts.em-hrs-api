@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -154,12 +155,17 @@ public class HearingRecordingController {
             HearingRecordingSegment segment = segmentDownloadService
                 .fetchSegmentByRecordingIdAndSegmentNumber(recordingId, segmentNo);
             segmentDownloadService.download(segment, request, response);
+        } catch (AccessDeniedException e) {
+            LOGGER.warn(
+                "User does not have permission to download recording {}",
+                e.getMessage()
+            );
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             LOGGER.warn(
                 "Download Issue possibly client abort {}",
                 e.getMessage()
             );//Exceptions are thrown during partial requests from front door (it throws client abort)
-
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(HttpStatus.OK);

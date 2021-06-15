@@ -68,21 +68,15 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
                 .body().asByteArray();
 
         final int actualFileSize = downloadedFileBytes.length;
-        assertThat(actualFileSize, is(not(0)));
         assertThat(actualFileSize, is(expectedFileSize));
     }
 
     @Test
     public void userWithCitizenRoleShouldNotBeAbleToDownloadHearingRecordings() {
-        final byte[] downloadedFileBytes =
-            downloadRecording(CITIZEN_USER, CITIZEN_ROLE, caseDetails.getData())
-                .then()
-                .statusCode(403) //FIXME should return 403
-                .extract().response()
-                .body().asByteArray();
-
-        final int actualFileSize = downloadedFileBytes.length;
-        assertThat(actualFileSize, is(not(0)));
-        assertThat(actualFileSize, is(expectedFileSize));
+        downloadRecording(CITIZEN_USER, CITIZEN_ROLE, caseDetails.getData())
+            .then()
+            .statusCode(403)
+            .extract().response()
+            .body().asByteArray();
     }
 }

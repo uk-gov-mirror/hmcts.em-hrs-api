@@ -66,13 +66,11 @@ public class ShareHearingRecordingScenarios extends BaseTest {
                 .body().asByteArray();
 
         final int actualFileSize = downloadedFileBytes.length;
-
-        assertThat(actualFileSize, is(not(0)));
         assertThat(actualFileSize, is(expectedFileSize));
     }
 
     @Test
-    public void shareeWithCitizenRoleShouldNotBeAbleToDownloadRecordings() {
+    public void shareeWithCitizenRoleIsAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CITIZEN_USER);
         final Response shareRecordingResponse = shareRecording(CITIZEN_USER, CITIZEN_ROLE, callbackRequest);
 
@@ -85,13 +83,11 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         final byte[] downloadedFileBytes =
             downloadRecording(CITIZEN_USER, CITIZEN_ROLE, caseDetails.getData())
                 .then()
-                .statusCode(403) //FIXME citizen role should not download hearing recordings
+                .statusCode(200)
                 .extract().response()
                 .body().asByteArray();
 
         final int actualFileSize = downloadedFileBytes.length;
-
-        assertThat(actualFileSize, is(not(0)));
         assertThat(actualFileSize, is(expectedFileSize));
     }
 
