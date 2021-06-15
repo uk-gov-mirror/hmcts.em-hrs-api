@@ -21,7 +21,8 @@ public class ShareHearingRecordingScenarios extends BaseTest {
     @Autowired
     private TestUtil testUtil;
 
-    private String caseRef, filename;
+    private String caseRef;
+    private String filename;
     private CaseDetails caseDetails;
     private int expectedFileSize;
 

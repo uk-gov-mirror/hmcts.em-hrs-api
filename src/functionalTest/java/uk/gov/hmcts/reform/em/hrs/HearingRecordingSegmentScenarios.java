@@ -17,7 +17,8 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
 
     @Autowired
     private TestUtil testUtil;
-    String caseRef, filename;
+    String caseRef;
+    String filename;
 
     @Before
     public void setup() throws Exception {
