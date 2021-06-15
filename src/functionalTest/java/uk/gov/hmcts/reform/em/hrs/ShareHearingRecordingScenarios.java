@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -50,9 +49,7 @@ public class ShareHearingRecordingScenarios extends BaseTest {
     @Test
     public void shareeWithCaseworkerRoleShouldBeAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CASEWORKER_USER);
-        final Response shareRecordingResponse = shareRecording(CASEWORKER_USER, CASE_WORKER_ROLE, callbackRequest);
-
-        shareRecordingResponse
+        shareRecording(CASEWORKER_USER, CASE_WORKER_ROLE, callbackRequest)
             .then()
             .log().all()
             .assertThat()
@@ -72,20 +69,16 @@ public class ShareHearingRecordingScenarios extends BaseTest {
     @Test
     public void shareeWithCitizenRoleIsAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CITIZEN_USER);
-        final Response shareRecordingResponse = shareRecording(CITIZEN_USER, CITIZEN_ROLE, callbackRequest);
-
-        shareRecordingResponse
+        shareRecording(CITIZEN_USER, CITIZEN_ROLE, callbackRequest)
             .then()
             .log().all()
-            .assertThat()
             .statusCode(200);
 
-        final byte[] downloadedFileBytes =
-            downloadRecording(CITIZEN_USER, CITIZEN_ROLE, caseDetails.getData())
-                .then()
-                .statusCode(200)
-                .extract().response()
-                .body().asByteArray();
+        final byte[] downloadedFileBytes = downloadRecording(CITIZEN_USER, CITIZEN_ROLE, caseDetails.getData())
+            .then()
+            .statusCode(200)
+            .extract().response()
+            .body().asByteArray();
 
         final int actualFileSize = downloadedFileBytes.length;
         assertThat(actualFileSize, is(expectedFileSize));
@@ -94,21 +87,19 @@ public class ShareHearingRecordingScenarios extends BaseTest {
     @Test
     public void shouldReturn400WhenShareHearingRecordingsToInvalidEmailAddress() {
         final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, ERROR_SHAREE_EMAIL_ADDRESS);
-        final Response shareRecordingResponse = shareRecording(SHAREE_EMAIL_ADDRESS, CASE_WORKER_ROLE, callbackRequest);
 
-        shareRecordingResponse
+        shareRecording(SHAREE_EMAIL_ADDRESS, CASE_WORKER_ROLE, callbackRequest)
             .then().log().all()
-            .assertThat().statusCode(400);
+            .statusCode(400);
     }
 
     @Test
     public void shouldReturn404WhenShareHearingRecordingsToEmailAddressWithNonExistentCaseId() {
         caseDetails.setId(RandomUtils.nextLong());
         final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, SHAREE_EMAIL_ADDRESS);
-        final Response shareRecordingResponse = shareRecording(SHAREE_EMAIL_ADDRESS, CASE_WORKER_ROLE, callbackRequest);
 
-        shareRecordingResponse
+        shareRecording(SHAREE_EMAIL_ADDRESS, CASE_WORKER_ROLE, callbackRequest)
             .then().log().all()
-            .assertThat().statusCode(404);
+            .statusCode(404);
     }
 }
