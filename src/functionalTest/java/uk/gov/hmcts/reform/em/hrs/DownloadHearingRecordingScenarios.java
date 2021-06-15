@@ -47,36 +47,27 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
     @Test
     public void userWithCaseWorkerHrsRoleShouldBeAbleToDownloadHearingRecordings() {
         final byte[] downloadedFileBytes =
-            downloadRecording(EMAIL_ADDRESS, CASE_WORKER_HRS_ROLE, caseDetails.getData())
+            downloadRecording(CASEWORKER_HRS_USER, CASE_WORKER_HRS_ROLE, caseDetails.getData())
                 .then()
                 .statusCode(200)
                 .extract().response()
                 .body().asByteArray();
 
         final int actualFileSize = downloadedFileBytes.length;
-        assertThat(actualFileSize, is(not(0)));
         assertThat(actualFileSize, is(expectedFileSize));
     }
 
     @Test
     public void userWithCaseWorkerRoleShouldNotBeAbleToDownloadHearingRecordings() {
-        final byte[] downloadedFileBytes =
-            downloadRecording(EMAIL_ADDRESS, CASE_WORKER_ROLE, caseDetails.getData())
-                .then()
-                .statusCode(200) //FIXME should return 403
-                .extract().response()
-                .body().asByteArray();
-
-        final int actualFileSize = downloadedFileBytes.length;
-        assertThat(actualFileSize, is(expectedFileSize));
+        downloadRecording(CASEWORKER_USER, CASE_WORKER_ROLE, caseDetails.getData())
+            .then()
+            .statusCode(403);
     }
 
     @Test
     public void userWithCitizenRoleShouldNotBeAbleToDownloadHearingRecordings() {
         downloadRecording(CITIZEN_USER, CITIZEN_ROLE, caseDetails.getData())
             .then()
-            .statusCode(403)
-            .extract().response()
-            .body().asByteArray();
+            .statusCode(403);
     }
 }

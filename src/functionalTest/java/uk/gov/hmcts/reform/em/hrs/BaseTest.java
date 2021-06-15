@@ -68,6 +68,7 @@ public abstract class BaseTest {
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
     protected static final String SHAREE_EMAIL_ADDRESS = "sharee@email.com";
+    protected static final String CASEWORKER_HRS_USER = "caseworker.hrs.user@email.com";
     protected static final String CASEWORKER_USER = "caseworker.user@email.com";
     protected static final String CITIZEN_USER = "citizen.user@email.com";
     protected static final String EMAIL_ADDRESS = "testuser@email.com";
