@@ -45,7 +45,7 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
     }
 
     @Test
-    public void userWithCaseWorkerHrsRoleShouldBeAbleToDownloadHearingRecordings() throws Exception {
+    public void userWithCaseWorkerHrsRoleShouldBeAbleToDownloadHearingRecordings() {
         final byte[] downloadedFileBytes =
             downloadRecording(EMAIL_ADDRESS, CASE_WORKER_HRS_ROLE, caseDetails.getData())
                 .then()
@@ -59,7 +59,7 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
     }
 
     @Test
-    public void userWithCaseWorkerRoleShouldNotBeAbleToDownloadHearingRecordings() throws Exception {
+    public void userWithCaseWorkerRoleShouldNotBeAbleToDownloadHearingRecordings() {
         final byte[] downloadedFileBytes =
             downloadRecording(EMAIL_ADDRESS, CASE_WORKER_ROLE, caseDetails.getData())
                 .then()
@@ -73,7 +73,7 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
     }
 
     @Test
-    public void userWithCitizenRoleShouldNotBeAbleToDownloadHearingRecordings() throws Exception {
+    public void userWithCitizenRoleShouldNotBeAbleToDownloadHearingRecordings() {
         final byte[] downloadedFileBytes =
             downloadRecording(CITIZEN_USER, CITIZEN_ROLE, caseDetails.getData())
                 .then()
