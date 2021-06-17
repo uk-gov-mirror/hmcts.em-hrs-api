@@ -30,6 +30,8 @@ def secrets = [
   'em-hrs-api-${env}': [
       secret('cvp-storage-connection-string', 'CVP_STORAGE_CONNECTION_STRING'),
       secret('cvp-storage-container-name', 'CVP_STORAGE_CONTAINER_NAME'),
+      secret('storage-account-primary-connection-string', 'HRS_STORAGEACCOUNT_CONNECTION_STRING'),
+      secret('hrs-storage-container-name', 'HRS_STORAGE_CONTAINER_NAME'),
       secret('notification-api-key', 'NOTIFICATION_API_KEY'),
       secret('idam-system-user-name', 'HRS_SYSTEM_USER'),
       secret('idam-system-user-password', 'HRS_SYSTEM_USER_PASSWORD')
@@ -54,7 +56,7 @@ env.XUI_API_URL = 'https://manage-case.aat.platform.hmcts.net'
 env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.internal'
 env.IDAM_REDIRECT_URI = 'https://em-hrs-api-aat.service.core-compute-aat.internal/oauth2/callback'
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
-env.CVP_CONTAINER_URL = 'https://emhrsapiaat.blob.core.windows.net/recordings/'
+env.CVP_CONTAINER_URL = 'https://emhrsapiaat.blob.core.windows.net/hrsperformancetest/'
 //env.CVP_CONTAINER_URL = 'https://emhrsapiaat.blob.core.windows.net/em-hrs-api-aat/'
 env.CCD_DEFINITION_FILE = 'hrs_ccd_case_definition_AAT.xlsx'
 

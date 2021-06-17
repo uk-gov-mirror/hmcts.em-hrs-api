@@ -114,7 +114,6 @@ public class SegmentDownloadServiceImpl implements SegmentDownloadService {
                 throw new InvalidRangeRequestException(response, fileSize);
             }
         }
-
         ServletOutputStream outputStream = response.getOutputStream();
         blobstoreClient.downloadFile(filename, blobRange, outputStream);
         auditEntryService.createAndSaveEntry(segment, AuditActions.USER_DOWNLOAD_OK);
