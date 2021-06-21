@@ -42,8 +42,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .statusCode(202);
 
         int count = 0;
-        while (!(testUtil.checkIfUploaded(FOLDER) > 0))
-        {
+        while (!(testUtil.checkIfUploaded(FOLDER) > 0)) {
             TimeUnit.SECONDS.sleep(30);
             count++;
 
