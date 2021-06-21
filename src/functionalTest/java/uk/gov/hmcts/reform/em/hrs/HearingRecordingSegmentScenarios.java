@@ -43,10 +43,10 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
 
         int count = 0;
         while (testUtil.checkIfUploaded(FOLDER) <= 0) {
-            TimeUnit.SECONDS.sleep(60);
+            TimeUnit.SECONDS.sleep(30);
             count++;
 
-            if (count > 5)
+            if (count > 10)
             {
                 break;
             }
