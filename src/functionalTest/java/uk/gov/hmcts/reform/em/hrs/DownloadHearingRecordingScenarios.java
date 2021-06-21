@@ -34,10 +34,10 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
 
         int count = 0;
         while (!(testUtil.checkIfUploaded(FOLDER) > 0)) {
-            TimeUnit.SECONDS.sleep(30);
+            TimeUnit.SECONDS.sleep(60);
             count++;
 
-            if (count > 3)
+            if (count > 5)
             {
                 break;
             }
