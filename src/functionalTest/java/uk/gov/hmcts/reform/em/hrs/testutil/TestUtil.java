@@ -38,6 +38,13 @@ public class TestUtil {
             });
     }
 
+    public int checkIfUploaded(final String folderName) {
+        int count = (int) hrsBlobContainerClient.listBlobs()
+            .stream()
+            .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
+        return count;
+    }
+
     public void deleteFileFromCvpContainer(final String folderName) {
         cvpBlobContainerClient.listBlobs()
             .stream()
