@@ -41,7 +41,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .log().all()
             .statusCode(202);
 
-        TimeUnit.SECONDS.sleep(30);
+        TimeUnit.SECONDS.sleep(60);
 
         getFilenames(FOLDER)
             .assertThat().log().all()
