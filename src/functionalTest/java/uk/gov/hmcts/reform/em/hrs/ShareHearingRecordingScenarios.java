@@ -33,7 +33,12 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         testUtil.uploadToCvpContainer(filename);
 
         postRecordingSegment(caseRef).then().statusCode(202);
-        TimeUnit.SECONDS.sleep(60);
+
+        while (!(testUtil.checkIfUploaded(FOLDER) > 0))
+        {
+            TimeUnit.SECONDS.sleep(30);
+        }
+
         caseDetails = findCase(caseRef);
 
         expectedFileSize = testUtil.getTestFile().readAllBytes().length;
