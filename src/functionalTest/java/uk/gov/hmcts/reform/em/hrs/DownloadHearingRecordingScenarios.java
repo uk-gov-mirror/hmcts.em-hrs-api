@@ -31,7 +31,7 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
         testUtil.uploadToCvpContainer(filename);
 
         postRecordingSegment(caseRef).then().statusCode(202);
-        TimeUnit.SECONDS.sleep(30);
+        TimeUnit.SECONDS.sleep(60);
         caseDetails = findCase(caseRef);
 
         expectedFileSize = testUtil.getTestFile().readAllBytes().length;
