@@ -35,7 +35,7 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         postRecordingSegment(caseRef).then().statusCode(202);
 
         int count = 0;
-        while (!(testUtil.checkIfUploaded(FOLDER) > 0)) {
+        while (testUtil.checkIfUploaded(FOLDER) <= 0) {
             TimeUnit.SECONDS.sleep(60);
             count++;
 
