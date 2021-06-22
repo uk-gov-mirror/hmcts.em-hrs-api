@@ -32,13 +32,12 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             TimeUnit.SECONDS.sleep(30);
             counter++;
 
-            if (counter > 10)
-            {
+            if (counter > 10){
                 break;
             }
         }
     }
-//
+
 //    @After
 //    public void clear() {
 //        testUtil.deleteFileFromHrsContainer(FOLDER);
@@ -57,8 +56,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             TimeUnit.SECONDS.sleep(30);
             count++;
 
-            if (count > 10)
-            {
+            if (count > 10) {
                 break;
             }
         }
