@@ -38,12 +38,12 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             }
         }
     }
-
-    @After
-    public void clear() {
-        testUtil.deleteFileFromHrsContainer(FOLDER);
-        testUtil.deleteFileFromCvpContainer(FOLDER);
-    }
+//
+//    @After
+//    public void clear() {
+//        testUtil.deleteFileFromHrsContainer(FOLDER);
+//        testUtil.deleteFileFromCvpContainer(FOLDER);
+//    }
 
     @Test
     public void shouldCreateHearingRecordingSegment() throws Exception {
