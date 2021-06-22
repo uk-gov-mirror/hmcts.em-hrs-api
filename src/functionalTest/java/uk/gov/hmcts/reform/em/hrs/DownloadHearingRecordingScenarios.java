@@ -37,8 +37,7 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
             TimeUnit.SECONDS.sleep(30);
             count++;
 
-            if (count > 10)
-            {
+            if (count > 10) {
                 break;
             }
         }
