@@ -33,7 +33,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             counter++;
 
             if (counter > 10){
-                break;
+                throw new IllegalStateException("could not find files");
             }
         }
     }
@@ -57,7 +57,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             count++;
 
             if (count > 10) {
-                break;
+                throw new IllegalStateException("could not find files within test");
             }
         }
 
