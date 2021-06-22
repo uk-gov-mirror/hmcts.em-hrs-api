@@ -73,7 +73,7 @@ public abstract class BaseTest {
     protected static final String CITIZEN_USER = "citizen.user@email.com";
     protected static final String ERROR_SHAREE_EMAIL_ADDRESS = "sharee.testertest.com";
     protected static final int SEGMENT = 0;
-    protected static final String FOLDER = "audiostream123456";
+    protected static final String FOLDER = "audiostream123455";
     protected static final String TIME =  "2020-11-04-14.56.32.819";
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
     protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker-hrs");
