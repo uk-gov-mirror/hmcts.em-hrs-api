@@ -3,9 +3,12 @@ package uk.gov.hmcts.reform.em.hrs.testutil;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.specialized.BlockBlobClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.em.hrs.BaseTest;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -20,6 +23,8 @@ public class TestUtil {
 
     private final BlobContainerClient hrsBlobContainerClient;
     private final BlobContainerClient cvpBlobContainerClient;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
     @Autowired
     public TestUtil(@Qualifier("hrsBlobContainerClient") BlobContainerClient hrsBlobContainerClient,
@@ -39,6 +44,7 @@ public class TestUtil {
     }
 
     public int checkIfUploaded(final String folderName) {
+        LOGGER.info("hrsBlobContainerClient.getBlobContainerUrl() ~{}" , hrsBlobContainerClient.getBlobContainerUrl());
         int count = (int) hrsBlobContainerClient.listBlobs()
             .stream()
             .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
@@ -61,6 +67,7 @@ public class TestUtil {
         final InputStream inStream = new ByteArrayInputStream(bytes);
 
         final BlobClient blobClient = cvpBlobContainerClient.getBlobClient(blobName);
+        LOGGER.info("cvpBlobContainerClient.getBlobContainerUrl() ~{}" , cvpBlobContainerClient.getBlobContainerUrl());
         blobClient.upload(new BufferedInputStream(inStream), bytes.length);
     }
 
