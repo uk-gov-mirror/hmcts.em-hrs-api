@@ -26,6 +26,17 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
         caseRef = randomCaseRef();
         filename = filename(caseRef);
         testUtil.uploadToCvpContainer(filename);
+
+        int counter = 0;
+        while (testUtil.checkIfUploaded(FOLDER) <= 0) {
+            TimeUnit.SECONDS.sleep(30);
+            counter++;
+
+            if (counter > 10)
+            {
+                break;
+            }
+        }
     }
 
     @After
