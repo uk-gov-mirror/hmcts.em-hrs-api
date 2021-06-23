@@ -28,7 +28,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
         testUtil.uploadToCvpContainer(filename);
 
         int counter = 0;
-        while (testUtil.checkIfUploaded(FOLDER) <= 0) {
+        while (testUtil.checkIfUploadedToCvp(FOLDER) <= 0) {
             TimeUnit.SECONDS.sleep(30);
             counter++;
 
@@ -52,7 +52,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .statusCode(202);
 
         int count = 0;
-        while (testUtil.checkIfUploaded(FOLDER) <= 0) {
+        while (testUtil.checkIfUploadedToHrs(FOLDER) <= 0) {
             TimeUnit.SECONDS.sleep(30);
             count++;
 
