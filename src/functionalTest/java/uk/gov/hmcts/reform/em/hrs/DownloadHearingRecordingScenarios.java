@@ -30,12 +30,12 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
         filename = filename(caseRef);
         testUtil.uploadToCvpContainer(filename);
 
-        int count = 0;
+        int counter = 0;
         while (testUtil.checkIfUploadedToCvp(FOLDER) <= 0) {
             TimeUnit.SECONDS.sleep(30);
-            count++;
+            counter++;
 
-            if (count > 10) {
+            if (counter > 10) {
                 break;
             }
         }
