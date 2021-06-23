@@ -36,7 +36,7 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
             counter++;
 
             if (counter > 10) {
-                break;
+                throw new IllegalStateException("could not find files");
             }
         }
 

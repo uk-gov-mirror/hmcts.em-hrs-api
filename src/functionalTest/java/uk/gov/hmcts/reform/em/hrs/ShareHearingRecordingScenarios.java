@@ -38,7 +38,7 @@ public class ShareHearingRecordingScenarios extends BaseTest {
             count++;
 
             if (count > 10) {
-                break;
+                throw new IllegalStateException("could not find files");
             }
         }
 
