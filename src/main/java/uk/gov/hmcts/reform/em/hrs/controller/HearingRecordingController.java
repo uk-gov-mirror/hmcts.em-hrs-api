@@ -96,9 +96,17 @@ public class HearingRecordingController {
     })
     public ResponseEntity<Void> createHearingRecording(@RequestBody final HearingRecordingDto hearingRecordingDto) {
         LOGGER.info(
-            "received request to create hearing recording with ref {} in folder {}",
+            "posting segment with details:\n"
+                + "rec-ref  {}\n"
+                + "folder   {}\n"
+                + "case-ref {}\n"
+                + "filename {}\n"
+                + "file-ext {}",
             hearingRecordingDto.getRecordingRef(),
-            hearingRecordingDto.getFolder()
+            hearingRecordingDto.getFolder(),
+            hearingRecordingDto.getCaseRef(),
+            hearingRecordingDto.getFilename(),
+            hearingRecordingDto.getFilenameExtension()
         );
 
         hearingRecordingDto.setUrlDomain(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString());
