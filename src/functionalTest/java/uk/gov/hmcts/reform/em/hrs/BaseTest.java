@@ -162,7 +162,7 @@ public abstract class BaseTest {
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .body(segmentPayload)
-            .when()
+            .when().log().all()
             .post("/segments");
     }
 
