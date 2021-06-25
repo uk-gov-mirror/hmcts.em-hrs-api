@@ -69,7 +69,7 @@ public class ShareHearingRecordingScenarios extends BaseTest {
 
     @Test
     public void shareeWithCaseworkerHrsRoleShouldBeAbleToDownloadRecordings() {
-        final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CASEWORKER_USER);
+        final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CASEWORKER_HRS_USER);
         shareRecording(CASEWORKER_HRS_USER, CASE_WORKER_HRS_ROLE, callbackRequest)
             .then()
             .log().all()
