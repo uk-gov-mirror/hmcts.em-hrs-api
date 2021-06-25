@@ -79,7 +79,6 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         final byte[] downloadedFileBytes =
             downloadRecording(CASEWORKER_USER, CITIZEN_ROLE, caseDetails.getData())
                 .then()
-                .log().all()
                 .statusCode(200)
                 .extract().response()
                 .body().asByteArray();
