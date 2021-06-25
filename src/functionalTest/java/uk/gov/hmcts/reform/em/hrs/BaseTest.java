@@ -69,8 +69,8 @@ public abstract class BaseTest {
     protected static final String FILE_EXT = "mp4";
     protected static final String SHAREE_EMAIL_ADDRESS = "sharee@email.com";
     protected static final String CASEWORKER_HRS_USER = "caseworker.hrs.user@email.com";
-    protected static final String CASEWORKER_USER = "caseworker.user@email.com";
-    protected static final String CITIZEN_USER = "citizen.user@email.com";
+    protected static final String CASEWORKER_USER = "hearing.audio.requester@gmail.com";
+    protected static final String CITIZEN_USER = "citizen.role@outlook.com";
     protected static final String ERROR_SHAREE_EMAIL_ADDRESS = "sharee.testertest.com";
     protected static final int SEGMENT = 0;
     protected static final String FOLDER = "audiostream123455";
