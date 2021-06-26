@@ -68,6 +68,26 @@ public class ShareHearingRecordingScenarios extends BaseTest {
     }
 
     @Test
+    public void shareeWithCaseworkerHrsRoleShouldBeAbleToDownloadRecordings() {
+        final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CASEWORKER_HRS_USER);
+        shareRecording(CASEWORKER_HRS_USER, CASE_WORKER_HRS_ROLE, callbackRequest)
+            .then()
+            .log().all()
+            .assertThat()
+            .statusCode(200);
+
+        final byte[] downloadedFileBytes =
+            downloadRecording(CASEWORKER_HRS_USER, CASE_WORKER_HRS_ROLE, caseDetails.getData())
+                .then()
+                .statusCode(200)
+                .extract().response()
+                .body().asByteArray();
+
+        final int actualFileSize = downloadedFileBytes.length;
+        assertThat(actualFileSize, is(expectedFileSize));
+    }
+
+    @Test
     public void shareeWithCaseworkerRoleShouldBeAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CASEWORKER_USER);
         shareRecording(CASEWORKER_USER, CASE_WORKER_ROLE, callbackRequest)
@@ -77,7 +97,7 @@ public class ShareHearingRecordingScenarios extends BaseTest {
             .statusCode(200);
 
         final byte[] downloadedFileBytes =
-            downloadRecording(CASEWORKER_USER, CITIZEN_ROLE, caseDetails.getData())
+            downloadRecording(CASEWORKER_USER, CASE_WORKER_ROLE, caseDetails.getData())
                 .then()
                 .statusCode(200)
                 .extract().response()
