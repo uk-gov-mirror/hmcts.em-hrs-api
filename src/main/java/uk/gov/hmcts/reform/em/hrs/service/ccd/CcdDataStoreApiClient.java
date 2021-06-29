@@ -32,6 +32,7 @@ public class CcdDataStoreApiClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CcdDataStoreApiClient.class);
     private static final String JURISDICTION = "HRS";
+    private static final String SERVICE = "service";
     private static final String CASE_TYPE = "HearingRecordings";
     private static final String CREATE_CASE = "createCase";
     private static final String CLOSE_CASE = "closeCase";
@@ -48,28 +49,33 @@ public class CcdDataStoreApiClient {
         this.coreCaseDataApi = coreCaseDataApi;
     }
 
-    public String closeCase(final String caseRef) {
+    public Long closeCase(final String caseRef) {
         Map<String, String> tokens = securityService.getTokens();
 
         StartEventResponse startEventResponse =
-            coreCaseDataApi.startCase(tokens.get("user"), tokens.get("service"), CASE_TYPE, CLOSE_CASE);
+            coreCaseDataApi.startCase(tokens.get("user"), tokens.get(SERVICE), CASE_TYPE, CLOSE_CASE);
 
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
             .eventToken(startEventResponse.getToken())
             .build();
 
-        LOGGER.info("closed case with reference ({})",
-                    caseRef
+        CaseDetails caseDetails = coreCaseDataApi
+            .submitForCaseworker(tokens.get("user"), tokens.get(SERVICE), tokens.get("userId"),
+                                 JURISDICTION, CASE_TYPE, false, caseData
+            );
+
+        LOGGER.info("closed case ({}) with reference ({})",
+                    caseDetails.getId(), caseRef
         );
-        return caseRef;
+        return caseDetails.getId();
     }
 
     public Long createCase(final UUID recordingId, final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityService.getTokens();
 
         StartEventResponse startEventResponse =
-            coreCaseDataApi.startCase(tokens.get("user"), tokens.get("service"), CASE_TYPE, CREATE_CASE);
+            coreCaseDataApi.startCase(tokens.get("user"), tokens.get(SERVICE), CASE_TYPE, CREATE_CASE);
 
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
@@ -78,7 +84,7 @@ public class CcdDataStoreApiClient {
             .build();
 
         CaseDetails caseDetails = coreCaseDataApi
-            .submitForCaseworker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
+            .submitForCaseworker(tokens.get("user"), tokens.get(SERVICE), tokens.get("userId"),
                                  JURISDICTION, CASE_TYPE, false, caseData
             );
 
@@ -93,7 +99,7 @@ public class CcdDataStoreApiClient {
                                             final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityService.getTokens();
 
-        StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get("service"),
+        StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get("user"), tokens.get(SERVICE),
                                                                            caseId.toString(), ADD_RECORDING_FILE
         );
 
@@ -116,7 +122,7 @@ public class CcdDataStoreApiClient {
             @Override
             public Long call() throws Exception {
                 return coreCaseDataApi
-                    .submitEventForCaseWorker(tokens.get("user"), tokens.get("service"), tokens.get("userId"),
+                    .submitEventForCaseWorker(tokens.get("user"), tokens.get(SERVICE), tokens.get("userId"),
                                               JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData
                     )
                     .getId();
