@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdDataStoreApiClient;
 import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
 import java.util.concurrent.TimeUnit;
@@ -17,8 +18,11 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
 
     @Autowired
     private TestUtil testUtil;
+    private CcdDataStoreApiClient ccdClient;
+
     String caseRef;
     String filename;
+
 
     @Before
     public void setup() throws Exception {
@@ -42,6 +46,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
     public void clear() {
         testUtil.deleteFileFromHrsContainer(FOLDER);
         testUtil.deleteFileFromCvpContainer(FOLDER);
+        ccdClient.closeCase(caseRef);
     }
 
     @Test

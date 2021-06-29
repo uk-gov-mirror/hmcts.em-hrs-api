@@ -34,6 +34,7 @@ public class CcdDataStoreApiClient {
     private static final String JURISDICTION = "HRS";
     private static final String CASE_TYPE = "HearingRecordings";
     private static final String CREATE_CASE = "createCase";
+    private static final String CLOSE_CASE = "closeCase";
     private static final String ADD_RECORDING_FILE = "manageFiles";
     private final SecurityService securityService;
     private final CaseDataContentCreator caseDataCreator;
@@ -45,6 +46,23 @@ public class CcdDataStoreApiClient {
         this.securityService = securityService;
         this.caseDataCreator = caseDataCreator;
         this.coreCaseDataApi = coreCaseDataApi;
+    }
+
+    public String closeCase(final String caseRef) {
+        Map<String, String> tokens = securityService.getTokens();
+
+        StartEventResponse startEventResponse =
+            coreCaseDataApi.startCase(tokens.get("user"), tokens.get("service"), CASE_TYPE, CLOSE_CASE);
+
+        CaseDataContent caseData = CaseDataContent.builder()
+            .event(Event.builder().id(startEventResponse.getEventId()).build())
+            .eventToken(startEventResponse.getToken())
+            .build();
+
+        LOGGER.info("closed case with reference ({})",
+                    caseRef
+        );
+        return caseRef;
     }
 
     public Long createCase(final UUID recordingId, final HearingRecordingDto hearingRecordingDto) {
