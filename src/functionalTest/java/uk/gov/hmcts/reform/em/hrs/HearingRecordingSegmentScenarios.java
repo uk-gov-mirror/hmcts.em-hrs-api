@@ -18,7 +18,6 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
 
     @Autowired
     private TestUtil testUtil;
-    private CcdDataStoreApiClient ccdClient;
 
     String caseRef;
     String filename;
@@ -46,7 +45,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
     public void clear() {
         testUtil.deleteFileFromHrsContainer(FOLDER);
         testUtil.deleteFileFromCvpContainer(FOLDER);
-        ccdClient.closeCase(caseRef);
+        closeCase(caseRef);
     }
 
     @Test

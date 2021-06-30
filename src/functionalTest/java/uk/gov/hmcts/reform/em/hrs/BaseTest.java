@@ -19,10 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.*;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
+import uk.gov.hmcts.reform.em.hrs.service.SecurityService;
 import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
@@ -79,6 +79,11 @@ public abstract class BaseTest {
     protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
 
+    protected static final String SERVICE = "service";
+    protected static final String USER = "user";
+    protected static final String USER_ID = "userId";
+    protected static final String CLOSE_CASE = "closeCase";
+
     protected String idamAuth;
     protected String s2sAuth;
     protected String userId;
@@ -103,6 +108,9 @@ public abstract class BaseTest {
 
     @Autowired
     protected CoreCaseDataApi coreCaseDataApi;
+
+    @Autowired
+    protected SecurityService securityService;
 
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
@@ -278,5 +286,27 @@ public abstract class BaseTest {
     protected String filename(String caseRef) {
         return FOLDER + "/" + JURISDICTION + "-" + LOCATION_CODE + "-" + caseRef + "_" + TIME
             + "-UTC_" + SEGMENT + ".mp4";
+    }
+
+    public Long closeCase(final String caseRef) {
+        Map<String, String> tokens = securityService.getTokens();
+
+        StartEventResponse startEventResponse =
+            coreCaseDataApi.startCase(tokens.get(USER), tokens.get(SERVICE), CASE_TYPE, CLOSE_CASE);
+
+        CaseDataContent caseData = CaseDataContent.builder()
+            .event(Event.builder().id(startEventResponse.getEventId()).build())
+            .eventToken(startEventResponse.getToken())
+            .build();
+
+        CaseDetails caseDetails = coreCaseDataApi
+            .submitForCaseworker(tokens.get(USER), tokens.get(SERVICE), tokens.get(USER_ID),
+                                 JURISDICTION, CASE_TYPE, false, caseData
+            );
+
+        LOGGER.info("closed case ({}) with reference ({})",
+                    caseDetails.getId(), caseRef
+        );
+        return caseDetails.getId();
     }
 }

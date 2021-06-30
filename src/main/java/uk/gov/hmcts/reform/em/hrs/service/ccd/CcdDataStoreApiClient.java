@@ -11,6 +11,7 @@ import com.github.rholder.retry.WaitStrategies;
 import com.google.common.base.Predicates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -34,6 +35,7 @@ public class CcdDataStoreApiClient {
     private static final String JURISDICTION = "HRS";
     private static final String SERVICE = "service";
     private static final String USER = "user";
+    private static final String USER_ID = "userId";
     private static final String CASE_TYPE = "HearingRecordings";
     private static final String CREATE_CASE = "createCase";
     private static final String CLOSE_CASE = "closeCase";
@@ -42,6 +44,7 @@ public class CcdDataStoreApiClient {
     private final CaseDataContentCreator caseDataCreator;
     private final CoreCaseDataApi coreCaseDataApi;
 
+    @Autowired
     public CcdDataStoreApiClient(SecurityService securityService,
                                  CaseDataContentCreator caseDataCreator,
                                  CoreCaseDataApi coreCaseDataApi) {
@@ -50,27 +53,7 @@ public class CcdDataStoreApiClient {
         this.coreCaseDataApi = coreCaseDataApi;
     }
 
-    public Long closeCase(final String caseRef) {
-        Map<String, String> tokens = securityService.getTokens();
 
-        StartEventResponse startEventResponse =
-            coreCaseDataApi.startCase(tokens.get(USER), tokens.get(SERVICE), CASE_TYPE, CLOSE_CASE);
-
-        CaseDataContent caseData = CaseDataContent.builder()
-            .event(Event.builder().id(startEventResponse.getEventId()).build())
-            .eventToken(startEventResponse.getToken())
-            .build();
-
-        CaseDetails caseDetails = coreCaseDataApi
-            .submitForCaseworker(tokens.get(USER), tokens.get(SERVICE), tokens.get("userId"),
-                                 JURISDICTION, CASE_TYPE, false, caseData
-            );
-
-        LOGGER.info("closed case ({}) with reference ({})",
-                    caseDetails.getId(), caseRef
-        );
-        return caseDetails.getId();
-    }
 
     public Long createCase(final UUID recordingId, final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityService.getTokens();
@@ -85,7 +68,7 @@ public class CcdDataStoreApiClient {
             .build();
 
         CaseDetails caseDetails = coreCaseDataApi
-            .submitForCaseworker(tokens.get(USER), tokens.get(SERVICE), tokens.get("userId"),
+            .submitForCaseworker(tokens.get(USER), tokens.get(SERVICE), tokens.get(USER_ID),
                                  JURISDICTION, CASE_TYPE, false, caseData
             );
 
@@ -123,7 +106,7 @@ public class CcdDataStoreApiClient {
             @Override
             public Long call() throws Exception {
                 return coreCaseDataApi
-                    .submitEventForCaseWorker(tokens.get(USER), tokens.get(SERVICE), tokens.get("userId"),
+                    .submitEventForCaseWorker(tokens.get(USER), tokens.get(SERVICE), tokens.get(USER_ID),
                                               JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData
                     )
                     .getId();
@@ -146,6 +129,29 @@ public class CcdDataStoreApiClient {
 
         return caseDetailsId;
     }
+
+//    public Long closeCase(final String caseRef) {
+//        Map<String, String> tokens = securityService.getTokens();
+//
+//        StartEventResponse startEventResponse =
+//            coreCaseDataApi.startCase(tokens.get(USER), tokens.get(SERVICE), CASE_TYPE, CLOSE_CASE);
+//
+//        CaseDataContent caseData = CaseDataContent.builder()
+//            .event(Event.builder().id(startEventResponse.getEventId()).build())
+//            .eventToken(startEventResponse.getToken())
+//            .build();
+//
+//        CaseDetails caseDetails = coreCaseDataApi
+//            .submitForCaseworker(tokens.get(USER), tokens.get(SERVICE), tokens.get(USER_ID),
+//                                 JURISDICTION, CASE_TYPE, false, caseData
+//            );
+//
+//        LOGGER.info("closed case ({}) with reference ({})",
+//                    caseDetails.getId(), caseRef
+//        );
+//        return caseDetails.getId();
+//    }
+
 }
 
 
