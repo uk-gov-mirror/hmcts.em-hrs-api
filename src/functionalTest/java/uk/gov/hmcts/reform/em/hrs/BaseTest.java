@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import javax.annotation.PostConstruct;
 
 import static org.junit.Assert.assertNotNull;
