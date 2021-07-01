@@ -44,7 +44,9 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
     public void clear() {
         testUtil.deleteFileFromHrsContainer(FOLDER);
         testUtil.deleteFileFromCvpContainer(FOLDER);
-        closeCase(caseRef);
+        if (testUtil.checkIfUploadedToHrs(FOLDER) > 0) {
+            closeCase(caseRef);
+        }
     }
 
     @Test
