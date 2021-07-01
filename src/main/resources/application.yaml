@@ -123,8 +123,13 @@ auth:
 
 logging:
   level:
+    root: DEBUG
     org:
       springframework:
         web:
           filter:
             CommonsRequestLoggingFilter: DEBUG
+        beans:
+          factory:
+            support: INFO
+      quartz: INFO
