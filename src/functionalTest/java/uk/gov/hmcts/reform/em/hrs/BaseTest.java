@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.*;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
-import uk.gov.hmcts.reform.em.hrs.service.SecurityService;
 import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
@@ -38,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.Callable;
 import javax.annotation.PostConstruct;
 
 import static org.junit.Assert.assertNotNull;
@@ -78,10 +78,6 @@ public abstract class BaseTest {
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
     protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
-
-    protected static final String SERVICE = "service";
-    protected static final String USER = "user";
-    protected static final String USER_ID = "userId";
     protected static final String CLOSE_CASE = "closeCase";
 
     protected String idamAuth;
@@ -108,9 +104,6 @@ public abstract class BaseTest {
 
     @Autowired
     protected CoreCaseDataApi coreCaseDataApi;
-
-    @Autowired
-    protected SecurityService securityService;
 
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
@@ -288,25 +281,39 @@ public abstract class BaseTest {
             + "-UTC_" + SEGMENT + ".mp4";
     }
 
-    public Long closeCase(final String caseRef) {
-        Map<String, String> tokens = securityService.getTokens();
+    public String closeCase(final String caseRef) {
+
+        String s2sToken = extendedCcdHelper.getCcdS2sToken();
+        String userToken = idamClient.getAccessToken(HRS_TESTER, "4590fgvhbfgbDdffm3lk4j");
+        String uid = idamClient.getUserInfo(userToken).getUid();
+
+        final Optional<CaseDetails> optionalCaseDetails = searchForCase(caseRef);
+        assertTrue(optionalCaseDetails.isPresent());
+
+        CaseDetails caseDetails = optionalCaseDetails.orElseGet(() -> CaseDetails.builder().build());
 
         StartEventResponse startEventResponse =
-            coreCaseDataApi.startCase(tokens.get(USER), tokens.get(SERVICE), CASE_TYPE, CLOSE_CASE);
+            coreCaseDataApi.startEvent(userToken, s2sToken, String.valueOf(caseDetails.getId()), CLOSE_CASE);
+
+        LOGGER.info("closing case ({}) with reference ({}), right now it has state ({})",
+                    caseDetails.getId(), caseRef, caseDetails.getState()
+        );
 
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
             .eventToken(startEventResponse.getToken())
+            .caseReference(caseRef)
             .build();
 
-        CaseDetails caseDetails = coreCaseDataApi
-            .submitForCaseworker(tokens.get(USER), tokens.get(SERVICE), tokens.get(USER_ID),
-                                 JURISDICTION, CASE_TYPE, false, caseData
+         caseDetails = coreCaseDataApi
+            .submitEventForCaseWorker(userToken, s2sToken, uid,
+                                 JURISDICTION, CASE_TYPE,  String.valueOf(caseDetails.getId()),false, caseData
             );
 
-        LOGGER.info("closed case ({}) with reference ({})",
-                    caseDetails.getId(), caseRef
+        assert (caseDetails.getState().equals("1_CLOSED"));
+        LOGGER.info("closed case ({}) with reference ({}), it now has state ({})",
+                    caseDetails.getId(), caseRef, caseDetails.getState()
         );
-        return caseDetails.getId();
+        return caseDetails.getState();
     }
 }

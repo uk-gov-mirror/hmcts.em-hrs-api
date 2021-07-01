@@ -129,29 +129,6 @@ public class CcdDataStoreApiClient {
 
         return caseDetailsId;
     }
-
-//    public Long closeCase(final String caseRef) {
-//        Map<String, String> tokens = securityService.getTokens();
-//
-//        StartEventResponse startEventResponse =
-//            coreCaseDataApi.startCase(tokens.get(USER), tokens.get(SERVICE), CASE_TYPE, CLOSE_CASE);
-//
-//        CaseDataContent caseData = CaseDataContent.builder()
-//            .event(Event.builder().id(startEventResponse.getEventId()).build())
-//            .eventToken(startEventResponse.getToken())
-//            .build();
-//
-//        CaseDetails caseDetails = coreCaseDataApi
-//            .submitForCaseworker(tokens.get(USER), tokens.get(SERVICE), tokens.get(USER_ID),
-//                                 JURISDICTION, CASE_TYPE, false, caseData
-//            );
-//
-//        LOGGER.info("closed case ({}) with reference ({})",
-//                    caseDetails.getId(), caseRef
-//        );
-//        return caseDetails.getId();
-//    }
-
 }
 
 

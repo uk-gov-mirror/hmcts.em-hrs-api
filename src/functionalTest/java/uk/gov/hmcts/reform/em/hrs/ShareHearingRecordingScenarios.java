@@ -67,7 +67,7 @@ public class ShareHearingRecordingScenarios extends BaseTest {
     public void clear() {
         testUtil.deleteFileFromHrsContainer(FOLDER);
         testUtil.deleteFileFromCvpContainer(FOLDER);
-        ccdClient.closeCase(caseRef);
+        closeCase(caseRef);
     }
 
     @Test
