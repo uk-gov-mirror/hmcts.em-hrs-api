@@ -70,6 +70,23 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
     }
 
     @Test
+    public void shouldNotCopyHearingRecordingSegmentWhenFileNameMalformed() throws Exception {
+        caseRef = "I'm malformed now " + caseRef + " I'm malformed now";
+        postRecordingSegment(caseRef)
+            .then()
+            .log().all()
+            .statusCode(202);
+
+        TimeUnit.SECONDS.sleep(30);
+
+        getFilenames(FOLDER)
+            .assertThat().log().all()
+            .statusCode(200)
+            .body("folder-name", equalTo(FOLDER))
+            .body("filenames", empty());
+    }
+
+    @Test
     public void shouldCreateFolderWhenDoesNotExistAndReturnEmptyFileNames() {
         final String nonExistentFolder = "audiostream000000";
 
