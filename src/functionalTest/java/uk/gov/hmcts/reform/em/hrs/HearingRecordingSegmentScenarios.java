@@ -71,7 +71,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
 
     @Test
     public void shouldNotCreateHearingRecordingSegmentWhenFileNameMalformed() throws Exception {
-        caseRef = caseRef + "I'm malformed now";
+        caseRef = "I'm malformed now " + caseRef + " I'm malformed now";
         postRecordingSegment(caseRef)
             .then()
             .log().all()
@@ -83,8 +83,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .assertThat().log().all()
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
-            .body("filenames", hasSize(0))
-            .body("filenames", contains());
+            .body("filenames", empty());
     }
 
     @Test
