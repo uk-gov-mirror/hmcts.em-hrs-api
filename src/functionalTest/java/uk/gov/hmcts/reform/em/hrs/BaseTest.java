@@ -22,8 +22,8 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
 import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
@@ -308,10 +308,10 @@ public abstract class BaseTest {
             .caseReference(caseRef)
             .build();
 
-         caseDetails = coreCaseDataApi
+        caseDetails = coreCaseDataApi
             .submitEventForCaseWorker(userToken, s2sToken, uid,
-                                 JURISDICTION, CASE_TYPE,  String.valueOf(caseDetails.getId()),false, caseData
-            );
+                                 JURISDICTION, CASE_TYPE,  String.valueOf(caseDetails.getId()),false,
+                                      caseData);
 
         assert (caseDetails.getState().equals("1_CLOSED"));
         LOGGER.info("closed case ({}) with reference ({}), it now has state ({})",
