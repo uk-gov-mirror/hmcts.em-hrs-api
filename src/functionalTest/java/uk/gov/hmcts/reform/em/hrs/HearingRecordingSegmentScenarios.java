@@ -70,7 +70,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
     }
 
     @Test
-    public void shouldNotCreateHearingRecordingSegmentWhenFileNameMalformed() throws Exception {
+    public void shouldNotCopyHearingRecordingSegmentWhenFileNameMalformed() throws Exception {
         caseRef = "I'm malformed now " + caseRef + " I'm malformed now";
         postRecordingSegment(caseRef)
             .then()
