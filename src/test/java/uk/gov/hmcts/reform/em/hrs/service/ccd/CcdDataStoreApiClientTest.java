@@ -96,31 +96,4 @@ class CcdDataStoreApiClientTest {
 
         assertEquals(123456789L, caseId);
     }
-
-    @Test
-    void shouldCloseCase() { //TODO
-        doReturn(Map.of("user", USER_TOKEN,
-                        "userId", USER_ID,
-                        "service", SERVICE_TOKEN)).when(securityService).getTokens();
-        StartEventResponse startEventResponse = StartEventResponse.builder()
-            .caseDetails(CaseDetails.builder().id(CASE_ID).build())
-            .build();
-        doReturn(startEventResponse).when(coreCaseDataApi).startEvent(
-            USER_TOKEN, SERVICE_TOKEN, String.valueOf(CASE_ID), ADD_RECORDING_FILE
-        );
-        CaseDetails caseDetails = CaseDetails.builder().id(CASE_ID).build();
-        JsonNode data = JsonNodeFactory.instance.objectNode();
-        doReturn(data).when(caseDataContentCreator)
-            .createCaseUpdateData(startEventResponse.getCaseDetails().getData(), RECORDING_ID, HEARING_RECORDING_DTO);
-        CaseDataContent caseData = CaseDataContent.builder().data(data)
-            .event(Event.builder().build()).build();
-        doReturn(caseDetails).when(coreCaseDataApi).submitEventForCaseWorker(
-            USER_TOKEN, SERVICE_TOKEN, USER_ID,
-            JURISDICTION, CASE_TYPE, String.valueOf(CASE_ID), false, caseData
-        );
-
-        Long caseId = underTest.updateCaseData(CASE_ID, RECORDING_ID, HEARING_RECORDING_DTO);
-
-        assertEquals(123456789L, caseId);
-    }
 }
