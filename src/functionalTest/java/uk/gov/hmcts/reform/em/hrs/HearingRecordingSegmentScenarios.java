@@ -84,7 +84,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
             .body("filenames", hasSize(0))
-            .body("filenames", contains(""));
+            .body("filenames", contains());
     }
 
     @Test
