@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
 import java.util.concurrent.TimeUnit;
@@ -17,6 +18,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
 
     @Autowired
     private TestUtil testUtil;
+
     String caseRef;
     String filename;
 
@@ -40,6 +42,10 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
 
     @After
     public void clear() {
+        if (testUtil.checkIfUploadedToHrs(FOLDER) > 0) {
+            CaseDetails caseDetails = findCase(caseRef);
+            closeCase(caseRef, caseDetails);
+        }
         testUtil.deleteFileFromHrsContainer(FOLDER);
         testUtil.deleteFileFromCvpContainer(FOLDER);
     }

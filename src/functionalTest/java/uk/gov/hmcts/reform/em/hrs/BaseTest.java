@@ -20,7 +20,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.Event;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
 import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
@@ -78,6 +81,7 @@ public abstract class BaseTest {
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
     protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
+    protected static final String CLOSE_CASE = "closeCase";
 
     protected String idamAuth;
     protected String s2sAuth;
@@ -278,5 +282,36 @@ public abstract class BaseTest {
     protected String filename(String caseRef) {
         return FOLDER + "/" + JURISDICTION + "-" + LOCATION_CODE + "-" + caseRef + "_" + TIME
             + "-UTC_" + SEGMENT + ".mp4";
+    }
+
+    public String closeCase(final String caseRef, CaseDetails caseDetails) {
+
+        String s2sToken = extendedCcdHelper.getCcdS2sToken();
+        String userToken = idamClient.getAccessToken(HRS_TESTER, "4590fgvhbfgbDdffm3lk4j");
+        String uid = idamClient.getUserInfo(userToken).getUid();
+
+        StartEventResponse startEventResponse =
+            coreCaseDataApi.startEvent(userToken, s2sToken, String.valueOf(caseDetails.getId()), CLOSE_CASE);
+
+        LOGGER.info("closing case ({}) with reference ({}), right now it has state ({})",
+                    caseDetails.getId(), caseRef, caseDetails.getState()
+        );
+
+        CaseDataContent caseData = CaseDataContent.builder()
+            .event(Event.builder().id(startEventResponse.getEventId()).build())
+            .eventToken(startEventResponse.getToken())
+            .caseReference(caseRef)
+            .build();
+
+        caseDetails = coreCaseDataApi
+            .submitEventForCaseWorker(userToken, s2sToken, uid,
+                                 JURISDICTION, CASE_TYPE,  String.valueOf(caseDetails.getId()),false,
+                                      caseData);
+
+        assert (caseDetails.getState().equals("1_CLOSED"));
+        LOGGER.info("closed case ({}) with reference ({}), it now has state ({})",
+                    caseDetails.getId(), caseRef, caseDetails.getState()
+        );
+        return caseDetails.getState();
     }
 }

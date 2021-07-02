@@ -18,6 +18,7 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
 
     @Autowired
     private TestUtil testUtil;
+
     private String caseRef;
     private String filename;
     private CaseDetails caseDetails;
@@ -62,6 +63,7 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
     public void clear() {
         testUtil.deleteFileFromHrsContainer(FOLDER);
         testUtil.deleteFileFromCvpContainer(FOLDER);
+        closeCase(caseRef, caseDetails);
     }
 
     @Test

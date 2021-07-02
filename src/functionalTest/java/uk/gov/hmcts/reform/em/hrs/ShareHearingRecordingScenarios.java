@@ -53,8 +53,6 @@ public class ShareHearingRecordingScenarios extends BaseTest {
                 throw new IllegalStateException("could not find files within test");
             }
         }
-
-
         caseDetails = findCase(caseRef);
 
         expectedFileSize = testUtil.getTestFile().readAllBytes().length;
@@ -65,6 +63,10 @@ public class ShareHearingRecordingScenarios extends BaseTest {
     public void clear() {
         testUtil.deleteFileFromHrsContainer(FOLDER);
         testUtil.deleteFileFromCvpContainer(FOLDER);
+
+        if (caseDetails.getId() != null) {
+            closeCase(caseRef, caseDetails);
+        }
     }
 
     @Test
@@ -142,5 +144,7 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         shareRecording(SHAREE_EMAIL_ADDRESS, CASE_WORKER_ROLE, callbackRequest)
             .then().log().all()
             .statusCode(404);
+
+        caseDetails.setId(null);
     }
 }

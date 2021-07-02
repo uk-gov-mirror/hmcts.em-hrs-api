@@ -44,7 +44,7 @@ public class TestUtil {
     }
 
     public int checkIfUploadedToCvp(final String folderName) {
-        LOGGER.info("cvpBlobContainerClient.getBlobContainerUrl() ~{}" , cvpBlobContainerClient.getBlobContainerUrl());
+        LOGGER.info("cvpBlobContainerClient.getBlobContainerUrl() ~{}", cvpBlobContainerClient.getBlobContainerUrl());
         int count = (int) cvpBlobContainerClient.listBlobs()
             .stream()
             .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
@@ -52,7 +52,7 @@ public class TestUtil {
     }
 
     public int checkIfUploadedToHrs(final String folderName) {
-        LOGGER.info("hrsBlobContainerClient.getBlobContainerUrl() ~{}" , hrsBlobContainerClient.getBlobContainerUrl());
+        LOGGER.info("hrsBlobContainerClient.getBlobContainerUrl() ~{}", hrsBlobContainerClient.getBlobContainerUrl());
         int count = (int) hrsBlobContainerClient.listBlobs()
             .stream()
             .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
