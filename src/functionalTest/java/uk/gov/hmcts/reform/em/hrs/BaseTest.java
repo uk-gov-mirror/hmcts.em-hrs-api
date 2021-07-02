@@ -88,7 +88,7 @@ public abstract class BaseTest {
     protected String userId;
 
     @Rule
-    public RetryRule retryRule = new RetryRule(3);
+    public RetryRule retryRule = new RetryRule(3); 
 
     @Value("${test.url}")
     protected String testUrl;
@@ -245,7 +245,7 @@ public abstract class BaseTest {
         final Optional<CaseDetails> optionalCaseDetails = searchForCase(caseRef);
         assertTrue(optionalCaseDetails.isPresent());
 
-        final CaseDetails caseDetails = optionalCaseDetails.orElseGet(() -> CaseDetails.builder().build());
+        CaseDetails caseDetails = optionalCaseDetails.orElseGet(() -> CaseDetails.builder().build());
         assertNotNull(caseDetails);
         assertNotNull(caseDetails.getId());
         assertNotNull(caseDetails.getData());
@@ -284,16 +284,11 @@ public abstract class BaseTest {
             + "-UTC_" + SEGMENT + ".mp4";
     }
 
-    public String closeCase(final String caseRef) {
+    public String closeCase(final String caseRef, CaseDetails caseDetails) {
 
         String s2sToken = extendedCcdHelper.getCcdS2sToken();
         String userToken = idamClient.getAccessToken(HRS_TESTER, "4590fgvhbfgbDdffm3lk4j");
         String uid = idamClient.getUserInfo(userToken).getUid();
-
-        final Optional<CaseDetails> optionalCaseDetails = searchForCase(caseRef);
-        assertTrue(optionalCaseDetails.isPresent());
-
-        CaseDetails caseDetails = optionalCaseDetails.orElseGet(() -> CaseDetails.builder().build());
 
         StartEventResponse startEventResponse =
             coreCaseDataApi.startEvent(userToken, s2sToken, String.valueOf(caseDetails.getId()), CLOSE_CASE);

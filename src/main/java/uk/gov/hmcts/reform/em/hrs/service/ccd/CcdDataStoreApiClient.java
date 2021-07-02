@@ -38,13 +38,11 @@ public class CcdDataStoreApiClient {
     private static final String USER_ID = "userId";
     private static final String CASE_TYPE = "HearingRecordings";
     private static final String CREATE_CASE = "createCase";
-    private static final String CLOSE_CASE = "closeCase";
     private static final String ADD_RECORDING_FILE = "manageFiles";
     private final SecurityService securityService;
     private final CaseDataContentCreator caseDataCreator;
     private final CoreCaseDataApi coreCaseDataApi;
 
-    @Autowired
     public CcdDataStoreApiClient(SecurityService securityService,
                                  CaseDataContentCreator caseDataCreator,
                                  CoreCaseDataApi coreCaseDataApi) {
@@ -52,8 +50,6 @@ public class CcdDataStoreApiClient {
         this.caseDataCreator = caseDataCreator;
         this.coreCaseDataApi = coreCaseDataApi;
     }
-
-
 
     public Long createCase(final UUID recordingId, final HearingRecordingDto hearingRecordingDto) {
         Map<String, String> tokens = securityService.getTokens();
