@@ -88,7 +88,7 @@ public abstract class BaseTest {
     protected String userId;
 
     @Rule
-    public RetryRule retryRule = new RetryRule(3); 
+    public RetryRule retryRule = new RetryRule(3);
 
     @Value("${test.url}")
     protected String testUrl;
@@ -245,7 +245,7 @@ public abstract class BaseTest {
         final Optional<CaseDetails> optionalCaseDetails = searchForCase(caseRef);
         assertTrue(optionalCaseDetails.isPresent());
 
-        CaseDetails caseDetails = optionalCaseDetails.orElseGet(() -> CaseDetails.builder().build());
+        final CaseDetails caseDetails = optionalCaseDetails.orElseGet(() -> CaseDetails.builder().build());
         assertNotNull(caseDetails);
         assertNotNull(caseDetails.getId());
         assertNotNull(caseDetails.getData());
