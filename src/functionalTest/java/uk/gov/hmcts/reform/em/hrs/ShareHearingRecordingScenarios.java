@@ -63,7 +63,10 @@ public class ShareHearingRecordingScenarios extends BaseTest {
     public void clear() {
         testUtil.deleteFileFromHrsContainer(FOLDER);
         testUtil.deleteFileFromCvpContainer(FOLDER);
-        closeCase(caseRef, caseDetails);
+
+        if (caseDetails.getId() != null) {
+            closeCase(caseRef, caseDetails);
+        }
     }
 
     @Test
@@ -141,5 +144,7 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         shareRecording(SHAREE_EMAIL_ADDRESS, CASE_WORKER_ROLE, callbackRequest)
             .then().log().all()
             .statusCode(404);
+
+        caseDetails.setId(null);
     }
 }
