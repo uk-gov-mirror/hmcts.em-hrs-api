@@ -18,11 +18,12 @@ public class CheckEndPointsApplicationReadyListener implements ApplicationListen
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
-        LOGGER.info("Application is Ready");
+        LOGGER.info("Application is Ready!");
 
         try {
+            LOGGER.info("StorageReport:");
             String report = hearingRecordingStorage.getStorageReport();
-            LOGGER.info("StorageReport: {}",report);
+            LOGGER.info(report);
         }
         catch (Exception e) {
             LOGGER.error("Unable to verify storage connectivity: {}",e.getMessage());
