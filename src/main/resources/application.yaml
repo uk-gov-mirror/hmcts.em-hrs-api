@@ -128,8 +128,15 @@ logging:
       springframework:
         web:
           filter:
-            CommonsRequestLoggingFilter: DEBUG
+            CommonsRequestLoggingFilter: INFO
         beans:
           factory:
             support: INFO
       quartz: INFO
+    uk:
+      gov:
+        hmcts:
+          reform:
+            logging:
+              filters:
+                RequestStatusLoggingFilter: WARN
