@@ -59,13 +59,6 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
         assertThat(expectedFileSize, is(not(0)));
     }
 
-    @After
-    public void clear() {
-        testUtil.deleteFileFromHrsContainer(FOLDER);
-        testUtil.deleteFileFromCvpContainer(FOLDER);
-        closeCase(caseRef, caseDetails);
-    }
-
     @Test
     public void userWithCaseWorkerHrsRoleShouldBeAbleToDownloadHearingRecordings() {
         final byte[] downloadedFileBytes =

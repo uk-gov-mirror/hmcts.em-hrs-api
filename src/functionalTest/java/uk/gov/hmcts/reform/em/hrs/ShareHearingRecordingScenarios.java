@@ -59,16 +59,6 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         assertThat(expectedFileSize, is(not(0)));
     }
 
-    @After
-    public void clear() {
-        testUtil.deleteFileFromHrsContainer(FOLDER);
-        testUtil.deleteFileFromCvpContainer(FOLDER);
-
-        if (caseDetails.getId() != null) {
-            closeCase(caseRef, caseDetails);
-        }
-    }
-
     @Test
     public void shareeWithCaseworkerHrsRoleShouldBeAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CASEWORKER_HRS_USER);

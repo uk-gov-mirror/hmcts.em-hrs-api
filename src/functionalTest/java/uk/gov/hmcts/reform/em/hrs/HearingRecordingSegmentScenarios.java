@@ -40,16 +40,6 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
         }
     }
 
-    @After
-    public void clear() {
-        if (testUtil.checkIfUploadedToHrs(FOLDER) > 0) {
-            CaseDetails caseDetails = findCase(caseRef);
-            closeCase(caseRef, caseDetails);
-        }
-        testUtil.deleteFileFromHrsContainer(FOLDER);
-        testUtil.deleteFileFromCvpContainer(FOLDER);
-    }
-
     @Test
     public void shouldCreateHearingRecordingSegment() throws Exception {
         postRecordingSegment(caseRef)
