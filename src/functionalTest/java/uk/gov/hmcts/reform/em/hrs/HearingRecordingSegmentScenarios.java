@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
+import static org.hamcrest.core.IsNot.not;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .assertThat().log().all()
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
-            .body("filenames", empty());
+            .body("filenames", not(contains(filename)));
     }
 
     @Test

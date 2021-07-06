@@ -45,9 +45,14 @@ public class TestUtil {
     }
 
     public void checkIfUploadedToCvp(final String folderName) throws InterruptedException {
+        int blobCount = (int) cvpBlobContainerClient.listBlobs()
+            .stream()
+            .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
+
+        int expectedBlobs = blobCount + 1;
         int count = 0;
-        int blobCount = -1;
-        while (count <= 10 & blobCount <= 0) {
+        boolean team
+        while (count <= 20 && blobCount < expectedBlobs) {
             TimeUnit.SECONDS.sleep(30);
             LOGGER.info("cvpBlobContainerClient.getBlobContainerUrl() ~{}", cvpBlobContainerClient.getBlobContainerUrl());
             blobCount = (int) cvpBlobContainerClient.listBlobs()
@@ -55,15 +60,19 @@ public class TestUtil {
                 .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
             count++;
         }
-        if (count > 10) {
+        if (count > 20) {
             throw new IllegalStateException("could not find files within test");
         }
     }
 
     public void checkIfUploadedToHrs(final String folderName) throws InterruptedException {
+        int blobCount = (int) cvpBlobContainerClient.listBlobs()
+            .stream()
+            .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
+
+        int expectedBlobs = blobCount + 1;
         int count = 0;
-        int blobCount = -1;
-        while (count <= 10 & blobCount <= 0) {
+        while (count <= 20 && blobCount < expectedBlobs) {
             TimeUnit.SECONDS.sleep(30);
             LOGGER.info("hrsBlobContainerClient.getBlobContainerUrl() ~{}", hrsBlobContainerClient.getBlobContainerUrl());
             blobCount = (int) hrsBlobContainerClient.listBlobs()
@@ -71,7 +80,7 @@ public class TestUtil {
                 .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
             count++;
         }
-        if (count > 10) {
+        if (count > 20) {
             throw new IllegalStateException("could not find files within test");
         }
     }
