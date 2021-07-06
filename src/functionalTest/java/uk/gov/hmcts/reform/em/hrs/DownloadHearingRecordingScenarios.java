@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,39 +30,15 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
         filename = filename(caseRef);
         testUtil.uploadToCvpContainer(filename);
 
-        int counter = 0;
-        while (testUtil.checkIfUploadedToCvp(FOLDER) <= 0) {
-            TimeUnit.SECONDS.sleep(30);
-            counter++;
-
-            if (counter > 10) {
-                throw new IllegalStateException("could not find files");
-            }
-        }
+        testUtil.checkIfUploadedToCvp(FOLDER);
 
         postRecordingSegment(caseRef).then().statusCode(202);
 
-        int count = 0;
-        while (testUtil.checkIfUploadedToHrs(FOLDER) <= 0) {
-            TimeUnit.SECONDS.sleep(30);
-            count++;
-
-            if (count > 10) {
-                throw new IllegalStateException("could not find files within test");
-            }
-        }
+        testUtil.checkIfUploadedToHrs(FOLDER);
         caseDetails = findCase(caseRef);
-
 
         expectedFileSize = testUtil.getTestFile().readAllBytes().length;
         assertThat(expectedFileSize, is(not(0)));
-    }
-
-    @After
-    public void clear() {
-        testUtil.deleteFileFromHrsContainer(FOLDER);
-        testUtil.deleteFileFromCvpContainer(FOLDER);
-        closeCase(caseRef, caseDetails);
     }
 
     @Test

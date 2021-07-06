@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
 import java.util.concurrent.TimeUnit;
@@ -12,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
 
 public class HearingRecordingSegmentScenarios extends BaseTest {
 
@@ -29,25 +26,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
         filename = filename(caseRef);
         testUtil.uploadToCvpContainer(filename);
 
-        int counter = 0;
-        while (testUtil.checkIfUploadedToCvp(FOLDER) <= 0) {
-            TimeUnit.SECONDS.sleep(30);
-            counter++;
-
-            if (counter > 10){
-                throw new IllegalStateException("could not find files");
-            }
-        }
-    }
-
-    @After
-    public void clear() {
-        if (testUtil.checkIfUploadedToHrs(FOLDER) > 0) {
-            CaseDetails caseDetails = findCase(caseRef);
-            closeCase(caseRef, caseDetails);
-        }
-        testUtil.deleteFileFromHrsContainer(FOLDER);
-        testUtil.deleteFileFromCvpContainer(FOLDER);
+        testUtil.checkIfUploadedToCvp(FOLDER);
     }
 
     @Test
@@ -57,21 +36,12 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .log().all()
             .statusCode(202);
 
-        int count = 0;
-        while (testUtil.checkIfUploadedToHrs(FOLDER) <= 0) {
-            TimeUnit.SECONDS.sleep(30);
-            count++;
-
-            if (count > 10) {
-                throw new IllegalStateException("could not find files within test");
-            }
-        }
+        testUtil.checkIfUploadedToHrs(FOLDER);
 
         getFilenames(FOLDER)
             .assertThat().log().all()
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
-            .body("filenames", hasSize(1))
             .body("filenames", contains(filename));
     }
 
