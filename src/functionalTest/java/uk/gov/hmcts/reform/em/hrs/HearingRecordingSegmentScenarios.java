@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
 
 public class HearingRecordingSegmentScenarios extends BaseTest {
 
@@ -61,7 +60,6 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .assertThat().log().all()
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
-            .body("filenames", hasSize(1))
             .body("filenames", contains(filename));
     }
 
