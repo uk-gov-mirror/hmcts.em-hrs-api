@@ -63,4 +63,19 @@ withNightlyPipeline(type, product, component) {
   loadVaultSecrets(secrets)
   enableMutationTest()
   enableSecurityScan()
+  enableFullFunctionalTest()
+  enableSlackNotifications('#em-dev-chat')
+
+  after('functionalTest:aat') {
+
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/functional",
+      reportFiles          : "index.html",
+      reportName           : "HRS API Functional Test Report"
+    ]
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+  }
 }
