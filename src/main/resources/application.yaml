@@ -27,6 +27,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQL95Dialect
     properties:
       hibernate:
+        show_sql: ${SHOW_SQL:false}
         order_inserts: true
         order_updates: true
         jdbc:
