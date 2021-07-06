@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import static org.junit.Assert.assertNotNull;
@@ -200,6 +201,18 @@ public abstract class BaseTest {
             .get(recordingUrl);
     }
 
+    protected JsonNode createSegmentPayload(String caseRef) {
+        return createRecordingSegment(
+            FOLDER,
+            JURISDICTION,
+            LOCATION_CODE,
+            caseRef,
+            TIME,
+            SEGMENT,
+            FILE_EXT
+        );
+    }
+
     protected JsonNode createRecordingSegment(String folder,
                                               String jurisdictionCode, String locationCode, String caseRef,
                                               String recordingTime, int segment, String fileExt) {
@@ -222,18 +235,6 @@ public abstract class BaseTest {
             .put("recording-date-time", recordingTime);
     }
 
-    protected JsonNode createSegmentPayload(String caseRef) {
-        return createRecordingSegment(
-            FOLDER,
-            JURISDICTION,
-            LOCATION_CODE,
-            caseRef,
-            TIME,
-            SEGMENT,
-            FILE_EXT
-        );
-    }
-
     protected void createFolderIfDoesNotExistInHrsDB(final String folderName) {
         getFilenames(folderName)
             .log().all()
@@ -241,8 +242,16 @@ public abstract class BaseTest {
             .statusCode(200);
     }
 
-    protected CaseDetails findCase(String caseRef) {
-        final Optional<CaseDetails> optionalCaseDetails = searchForCase(caseRef);
+    protected CaseDetails findCase(String caseRef) throws InterruptedException {
+        Optional<CaseDetails> optionalCaseDetails = searchForCase(caseRef);
+
+        int count = 0;
+        while (count <= 10 && optionalCaseDetails.isEmpty()) {
+            TimeUnit.SECONDS.sleep(30);
+            optionalCaseDetails = searchForCase(caseRef);
+            count++;
+        }
+
         assertTrue(optionalCaseDetails.isPresent());
 
         final CaseDetails caseDetails = optionalCaseDetails.orElseGet(() -> CaseDetails.builder().build());

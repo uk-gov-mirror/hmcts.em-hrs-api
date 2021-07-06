@@ -26,15 +26,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
         filename = filename(caseRef);
         testUtil.uploadToCvpContainer(filename);
 
-        int counter = 0;
-        while (testUtil.checkIfUploadedToCvp(FOLDER) <= 0) {
-            TimeUnit.SECONDS.sleep(30);
-            counter++;
-
-            if (counter > 10){
-                throw new IllegalStateException("could not find files");
-            }
-        }
+        testUtil.checkIfUploadedToCvp(FOLDER);
     }
 
     @Test
@@ -44,15 +36,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .log().all()
             .statusCode(202);
 
-        int count = 0;
-        while (testUtil.checkIfUploadedToHrs(FOLDER) <= 0) {
-            TimeUnit.SECONDS.sleep(30);
-            count++;
-
-            if (count > 10) {
-                throw new IllegalStateException("could not find files within test");
-            }
-        }
+        testUtil.checkIfUploadedToHrs(FOLDER);
 
         getFilenames(FOLDER)
             .assertThat().log().all()

@@ -31,27 +31,11 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         filename = filename(caseRef);
         testUtil.uploadToCvpContainer(filename);
 
-        int count = 0;
-        while (testUtil.checkIfUploadedToCvp(FOLDER) <= 0) {
-            TimeUnit.SECONDS.sleep(30);
-            count++;
-
-            if (count > 10) {
-                throw new IllegalStateException("could not find files");
-            }
-        }
+        testUtil.checkIfUploadedToCvp(FOLDER);
 
         postRecordingSegment(caseRef).then().statusCode(202);
 
-        int counter = 0;
-        while (testUtil.checkIfUploadedToHrs(FOLDER) <= 0) {
-            TimeUnit.SECONDS.sleep(30);
-            counter++;
-
-            if (counter > 10) {
-                throw new IllegalStateException("could not find files within test");
-            }
-        }
+        testUtil.checkIfUploadedToHrs(FOLDER);
         caseDetails = findCase(caseRef);
 
         expectedFileSize = testUtil.getTestFile().readAllBytes().length;
