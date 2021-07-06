@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import org.apache.commons.lang3.RandomUtils;
+import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

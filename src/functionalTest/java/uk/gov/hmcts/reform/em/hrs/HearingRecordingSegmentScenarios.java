@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import static org.hamcrest.core.IsNot.not;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +8,12 @@ import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+
 
 public class HearingRecordingSegmentScenarios extends BaseTest {
 
