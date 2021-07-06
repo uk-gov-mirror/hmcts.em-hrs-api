@@ -51,7 +51,6 @@ public class TestUtil {
 
         int expectedBlobs = blobCount + 1;
         int count = 0;
-        boolean team
         while (count <= 20 && blobCount < expectedBlobs) {
             TimeUnit.SECONDS.sleep(30);
             LOGGER.info("cvpBlobContainerClient.getBlobContainerUrl() ~{}", cvpBlobContainerClient.getBlobContainerUrl());
