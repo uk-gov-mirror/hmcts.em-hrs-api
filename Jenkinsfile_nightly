@@ -29,8 +29,30 @@ def secrets = [
   'rpa-${env}': [
     secret('oauth2-client-id', 'OAUTH_CLIENT_ID'),
     secret('show-oauth2-token', 'FUNCTIONAL_TEST_CLIENT_OAUTH_SECRET')
+    ],
+    'em-hrs-api-${env}': [
+      secret('cvp-storage-connection-string', 'CVP_STORAGE_CONNECTION_STRING'),
+      secret('cvp-storage-container-name', 'CVP_STORAGE_CONTAINER_NAME'),
+      secret('storage-account-primary-connection-string', 'HRS_STORAGEACCOUNT_CONNECTION_STRING'),
+      secret('hrs-storage-container-name', 'HRS_STORAGE_CONTAINER_NAME'),
+      secret('notification-api-key', 'NOTIFICATION_API_KEY'),
+      secret('idam-system-user-name', 'HRS_SYSTEM_USER'),
+      secret('idam-system-user-password', 'HRS_SYSTEM_USER_PASSWORD')
+    ]
   ]
-]
+
+// Vars for Kubernetes Endpoints
+env.IDAM_API_BASE_URI = 'https://idam-api.aat.platform.hmcts.net'
+env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'
+env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
+env.CCD_DATA_API_URL = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
+env.XUI_API_URL = 'https://manage-case.aat.platform.hmcts.net'
+env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.internal'
+env.IDAM_REDIRECT_URI = 'https://em-hrs-api-aat.service.core-compute-aat.internal/oauth2/callback'
+env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
+env.CVP_CONTAINER_URL = 'https://emhrsapiaat.blob.core.windows.net/hrsperformancetest/'
+//env.CVP_CONTAINER_URL = 'https://emhrsapiaat.blob.core.windows.net/em-hrs-api-aat/'
+env.CCD_DEFINITION_FILE = 'hrs_ccd_case_definition_AAT.xlsx'
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
   [$class     : 'AzureKeyVaultSecret',
@@ -63,4 +85,17 @@ withNightlyPipeline(type, product, component) {
   loadVaultSecrets(secrets)
   enableMutationTest()
   enableSecurityScan()
+
+  after('functionalTest:aat') {
+
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/functional",
+      reportFiles          : "index.html",
+      reportName           : "HRS API Functional Test Report"
+    ]
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+  }
 }
