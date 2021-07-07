@@ -8,12 +8,10 @@ import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
 import java.util.concurrent.TimeUnit;
 
-
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-
 
 public class HearingRecordingSegmentScenarios extends BaseTest {
 
@@ -36,13 +34,13 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
     @Test
     public void shouldCreateHearingRecordingSegment() throws Exception {
         int hrsBlobCount = testUtil.getHrsBlobCount(FOLDER);
+
         postRecordingSegment(caseRef)
             .then()
             .log().all()
             .statusCode(202);
 
         testUtil.checkIfUploadedToHrs(FOLDER, hrsBlobCount);
-
         getFilenames(FOLDER)
             .assertThat().log().all()
             .statusCode(200)
