@@ -153,12 +153,13 @@ def coverageExclusionList = [
   '**uk/gov/hmcts/reform/em/hrs/Application*',
   '**uk/gov/hmcts/reform/em/hrs/appinsights/**',
   '**uk/gov/hmcts/reform/em/hrs/config/**',
+  '**uk/gov/hmcts/reform/em/hrs/domain/**',
+  '**uk/gov/hmcts/reform/em/hrs/domain/**',
   '**uk/gov/hmcts/reform/em/hrs/dto/**',
-  '**uk/gov/hmcts/reform/em/hrs/model/**',
-  '**uk/gov/hmcts/reform/em/hrs/domain/**',
-  '**uk/gov/hmcts/reform/em/hrs/listener/**',
   '**uk/gov/hmcts/reform/em/hrs/exception/**',
-  '**uk/gov/hmcts/reform/em/hrs/domain/**',
+  '**uk/gov/hmcts/reform/em/hrs/listener/**',
+  '**uk/gov/hmcts/reform/em/hrs/model/**',
+  '**uk/gov/hmcts/reform/em/hrs/storage/**',
   '**uk/gov/hmcts/reform/em/hrs/util/debug/**',
 ]
 
