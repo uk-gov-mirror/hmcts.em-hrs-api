@@ -8,8 +8,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
@@ -29,13 +27,15 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = randomCaseRef();
         filename = filename(caseRef);
+
+        int cvpBlobCount = testUtil.getCvpBlobCount(FOLDER);
         testUtil.uploadToCvpContainer(filename);
+        testUtil.checkIfUploadedToCvp(FOLDER, cvpBlobCount);
 
-        testUtil.checkIfUploadedToCvp(FOLDER);
-
+        int hrsBlobCount = testUtil.getHrsBlobCount(FOLDER);
         postRecordingSegment(caseRef).then().statusCode(202);
+        testUtil.checkIfUploadedToHrs(FOLDER, hrsBlobCount);
 
-        testUtil.checkIfUploadedToHrs(FOLDER);
         caseDetails = findCase(caseRef);
 
         expectedFileSize = testUtil.getTestFile().readAllBytes().length;
