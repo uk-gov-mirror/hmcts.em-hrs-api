@@ -84,6 +84,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
         // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
         if (!destinationBlobClient.exists()) {
             if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
+                LOGGER.info("Generating and appending SAS token for copy");
                 String sasToken = generateReadSasForCvp(filename);
                 sourceUri = sourceUri + "?" + sasToken;
             }
@@ -93,14 +94,11 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
                 BlockBlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
                 LOGGER.info("sourceBlob.exists() {}", sourceBlob.exists());
-
-                //TODO ensure sourceURIs are not logged after perftest integration is complete
-                LOGGER.info("INTEGRATION - DELETE LATER: Begin File copy  for {}", sourceUri);
                 SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
                 PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
                 LOGGER.info(
-                    "INTEGRATION - DELETE LATER: File copy completed for {} with status {}",
-                    sourceUri,
+                    "File copy completed for {} with status {}",
+                    filename,
                     poll.getStatus()
                 );
             } catch (BlobStorageException be) {
@@ -156,12 +154,9 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
         BlobServiceSasSignatureValues signatureValues = new BlobServiceSasSignatureValues(expiryTime, permission)
             .setStartTime(OffsetDateTime.now().minusMinutes(95));
-        //        String sas = sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey);
-        String accountName = "cvprecordingsstgsa";//TODO this is hardcoded for perftest enviro
-        Context context = new Context("Azure-Storage-Log-String-To-Sign", "true");
-        String sas = sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey, accountName, context);
+        String accountName = AccountUrlHelper.extractAccountFromUrl(cvpConnectionString);//TODO this is hardcoded for perftest enviro
+        String sas = sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey, accountName, Context.NONE);
 
-        LOGGER.info("INTEGRATION LOGGING (delete this later): sas=" + sas);
 
         return sas;
     }
@@ -181,7 +176,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
 
         final PagedIterable<BlobItem> hrsBlobItems = hrsBlobContainerClient.listBlobs(options, duration);
-        long hrsItemCount = cvpBlobItems.streamByPage().count();
+        long hrsItemCount = cvpBlobItems.stream().count();
 
         String report = "CVP Count = " + cvpItemCount;
         report += "\nHRS Count = " + hrsItemCount;
