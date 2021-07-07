@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
