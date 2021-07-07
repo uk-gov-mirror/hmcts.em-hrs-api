@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs.storage;
 
 import com.azure.core.http.rest.PagedIterable;
+import com.azure.core.util.Context;
 import com.azure.core.util.polling.PollResponse;
 import com.azure.core.util.polling.SyncPoller;
 import com.azure.identity.DefaultAzureCredential;
@@ -91,11 +92,13 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
             try {
 
                 BlockBlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
-                LOGGER.debug("sourceBlob.exists() {}", sourceBlob.exists());
+                LOGGER.info("sourceBlob.exists() {}", sourceBlob.exists());
 
+                //TODO ensure sourceURIs are not logged after perftest integration is complete
+                LOGGER.info("INTEGRATION - DELETE LATER: Begin File copy  for {}", sourceUri);
                 SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
                 PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
-                LOGGER.info("File copy completed for {} with status {}", sourceUri, poll.getStatus());
+                LOGGER.info("INTEGRATION - DELETE LATER: File copy completed for {} with status {}", sourceUri, poll.getStatus());
             } catch (BlobStorageException be) {
                 LOGGER.info("Blob Copy BlobStorageException code {}, message{}", be.getErrorCode(), be.getMessage());
                 throw new BlobCopyException(be.getMessage(), be);
@@ -137,7 +140,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
         OffsetDateTime delegationKeyStartTime = OffsetDateTime.now().minusMinutes(95);
         OffsetDateTime delegationKeyExpiryTime = OffsetDateTime.now().plusMinutes(95);
         UserDelegationKey
-            key = blobServiceClient.getUserDelegationKey(delegationKeyStartTime, delegationKeyExpiryTime);
+            userDelegationKey = blobServiceClient.getUserDelegationKey(delegationKeyStartTime, delegationKeyExpiryTime);
 
         //get SAS String for blobfile
         LOGGER.info("get SAS String using BlobClient for blobfile: {}", fileName);
@@ -147,9 +150,14 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
         OffsetDateTime expiryTime = OffsetDateTime.now().plusMinutes(95);
         BlobSasPermission permission = new BlobSasPermission().setReadPermission(true).setListPermission(true);
 
-        BlobServiceSasSignatureValues myValues = new BlobServiceSasSignatureValues(expiryTime, permission)
+        BlobServiceSasSignatureValues signatureValues = new BlobServiceSasSignatureValues(expiryTime, permission)
             .setStartTime(OffsetDateTime.now().minusMinutes(95));
-        String sas = sourceBlob.generateUserDelegationSas(myValues, key);
+//        String sas = sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey);
+        String accountName="cvprecordingsstgsa";//TODO this is hardcoded for perftest enviro
+        Context context = new Context("Azure-Storage-Log-String-To-Sign","true");
+        String sas = sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey, accountName, context);
+
+        LOGGER.info("INTEGRATION LOGGING (delete this later): sas="+sas);
 
         return sas;
     }
