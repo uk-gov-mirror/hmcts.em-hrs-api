@@ -28,15 +28,13 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = randomCaseRef();
         filename = filename(caseRef);
+        int cvpBlobCount = testUtil.getCvpBlobCount(FOLDER);
+        int hrsBlobCount = testUtil.getHrsBlobCount(FOLDER);
         testUtil.uploadToCvpContainer(filename);
-
-        testUtil.checkIfUploadedToCvp(FOLDER);
-
+        testUtil.checkIfUploadedToCvp(FOLDER, cvpBlobCount);
         postRecordingSegment(caseRef).then().statusCode(202);
-
-        testUtil.checkIfUploadedToHrs(FOLDER);
+        testUtil.checkIfUploadedToHrs(FOLDER, hrsBlobCount);
         caseDetails = findCase(caseRef);
-
         expectedFileSize = testUtil.getTestFile().readAllBytes().length;
         assertThat(expectedFileSize, is(not(0)));
     }

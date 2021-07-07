@@ -28,19 +28,20 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = randomCaseRef();
         filename = filename(caseRef);
+        int cvpBlobCount = testUtil.getCvpBlobCount(FOLDER);
         testUtil.uploadToCvpContainer(filename);
-
-        testUtil.checkIfUploadedToCvp(FOLDER);
+        testUtil.checkIfUploadedToCvp(FOLDER, cvpBlobCount);
     }
 
     @Test
     public void shouldCreateHearingRecordingSegment() throws Exception {
+        int hrsBlobCount = testUtil.getHrsBlobCount(FOLDER);
         postRecordingSegment(caseRef)
             .then()
             .log().all()
             .statusCode(202);
 
-        testUtil.checkIfUploadedToHrs(FOLDER);
+        testUtil.checkIfUploadedToHrs(FOLDER, hrsBlobCount);
 
         getFilenames(FOLDER)
             .assertThat().log().all()

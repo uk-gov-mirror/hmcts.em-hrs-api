@@ -44,19 +44,29 @@ public class TestUtil {
             });
     }
 
-    public void checkIfUploadedToCvp(final String folderName) throws InterruptedException {
-        int blobCount = (int) cvpBlobContainerClient.listBlobs()
-            .stream()
-            .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
+    public void checkIfUploadedToCvp(final String folderName, int blobCount) throws InterruptedException {
+        int expectedBlobs = blobCount + 1;
+        int count = 0;
+        while (count <= 10 && blobCount < expectedBlobs) {
+            TimeUnit.SECONDS.sleep(30);
+            LOGGER.info("cvpBlobContainerClient.getBlobContainerUrl() ~{}",
+                        cvpBlobContainerClient.getBlobContainerUrl());
+            blobCount = getCvpBlobCount(folderName);
+            count++;
+        }
+        if (count > 10) {
+            throw new IllegalStateException("could not find files within test");
+        }
+    }
 
+    public void checkIfUploadedToHrs(final String folderName, int blobCount) throws InterruptedException {
         int expectedBlobs = blobCount + 1;
         int count = 0;
         while (count <= 20 && blobCount < expectedBlobs) {
             TimeUnit.SECONDS.sleep(30);
-            LOGGER.info("cvpBlobContainerClient.getBlobContainerUrl() ~{}", cvpBlobContainerClient.getBlobContainerUrl());
-            blobCount = (int) cvpBlobContainerClient.listBlobs()
-                .stream()
-                .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
+            LOGGER.info("hrsBlobContainerClient.getBlobContainerUrl() ~{}",
+                        hrsBlobContainerClient.getBlobContainerUrl());
+            blobCount = getHrsBlobCount(folderName);
             count++;
         }
         if (count > 20) {
@@ -64,24 +74,18 @@ public class TestUtil {
         }
     }
 
-    public void checkIfUploadedToHrs(final String folderName) throws InterruptedException {
-        int blobCount = (int) cvpBlobContainerClient.listBlobs()
+    public int getCvpBlobCount(String folderName) {
+        return getBlobCount(cvpBlobContainerClient, folderName);
+    }
+
+    public int getHrsBlobCount(String folderName) {
+        return getBlobCount(hrsBlobContainerClient, folderName);
+    }
+
+    private int getBlobCount(BlobContainerClient client, String folderName) {
+        return  (int) client.listBlobs()
             .stream()
             .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
-
-        int expectedBlobs = blobCount + 1;
-        int count = 0;
-        while (count <= 20 && blobCount < expectedBlobs) {
-            TimeUnit.SECONDS.sleep(30);
-            LOGGER.info("hrsBlobContainerClient.getBlobContainerUrl() ~{}", hrsBlobContainerClient.getBlobContainerUrl());
-            blobCount = (int) hrsBlobContainerClient.listBlobs()
-                .stream()
-                .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
-            count++;
-        }
-        if (count > 20) {
-            throw new IllegalStateException("could not find files within test");
-        }
     }
 
     public void deleteFileFromCvpContainer(final String folderName) {
