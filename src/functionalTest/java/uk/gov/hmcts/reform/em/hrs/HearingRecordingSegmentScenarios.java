@@ -8,9 +8,9 @@ import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 
 public class HearingRecordingSegmentScenarios extends BaseTest {
@@ -45,7 +45,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .assertThat().log().all()
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
-            .body("filenames", contains(filename));
+            .body("filenames", hasItem(filename));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .assertThat().log().all()
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
-            .body("filenames", not(contains(filename)));
+            .body("filenames", not(hasItem(filename)));
     }
 
     @Test

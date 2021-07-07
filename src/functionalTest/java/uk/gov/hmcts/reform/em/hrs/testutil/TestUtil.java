@@ -93,7 +93,8 @@ public class TestUtil {
             .stream()
             .filter(blobItem -> blobItem.getName().startsWith(folderName))
             .forEach(blobItem -> {
-                final BlockBlobClient blobClient = cvpBlobContainerClient.getBlobClient(blobItem.getName()).getBlockBlobClient();
+                final BlockBlobClient blobClient = cvpBlobContainerClient
+                    .getBlobClient(blobItem.getName()).getBlockBlobClient();
                 blobClient.delete();
             });
     }
