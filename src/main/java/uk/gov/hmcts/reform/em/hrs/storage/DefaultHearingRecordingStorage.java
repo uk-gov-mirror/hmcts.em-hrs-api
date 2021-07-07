@@ -98,7 +98,11 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
                 LOGGER.info("INTEGRATION - DELETE LATER: Begin File copy  for {}", sourceUri);
                 SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
                 PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
-                LOGGER.info("INTEGRATION - DELETE LATER: File copy completed for {} with status {}", sourceUri, poll.getStatus());
+                LOGGER.info(
+                    "INTEGRATION - DELETE LATER: File copy completed for {} with status {}",
+                    sourceUri,
+                    poll.getStatus()
+                );
             } catch (BlobStorageException be) {
                 LOGGER.info("Blob Copy BlobStorageException code {}, message{}", be.getErrorCode(), be.getMessage());
                 throw new BlobCopyException(be.getMessage(), be);
@@ -152,12 +156,12 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
         BlobServiceSasSignatureValues signatureValues = new BlobServiceSasSignatureValues(expiryTime, permission)
             .setStartTime(OffsetDateTime.now().minusMinutes(95));
-//        String sas = sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey);
-        String accountName="cvprecordingsstgsa";//TODO this is hardcoded for perftest enviro
-        Context context = new Context("Azure-Storage-Log-String-To-Sign","true");
+        //        String sas = sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey);
+        String accountName = "cvprecordingsstgsa";//TODO this is hardcoded for perftest enviro
+        Context context = new Context("Azure-Storage-Log-String-To-Sign", "true");
         String sas = sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey, accountName, context);
 
-        LOGGER.info("INTEGRATION LOGGING (delete this later): sas="+sas);
+        LOGGER.info("INTEGRATION LOGGING (delete this later): sas=" + sas);
 
         return sas;
     }
