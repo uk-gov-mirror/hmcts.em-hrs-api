@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs.storage;
 
 import com.azure.core.http.rest.PagedIterable;
+import com.azure.core.util.Context;
 import com.azure.core.util.polling.PollResponse;
 import com.azure.core.util.polling.SyncPoller;
 import com.azure.identity.DefaultAzureCredential;
@@ -31,6 +32,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import static uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver.extractAccountFromUrl;
 
 @Named
 public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
@@ -83,6 +86,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
         // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
         if (!destinationBlobClient.exists()) {
             if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
+                LOGGER.info("Generating and appending SAS token for copy");
                 String sasToken = generateReadSasForCvp(filename);
                 sourceUri = sourceUri + "?" + sasToken;
             }
@@ -91,11 +95,14 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
             try {
 
                 BlockBlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
-                LOGGER.debug("sourceBlob.exists() {}", sourceBlob.exists());
-
+                LOGGER.info("sourceBlob.exists() {}", sourceBlob.exists());
                 SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
                 PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
-                LOGGER.info("File copy completed for {} with status {}", sourceUri, poll.getStatus());
+                LOGGER.info(
+                    "File copy completed for {} with status {}",
+                    filename,
+                    poll.getStatus()
+                );
             } catch (BlobStorageException be) {
                 LOGGER.info("Blob Copy BlobStorageException code {}, message{}", be.getErrorCode(), be.getMessage());
                 throw new BlobCopyException(be.getMessage(), be);
@@ -137,7 +144,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
         OffsetDateTime delegationKeyStartTime = OffsetDateTime.now().minusMinutes(95);
         OffsetDateTime delegationKeyExpiryTime = OffsetDateTime.now().plusMinutes(95);
         UserDelegationKey
-            key = blobServiceClient.getUserDelegationKey(delegationKeyStartTime, delegationKeyExpiryTime);
+            userDelegationKey = blobServiceClient.getUserDelegationKey(delegationKeyStartTime, delegationKeyExpiryTime);
 
         //get SAS String for blobfile
         LOGGER.info("get SAS String using BlobClient for blobfile: {}", fileName);
@@ -147,9 +154,13 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
         OffsetDateTime expiryTime = OffsetDateTime.now().plusMinutes(95);
         BlobSasPermission permission = new BlobSasPermission().setReadPermission(true).setListPermission(true);
 
-        BlobServiceSasSignatureValues myValues = new BlobServiceSasSignatureValues(expiryTime, permission)
+        BlobServiceSasSignatureValues signatureValues = new BlobServiceSasSignatureValues(expiryTime, permission)
             .setStartTime(OffsetDateTime.now().minusMinutes(95));
-        String sas = sourceBlob.generateUserDelegationSas(myValues, key);
+        String accountName =
+            extractAccountFromUrl(cvpConnectionString);//TODO this is hardcoded for perftest enviro
+        String sas =
+            sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey, accountName, Context.NONE);
+
 
         return sas;
     }
@@ -169,7 +180,7 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
 
         final PagedIterable<BlobItem> hrsBlobItems = hrsBlobContainerClient.listBlobs(options, duration);
-        long hrsItemCount = cvpBlobItems.streamByPage().count();
+        long hrsItemCount = cvpBlobItems.stream().count();
 
         String report = "CVP Count = " + cvpItemCount;
         report += "\nHRS Count = " + hrsItemCount;

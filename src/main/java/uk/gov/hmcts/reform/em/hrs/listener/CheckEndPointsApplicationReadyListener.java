@@ -28,9 +28,8 @@ public class CheckEndPointsApplicationReadyListener implements ApplicationListen
             LOGGER.info("StorageReport:");
             String report = hearingRecordingStorage.getStorageReport();
             LOGGER.info(report);
-        }
-        catch (Exception e) {
-            LOGGER.error("Unable to verify storage connectivity: {}",e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Unable to verify storage connectivity: {}", e.getMessage());
         }
 
         try {
@@ -39,11 +38,9 @@ public class CheckEndPointsApplicationReadyListener implements ApplicationListen
             LOGGER.info("StorageReport:");
             String report = hearingRecordingStorage.getStorageReport();
             LOGGER.info(report);
+        } catch (Exception e) {
+            LOGGER.error("Unable to verify 2nd storage connectivity: {}", e.getMessage());
         }
-        catch (Exception e) {
-            LOGGER.error("Unable to verify 2nd storage connectivity: {}",e.getMessage());
-        }
-
 
 
     }
