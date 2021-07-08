@@ -26,7 +26,7 @@ public class CvpConnectionResolver {
     */
     static Pattern pattern = Pattern.compile("https://(.*?)(?:-secondary)?.blob.core.windows.net");
 
-    static String extractAccountFromUrl(String cvpConnectionString) {
+    public static String extractAccountFromUrl(String cvpConnectionString) {
 
         Matcher matcher = pattern.matcher(cvpConnectionString);
         String accountName = null;

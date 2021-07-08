@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import static uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver.extractAccountFromUrl;
+
 @Named
 public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHearingRecordingStorage.class);
@@ -154,8 +156,10 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
         BlobServiceSasSignatureValues signatureValues = new BlobServiceSasSignatureValues(expiryTime, permission)
             .setStartTime(OffsetDateTime.now().minusMinutes(95));
-        String accountName = AccountUrlHelper.extractAccountFromUrl(cvpConnectionString);//TODO this is hardcoded for perftest enviro
-        String sas = sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey, accountName, Context.NONE);
+        String accountName =
+            extractAccountFromUrl(cvpConnectionString);//TODO this is hardcoded for perftest enviro
+        String sas =
+            sourceBlob.generateUserDelegationSas(signatureValues, userDelegationKey, accountName, Context.NONE);
 
 
         return sas;
