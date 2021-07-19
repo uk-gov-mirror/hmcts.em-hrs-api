@@ -201,15 +201,9 @@ sonarqube {
 /***********************************************************************************************************************
  * Dependency Management
  **********************************************************************************************************************/
-configurations.all {
-  resolutionStrategy {
-    eachDependency { DependencyResolveDetails details ->
-      if (details.requested.group in ['org.apache.tomcat.embed']) {
-        details.useVersion '9.0.43'
-      }
-    }
-  }
-}
+
+
+
 
 // before committing a change, make sure task still works
 dependencyUpdates {
@@ -230,6 +224,19 @@ dependencyCheck {
 
 dependencyManagement {
   dependencies {
+
+    //CVE-2021-27568
+    dependencySet(group: 'net.minidev', version: '2.3.1') {
+      entry 'json-smart'
+    }
+
+    //CVE-2021-33037
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.48') {
+      entry 'tomcat-embed-core'
+      entry 'tomcat-embed-websocket'
+    }
+
+
     dependencySet(group: 'com.google.guava', version: '30.1.1-jre') {
       // Guava CVE-2018-10237 - Unbounded memory allocation
       entry 'guava'
@@ -300,7 +307,6 @@ dependencyManagement {
 }
 
 repositories {
-  //TODO confirm this should be the primary maven repo (it is in dm store and em stictching)
   mavenCentral()
   jcenter()
   maven { url 'https://jitpack.io' }
@@ -367,7 +373,7 @@ dependencies {
 
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
-//  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.2'
+
   implementation "org.springframework.boot:spring-boot-starter-actuator"
   implementation "org.springframework.boot:spring-boot-starter-aop"
   implementation "org.springframework.boot:spring-boot-starter-json"
@@ -496,7 +502,7 @@ dependencies {
   smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
   smokeTestImplementation 'com.github.hmcts:em-test-helper:1.18.2'
 
-  //functionalTestCompile "uk.gov.hmcts.reform:em-test-helper:1.18.1", withoutStuff
+
 
 /***********************************************************************************************************************
  * TEST SOURCE SETS
