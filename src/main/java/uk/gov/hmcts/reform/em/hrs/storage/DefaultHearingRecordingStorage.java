@@ -20,6 +20,7 @@ import com.azure.storage.blob.models.UserDelegationKey;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.azure.storage.blob.specialized.BlockBlobClient;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,12 +61,16 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
 
     @Override
     public Set<String> findByFolder(final String folderName) {
+        boolean folderNameIncludesTrailingSlash = StringUtils.endsWith(folderName, "/");
+
+        final String folderPath = folderNameIncludesTrailingSlash ? folderName : folderName + "/";
+
         final BlobListDetails blobListDetails = new BlobListDetails()
             .setRetrieveDeletedBlobs(false)
             .setRetrieveSnapshots(false);
         final ListBlobsOptions options = new ListBlobsOptions()
             .setDetails(blobListDetails)
-            .setPrefix(folderName);
+            .setPrefix(folderPath);
         final Duration duration = Duration.ofMinutes(BLOB_LIST_TIMEOUT);
 
         final PagedIterable<BlobItem> blobItems = hrsBlobContainerClient.listBlobs(options, duration);
