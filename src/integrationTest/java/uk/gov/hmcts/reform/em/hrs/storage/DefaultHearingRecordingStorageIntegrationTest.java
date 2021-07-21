@@ -61,23 +61,15 @@ class DefaultHearingRecordingStorageIntegrationTest {
     }
 
     @Test
-    void testShouldReturnASetContainingOneWhenFolderContainsOneItem() {
+    void testShouldReturnASetContainingOneWhenFolderContainsOneItemWithAndWithoutATrailingSlash() {
         final String filePath = ONE_ITEM_FOLDER + "/" + UUID.randomUUID().toString() + ".txt";
         azureIntegrationTestOperations.uploadToHrsContainer(filePath);
 
-        final Set<String> files = underTest.findByFolder(ONE_ITEM_FOLDER);
+        final Set<String> filesWithoutTrailingSlash = underTest.findByFolder(ONE_ITEM_FOLDER);
+        final Set<String> filesWithTrailingSlash = underTest.findByFolder(ONE_ITEM_FOLDER + "/");
 
-        assertThat(files).singleElement().isEqualTo(filePath);
-    }
-
-    @Test
-    void testShouldReturnASetContainingOneWhenFolderContainsOneItemAndHasTrailingSlashInPath() {
-        final String filePath = ONE_ITEM_FOLDER + "/" + UUID.randomUUID().toString() + ".txt";
-        azureIntegrationTestOperations.uploadToHrsContainer(filePath);
-
-        final Set<String> files = underTest.findByFolder(ONE_ITEM_FOLDER + "/");
-
-        assertThat(files).singleElement().isEqualTo(filePath);
+        assertThat(filesWithoutTrailingSlash).singleElement().isEqualTo(filePath);
+        assertThat(filesWithTrailingSlash).singleElement().isEqualTo(filePath);
     }
 
 
