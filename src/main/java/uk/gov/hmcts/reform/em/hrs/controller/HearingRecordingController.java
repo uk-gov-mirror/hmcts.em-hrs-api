@@ -21,9 +21,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
-import uk.gov.hmcts.reform.em.hrs.dto.RecordingFilenameDto;
-import uk.gov.hmcts.reform.em.hrs.service.AuditEntryService;
-import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
@@ -34,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
@@ -43,45 +39,20 @@ public class HearingRecordingController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HearingRecordingController.class);
 
-    private final FolderService folderService;
+
     private final ShareAndNotifyService shareAndNotifyService;
     private final SegmentDownloadService segmentDownloadService;
     private final IngestionQueue ingestionQueue;
 
     @Autowired
-    public HearingRecordingController(final FolderService folderService,
-                                      final ShareAndNotifyService shareAndNotifyService,
+    public HearingRecordingController(final ShareAndNotifyService shareAndNotifyService,
                                       final IngestionQueue ingestionQueue,
-                                      SegmentDownloadService segmentDownloadService,
-                                      AuditEntryService auditEntryService) {
-        this.folderService = folderService;
+                                      SegmentDownloadService segmentDownloadService) {
         this.shareAndNotifyService = shareAndNotifyService;
         this.ingestionQueue = ingestionQueue;
         this.segmentDownloadService = segmentDownloadService;
     }
 
-    @GetMapping(
-        path = "/folders/{name}",
-        produces = APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    @ApiOperation(value = "Get recording file names", notes = "Retrieve recording file names for a given folder")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Names of successfully stored recording files"),
-        @ApiResponse(code = 500, message = "Internal Server Error")
-    })
-    public ResponseEntity<RecordingFilenameDto> getFilenames(@PathVariable("name") final String folderName) {
-        final RecordingFilenameDto recordingFilenameDto = new RecordingFilenameDto(
-            folderName,
-            folderService.getStoredFiles(folderName)
-        );
-
-        LOGGER.info("returning the filenames under folder {}", folderName);
-        return ResponseEntity
-            .ok()
-            .contentType(APPLICATION_JSON)
-            .body(recordingFilenameDto);
-    }
 
     @PostMapping(
         path = "/segments",

@@ -4,6 +4,7 @@ package uk.gov.hmcts.reform.em.hrs.service.ccd;
 //import com.github.rholder.retry.RetryerBuilder;
 //import com.github.rholder.retry.StopStrategies;
 //import com.github.rholder.retry.WaitStrategies;
+
 import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
@@ -11,7 +12,6 @@ import com.github.rholder.retry.WaitStrategies;
 import com.google.common.base.Predicates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;

@@ -11,20 +11,19 @@ import static lombok.AccessLevel.PRIVATE;
 public class CvpConnectionResolver {
 
 
-    public static boolean isACvpEndpointUrl(String cvpConnectionString) {
-        boolean isACvpEndpointUrl =
-            cvpConnectionString.contains("cvprecordings") && !cvpConnectionString.contains("AccountName");
-        return isACvpEndpointUrl;
-    }
-
-
     /*
        url pattern is expected to be either
     https://cvprecordingsstgsa-secondary.blob.core.windows.net/
        or
     https://cvprecordingsstgsa.blob.core.windows.net/
     */
-    static Pattern pattern = Pattern.compile("https://(.*?)(?:-secondary)?.blob.core.windows.net");
+    private static Pattern pattern = Pattern.compile("https://(.*?)(?:-secondary)?.blob.core.windows.net");
+
+    public static boolean isACvpEndpointUrl(String cvpConnectionString) {
+        boolean isACvpEndpointUrl =
+            cvpConnectionString.contains("cvprecordings") && !cvpConnectionString.contains("AccountName");
+        return isACvpEndpointUrl;
+    }
 
     public static String extractAccountFromUrl(String cvpConnectionString) {
 

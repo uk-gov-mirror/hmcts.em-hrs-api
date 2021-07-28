@@ -28,7 +28,7 @@ public class CvpConnectionResolverTest {
     }
 
     @Test
-    void testUrlWithSecondaryDNSWorks() {
+    void testUrlWithSecondaryDnsWorks() {
         String input = "https://cvprecordingsstgsa-secondary.blob.core.windows.net/";
         String expected = "cvprecordingsstgsa";
         String actual = extractAccountFromUrl(input);
@@ -36,7 +36,7 @@ public class CvpConnectionResolverTest {
     }
 
     @Test
-    void testUrlWithPrimaryDNSWorks() {
+    void testUrlWithPrimaryDnsWorks() {
         String input = "https://cvprecordingsstgsa.blob.core.windows.net/";
         String expected = "cvprecordingsstgsa";
         String actual = extractAccountFromUrl(input);

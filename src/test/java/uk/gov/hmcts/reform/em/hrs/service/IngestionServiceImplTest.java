@@ -27,10 +27,10 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CCD_CASE_ID;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_DTO;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_WITH_SEGMENTS;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_REFERENCE;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SEGMENT_1;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.TEST_FOLDER;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.TEST_FOLDER_1;
 
 @ExtendWith(MockitoExtension.class)
 class IngestionServiceImplTest {
@@ -53,9 +53,9 @@ class IngestionServiceImplTest {
     @Test
     void testShouldCreateNewCaseInCcdAndPersistToPostgresAndAzureStorageWhenHearingRecordingIsNew() {
         doReturn(Optional.empty()).when(recordingRepository)
-            .findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER.getName());
+            .findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER_1.getName());
 
-        doReturn(TEST_FOLDER).when(folderService).getFolderByName(TEST_FOLDER.getName());
+        doReturn(TEST_FOLDER_1).when(folderService).getFolderByName(TEST_FOLDER_1.getName());
         doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).createCase(HEARING_RECORDING.getId(), HEARING_RECORDING_DTO);
         doReturn(HEARING_RECORDING).when(recordingRepository).save(any(HearingRecording.class));
         doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));
@@ -64,7 +64,7 @@ class IngestionServiceImplTest {
 
         underTest.ingest(HEARING_RECORDING_DTO);
 
-        verify(recordingRepository).findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER.getName());
+        verify(recordingRepository).findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER_1.getName());
         verify(ccdDataStoreApiClient).createCase(HEARING_RECORDING.getId(), HEARING_RECORDING_DTO);
         verify(recordingRepository, times(2)).save(any(HearingRecording.class));
         verify(segmentRepository).save(any(HearingRecordingSegment.class));
@@ -75,21 +75,21 @@ class IngestionServiceImplTest {
 
     @Test
     void testShouldUpdateCaseInCcdAndPersistToPostgresAndAzureStorageWhenHearingRecordingExist() {
-        doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS)).when(recordingRepository)
-            .findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER.getName());
+        doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3)).when(recordingRepository)
+            .findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER_1.getName());
         doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient)
-            .updateCaseData(anyLong(), eq(HEARING_RECORDING_WITH_SEGMENTS.getId()), eq(HEARING_RECORDING_DTO));
+            .updateCaseData(anyLong(), eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()), eq(HEARING_RECORDING_DTO));
         doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));
         doNothing().when(hearingRecordingStorage)
             .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
 
         underTest.ingest(HEARING_RECORDING_DTO);
 
-        verify(recordingRepository).findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER.getName());
+        verify(recordingRepository).findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER_1.getName());
         verify(ccdDataStoreApiClient)
-            .updateCaseData(anyLong(), eq(HEARING_RECORDING_WITH_SEGMENTS.getId()), eq(HEARING_RECORDING_DTO));
+            .updateCaseData(anyLong(), eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()), eq(HEARING_RECORDING_DTO));
         verify(ccdDataStoreApiClient, never())
-            .createCase(HEARING_RECORDING_WITH_SEGMENTS.getId(), HEARING_RECORDING_DTO);
+            .createCase(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId(), HEARING_RECORDING_DTO);
         verify(recordingRepository, never()).save(any(HearingRecording.class));
         verify(segmentRepository).save(any(HearingRecordingSegment.class));
         verify(hearingRecordingStorage)

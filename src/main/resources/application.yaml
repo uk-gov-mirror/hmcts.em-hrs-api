@@ -86,6 +86,7 @@ xui:
     url: ${XUI_API_URL:https://localhost:1337}
 
 azure:
+  cluster_name: ${CLUSTER_NAME:dev-00}
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:d04b52b1-20e5-473a-8ac4-3f6859ea113c}

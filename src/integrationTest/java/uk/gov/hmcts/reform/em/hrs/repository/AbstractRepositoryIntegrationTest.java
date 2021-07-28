@@ -21,7 +21,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @EnableJpaAuditing
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(initializers = AbstractRepositoryIntegrationTest.DockerPostgreDataSourceInitializer.class)
-//@TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=validate"})
 @Testcontainers
 public abstract class AbstractRepositoryIntegrationTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRepositoryIntegrationTest.class);

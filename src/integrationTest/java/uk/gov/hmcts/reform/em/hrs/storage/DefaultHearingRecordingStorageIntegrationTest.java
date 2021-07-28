@@ -55,7 +55,7 @@ class DefaultHearingRecordingStorageIntegrationTest {
 
     @Test
     void testShouldReturnEmptySetWhenFolderDoesNotExist() {
-        final Set<String> files = underTest.findByFolder(EMPTY_FOLDER);
+        final Set<String> files = underTest.findByFolderName(EMPTY_FOLDER);
 
         assertThat(files).isEmpty();
     }
@@ -65,8 +65,8 @@ class DefaultHearingRecordingStorageIntegrationTest {
         final String filePath = ONE_ITEM_FOLDER + "/" + UUID.randomUUID().toString() + ".txt";
         azureIntegrationTestOperations.uploadToHrsContainer(filePath);
 
-        final Set<String> filesWithoutTrailingSlash = underTest.findByFolder(ONE_ITEM_FOLDER);
-        final Set<String> filesWithTrailingSlash = underTest.findByFolder(ONE_ITEM_FOLDER + "/");
+        final Set<String> filesWithoutTrailingSlash = underTest.findByFolderName(ONE_ITEM_FOLDER);
+        final Set<String> filesWithTrailingSlash = underTest.findByFolderName(ONE_ITEM_FOLDER + "/");
 
         assertThat(filesWithoutTrailingSlash).singleElement().isEqualTo(filePath);
         assertThat(filesWithTrailingSlash).singleElement().isEqualTo(filePath);
@@ -78,7 +78,7 @@ class DefaultHearingRecordingStorageIntegrationTest {
         final Set<String> filePaths = generateFilePaths();
         azureIntegrationTestOperations.populateHrsContainer(filePaths);
 
-        final Set<String> files = underTest.findByFolder(MANY_ITEMS_FOLDER);
+        final Set<String> files = underTest.findByFolderName(MANY_ITEMS_FOLDER);
 
         assertThat(files).hasSameElementsAs(filePaths);
     }

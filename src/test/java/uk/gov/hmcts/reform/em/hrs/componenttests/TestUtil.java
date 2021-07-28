@@ -26,10 +26,10 @@ public class TestUtil {
     private static final String DOWNLOAD_URL_PREFIX = "https://xui/hearing-recordings/";
 
     public static final int INGESTION_QUEUE_SIZE = 2;
-    public static final String FILE_1 = "file-1.mp4";
-    public static final String FILE_2 = "file-2.mp4";
-    public static final String FILE_3 = "file-3.mp4";
-    public static final String TEST_FOLDER_NAME = "folder-1";
+    public static final String FILENAME_1 = "file-1.mp4";
+    public static final String FILENAME_2 = "file-2.mp4";
+    public static final String FILENAME_3 = "file-3.mp4";
+    public static final String TEST_FOLDER_1_NAME = "folder-1";
     public static final UUID RANDOM_UUID = UUID.randomUUID();
     public static final String AUTHORIZATION_TOKEN = "xxxxxxxxxxxxxxxxxxxx";
     public static final String SERVICE_AUTHORIZATION_TOKEN = "xxxxxxxxxxxxxxxx";
@@ -43,25 +43,25 @@ public class TestUtil {
     public static final LocalDate RECORDING_DATE = LocalDate.now();
     public static final String RECORDING_TIMEOFDAY = RECORDING_DATETIME.getHour() > 12 ? "AM" : "PM";
     public static final String RECORDING_REFERENCE = "file-1";
-    public static final Folder TEST_FOLDER = Folder.builder().name(TEST_FOLDER_NAME).build();
+    public static final Folder TEST_FOLDER_1 = Folder.builder().name(TEST_FOLDER_1_NAME).build();
     public static final String SERVER_ERROR_MESSAGE = "We have detected a problem and our engineers are working on it."
         + "\nPlease try again later and thank you for your patience";
 
     public static final HearingRecordingSegment SEGMENT_1 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
-        .filename(FILE_1)
+        .filename(FILENAME_1)
         .build();
-    private static final HearingRecordingSegment SEGMENT_2 = HearingRecordingSegment.builder()
+    public static final HearingRecordingSegment SEGMENT_2 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
-        .filename(FILE_2)
+        .filename(FILENAME_2)
         .build();
-    private static final HearingRecordingSegment SEGMENT_3 = HearingRecordingSegment.builder()
+    public static final HearingRecordingSegment SEGMENT_3 = HearingRecordingSegment.builder()
         .id(RANDOM_UUID)
-        .filename(FILE_3)
+        .filename(FILENAME_3)
         .build();
 
     public static final HearingRecordingDto HEARING_RECORDING_DTO = HearingRecordingDto.builder()
-        .folder(TEST_FOLDER_NAME)
+        .folder(TEST_FOLDER_1_NAME)
         .caseRef(CASE_REFERENCE)
         .recordingSource("CVP")
         .courtLocationCode("LC")
@@ -99,6 +99,7 @@ public class TestUtil {
 
     public static final Folder FOLDER = Folder.builder()
         .id(RANDOM_UUID)
+        .name(TEST_FOLDER_1_NAME)
         .hearingRecordings(List.of(HearingRecording.builder()
                                        .id(RANDOM_UUID)
                                        .segments(Collections.emptySet())
@@ -106,8 +107,9 @@ public class TestUtil {
         .jobsInProgress(Collections.emptyList())
         .build();
 
-    public static final Folder FOLDER_WITH_SEGMENT = Folder.builder()
+    public static final Folder FOLDER_WITH_SEGMENTS_1_2_3 = Folder.builder()
         .id(RANDOM_UUID)
+        .name(TEST_FOLDER_1_NAME)
         .hearingRecordings(List.of(HearingRecording.builder()
                                        .id(RANDOM_UUID)
                                        .segments(Set.of(SEGMENT_1, SEGMENT_2, SEGMENT_3))
@@ -117,30 +119,32 @@ public class TestUtil {
 
     public static final Folder FOLDER_WITH_JOBS_IN_PROGRESS = Folder.builder()
         .id(RANDOM_UUID)
-        .name(TEST_FOLDER_NAME)
+        .name(TEST_FOLDER_1_NAME)
         .hearingRecordings(Collections.emptyList())
         .jobsInProgress(List.of(
-            JobInProgress.builder().filename(FILE_1).build(),
-            JobInProgress.builder().filename(FILE_2).build()
+            JobInProgress.builder().filename(FILENAME_1).build(),
+            JobInProgress.builder().filename(FILENAME_2).build()
         ))
         .build();
 
     public static final Folder FOLDER_WITH_SEGMENT_AND_IN_PROGRESS = Folder.builder()
         .id(RANDOM_UUID)
+        .name(TEST_FOLDER_1_NAME)
         .hearingRecordings(List.of(HearingRecording.builder()
                                        .id(RANDOM_UUID)
                                        .segments(Set.of(SEGMENT_1, SEGMENT_2))
                                        .build()))
-        .jobsInProgress(List.of(JobInProgress.builder().filename(FILE_3).build()))
+        .jobsInProgress(List.of(JobInProgress.builder().filename(FILENAME_3).build()))
         .build();
+
 
     public static final HearingRecording HEARING_RECORDING = HearingRecording.builder()
         .id(RANDOM_UUID)
-        .folder(TEST_FOLDER)
+        .folder(TEST_FOLDER_1)
         .segments(Collections.emptySet())
         .build();
 
-    public static final HearingRecording HEARING_RECORDING_WITH_SEGMENTS = HearingRecording.builder()
+    public static final HearingRecording HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3 = HearingRecording.builder()
         .id(RANDOM_UUID)
         .caseRef(CASE_REFERENCE)
         .ccdCaseId(CCD_CASE_ID)
