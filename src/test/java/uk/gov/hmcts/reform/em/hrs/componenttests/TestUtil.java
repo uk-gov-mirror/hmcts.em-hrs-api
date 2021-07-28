@@ -138,8 +138,6 @@ public class TestUtil {
         .build();
 
 
-
-
     public static final HearingRecording HEARING_RECORDING = HearingRecording.builder()
         .id(RANDOM_UUID)
         .folder(TEST_FOLDER_1)
@@ -154,18 +152,6 @@ public class TestUtil {
         .folder(Folder.builder().id(RANDOM_UUID).build())
         .createdOn(RECORDING_DATETIME)
         .build();
-
-//
-//    public static final Set<HearingRecordingSegment> SEGMENTS_1_AND_2 = constructSegments1And2();
-//
-//    private static Set<HearingRecordingSegment> constructSegments1And2() {
-//        HearingRecordingSegment segment1 =
-//            HearingRecordingSegment.builder().filename(FILENAME_1).build();
-//        HearingRecordingSegment segment2 =
-//            HearingRecordingSegment.builder().filename(FILENAME_2).build();
-//        Set<HearingRecordingSegment> segment1and2 = Set.of(segment1, segment2);
-//        return segment1and2;
-//    }
 
     public static final HearingRecordingSharee HEARING_RECORDING_SHAREE = HearingRecordingSharee.builder()
         .id(SHAREE_ID)
