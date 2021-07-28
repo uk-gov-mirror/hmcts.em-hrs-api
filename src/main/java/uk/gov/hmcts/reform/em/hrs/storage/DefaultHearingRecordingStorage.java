@@ -40,7 +40,6 @@ import static uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver.extractAccou
 public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHearingRecordingStorage.class);
     private static final int BLOB_LIST_TIMEOUT = 5;
-    private final BlobContainerAsyncClient hrsBlobContainerAsyncClient;
     private final BlobContainerClient hrsBlobContainerClient;
     private final BlobContainerClient cvpBlobContainerClient;
 
@@ -53,25 +52,24 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
                                           final @Named("CvpBlobContainerClient") BlobContainerClient cvpContainerClient,
 
                                           @Value("${azure.storage.cvp.connection-string}") String cvpConnectionString) {
-        this.hrsBlobContainerAsyncClient = hrsContainerAsyncClient;
         this.hrsBlobContainerClient = hrsContainerClient;
         this.cvpBlobContainerClient = cvpContainerClient;
         this.cvpConnectionString = cvpConnectionString;
     }
 
     @Override
-    public Set<String> findByFolder(final String folderName) {
+    public Set<String> findByFolderName(final String folderName) {
         boolean folderNameIncludesTrailingSlash = StringUtils.endsWith(folderName, "/");
 
-        final String folderPath = folderNameIncludesTrailingSlash ? folderName : folderName + "/";
+        var folderPath = folderNameIncludesTrailingSlash ? folderName : folderName + "/";
 
-        final BlobListDetails blobListDetails = new BlobListDetails()
+        var blobListDetails = new BlobListDetails()
             .setRetrieveDeletedBlobs(false)
             .setRetrieveSnapshots(false);
-        final ListBlobsOptions options = new ListBlobsOptions()
+        var options = new ListBlobsOptions()
             .setDetails(blobListDetails)
             .setPrefix(folderPath);
-        final Duration duration = Duration.ofMinutes(BLOB_LIST_TIMEOUT);
+        final var duration = Duration.ofMinutes(BLOB_LIST_TIMEOUT);
 
         final PagedIterable<BlobItem> blobItems = hrsBlobContainerClient.listBlobs(options, duration);
 
