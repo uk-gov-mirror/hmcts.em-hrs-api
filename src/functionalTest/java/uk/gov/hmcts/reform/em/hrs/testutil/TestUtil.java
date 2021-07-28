@@ -39,7 +39,8 @@ public class TestUtil {
             .stream()
             .filter(blobItem -> blobItem.getName().startsWith(folderName))
             .forEach(blobItem -> {
-                final BlockBlobClient blobClient = hrsBlobContainerClient.getBlobClient(blobItem.getName()).getBlockBlobClient();
+                final BlockBlobClient blobClient =
+                    hrsBlobContainerClient.getBlobClient(blobItem.getName()).getBlockBlobClient();
                 blobClient.delete();
             });
     }
@@ -49,8 +50,10 @@ public class TestUtil {
         int count = 0;
         while (count <= 10 && blobCount < expectedBlobs) {
             TimeUnit.SECONDS.sleep(30);
-            LOGGER.info("cvpBlobContainerClient.getBlobContainerUrl() ~{}",
-                        cvpBlobContainerClient.getBlobContainerUrl());
+            LOGGER.info(
+                "cvpBlobContainerClient.getBlobContainerUrl() ~{}",
+                cvpBlobContainerClient.getBlobContainerUrl()
+            );
             blobCount = getCvpBlobCount(folderName);
             count++;
         }
@@ -64,8 +67,10 @@ public class TestUtil {
         int count = 0;
         while (count <= 20 && blobCount < expectedBlobs) {
             TimeUnit.SECONDS.sleep(30);
-            LOGGER.info("hrsBlobContainerClient.getBlobContainerUrl() ~{}",
-                        hrsBlobContainerClient.getBlobContainerUrl());
+            LOGGER.info(
+                "hrsBlobContainerClient.getBlobContainerUrl() ~{}",
+                hrsBlobContainerClient.getBlobContainerUrl()
+            );
             blobCount = getHrsBlobCount(folderName);
             count++;
         }
@@ -83,7 +88,7 @@ public class TestUtil {
     }
 
     private int getBlobCount(BlobContainerClient client, String folderName) {
-        return  (int) client.listBlobs()
+        return (int) client.listBlobs()
             .stream()
             .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
     }

@@ -71,10 +71,6 @@ public class HearingRecording {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hearingRecording")
     private Set<HearingRecordingAuditEntry> auditEntries;
 
-    //@ElementCollection
-    //@CollectionTable(name = "hearing_recording_roles", joinColumns = @JoinColumn(name = "hearing_recording_roles_id"))
-    //private Set<String> roles;
-
     @ElementCollection
     @MapKeyColumn(name = "name")
     @Column(name = "value")
@@ -102,7 +98,6 @@ public class HearingRecording {
                             LocalDateTime modifiedOn, LocalDateTime createdOn,
                             boolean deleted, Folder folder,
                             Set<HearingRecordingAuditEntry> auditEntries,
-                            //Set<String> roles,
                             Map<String, String> metadata, LocalDateTime ttl,
                             String recordingRef, String caseRef, String hearingLocationCode,
                             String hearingRoomRef, String hearingSource,
@@ -119,7 +114,6 @@ public class HearingRecording {
         setFolder(folder);
 
         setAuditEntries(auditEntries);
-        //setRoles(roles);
         setMetadata(metadata);
         setTtl(ttl);
 

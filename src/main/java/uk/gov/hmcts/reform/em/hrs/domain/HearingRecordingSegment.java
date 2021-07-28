@@ -97,7 +97,6 @@ public class HearingRecordingSegment {
 
 
         setAuditEntries(auditEntries);
-        //setRoles(roles);
 
         setBlobUuid(blobUuid);
         setFilename(filename);

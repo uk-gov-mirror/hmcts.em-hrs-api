@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CASE_RECORDING_
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CASE_REFERENCE;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CCD_CASE_ID;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_SHAREE;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_WITH_SEGMENTS;
+import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_DATE;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_TIMEOFDAY;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_BAD_EMAIL_ADDRESS;
@@ -66,10 +66,10 @@ class ShareAndNotifyServiceImplTest {
         doReturn(List.of(
             CaseDocument.builder().binaryUrl("http://em-hrs-api.com/hearing-recordings/1234/segments/0").build()
         )).when(caseDataCreator).extractCaseDocuments(caseData);
-        doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS))
+        doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3))
             .when(hearingRecordingRepository).findByCcdCaseId(CCD_CASE_ID);
         doReturn(HEARING_RECORDING_SHAREE)
-            .when(shareeService).createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS);
+            .when(shareeService).createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3);
         doNothing()
             .when(notificationService)
             .sendEmailNotification(
@@ -83,7 +83,7 @@ class ShareAndNotifyServiceImplTest {
 
         verify(hearingRecordingRepository, times(2)).findByCcdCaseId(CCD_CASE_ID);
         verify(shareeService, times(2))
-            .createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS);
+            .createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3);
         verify(notificationService, times(2))
             .sendEmailNotification(
                 CASE_REFERENCE,
@@ -105,10 +105,10 @@ class ShareAndNotifyServiceImplTest {
         doReturn(List.of(
             CaseDocument.builder().binaryUrl("http://em-hrs-api.com/hearing-recordings/1234/segments/0").build()
         )).when(caseDataCreator).extractCaseDocuments(caseData);
-        doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS))
+        doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3))
             .when(hearingRecordingRepository).findByCcdCaseId(CCD_CASE_ID);
         doReturn(HEARING_RECORDING_SHAREE)
-            .when(shareeService).createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS);
+            .when(shareeService).createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3);
         doNothing()
             .when(notificationService)
             .sendEmailNotification(
@@ -124,7 +124,7 @@ class ShareAndNotifyServiceImplTest {
 
         verify(hearingRecordingRepository, times(0)).findByCcdCaseId(CCD_CASE_ID);
         verify(shareeService, times(0))
-            .createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS);
+            .createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3);
         verify(notificationService, times(0))
             .sendEmailNotification(
                 CASE_REFERENCE,
@@ -147,10 +147,10 @@ class ShareAndNotifyServiceImplTest {
         doReturn(List.of(
             CaseDocument.builder().binaryUrl("http://em-hrs-api.com/hearing-recordings/1234/segments/0").build()
         )).when(caseDataCreator).extractCaseDocuments(caseData);
-        doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS))
+        doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3))
             .when(hearingRecordingRepository).findByCcdCaseId(CCD_CASE_ID);
         doReturn(HEARING_RECORDING_SHAREE)
-            .when(shareeService).createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS);
+            .when(shareeService).createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3);
         doNothing()
             .when(notificationService)
             .sendEmailNotification(
@@ -168,7 +168,7 @@ class ShareAndNotifyServiceImplTest {
 
         verify(hearingRecordingRepository, times(1)).findByCcdCaseId(CCD_CASE_ID);
         verify(shareeService, times(1))
-            .createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS);
+            .createAndSaveEntry(SHAREE_EMAIL_ADDRESS, HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3);
         verify(notificationService, times(1))
             .sendEmailNotification(
                 CASE_REFERENCE,
