@@ -43,7 +43,7 @@ public class FolderServiceImpl implements FolderService {
                              HearingRecordingStorage hearingRecordingStorage,
                              HearingRecordingRepository hearingRecordingRepository,
                              HearingRecordingSegmentRepository hearingRecordingSegmentRepository
-                             ) {
+    ) {
         this.folderRepository = folderRepository;
         this.jobInProgressRepository = jobInProgressRepository;
         this.hearingRecordingStorage = hearingRecordingStorage;
@@ -68,9 +68,8 @@ public class FolderServiceImpl implements FolderService {
     }
 
     private void deleteStaleCcdUploadAttempts() {
-
-        LocalDateTime yesterday = LocalDateTime.now(Clock.systemUTC()).minusHours(24);
-        hearingRecordingRepository.deleteStaleRecordsWithNullCcdCaseId(yesterday);
+        LocalDateTime one_hour_ago = LocalDateTime.now(Clock.systemUTC()).minusHours(1);
+        hearingRecordingRepository.deleteStaleRecordsWithNullCcdCaseId(one_hour_ago);
     }
 
     @Override
@@ -114,7 +113,8 @@ public class FolderServiceImpl implements FolderService {
 
 
     private Set<String> getSegmentFilenamesInFolder(String folderName) {
-        Set<HearingRecordingSegment> segments =  hearingRecordingSegmentRepository.findByHearingRecordingFolderName(folderName);
+        Set<HearingRecordingSegment> segments =
+            hearingRecordingSegmentRepository.findByHearingRecordingFolderName(folderName);
         return segments.stream()
             .map(HearingRecordingSegment::getFilename)
             .collect(Collectors.toUnmodifiableSet());

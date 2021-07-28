@@ -82,7 +82,6 @@ public class HearingRecordingController {
 
         hearingRecordingDto.setUrlDomain(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString());
         final boolean accepted = ingestionQueue.offer(hearingRecordingDto);
-
         return accepted ? new ResponseEntity<>(ACCEPTED) : new ResponseEntity<>(TOO_MANY_REQUESTS);
     }
 
