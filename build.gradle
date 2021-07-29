@@ -404,7 +404,7 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformLogging
 
 //hmcts resilience
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.9.RELEASE'
 
 //gov notify email service
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
@@ -472,7 +472,7 @@ dependencies {
 
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
   testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
-  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.15.2'
+  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.16.0'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.3'
   testImplementation group: 'com.devskiller', name: 'jfairy', version: '0.6.4', {
     exclude group: 'com.google.guava', module: 'guava'
