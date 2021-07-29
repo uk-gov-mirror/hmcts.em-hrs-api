@@ -228,7 +228,7 @@ dependencyManagement {
   dependencies {
 
     //CVE-2021-27568
-    dependencySet(group: 'net.minidev', version: '2.3.1') {
+    dependencySet(group: 'net.minidev', version: '2.4.7') {
       entry 'json-smart'
     }
 
@@ -285,7 +285,7 @@ dependencyManagement {
     }
 
     //CVE-2021-29425
-    dependencySet(group: 'commons-io', version: '2.8.0') {
+    dependencySet(group: 'commons-io', version: '2.11.0') {
       entry 'commons-io'
     }
 
