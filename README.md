@@ -1,5 +1,10 @@
 # Hearing Recording Service
 
+#.github custom workflows
+
+https://github.com/hrvey/combine-prs-workflow
+ is used to combine passing dependabot PRs into a single branch
+
 ## Pre-requisites:
 
 To be able to run the applicaiton locally, you will need to be able to run the docker images
