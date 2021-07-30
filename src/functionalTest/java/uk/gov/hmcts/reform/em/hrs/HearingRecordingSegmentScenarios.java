@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
@@ -24,7 +23,7 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
     @Before
     public void setup() throws Exception {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
-        caseRef = randomCaseRef();
+        caseRef = timebasedCaseRef();
         filename = filename(caseRef);
         int cvpBlobCount = testUtil.getCvpBlobCount(FOLDER);
         testUtil.uploadToCvpContainer(filename);
@@ -63,16 +62,5 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
             .body("filenames", not(hasItem(filename)));
-    }
-
-    @Test
-    public void shouldCreateFolderWhenDoesNotExistAndReturnEmptyFileNames() {
-        final String nonExistentFolder = "audiostream000000";
-
-        getFilenames(nonExistentFolder)
-            .assertThat().log().all()
-            .statusCode(200)
-            .body("folder-name", equalTo(nonExistentFolder))
-            .body("filenames", empty());
     }
 }

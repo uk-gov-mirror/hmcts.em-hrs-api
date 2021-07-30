@@ -36,11 +36,12 @@ import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
@@ -78,7 +79,7 @@ public abstract class BaseTest {
     protected static final String ERROR_SHAREE_EMAIL_ADDRESS = "sharee.testertest.com";
     protected static final int SEGMENT = 0;
     protected static final String FOLDER = "audiostream123455";
-    protected static final String TIME =  "2020-11-04-14.56.32.819";
+    protected static final String TIME = "2020-11-04-14.56.32.819";
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
     protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
@@ -216,17 +217,18 @@ public abstract class BaseTest {
     protected JsonNode createRecordingSegment(String folder,
                                               String jurisdictionCode, String locationCode, String caseRef,
                                               String recordingTime, int segment, String fileExt) {
-        String recordingRef = folder + "/" + jurisdictionCode + "-" + locationCode + "-" + caseRef + "_" + recordingTime;
+        String recordingRef =
+            folder + "/" + jurisdictionCode + "-" + locationCode + "-" + caseRef + "_" + recordingTime;
         String filename = recordingRef + "-UTC_" + segment + "." + fileExt;
         return JsonNodeFactory.instance.objectNode()
             .put("folder", folder)
             .put("recording-ref", recordingRef)
-            .put("recording-source","CVP")
-            .put("court-location-code",locationCode)
-            .put("service-code","PROBATE")
-            .put("hearing-room-ref","London")
-            .put("jurisdiction-code",jurisdictionCode)
-            .put("case-ref",caseRef)
+            .put("recording-source", "CVP")
+            .put("court-location-code", locationCode)
+            .put("service-code", "PROBATE")
+            .put("hearing-room-ref", "London")
+            .put("jurisdiction-code", jurisdictionCode)
+            .put("case-ref", caseRef)
             .put("cvp-file-url", cvpContainerUrl + filename)
             .put("filename", filename)
             .put("filename-extension", fileExt)
@@ -268,10 +270,12 @@ public abstract class BaseTest {
         String uid = idamClient.getUserInfo(userToken).getUid();
 
         LOGGER.info("searching for case with userToken ({}) and serviceToken ({})",
-                    idamAuth.substring(0,12), s2sToken.substring(0, 12));
+                    idamAuth.substring(0, 12), s2sToken.substring(0, 12)
+        );
         return coreCaseDataApi
             .searchForCaseworker(userToken, s2sToken, uid,
-                                 JURISDICTION, CASE_TYPE, searchCriteria)
+                                 JURISDICTION, CASE_TYPE, searchCriteria
+            )
             .stream().findAny();
     }
 
@@ -282,10 +286,13 @@ public abstract class BaseTest {
         return CallbackRequest.builder().caseDetails(caseDetails).build();
     }
 
-    protected String randomCaseRef() {
-        final Random rd = new Random();
-        final int random = Math.abs(rd.nextInt());
-        return "FUNCTEST" + random;
+    protected String timebasedCaseRef() {
+        DateTimeFormatter customFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-MM-ss-SSS");
+        //yyyy-MM-dd-HH-MM-ss-SSS=07-30-2021-16-07-35-485
+        ZonedDateTime now = ZonedDateTime.now();
+
+        String time = customFormatter.format(now);
+        return "FUNCTEST_" + time;
     }
 
     protected String filename(String caseRef) {
@@ -314,8 +321,9 @@ public abstract class BaseTest {
 
         caseDetails = coreCaseDataApi
             .submitEventForCaseWorker(userToken, s2sToken, uid,
-                                 JURISDICTION, CASE_TYPE,  String.valueOf(caseDetails.getId()),false,
-                                      caseData);
+                                      JURISDICTION, CASE_TYPE, String.valueOf(caseDetails.getId()), false,
+                                      caseData
+            );
 
         assert (caseDetails.getState().equals("1_CLOSED"));
         LOGGER.info("closed case ({}) with reference ({}), it now has state ({})",
