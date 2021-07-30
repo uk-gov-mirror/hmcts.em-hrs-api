@@ -371,7 +371,7 @@ dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  implementation "ch.qos.logback:logback-classic:1.2.3"
+  implementation "ch.qos.logback:logback-classic:1.2.5"
 
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
