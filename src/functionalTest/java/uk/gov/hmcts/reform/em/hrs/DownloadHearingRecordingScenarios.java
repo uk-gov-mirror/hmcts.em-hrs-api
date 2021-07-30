@@ -23,7 +23,7 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
     @Before
     public void setup() throws Exception {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
-        caseRef = randomCaseRef();
+        caseRef = timebasedCaseRef();
         filename = filename(caseRef);
 
         int cvpBlobCount = testUtil.getCvpBlobCount(FOLDER);
