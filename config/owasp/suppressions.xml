@@ -21,5 +21,11 @@
     </notes>
     <cve>CVE-2021-22112</cve>
   </suppress>
-
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-security-core-5.3.8.RELEASE.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-core@.*$</packageUrl>
+    <vulnerabilityName>CVE-2021-22119</vulnerabilityName>
+  </suppress>
 </suppressions>
