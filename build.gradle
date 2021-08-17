@@ -79,11 +79,6 @@ sourceSets {
       runtimeClasspath += main.output + test.output
     }
   }
-
-  test {
-    java.srcDir 'src/test/java'
-    resources.srcDir file('src/test/resources')
-  }
 }
 
 /***********************************************************************************************************************
