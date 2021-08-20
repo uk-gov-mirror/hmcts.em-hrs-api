@@ -27,10 +27,10 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
 import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
+import uk.gov.hmcts.reform.em.hrs.testutil.AzureStorageContainerClientBeans;
+import uk.gov.hmcts.reform.em.hrs.testutil.BlobTestUtil;
 import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
-import uk.gov.hmcts.reform.em.hrs.testutil.HrsAzureClient;
-import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
@@ -56,8 +56,8 @@ import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER_R
     EmTestConfig.class,
     CcdAuthTokenGeneratorConfiguration.class,
     AuthTokenGeneratorConfiguration.class,
-    TestUtil.class,
-    HrsAzureClient.class
+    BlobTestUtil.class,
+    AzureStorageContainerClientBeans.class
 })
 
 @TestPropertySource(value = "classpath:application.yml")
@@ -65,7 +65,7 @@ import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER_R
 @WithTags({@WithTag("testType:Functional")})
 public abstract class BaseTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
     protected static final String JURISDICTION = "HRS";
     protected static final String LOCATION_CODE = "0123";
@@ -84,6 +84,8 @@ public abstract class BaseTest {
     protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
     protected static final String CLOSE_CASE = "closeCase";
+
+    int FIND_CASE_TIMEOUT = 10;
 
     protected String idamAuth;
     protected String s2sAuth;
@@ -244,12 +246,17 @@ public abstract class BaseTest {
             .statusCode(200);
     }
 
-    protected CaseDetails findCase(String caseRef) throws InterruptedException {
+    CaseDetails findCaseWithAutoRetry(String caseRef) {
         Optional<CaseDetails> optionalCaseDetails = searchForCase(caseRef);
 
         int count = 0;
         while (count <= 10 && optionalCaseDetails.isEmpty()) {
-            TimeUnit.SECONDS.sleep(30);
+
+            try {
+                TimeUnit.SECONDS.sleep(FIND_CASE_TIMEOUT);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             optionalCaseDetails = searchForCase(caseRef);
             count++;
         }

@@ -6,16 +6,16 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
+import uk.gov.hmcts.reform.em.hrs.testutil.BlobTestUtil;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 
-public class ShareHearingRecordingScenarios extends BaseTest {
+public class ShareScenarios extends BaseTest {
 
     @Autowired
-    private TestUtil testUtil;
+    private BlobTestUtil testUtil;
 
     private String caseRef;
     private String filename;
@@ -36,7 +36,7 @@ public class ShareHearingRecordingScenarios extends BaseTest {
         postRecordingSegment(caseRef).then().statusCode(202);
         testUtil.checkIfUploadedToHrs(FOLDER, hrsBlobCount);
 
-        caseDetails = findCase(caseRef);
+        caseDetails = findCaseWithAutoRetry(caseRef);
 
         expectedFileSize = testUtil.getTestFile().readAllBytes().length;
         assertThat(expectedFileSize, is(not(0)));

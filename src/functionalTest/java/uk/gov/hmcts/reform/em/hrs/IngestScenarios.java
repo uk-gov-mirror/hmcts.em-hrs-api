@@ -4,18 +4,22 @@ package uk.gov.hmcts.reform.em.hrs;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.em.hrs.testutil.BlobTestUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 
-public class HearingRecordingSegmentScenarios extends BaseTest {
+public class IngestScenarios extends BaseTest {
 
     @Autowired
-    private TestUtil testUtil;
+    private BlobTestUtil testUtil;
 
     String caseRef;
     String filename;
@@ -45,6 +49,20 @@ public class HearingRecordingSegmentScenarios extends BaseTest {
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
             .body("filenames", hasItem(filename));
+
+        LOGGER.info("*****************************");
+        LOGGER.info("*****************************");
+        LOGGER.info("*****************************");
+        LOGGER.info("*****************************");
+        LOGGER.info("*****************************");
+
+        CaseDetails caseDetails = findCaseWithAutoRetry(caseRef);
+
+
+        Map<String, Object> data = caseDetails.getData();
+        LOGGER.info("data size: " + data.size()); //TODO when posting multisegment - this needs to match
+        List recordingFiles = (ArrayList) data.get("recordingFiles");
+
     }
 
     @Test

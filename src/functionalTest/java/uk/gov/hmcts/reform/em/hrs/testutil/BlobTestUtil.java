@@ -20,16 +20,17 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class TestUtil {
+public class BlobTestUtil {
 
+    public static final int FIND_BLOB_TIMEOUT = 3;
     private final BlobContainerClient hrsBlobContainerClient;
     private final BlobContainerClient cvpBlobContainerClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
     @Autowired
-    public TestUtil(@Qualifier("hrsBlobContainerClient") BlobContainerClient hrsBlobContainerClient,
-                    @Qualifier("cvpBlobContainerClient") BlobContainerClient cvpBlobContainerClient) {
+    public BlobTestUtil(@Qualifier("hrsBlobContainerClient") BlobContainerClient hrsBlobContainerClient,
+                        @Qualifier("cvpBlobContainerClient") BlobContainerClient cvpBlobContainerClient) {
         this.hrsBlobContainerClient = hrsBlobContainerClient;
         this.cvpBlobContainerClient = cvpBlobContainerClient;
     }
@@ -49,7 +50,7 @@ public class TestUtil {
         int expectedBlobs = blobCount + 1;
         int count = 0;
         while (count <= 10 && blobCount < expectedBlobs) {
-            TimeUnit.SECONDS.sleep(30);
+            TimeUnit.SECONDS.sleep(FIND_BLOB_TIMEOUT);
             LOGGER.info(
                 "cvpBlobContainerClient.getBlobContainerUrl() ~{}",
                 cvpBlobContainerClient.getBlobContainerUrl()
@@ -66,7 +67,7 @@ public class TestUtil {
         int expectedBlobs = blobCount + 1;
         int count = 0;
         while (count <= 20 && blobCount < expectedBlobs) {
-            TimeUnit.SECONDS.sleep(30);
+            TimeUnit.SECONDS.sleep(5);
             LOGGER.info(
                 "hrsBlobContainerClient.getBlobContainerUrl() ~{}",
                 hrsBlobContainerClient.getBlobContainerUrl()
@@ -115,7 +116,7 @@ public class TestUtil {
     }
 
     public FileInputStream getTestFile() throws Exception {
-        final URL resource = TestUtil.class.getClassLoader().getResource("data/test_data.mp4");
+        final URL resource = BlobTestUtil.class.getClassLoader().getResource("data/test_data.mp4");
         final File file = new File(Objects.requireNonNull(resource).toURI());
         return new FileInputStream(file);
     }
