@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.em.hrs.testutil.AzureStorageContainerClientBeans;
 import uk.gov.hmcts.reform.em.hrs.testutil.BlobTestUtil;
 import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
+import uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
@@ -42,7 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import static org.junit.Assert.assertNotNull;
@@ -80,6 +80,7 @@ public abstract class BaseTest {
     protected static final int SEGMENT = 0;
     protected static final String FOLDER = "audiostream123455";
     protected static final String TIME = "2020-11-04-14.56.32.819";
+    public static final String CASEREF_PREFIX = "FUNCTEST_";
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
     protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
@@ -90,6 +91,11 @@ public abstract class BaseTest {
     protected String idamAuth;
     protected String s2sAuth;
     protected String userId;
+
+
+    //yyyy-MM-dd---HH-MM-ss---SSS=07-30-2021---16-07-35---485
+    DateTimeFormatter datePartFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    DateTimeFormatter timePartFormatter = DateTimeFormatter.ofPattern("HH-MM-ss---SSS");
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -159,8 +165,8 @@ public abstract class BaseTest {
             .then();
     }
 
-    protected Response postRecordingSegment(String caseRef) {
-        final JsonNode segmentPayload = createSegmentPayload(caseRef);
+    protected Response postRecordingSegment(String caseRef, int segment) {
+        final JsonNode segmentPayload = createSegmentPayload(caseRef, segment);
         return postRecordingSegment(segmentPayload);
     }
 
@@ -204,14 +210,14 @@ public abstract class BaseTest {
             .get(recordingUrl);
     }
 
-    protected JsonNode createSegmentPayload(String caseRef) {
+    protected JsonNode createSegmentPayload(String caseRef, int segment) {
         return createRecordingSegment(
             FOLDER,
             JURISDICTION,
             LOCATION_CODE,
             caseRef,
             TIME,
-            SEGMENT,
+            segment,
             FILE_EXT
         );
     }
@@ -251,12 +257,7 @@ public abstract class BaseTest {
 
         int count = 0;
         while (count <= 10 && optionalCaseDetails.isEmpty()) {
-
-            try {
-                TimeUnit.SECONDS.sleep(FIND_CASE_TIMEOUT);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            SleepHelper.sleepForSeconds(FIND_CASE_TIMEOUT);
             optionalCaseDetails = searchForCase(caseRef);
             count++;
         }
@@ -276,8 +277,8 @@ public abstract class BaseTest {
         String userToken = idamClient.getAccessToken(HRS_TESTER, "4590fgvhbfgbDdffm3lk4j");
         String uid = idamClient.getUserInfo(userToken).getUid();
 
-        LOGGER.info("searching for case with userToken ({}) and serviceToken ({})",
-                    idamAuth.substring(0, 12), s2sToken.substring(0, 12)
+        LOGGER.info("searching for case by ref ({}) with userToken ({}) and serviceToken ({})",
+                    caseRef, idamAuth.substring(0, 12), s2sToken.substring(0, 12)
         );
         return coreCaseDataApi
             .searchForCaseworker(userToken, s2sToken, uid,
@@ -294,17 +295,18 @@ public abstract class BaseTest {
     }
 
     protected String timebasedCaseRef() {
-        DateTimeFormatter customFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-MM-ss-SSS");
-        //yyyy-MM-dd-HH-MM-ss-SSS=07-30-2021-16-07-35-485
+
         ZonedDateTime now = ZonedDateTime.now();
 
-        String time = customFormatter.format(now);
-        return "FUNCTEST_" + time;
+        String date = datePartFormatter.format(now);
+        String time = timePartFormatter.format(now);
+        //yyyy-MM-dd---HH-MM-ss---SSS=07-30-2021---16-07-35---485
+        return CASEREF_PREFIX + date + "---" + time;
     }
 
-    protected String filename(String caseRef) {
+    protected String filename(String caseRef, int segment) {
         return FOLDER + "/" + JURISDICTION + "-" + LOCATION_CODE + "-" + caseRef + "_" + TIME
-            + "-UTC_" + SEGMENT + ".mp4";
+            + "-UTC_" + segment + ".mp4";
     }
 
     public String closeCase(final String caseRef, CaseDetails caseDetails) {
@@ -338,4 +340,6 @@ public abstract class BaseTest {
         );
         return caseDetails.getState();
     }
+
+
 }

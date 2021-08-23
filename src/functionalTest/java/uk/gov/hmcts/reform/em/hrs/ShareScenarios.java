@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +25,15 @@ public class ShareScenarios extends BaseTest {
     public void setup() throws Exception {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = timebasedCaseRef();
-        filename = filename(caseRef);
+        filename = filename(caseRef,0);
 
-        int cvpBlobCount = testUtil.getCvpBlobCount(FOLDER);
+        int cvpExistingBlobCount = testUtil.getBlobCount(testUtil.cvpBlobContainerClient, FOLDER);
         testUtil.uploadToCvpContainer(filename);
-        testUtil.checkIfUploadedToCvp(FOLDER, cvpBlobCount);
+        testUtil.checkIfBlobUploadedToCvp(FOLDER, cvpExistingBlobCount);
 
-        int hrsBlobCount = testUtil.getHrsBlobCount(FOLDER);
-        postRecordingSegment(caseRef).then().statusCode(202);
-        testUtil.checkIfUploadedToHrs(FOLDER, hrsBlobCount);
+        int hrsBlobCount = testUtil.getBlobCount(testUtil.hrsBlobContainerClient, FOLDER);
+        postRecordingSegment(caseRef, 0).then().statusCode(202);
+        testUtil.checkIfUploadedToHrsStorage(FOLDER, hrsBlobCount);
 
         caseDetails = findCaseWithAutoRetry(caseRef);
 
@@ -111,7 +110,7 @@ public class ShareScenarios extends BaseTest {
 
     @Test
     public void shouldReturn404WhenShareHearingRecordingsToEmailAddressWithNonExistentCaseId() {
-        caseDetails.setId(RandomUtils.nextLong());
+        caseDetails.setId(1l);
         final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, SHAREE_EMAIL_ADDRESS);
 
         shareRecording(SHAREE_EMAIL_ADDRESS, CASE_WORKER_ROLE, callbackRequest)

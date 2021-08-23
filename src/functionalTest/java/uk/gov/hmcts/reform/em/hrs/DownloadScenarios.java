@@ -12,11 +12,11 @@ import static org.hamcrest.Matchers.not;
 
 public class DownloadScenarios extends BaseTest {
 
+
+    private String filename;
     @Autowired
     private BlobTestUtil testUtil;
-
     private String caseRef;
-    private String filename;
     private CaseDetails caseDetails;
     private int expectedFileSize;
 
@@ -24,15 +24,16 @@ public class DownloadScenarios extends BaseTest {
     public void setup() throws Exception {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = timebasedCaseRef();
-        filename = filename(caseRef);
+        filename = filename(caseRef, 0);
 
-        int cvpBlobCount = testUtil.getCvpBlobCount(FOLDER);
+        int cvpBlobCount = testUtil.getBlobCount(testUtil.cvpBlobContainerClient,FOLDER);
         testUtil.uploadToCvpContainer(filename);
-        testUtil.checkIfUploadedToCvp(FOLDER, cvpBlobCount);
+        testUtil.checkIfBlobUploadedToCvp(FOLDER, cvpBlobCount);
 
-        int hrsBlobCount = testUtil.getHrsBlobCount(FOLDER);
-        postRecordingSegment(caseRef).then().statusCode(202);
-        testUtil.checkIfUploadedToHrs(FOLDER, hrsBlobCount);
+
+        int hrsBlobCount = testUtil.getBlobCount(testUtil.hrsBlobContainerClient,FOLDER);
+        postRecordingSegment(caseRef, 0).then().statusCode(202);
+        testUtil.checkIfUploadedToHrsStorage(FOLDER, hrsBlobCount);
 
         caseDetails = findCaseWithAutoRetry(caseRef);
 

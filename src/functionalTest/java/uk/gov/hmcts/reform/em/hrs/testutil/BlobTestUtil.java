@@ -17,14 +17,15 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+
+import static uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper.sleepForSeconds;
 
 @Component
 public class BlobTestUtil {
 
     public static final int FIND_BLOB_TIMEOUT = 3;
-    private final BlobContainerClient hrsBlobContainerClient;
-    private final BlobContainerClient cvpBlobContainerClient;
+    public final BlobContainerClient hrsBlobContainerClient;
+    public final BlobContainerClient cvpBlobContainerClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
@@ -35,75 +36,61 @@ public class BlobTestUtil {
         this.cvpBlobContainerClient = cvpBlobContainerClient;
     }
 
-    public void deleteFileFromHrsContainer(final String folderName) {
-        hrsBlobContainerClient.listBlobs()
+    public void deleteFilesFromContainerNotMatchingPrefix(final String folderName, BlobContainerClient containerClient,
+                                                          String fileNamePrefixToNotDelete) {
+
+        String pathPrefix = folderName + "/" + fileNamePrefixToNotDelete;
+        LOGGER.info("Cleaning folder: {}", folderName);
+        LOGGER.info("Excluding Prefix: {}", pathPrefix);
+
+
+        containerClient.listBlobs()
             .stream()
-            .filter(blobItem -> blobItem.getName().startsWith(folderName))
+            .filter(blobItem -> blobItem.getName().startsWith(folderName) & !blobItem.getName().startsWith(pathPrefix))
             .forEach(blobItem -> {
+                LOGGER.info("Deleting blob: {}", blobItem.getName());
                 final BlockBlobClient blobClient =
-                    hrsBlobContainerClient.getBlobClient(blobItem.getName()).getBlockBlobClient();
+                    containerClient.getBlobClient(blobItem.getName()).getBlockBlobClient();
                 blobClient.delete();
             });
     }
 
-    public void checkIfUploadedToCvp(final String folderName, int blobCount) throws InterruptedException {
-        int expectedBlobs = blobCount + 1;
-        int count = 0;
-        while (count <= 10 && blobCount < expectedBlobs) {
-            TimeUnit.SECONDS.sleep(FIND_BLOB_TIMEOUT);
-            LOGGER.info(
-                "cvpBlobContainerClient.getBlobContainerUrl() ~{}",
-                cvpBlobContainerClient.getBlobContainerUrl()
-            );
-            blobCount = getCvpBlobCount(folderName);
-            count++;
-        }
-        if (count > 10) {
-            throw new IllegalStateException("could not find files within test");
-        }
+    public void checkIfBlobUploadedToCvp(final String folderName, int originalBlobCount) {
+        checkIfUploadedToStore(folderName, originalBlobCount, 1, cvpBlobContainerClient);
     }
 
-    public void checkIfUploadedToHrs(final String folderName, int blobCount) throws InterruptedException {
-        int expectedBlobs = blobCount + 1;
-        int count = 0;
-        while (count <= 20 && blobCount < expectedBlobs) {
-            TimeUnit.SECONDS.sleep(5);
-            LOGGER.info(
+    public void checkIfUploadedToHrsStorage(final String folderName, int blobCount) {
+        checkIfUploadedToStore(folderName, blobCount, 1, hrsBlobContainerClient);
+    }
+
+
+    public void checkIfUploadedToStore(final String folderName, int originalBlobCount, int expectedNewBlobs,
+                                       BlobContainerClient containerClient) {
+        int expectedTotalBlobs = originalBlobCount + expectedNewBlobs;
+        int retryCount = 0;
+        int currentBlobCount = originalBlobCount;
+        while (retryCount <= 20 && currentBlobCount < expectedTotalBlobs) {
+            sleepForSeconds(FIND_BLOB_TIMEOUT);
+            LOGGER.debug(
                 "hrsBlobContainerClient.getBlobContainerUrl() ~{}",
-                hrsBlobContainerClient.getBlobContainerUrl()
+                containerClient.getBlobContainerUrl()
             );
-            blobCount = getHrsBlobCount(folderName);
-            count++;
+            currentBlobCount = getBlobCount(containerClient, folderName);
+            retryCount++;
         }
-        if (count > 20) {
-            throw new IllegalStateException("could not find files within test");
+        if (retryCount > 20) {
+            throw new IllegalStateException(
+                "Could not find files within test.\nOriginal count =" + originalBlobCount + ", Expected Total = " +
+                    expectedTotalBlobs + ", Last Count=" + currentBlobCount);
         }
     }
 
-    public int getCvpBlobCount(String folderName) {
-        return getBlobCount(cvpBlobContainerClient, folderName);
-    }
-
-    public int getHrsBlobCount(String folderName) {
-        return getBlobCount(hrsBlobContainerClient, folderName);
-    }
-
-    private int getBlobCount(BlobContainerClient client, String folderName) {
+    public int getBlobCount(BlobContainerClient client, String folderName) {
         return (int) client.listBlobs()
             .stream()
             .filter(blobItem -> blobItem.getName().startsWith(folderName)).count();
     }
 
-    public void deleteFileFromCvpContainer(final String folderName) {
-        cvpBlobContainerClient.listBlobs()
-            .stream()
-            .filter(blobItem -> blobItem.getName().startsWith(folderName))
-            .forEach(blobItem -> {
-                final BlockBlobClient blobClient = cvpBlobContainerClient
-                    .getBlobClient(blobItem.getName()).getBlockBlobClient();
-                blobClient.delete();
-            });
-    }
 
     public void uploadToCvpContainer(final String blobName) throws Exception {
         final FileInputStream fileInputStream = getTestFile();
@@ -111,7 +98,7 @@ public class BlobTestUtil {
         final InputStream inStream = new ByteArrayInputStream(bytes);
 
         final BlobClient blobClient = cvpBlobContainerClient.getBlobClient(blobName);
-        LOGGER.info("cvpBlobContainerClient.getBlobContainerUrl() ~{}", cvpBlobContainerClient.getBlobContainerUrl());
+        LOGGER.debug("cvpBlobContainerClient.getBlobContainerUrl() ~{}", cvpBlobContainerClient.getBlobContainerUrl());
         blobClient.upload(new BufferedInputStream(inStream), bytes.length);
     }
 
