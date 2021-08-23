@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.em.hrs.testutil.BlobTestUtil;
+import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class IngestScenarios extends BaseTest {
     public static final int SEGMENT_COUNT = 12;
 
     @Autowired
-    private BlobTestUtil testUtil;
+    private BlobUtil testUtil;
 
     String caseRef;
     List<String> filenames = new ArrayList<String>();

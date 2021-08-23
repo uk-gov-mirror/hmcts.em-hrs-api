@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
 import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.AzureStorageContainerClientBeans;
-import uk.gov.hmcts.reform.em.hrs.testutil.BlobTestUtil;
+import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
 import uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper;
@@ -56,7 +56,7 @@ import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER_R
     EmTestConfig.class,
     CcdAuthTokenGeneratorConfiguration.class,
     AuthTokenGeneratorConfiguration.class,
-    BlobTestUtil.class,
+    BlobUtil.class,
     AzureStorageContainerClientBeans.class
 })
 

@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.em.hrs.testutil.BlobTestUtil;
+import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.not;
 public class ShareScenarios extends BaseTest {
 
     @Autowired
-    private BlobTestUtil testUtil;
+    private BlobUtil testUtil;
 
     private String caseRef;
     private String filename;
@@ -31,9 +31,9 @@ public class ShareScenarios extends BaseTest {
         testUtil.uploadToCvpContainer(filename);
         testUtil.checkIfBlobUploadedToCvp(FOLDER, cvpExistingBlobCount);
 
-        int hrsBlobCount = testUtil.getBlobCount(testUtil.hrsBlobContainerClient, FOLDER);
+        int hrsExistingBlobCount = testUtil.getBlobCount(testUtil.hrsBlobContainerClient, FOLDER);
         postRecordingSegment(caseRef, 0).then().statusCode(202);
-        testUtil.checkIfUploadedToHrsStorage(FOLDER, hrsBlobCount);
+        testUtil.checkIfUploadedToHrsStorage(FOLDER, hrsExistingBlobCount);
 
         caseDetails = findCaseWithAutoRetry(caseRef);
 

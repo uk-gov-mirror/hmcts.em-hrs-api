@@ -21,7 +21,7 @@ import java.util.Objects;
 import static uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper.sleepForSeconds;
 
 @Component
-public class BlobTestUtil {
+public class BlobUtil {
 
     public static final int FIND_BLOB_TIMEOUT = 3;
     public final BlobContainerClient hrsBlobContainerClient;
@@ -30,8 +30,8 @@ public class BlobTestUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
     @Autowired
-    public BlobTestUtil(@Qualifier("hrsBlobContainerClient") BlobContainerClient hrsBlobContainerClient,
-                        @Qualifier("cvpBlobContainerClient") BlobContainerClient cvpBlobContainerClient) {
+    public BlobUtil(@Qualifier("hrsBlobContainerClient") BlobContainerClient hrsBlobContainerClient,
+                    @Qualifier("cvpBlobContainerClient") BlobContainerClient cvpBlobContainerClient) {
         this.hrsBlobContainerClient = hrsBlobContainerClient;
         this.cvpBlobContainerClient = cvpBlobContainerClient;
     }
@@ -46,9 +46,12 @@ public class BlobTestUtil {
 
         containerClient.listBlobs()
             .stream()
-            .filter(blobItem -> blobItem.getName().startsWith(folderName) & !blobItem.getName().startsWith(pathPrefix))
+            .filter(blobItem ->
+                        blobItem.getName().startsWith(folderName) &&
+                            !blobItem.getName().startsWith(pathPrefix)
+            )
             .forEach(blobItem -> {
-                LOGGER.info("Deleting blob: {}", blobItem.getName());
+                LOGGER.info("Deleting old blob: {}", blobItem.getName());
                 final BlockBlobClient blobClient =
                     containerClient.getBlobClient(blobItem.getName()).getBlockBlobClient();
                 blobClient.delete();
@@ -103,7 +106,7 @@ public class BlobTestUtil {
     }
 
     public FileInputStream getTestFile() throws Exception {
-        final URL resource = BlobTestUtil.class.getClassLoader().getResource("data/test_data.mp4");
+        final URL resource = BlobUtil.class.getClassLoader().getResource("data/test_data.mp4");
         final File file = new File(Objects.requireNonNull(resource).toURI());
         return new FileInputStream(file);
     }
