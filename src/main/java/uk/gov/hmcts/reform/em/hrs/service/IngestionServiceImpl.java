@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
-import uk.gov.hmcts.reform.em.hrs.util.CcdUploadQueue;
+
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 @Transactional
@@ -16,11 +18,13 @@ public class IngestionServiceImpl implements IngestionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(IngestionServiceImpl.class);
 
     private final HearingRecordingStorage hearingRecordingStorage;
-    private final CcdUploadQueue ccdUploadQueue= CcdUploadQueue.builder().build();
+    private final LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue;
 
     @Autowired
-    public IngestionServiceImpl(final HearingRecordingStorage hearingRecordingStorage) {
+    public IngestionServiceImpl(final HearingRecordingStorage hearingRecordingStorage, @Qualifier("ccdUploadQueue")
+    final LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue) {
         this.hearingRecordingStorage = hearingRecordingStorage;
+        this.ccdUploadQueue = ccdUploadQueue;
     }
 
     @Override

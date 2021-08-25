@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.em.hrs.job;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.quartz.JobExecutionContext;
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdUploadService;
-import uk.gov.hmcts.reform.em.hrs.util.CcdUploadQueue;
 
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import javax.inject.Inject;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -17,7 +19,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CASE_REFERENCE;
-import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.INGESTION_QUEUE_SIZE;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_DATETIME;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_REFERENCE;
 
@@ -37,9 +38,11 @@ class CcdUploadJobTest {
         .cvpFileUrl("recording-cvp-uri")
         .checkSum("erI2foA30B==")
         .build();
-    private final CcdUploadQueue ccdUploadQueue = CcdUploadQueue.builder()
-        .capacity(INGESTION_QUEUE_SIZE)
-        .build();
+    @Inject
+    @Qualifier("ccdUploadQueue")
+    private LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue;
+
+
     private final CcdUploadService ccdUploadService = mock(CcdUploadService.class);
     private final JobExecutionContext context = mock(JobExecutionContext.class);
     private final CcdUploadJob underTest = new CcdUploadJob(ccdUploadQueue, ccdUploadService);

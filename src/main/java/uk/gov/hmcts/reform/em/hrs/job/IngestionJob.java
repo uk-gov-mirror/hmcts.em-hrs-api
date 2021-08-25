@@ -3,12 +3,13 @@ package uk.gov.hmcts.reform.em.hrs.job;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.IngestionService;
-import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
 import java.util.Optional;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,7 +18,10 @@ import javax.inject.Named;
 public class IngestionJob extends QuartzJobBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(IngestionJob.class);
     @Inject
-    private IngestionQueue ingestionQueue;
+    @Qualifier("ingestionQueue")
+    private LinkedBlockingQueue<HearingRecordingDto> ingestionQueue;
+
+
     @Inject
     private IngestionService ingestionService;
 
@@ -25,7 +29,7 @@ public class IngestionJob extends QuartzJobBean {
     public IngestionJob() {
     }
 
-    IngestionJob(final IngestionQueue ingestionQueue, final IngestionService ingestionService) {
+    IngestionJob(final LinkedBlockingQueue<HearingRecordingDto> ingestionQueue, final IngestionService ingestionService) {
         this.ingestionQueue = ingestionQueue;
         this.ingestionService = ingestionService;
     }

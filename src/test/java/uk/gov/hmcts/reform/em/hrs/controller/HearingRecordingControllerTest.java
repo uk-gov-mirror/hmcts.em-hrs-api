@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -14,13 +15,13 @@ import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 import uk.gov.hmcts.reform.em.hrs.service.AuditEntryService;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
-import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.IntStream;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +59,8 @@ class HearingRecordingControllerTest extends AbstractBaseTest {
     private SegmentDownloadService segmentDownloadService;
 
     @Inject
-    private IngestionQueue ingestionQueue;
+    @Qualifier("ingestionQueue")
+    private LinkedBlockingQueue<HearingRecordingDto> ingestionQueue;
 
     @MockBean
     private AuditEntryService auditEntryService;

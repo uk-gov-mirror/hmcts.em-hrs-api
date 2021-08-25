@@ -4,12 +4,13 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdUploadService;
-import uk.gov.hmcts.reform.em.hrs.util.CcdUploadQueue;
 
 import java.util.Optional;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -18,8 +19,12 @@ import javax.inject.Named;
 @DisallowConcurrentExecution
 public class CcdUploadJob extends QuartzJobBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CcdUploadJob.class);
+
     @Inject
-    private CcdUploadQueue ccdUploadQueue;
+    @Qualifier("ccdUploadQueue")
+    private LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue;
+
+
     @Inject
     private CcdUploadService ccdUploadService;
 
@@ -27,7 +32,8 @@ public class CcdUploadJob extends QuartzJobBean {
     public CcdUploadJob() {
     }
 
-    CcdUploadJob(final CcdUploadQueue ccdUploadQueue, final CcdUploadService ccdUploadService) {
+    CcdUploadJob(final LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue,
+                 final CcdUploadService ccdUploadService) {
         this.ccdUploadQueue = ccdUploadQueue;
         this.ccdUploadService = ccdUploadService;
     }
