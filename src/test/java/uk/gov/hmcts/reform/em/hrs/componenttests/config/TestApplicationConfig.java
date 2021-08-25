@@ -20,11 +20,13 @@ public class TestApplicationConfig {
     }
 
     @Bean
+    @Primary
     public LinkedBlockingQueue<HearingRecordingDto> ingestionQueue() {
         return new LinkedBlockingQueue<HearingRecordingDto>(INGESTION_QUEUE_SIZE);
     }
 
     @Bean
+    @Primary
     public LinkedBlockingQueue<HearingRecordingDto> ccdQueue() {
         return new LinkedBlockingQueue<HearingRecordingDto>(INGESTION_QUEUE_SIZE);
     }

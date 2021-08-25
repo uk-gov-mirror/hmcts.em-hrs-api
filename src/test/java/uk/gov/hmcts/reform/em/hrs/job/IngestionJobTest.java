@@ -3,13 +3,11 @@ package uk.gov.hmcts.reform.em.hrs.job;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.quartz.JobExecutionContext;
-import org.springframework.beans.factory.annotation.Qualifier;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.IngestionService;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
-import javax.inject.Inject;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -21,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CASE_REFERENCE;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_DATETIME;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.RECORDING_REFERENCE;
+
 
 class IngestionJobTest {
     private static final HearingRecordingDto HEARING_RECORDING_DTO = HearingRecordingDto.builder()
@@ -39,9 +38,8 @@ class IngestionJobTest {
         .checkSum("erI2foA30B==")
         .build();
 
-    @Inject
-    @Qualifier("ingestionQueue")
-    private LinkedBlockingQueue<HearingRecordingDto> ingestionQueue;
+    private LinkedBlockingQueue<HearingRecordingDto> ingestionQueue =
+        new LinkedBlockingQueue<HearingRecordingDto>(1000);
 
 
     private final IngestionService ingestionService = mock(IngestionService.class);
