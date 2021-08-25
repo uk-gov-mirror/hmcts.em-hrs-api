@@ -43,7 +43,7 @@ class CcdUploadServiceImplTest {
     private CcdUploadServiceImpl underTest;
 
     @Test
-    void testShouldCreateNewCaseInCcdAndPersistToPostgresWhenHearingRecordingIsNew() {
+    void testShouldCreateNewCaseInCcdAndPersistToPostgresWhenHearingRecordingIsNotInDatabase() {
         doReturn(Optional.empty()).when(recordingRepository)
             .findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER_1.getName());
         doReturn(TEST_FOLDER_1).when(folderService).getFolderByName(TEST_FOLDER_1.getName());
@@ -61,18 +61,26 @@ class CcdUploadServiceImplTest {
     }
 
     @Test
-    void testShouldUpdateCaseInCcdAndPersistToPostgresAndAzureStorageWhenHearingRecordingExist() {
+    void testShouldUpdateCaseInCcdAndPersistToPostgresWhenHearingRecordingExistsInDatabase() {
         doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3)).when(recordingRepository)
             .findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER_1.getName());
         doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient)
-            .updateCaseData(anyLong(), eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()), eq(HEARING_RECORDING_DTO));
+            .updateCaseData(
+                anyLong(),
+                eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()),
+                eq(HEARING_RECORDING_DTO)
+            );
         doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));
 
         underTest.upload(HEARING_RECORDING_DTO);
 
         verify(recordingRepository).findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER_1.getName());
         verify(ccdDataStoreApiClient)
-            .updateCaseData(anyLong(), eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()), eq(HEARING_RECORDING_DTO));
+            .updateCaseData(
+                anyLong(),
+                eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()),
+                eq(HEARING_RECORDING_DTO)
+            );
         verify(ccdDataStoreApiClient, never())
             .createCase(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId(), HEARING_RECORDING_DTO);
         verify(recordingRepository, never()).save(any(HearingRecording.class));

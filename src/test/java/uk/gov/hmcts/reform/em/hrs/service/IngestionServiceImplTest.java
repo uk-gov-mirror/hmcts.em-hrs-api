@@ -25,20 +25,8 @@ class IngestionServiceImplTest {
     private IngestionServiceImpl underTest;
 
     @Test
-    void testShouldCreateNewCaseInCcdAndPersistToPostgresAndAzureStorageWhenHearingRecordingIsNew() {
+    void testShouldCopyToAzureStorageWhenHearingRecordingIsNew() {
 
-        doNothing().when(hearingRecordingStorage)
-            .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
-
-        underTest.ingest(HEARING_RECORDING_DTO);
-
-        verify(hearingRecordingStorage)
-            .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
-        verifyNoInteractions(snooper);
-    }
-
-    @Test
-    void testShouldUpdateCaseInCcdAndPersistToPostgresAndAzureStorageWhenHearingRecordingExist() {
         doNothing().when(hearingRecordingStorage)
             .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
 
