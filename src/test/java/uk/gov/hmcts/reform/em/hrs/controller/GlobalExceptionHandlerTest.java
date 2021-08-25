@@ -36,9 +36,6 @@ class GlobalExceptionHandlerTest extends AbstractBaseTest {
     @MockBean
     private ShareAndNotifyService shareService;
 
-    @Inject
-    private IngestionQueue ingestionQueue;
-
     @Test
     void testShouldReturnNotFoundWithMessageWhenHearingRecordingNotFoundExceptionIsRaised() throws Exception {
         final String path = "/sharees";

@@ -8,6 +8,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
+import uk.gov.hmcts.reform.em.hrs.util.CcdQueue;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientApi;
@@ -32,6 +33,14 @@ public class ApplicationConfig {
             .capacity(ingestionQueueSize)
             .build();
     }
+
+    @Bean
+    public CcdQueue provideCcdQueue() {
+        return CcdQueue.builder()
+            .capacity(ingestionQueueSize)
+            .build();
+    }
+
 
     @Bean
     public Jackson2ObjectMapperBuilder provideJackson2ObjectMapperBuilder() {
