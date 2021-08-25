@@ -15,19 +15,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
-public class JobOrchestrator {
+public class CcdUploadJobScheduler {
     private final Scheduler scheduler;
-    private final int rate;
+    private final int intervalInSeconds;
 
     @Inject
-    public JobOrchestrator(final Scheduler scheduler, @Value("${hrs.ingestion-frequency}") final int rate) {
+    public CcdUploadJobScheduler(final Scheduler scheduler, @Value("${hrs.ingestion-interval-in-seconds}") final int intervalInSeconds) {
         this.scheduler = scheduler;
-        this.rate = rate;
+        this.intervalInSeconds = intervalInSeconds;
     }
 
     @PostConstruct
     public void start() throws SchedulerException {
-        final String nameElement = "CVP-Hearing-Recording";
+        final String nameElement = "CCD-Upload";
         final String groupElement = "HRS-Ingestion-Jobs";
         final JobDetail jobDetail = JobBuilder.newJob(IngestionJob.class)
             .withIdentity(nameElement, groupElement)
@@ -37,7 +37,7 @@ public class JobOrchestrator {
         final Trigger trigger = TriggerBuilder.newTrigger()
             .withSchedule(
                 SimpleScheduleBuilder.simpleSchedule()
-                    .withIntervalInSeconds(rate)
+                    .withIntervalInSeconds(intervalInSeconds)
                     .withMisfireHandlingInstructionIgnoreMisfires()
                     .repeatForever()
             ).build();

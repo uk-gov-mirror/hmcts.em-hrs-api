@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.annotation.Nonnull;
 
-public enum CcdQueue {
+public enum CcdUploadQueue {
     INSTANCE;
 
     private LinkedBlockingQueue<HearingRecordingDto> queue;
@@ -46,8 +46,8 @@ public enum CcdQueue {
             return this;
         }
 
-        public CcdQueue build() {
-            final CcdQueue instance = CcdQueue.INSTANCE;
+        public CcdUploadQueue build() {
+            final CcdUploadQueue instance = CcdUploadQueue.INSTANCE;
             if (capacity == 0) {
                 instance.init(DEFAULT_CAPACITY);
             } else {

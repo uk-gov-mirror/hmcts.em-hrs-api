@@ -121,7 +121,7 @@ hrs:
     core-size: 5
     max-size: 10
     queue-capacity: 100
-  ingestion-frequency: 1 # how often to call ccd per second
+  ingestion-interval-in-seconds: 4 # how long between each fired job (per server: 4 servers at 4 seconds = 1 per second)
   allowed-roles: ${ALLOWED_ROLES:caseworker-hrs}
 
 auth:

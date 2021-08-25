@@ -15,12 +15,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-class JobOrchestratorTest {
+class CcdUploadJobSchedulerTest {
     private final Scheduler scheduler = mock(Scheduler.class);
 
     private final int rate = 1;
 
-    private final JobOrchestrator underTest = new JobOrchestrator(scheduler, rate);
+    private final CcdUploadJobScheduler underTest = new CcdUploadJobScheduler(scheduler, rate);
 
     @Test
     void testShouldStartTheScheduler() throws Exception {

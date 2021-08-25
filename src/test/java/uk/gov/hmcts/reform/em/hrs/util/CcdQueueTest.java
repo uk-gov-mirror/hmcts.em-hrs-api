@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.INGESTION_QUEUE_SIZE;
 
 class CcdQueueTest {
-    private final CcdQueue underTest = CcdQueue.builder()
+    private final CcdUploadQueue underTest = CcdUploadQueue.builder()
         .capacity(INGESTION_QUEUE_SIZE)
         .build();
 

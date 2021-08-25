@@ -4,7 +4,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import uk.gov.hmcts.reform.em.hrs.util.CcdQueue;
+import uk.gov.hmcts.reform.em.hrs.util.CcdUploadQueue;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 
@@ -28,8 +28,8 @@ public class TestApplicationConfig {
 
     @Bean
     @Primary
-    public CcdQueue provideCcdQueue() {
-        return CcdQueue.builder()
+    public CcdUploadQueue provideCcdQueue() {
+        return CcdUploadQueue.builder()
             .capacity(INGESTION_QUEUE_SIZE)
             .build();
     }
