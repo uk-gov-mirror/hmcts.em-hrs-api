@@ -43,7 +43,7 @@ class CcdUploadServiceImplTest {
     private CcdUploadServiceImpl underTest;
 
     @Test
-    void testShouldCreateNewCaseInCcdAndPersistToPostgresWhenHearingRecordingIsNotInDatabase() {
+    void testShouldCreateNewCaseInCcdAndPersistRecordingAndSegmentToPostgresWhenHearingRecordingIsNotInDatabase() {
         doReturn(Optional.empty()).when(recordingRepository)
             .findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER_1.getName());
         doReturn(TEST_FOLDER_1).when(folderService).getFolderByName(TEST_FOLDER_1.getName());
@@ -61,7 +61,7 @@ class CcdUploadServiceImplTest {
     }
 
     @Test
-    void testShouldUpdateCaseInCcdAndPersistToPostgresWhenHearingRecordingExistsInDatabase() {
+    void testShouldUpdateCaseInCcdAndPersistSegmentToPostgresWhenHearingRecordingReferenceExistsInDatabase() {
         doReturn(Optional.of(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3)).when(recordingRepository)
             .findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER_1.getName());
         doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient)

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -37,41 +38,42 @@ public class CcdUploadServiceImpl implements CcdUploadService {
     }
 
     @Override
-    public void upload(final HearingRecordingDto hearingRecordingDto) {
+    public void upload(final HearingRecordingDto recordingDto) {
 
-        final Optional<HearingRecording> checkHearingRecording =
-            recordingRepository.findByRecordingRefAndFolderName(
-                hearingRecordingDto.getRecordingRef(), hearingRecordingDto.getFolder()
-            );
+        String recordingRef = recordingDto.getRecordingRef();
+        String folder = recordingDto.getFolder();
 
-        checkHearingRecording.ifPresentOrElse(
-            hearingRecording -> updateCase(hearingRecording, hearingRecordingDto),
-            () -> createCaseinCcdAndPersist(hearingRecordingDto)
+        final Optional<HearingRecording> hearingRecording =
+            recordingRepository.findByRecordingRefAndFolderName(recordingRef, folder);
+
+        hearingRecording.ifPresentOrElse(
+            x -> updateCase(x, recordingDto),
+            () -> createCaseinCcdAndPersist(recordingDto)
         );
 
     }
 
-    private void updateCase(final HearingRecording recording,
-                            final HearingRecordingDto recordingDto) {
-        if (recording.getCcdCaseId() == null) {
+    private void updateCase(final HearingRecording recording, final HearingRecordingDto recordingDto) {
+
+        UUID id = recording.getId();
+        Long ccdCaseId = recording.getCcdCaseId();
+        String recordingRef = recordingDto.getRecordingRef();
+        String folder = recordingDto.getFolder();
+
+        if (ccdCaseId == null) {
             LOGGER.info(
                 "Recording Ref {} in folder {}, has no ccd id, case still being created in CCD or has been rejected",
-                recordingDto.getRecordingRef(),
-                recordingDto.getFolder()
+                recordingRef, folder
             );
             return;
         }
 
         LOGGER.info(
-            "adding  recording (ref {}) in folder {} to case (ccdId {})",
-            recordingDto.getRecordingRef(),
-            recordingDto.getFolder(),
-            recording.getCcdCaseId()
-        );
+            "adding  recording (ref {}) in folder {} to case (ccdId {})", recordingRef, folder, ccdCaseId);
 
 
         Long caseDetailsId =
-            ccdDataStoreApiClient.updateCaseData(recording.getCcdCaseId(), recording.getId(), recordingDto);
+            ccdDataStoreApiClient.updateCaseData(ccdCaseId, id, recordingDto);
 
         LOGGER.info("Case Details (id {}) updated successfully", caseDetailsId);
 
@@ -82,8 +84,8 @@ public class CcdUploadServiceImpl implements CcdUploadService {
         } catch (Exception e) {
             LOGGER.info(
                 "segment not added to database, probably duplicate entry (ref {}) to case(ccdId {})",
-                recordingDto.getRecordingRef(),
-                recording.getCcdCaseId()
+                recordingRef,
+                ccdCaseId
             );
         }
 

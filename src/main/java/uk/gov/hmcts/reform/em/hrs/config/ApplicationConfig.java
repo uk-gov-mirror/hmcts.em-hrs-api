@@ -24,21 +24,6 @@ public class ApplicationConfig {
     public NotificationClientApi provideNotificationClient() {
         return new NotificationClient(notificationApiKey);
     }
-    //
-    //    @Bean
-    //    public IngestionQueue provideIngestionQueue() {
-    //        return IngestionQueue.builder()
-    //            .capacity(ingestionQueueSize)
-    //            .build();
-    //    }
-    //
-    //    @Bean
-    //    public CcdUploadQueue provideCcdQueue() {
-    //        return CcdUploadQueue.builder()
-    //            .capacity(ingestionQueueSize)
-    //            .build();
-    //    }
-
 
     @Bean
     public Jackson2ObjectMapperBuilder provideJackson2ObjectMapperBuilder() {
