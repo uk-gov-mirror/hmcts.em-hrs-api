@@ -86,7 +86,11 @@ public class ShareHearingRecordingScenarios extends BaseTest {
     }
 
     @Test
-    public void shareeWithCitizenRoleIsAbleToDownloadRecordings() {//TODO SHOULD THIS FAIL - citizen is in admin
+    public void shareeWithCitizenRoleIsAbleToDownloadRecordings() {
+        // NOTE THAT ANY EMAIL ADDRESS THAT IS SHARED TO IS ABLE TO DOWNLOAD FROM HRS AS LONG AS THEY ARE IN IDAM
+        // HOWEVER TO ACCESS THE FILE, THEY HAVE TO DOWNLOAD VIA EXUI
+        // WHICH AT TIME OF WRITING ONLY ALLOWS CASEWORKER AND CASEWORKER_HRS ROLES FOR THE HRS JURISDICTION
+        // TODO NOT SURE WHY THIS TEST IS HERE - POSSIBLY FUTURE PROOFING - DOES CITIZEN ROLE ACTUALLY EXIST IN IDAM?
         final CallbackRequest callbackRequest =
             addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_NONACCESS_ROLE__CITIZEN);
         shareRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, callbackRequest)
