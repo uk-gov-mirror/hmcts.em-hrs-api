@@ -20,7 +20,7 @@ public class CcdUploadJobScheduler {
     private final int intervalInSeconds;
 
     @Inject
-    public CcdUploadJobScheduler(final Scheduler scheduler, @Value("${hrs.ingestion-interval-in-seconds}") final int intervalInSeconds) {
+    public CcdUploadJobScheduler(final Scheduler scheduler, @Value("${hrs.ccdupload-interval-in-seconds}") final int intervalInSeconds) {
         this.scheduler = scheduler;
         this.intervalInSeconds = intervalInSeconds;
     }
