@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.em.hrs.util.Snooper;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING_DTO;
@@ -31,13 +32,15 @@ class IngestionServiceImplTest {
     private IngestionServiceImpl underTest;
 
     @Test
-    void testShouldCopyToAzureStorageWhenHearingRecordingIsNew() {
+    void testShouldCopyToAzureStorageAndJobToCCDQueueWhenHearingRecordingIsNew() {
 
         doNothing().when(hearingRecordingStorage)
             .copyRecording(
                 HEARING_RECORDING_DTO.getCvpFileUrl(),
                 HEARING_RECORDING_DTO.getFilename()
             );
+
+        doReturn(false).when(ccdUploadQueue).offer(HEARING_RECORDING_DTO);
 
         underTest.ingest(HEARING_RECORDING_DTO);
 
