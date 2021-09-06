@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
+import liquibase.pro.packaged.x;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.security.SecureRandom;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -64,7 +66,7 @@ import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
 @WithTags({@WithTag("testType:Functional")})
 public abstract class BaseTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
     protected static final String JURISDICTION = "HRS";
     protected static final String LOCATION_CODE = "0123";
@@ -86,6 +88,9 @@ public abstract class BaseTest {
     protected String idamAuth_hrs_tester;
     protected String s2sAuth;
     protected String userId_hrs_tester;
+
+
+
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -113,6 +118,7 @@ public abstract class BaseTest {
 
     @PostConstruct
     public void init() {
+        LOGGER.info("POST CONSTRUCT INITIALISATIONS....");
         SerenityRest.useRelaxedHTTPSValidation();
         idamAuth_hrs_tester = idamHelper.authenticateUser(HRS_TESTER);
         s2sAuth = BEARER + s2sHelper.getS2sToken();
@@ -273,8 +279,8 @@ public abstract class BaseTest {
         String userToken = idamClient.getAccessToken(HRS_TESTER, "4590fgvhbfgbDdffm3lk4j");
         String uid = idamClient.getUserInfo(userToken).getUid();
 
-        LOGGER.info("searching for case with userToken ({}) and serviceToken ({})",
-                    idamAuth_hrs_tester.substring(0, 12), s2sToken.substring(0, 12)
+        LOGGER.info("searching for case by ref ({}) with userToken ({}) and serviceToken ({})",
+                    caseRef, idamAuth_hrs_tester.substring(0, 12), s2sToken.substring(0, 12)
         );
         return coreCaseDataApi
             .searchForCaseworker(userToken, s2sToken, uid,
@@ -314,7 +320,7 @@ public abstract class BaseTest {
         StartEventResponse startEventResponse =
             coreCaseDataApi.startEvent(userToken, s2sToken, String.valueOf(caseDetails.getId()), CLOSE_CASE);
 
-        LOGGER.info("closing case ({}) with reference ({}), right now it has state ({})",
+        LOGGER.info("closing case id ({}) with reference ({}), right now it has state ({})",
                     caseDetails.getId(), caseRef, caseDetails.getState()
         );
 
@@ -331,9 +337,72 @@ public abstract class BaseTest {
             );
 
         assert (caseDetails.getState().equals("1_CLOSED"));
-        LOGGER.info("closed case ({}) with reference ({}), it now has state ({})",
+        LOGGER.info("closed case id ({}) with reference ({}), it now has state ({})",
                     caseDetails.getId(), caseRef, caseDetails.getState()
         );
         return caseDetails.getState();
+    }
+
+
+
+
+
+    /**
+     * below three methods denerate a random valid UID.
+     * ripped from uk.gov.hmcts.ccd.domain.service.common TODO consider importing this as a library if it exists
+     * @return A randomly generated, valid, UID.
+     */
+    public String generateUID() {
+        SecureRandom random = new SecureRandom();
+        String currentTime10OfSeconds = String.valueOf(System.currentTimeMillis()).substring(0, 11);
+        StringBuilder builder = new StringBuilder(currentTime10OfSeconds);
+        for (int i = 0; i < 4; i++) {
+            int digit = random.nextInt(10);
+            builder.append(digit);
+        }
+        // Do the Luhn algorithm to generate the check digit.
+        int checkDigit = checkSum(builder.toString(), true);
+        builder.append(checkDigit);
+
+        return builder.toString();
+    }
+
+    /**
+     * Generate check digit for a number string.
+     *
+     * @param numberString number string to process
+     * @param noCheckDigit Whether check digit is present or not. True if no check Digit
+     *                     is appended.
+     * @return
+     */
+    public int checkSum(String numberString, boolean noCheckDigit) {
+        int sum = 0;
+        int checkDigit = 0;
+
+        if (!noCheckDigit) {
+            numberString = numberString.substring(0, numberString.length() - 1);
+        }
+
+        boolean isDouble = true;
+        for (int i = numberString.length() - 1; i >= 0; i--) {
+            int k = Integer.parseInt(String.valueOf(numberString.charAt(i)));
+            sum += sumToSingleDigit((k * (isDouble ? 2 : 1)));
+            isDouble = !isDouble;
+        }
+
+        if ((sum % 10) > 0) {
+            checkDigit = (10 - (sum % 10));
+        }
+
+        return checkDigit;
+    }
+
+
+    private int sumToSingleDigit(int k) {
+        if (k < 10) {
+            return k;
+        }
+
+        return sumToSingleDigit(k / 10) + (k % 10);
     }
 }

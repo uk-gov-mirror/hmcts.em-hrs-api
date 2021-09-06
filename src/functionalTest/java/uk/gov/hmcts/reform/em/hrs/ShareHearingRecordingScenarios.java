@@ -23,6 +23,8 @@ public class ShareHearingRecordingScenarios extends BaseTest {
 
     @Before
     public void setup() throws Exception {
+        LOGGER.info("SETTING UP SHARE RECORDING SCENARIOS....");
+
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = timebasedCaseRef();
         filename = filename(caseRef);
@@ -121,10 +123,10 @@ public class ShareHearingRecordingScenarios extends BaseTest {
 
     @Test
     public void shouldReturn404WhenShareHearingRecordingsToEmailAddressWithNonExistentCaseId() {
-        caseDetails.setId(0L);
+        caseDetails.setId(Long.valueOf(generateUID()));
         final CallbackRequest callbackRequest =
             addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER);
-
+        LOGGER.info("Sharing case with id 0, by user {}",USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
         shareRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, callbackRequest)
             .then().log().all()
             .statusCode(404);
