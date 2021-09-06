@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,15 +43,18 @@ public class ShareHearingRecordingScenarios extends BaseTest {
 
     @Test
     public void shareeWithCaseworkerHrsRoleShouldBeAbleToDownloadRecordings() {
-        final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CASEWORKER_HRS_USER);
-        shareRecording(CASEWORKER_HRS_USER, CASE_WORKER_HRS_ROLE, callbackRequest)
+        final CallbackRequest callbackRequest = addEmailRecipientToCaseDetailsCallBack(
+            caseDetails,
+            USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS
+        );
+        shareRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, callbackRequest)
             .then()
             .log().all()
             .assertThat()
             .statusCode(200);
 
         final byte[] downloadedFileBytes =
-            downloadRecording(CASEWORKER_HRS_USER, CASE_WORKER_HRS_ROLE, caseDetails.getData())
+            downloadRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, caseDetails.getData())
                 .then()
                 .statusCode(200)
                 .extract().response()
@@ -64,15 +66,16 @@ public class ShareHearingRecordingScenarios extends BaseTest {
 
     @Test
     public void shareeWithCaseworkerRoleShouldBeAbleToDownloadRecordings() {
-        final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CASEWORKER_USER);
-        shareRecording(CASEWORKER_USER, CASE_WORKER_ROLE, callbackRequest)
+        final CallbackRequest callbackRequest =
+            addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER);
+        shareRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, callbackRequest)
             .then()
             .log().all()
             .assertThat()
             .statusCode(200);
 
         final byte[] downloadedFileBytes =
-            downloadRecording(CASEWORKER_USER, CASE_WORKER_ROLE, caseDetails.getData())
+            downloadRecording(USER_WITH_REQUESTOR_ROLE__CASEWORKER, caseDetails.getData())
                 .then()
                 .statusCode(200)
                 .extract().response()
@@ -84,17 +87,23 @@ public class ShareHearingRecordingScenarios extends BaseTest {
 
     @Test
     public void shareeWithCitizenRoleIsAbleToDownloadRecordings() {
-        final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, CITIZEN_USER);
-        shareRecording(CITIZEN_USER, CITIZEN_ROLE, callbackRequest)
+        // NOTE THAT ANY EMAIL ADDRESS THAT IS SHARED TO IS ABLE TO DOWNLOAD FROM HRS AS LONG AS THEY ARE IN IDAM
+        // HOWEVER TO ACCESS THE FILE, THEY HAVE TO DOWNLOAD VIA EXUI
+        // WHICH AT TIME OF WRITING ONLY ALLOWS CASEWORKER AND CASEWORKER_HRS ROLES FOR THE HRS JURISDICTION
+        // TODO NOT SURE WHY THIS TEST IS HERE - POSSIBLY FUTURE PROOFING - DOES CITIZEN ROLE ACTUALLY EXIST IN IDAM?
+        final CallbackRequest callbackRequest =
+            addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_NONACCESS_ROLE__CITIZEN);
+        shareRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, callbackRequest)
             .then()
             .log().all()
             .statusCode(200);
 
-        final byte[] downloadedFileBytes = downloadRecording(CITIZEN_USER, CITIZEN_ROLE, caseDetails.getData())
-            .then()
-            .statusCode(200)
-            .extract().response()
-            .body().asByteArray();
+        final byte[] downloadedFileBytes =
+            downloadRecording(USER_WITH_NONACCESS_ROLE__CITIZEN, caseDetails.getData())
+                .then()
+                .statusCode(200)
+                .extract().response()
+                .body().asByteArray();
 
         final int actualFileSize = downloadedFileBytes.length;
         assertThat(actualFileSize, is(expectedFileSize));
@@ -102,19 +111,21 @@ public class ShareHearingRecordingScenarios extends BaseTest {
 
     @Test
     public void shouldReturn400WhenShareHearingRecordingsToInvalidEmailAddress() {
-        final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, ERROR_SHAREE_EMAIL_ADDRESS);
+        final CallbackRequest callbackRequest =
+            addEmailRecipientToCaseDetailsCallBack(caseDetails, EMAIL_ADDRESS_INVALID_FORMAT);
 
-        shareRecording(SHAREE_EMAIL_ADDRESS, CASE_WORKER_ROLE, callbackRequest)
+        shareRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, callbackRequest)
             .then().log().all()
             .statusCode(400);
     }
 
     @Test
     public void shouldReturn404WhenShareHearingRecordingsToEmailAddressWithNonExistentCaseId() {
-        caseDetails.setId(RandomUtils.nextLong());
-        final CallbackRequest callbackRequest = createCallbackRequest(caseDetails, SHAREE_EMAIL_ADDRESS);
+        caseDetails.setId(0L);
+        final CallbackRequest callbackRequest =
+            addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER);
 
-        shareRecording(SHAREE_EMAIL_ADDRESS, CASE_WORKER_ROLE, callbackRequest)
+        shareRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, callbackRequest)
             .then().log().all()
             .statusCode(404);
 
