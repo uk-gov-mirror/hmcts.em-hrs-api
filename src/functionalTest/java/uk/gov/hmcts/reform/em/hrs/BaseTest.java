@@ -86,7 +86,7 @@ public abstract class BaseTest {
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
     protected static final String CLOSE_CASE = "closeCase";
 
-    int FIND_CASE_TIMEOUT = 10;
+    int FIND_CASE_TIMEOUT = 30;
 
     protected String idamAuth;
     protected String s2sAuth;
@@ -318,7 +318,7 @@ public abstract class BaseTest {
         StartEventResponse startEventResponse =
             coreCaseDataApi.startEvent(userToken, s2sToken, String.valueOf(caseDetails.getId()), CLOSE_CASE);
 
-        LOGGER.info("closing case ({}) with reference ({}), right now it has state ({})",
+        LOGGER.info("closing case id ({}) with reference ({}), right now it has state ({})",
                     caseDetails.getId(), caseRef, caseDetails.getState()
         );
 
@@ -335,7 +335,7 @@ public abstract class BaseTest {
             );
 
         assert (caseDetails.getState().equals("1_CLOSED"));
-        LOGGER.info("closed case ({}) with reference ({}), it now has state ({})",
+        LOGGER.info("closed case id ({}) with reference ({}), it now has state ({})",
                     caseDetails.getId(), caseRef, caseDetails.getState()
         );
         return caseDetails.getState();
