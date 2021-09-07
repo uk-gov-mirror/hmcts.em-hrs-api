@@ -19,7 +19,8 @@ import static org.hamcrest.Matchers.not;
 
 public class IngestScenarios extends BaseTest {
 
-    public static final int SEGMENT_COUNT = 12;
+    public static final int SEGMENT_COUNT = 1;//TODO set this 10 11 to test CCD validation changes, after branches are
+    //aligned
 
     @Autowired
     private BlobUtil testUtil;
