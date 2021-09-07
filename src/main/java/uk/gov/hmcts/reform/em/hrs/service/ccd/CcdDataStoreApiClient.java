@@ -80,26 +80,12 @@ public class CcdDataStoreApiClient {
                 startEventResponse.getCaseDetails().getData(), recordingId, hearingRecordingDto)
             ).build();
 
+
         LOGGER.info(
             "updating ccd case (id {}) with new recording (ref {})",
             caseId,
             hearingRecordingDto.getRecordingRef()
         );
-
-        Long caseDetailsId = null;
-
-        Callable<Long> callable = new Callable<Long>() {
-            @Override
-            public Long call() throws Exception {
-                return coreCaseDataApi
-                    .submitEventForCaseWorker(tokens.get(USER), tokens.get(SERVICE), tokens.get(USER_ID),
-                                              JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData
-                    )
-                    .getId();
-
-            }
-        };
-
 
         try {
             CaseDetails caseDetails =
@@ -108,7 +94,6 @@ public class CcdDataStoreApiClient {
                 );
 
             return caseDetails.getId();
-
         } catch (Exception e) {
             //CCD has rejected, so log payload to assist with debugging (no sensitive information is exposed)
             String caseReference = caseData.getCaseReference();
@@ -131,10 +116,7 @@ public class CcdDataStoreApiClient {
             LOGGER.info("caseData Pretty: " + jsonOutput);
 
 
-            throw new CcdUploadException(
-                "Error Uploading Segment for filename:" + hearingRecordingDto.getFilename(),
-                e
-            );
+            throw new CcdUploadException("Error Uploading Segment", e);
         }
 
     }

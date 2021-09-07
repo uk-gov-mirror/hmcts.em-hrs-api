@@ -103,6 +103,12 @@ docker-compose ${COMPOSE_FILE} up -d shared-database \
 
 echo "LOCAL ENVIRONMENT BOOT UP SUCCESSFULLY STARTED, about to tail logs whilst apps intialise. CCD Data API is the longest running to  initialise"
 
+
+
+az storage container create --name 'cvptestcontainer' --connection-string 'DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;'
+
+
+
 date
 
 echo "Remember to prime CCD with the hrs ccd data definition - by running the functional tests once the CCD data-store API is ready.."

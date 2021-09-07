@@ -5,16 +5,16 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
+import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 
-public class ShareHearingRecordingScenarios extends BaseTest {
+public class ShareScenarios extends BaseTest {
 
     @Autowired
-    private TestUtil testUtil;
+    private BlobUtil testUtil;
 
     private String caseRef;
     private String filename;
@@ -27,17 +27,17 @@ public class ShareHearingRecordingScenarios extends BaseTest {
 
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = timebasedCaseRef();
-        filename = filename(caseRef);
+        filename = filename(caseRef,0);
 
-        int cvpBlobCount = testUtil.getCvpBlobCount(FOLDER);
+        int cvpExistingBlobCount = testUtil.getBlobCount(testUtil.cvpBlobContainerClient, FOLDER);
         testUtil.uploadToCvpContainer(filename);
-        testUtil.checkIfUploadedToCvp(FOLDER, cvpBlobCount);
+        testUtil.checkIfBlobUploadedToCvp(FOLDER, cvpExistingBlobCount);
 
-        int hrsBlobCount = testUtil.getHrsBlobCount(FOLDER);
-        postRecordingSegment(caseRef).then().statusCode(202);
-        testUtil.checkIfUploadedToHrs(FOLDER, hrsBlobCount);
+        int hrsExistingBlobCount = testUtil.getBlobCount(testUtil.hrsBlobContainerClient, FOLDER);
+        postRecordingSegment(caseRef, 0).then().statusCode(202);
+        testUtil.checkIfUploadedToHrsStorage(FOLDER, hrsExistingBlobCount);
 
-        caseDetails = findCase(caseRef);
+        caseDetails = findCaseWithAutoRetry(caseRef);
 
         expectedFileSize = testUtil.getTestFile().readAllBytes().length;
         assertThat(expectedFileSize, is(not(0)));

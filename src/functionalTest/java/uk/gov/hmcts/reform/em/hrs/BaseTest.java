@@ -28,10 +28,11 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
 import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
+import uk.gov.hmcts.reform.em.hrs.testutil.AzureStorageContainerClientBeans;
+import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
-import uk.gov.hmcts.reform.em.hrs.testutil.HrsAzureClient;
-import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
+import uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
@@ -44,7 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import static org.junit.Assert.assertNotNull;
@@ -57,8 +57,8 @@ import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
     EmTestConfig.class,
     CcdAuthTokenGeneratorConfiguration.class,
     AuthTokenGeneratorConfiguration.class,
-    TestUtil.class,
-    HrsAzureClient.class
+    BlobUtil.class,
+    AzureStorageContainerClientBeans.class
 })
 
 @TestPropertySource(value = "classpath:application.yml")
@@ -80,17 +80,22 @@ public abstract class BaseTest {
     protected static final int SEGMENT = 0;
     protected static final String FOLDER = "audiostream123455";
     protected static final String TIME = "2020-11-04-14.56.32.819";
+    public static final String CASEREF_PREFIX = "FUNCTEST_";
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
     protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
     protected static final String CLOSE_CASE = "closeCase";
+
+    int FIND_CASE_TIMEOUT = 30;
 
     protected String idamAuth_hrs_tester;
     protected String s2sAuth;
     protected String userId_hrs_tester;
 
 
-
+    //yyyy-MM-dd---HH-MM-ss---SSS=07-30-2021---16-07-35---485
+    DateTimeFormatter datePartFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    DateTimeFormatter timePartFormatter = DateTimeFormatter.ofPattern("HH-MM-ss---SSS");
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -167,8 +172,8 @@ public abstract class BaseTest {
             .then();
     }
 
-    protected Response postRecordingSegment(String caseRef) {
-        final JsonNode segmentPayload = createSegmentPayload(caseRef);
+    protected Response postRecordingSegment(String caseRef, int segment) {
+        final JsonNode segmentPayload = createSegmentPayload(caseRef, segment);
         return postRecordingSegment(segmentPayload);
     }
 
@@ -212,14 +217,14 @@ public abstract class BaseTest {
             .get(recordingUrl);
     }
 
-    protected JsonNode createSegmentPayload(String caseRef) {
+    protected JsonNode createSegmentPayload(String caseRef, int segment) {
         return createRecordingSegment(
             FOLDER,
             JURISDICTION,
             LOCATION_CODE,
             caseRef,
             TIME,
-            SEGMENT,
+            segment,
             FILE_EXT
         );
     }
@@ -254,12 +259,12 @@ public abstract class BaseTest {
             .statusCode(200);
     }
 
-    protected CaseDetails findCase(String caseRef) throws InterruptedException {
+    CaseDetails findCaseWithAutoRetry(String caseRef) {
         Optional<CaseDetails> optionalCaseDetails = searchForCase(caseRef);
 
         int count = 0;
         while (count <= 10 && optionalCaseDetails.isEmpty()) {
-            TimeUnit.SECONDS.sleep(30);
+            SleepHelper.sleepForSeconds(FIND_CASE_TIMEOUT);
             optionalCaseDetails = searchForCase(caseRef);
             count++;
         }
@@ -298,17 +303,18 @@ public abstract class BaseTest {
     }
 
     protected String timebasedCaseRef() {
-        DateTimeFormatter customFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-MM-ss-SSS");
-        //yyyy-MM-dd-HH-MM-ss-SSS=07-30-2021-16-07-35-485
+
         ZonedDateTime now = ZonedDateTime.now();
 
-        String time = customFormatter.format(now);
-        return "FUNCTEST_" + time;
+        String date = datePartFormatter.format(now);
+        String time = timePartFormatter.format(now);
+        //yyyy-MM-dd---HH-MM-ss---SSS=07-30-2021---16-07-35---485
+        return CASEREF_PREFIX + date + "---" + time;
     }
 
-    protected String filename(String caseRef) {
+    protected String filename(String caseRef, int segment) {
         return FOLDER + "/" + JURISDICTION + "-" + LOCATION_CODE + "-" + caseRef + "_" + TIME
-            + "-UTC_" + SEGMENT + ".mp4";
+            + "-UTC_" + segment + ".mp4";
     }
 
     public String closeCase(final String caseRef, CaseDetails caseDetails) {
