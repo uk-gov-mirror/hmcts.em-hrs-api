@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.em.hrs.service.SecurityService;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 @Service
 public class CcdDataStoreApiClient {
