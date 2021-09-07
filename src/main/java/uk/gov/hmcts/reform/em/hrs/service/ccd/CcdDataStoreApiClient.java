@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
-import com.github.rholder.retry.Retryer;
-import com.github.rholder.retry.RetryerBuilder;
-import com.github.rholder.retry.StopStrategies;
-import com.github.rholder.retry.WaitStrategies;
-import com.google.common.base.Predicates;
+import com.microsoft.applicationinsights.core.dependencies.google.gson.Gson;
+import com.microsoft.applicationinsights.core.dependencies.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,11 +14,8 @@ import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.exception.CcdUploadException;
 import uk.gov.hmcts.reform.em.hrs.service.SecurityService;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class CcdDataStoreApiClient {
@@ -85,40 +79,45 @@ public class CcdDataStoreApiClient {
                 startEventResponse.getCaseDetails().getData(), recordingId, hearingRecordingDto)
             ).build();
 
+
         LOGGER.info(
             "updating ccd case (id {}) with new recording (ref {})",
             caseId,
             hearingRecordingDto.getRecordingRef()
         );
 
-        Long caseDetailsId = null;
-
-        Callable<Long> callable = new Callable<Long>() {
-            @Override
-            public Long call() throws Exception {
-                return coreCaseDataApi
-                    .submitEventForCaseWorker(tokens.get(USER), tokens.get(SERVICE), tokens.get(USER_ID),
-                                              JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData
-                    )
-                    .getId();
-
-            }
-        };
-
-        Retryer<Long> retryer = RetryerBuilder.<Long>newBuilder()
-            .retryIfResult(Predicates.<Long>isNull())
-            .retryIfExceptionOfType(IOException.class)//TODO determine the expected CCD exception thrown here
-            .retryIfRuntimeException()
-            .withWaitStrategy(WaitStrategies.fibonacciWait(2000, 2, TimeUnit.MINUTES))
-            .withStopStrategy(StopStrategies.stopAfterAttempt(5))
-            .build();
         try {
-            caseDetailsId = retryer.call(callable);
+            CaseDetails caseDetails =
+                coreCaseDataApi.submitEventForCaseWorker(tokens.get(USER), tokens.get(SERVICE), tokens.get(USER_ID),
+                                                         JURISDICTION, CASE_TYPE, caseId.toString(), false, caseData
+                );
+
+            return caseDetails.getId();
         } catch (Exception e) {
-            throw new CcdUploadException("Failed to upload to CCD " + e.getMessage(), e);
+            //CCD has rejected, so log payload to assist with debugging (no sensitive information is exposed)
+            String caseReference = caseData.getCaseReference();
+            Event event = caseData.getEvent();
+            String eventDescription = event.getDescription();
+            String eventId = event.getId();
+            String eventSummary = event.getSummary();
+
+            LOGGER.info(
+                "caseReference: {}, eventId: {}, eventDescription: {}, eventSummary: {}",
+                caseReference,
+                eventId,
+                eventDescription,
+                eventSummary
+            );
+            Object jsonData = caseData.getData();
+            LOGGER.info("caseData Raw: " + jsonData.toString());
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            String jsonOutput = gson.toJson(jsonData);
+            LOGGER.info("caseData Pretty: " + jsonOutput);
+
+
+            throw new CcdUploadException("Error Uploading Segment", e);
         }
 
-        return caseDetailsId;
     }
 }
 
