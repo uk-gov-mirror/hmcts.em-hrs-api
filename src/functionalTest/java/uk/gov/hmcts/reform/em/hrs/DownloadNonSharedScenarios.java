@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
@@ -14,6 +17,7 @@ public class DownloadNonSharedScenarios extends BaseTest {
 
 
     private String filename;
+    private Set<String> filenames = new HashSet<String>();
     @Autowired
     private BlobUtil blobUtil;
     private String caseRef;
@@ -26,14 +30,11 @@ public class DownloadNonSharedScenarios extends BaseTest {
         caseRef = timebasedCaseRef();
         filename = filename(caseRef, 0);
 
-        int cvpBlobCount = blobUtil.getBlobCount(blobUtil.cvpBlobContainerClient, FOLDER);
         blobUtil.uploadToCvpContainer(filename);
-        blobUtil.checkIfBlobUploadedToCvp(FOLDER, cvpBlobCount);
+        blobUtil.checkIfUploadedToStore(filenames, blobUtil.cvpBlobContainerClient);
 
-
-        int hrsBlobCount = blobUtil.getBlobCount(blobUtil.hrsBlobContainerClient, FOLDER);
         postRecordingSegment(caseRef, 0).then().statusCode(202);
-        blobUtil.checkIfUploadedToHrsStorage(FOLDER, hrsBlobCount);
+        blobUtil.checkIfUploadedToStore(filenames, blobUtil.hrsBlobContainerClient);
 
         caseDetails = findCaseWithAutoRetry(caseRef);
 

@@ -9,12 +9,14 @@ import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
 
 public class IngestScenarios extends BaseTest {
@@ -26,7 +28,7 @@ public class IngestScenarios extends BaseTest {
     private BlobUtil testUtil;
 
     String caseRef;
-    List<String> filenames = new ArrayList<String>();
+    Set<String> filenames = new HashSet<>();
 
     @Before
     public void setup() throws Exception {
@@ -50,7 +52,7 @@ public class IngestScenarios extends BaseTest {
         );
 
         caseRef = timebasedCaseRef();
-        int cvpOriginalBlobCount = testUtil.getBlobCount(testUtil.cvpBlobContainerClient, FOLDER);
+
 
         for (int segmentIndex = 0; segmentIndex < SEGMENT_COUNT; segmentIndex++) {
             String filename = filename(caseRef, segmentIndex);
@@ -58,12 +60,11 @@ public class IngestScenarios extends BaseTest {
             testUtil.uploadToCvpContainer(filename);
         }
 
-        testUtil.checkIfUploadedToStore(FOLDER, cvpOriginalBlobCount, SEGMENT_COUNT, testUtil.cvpBlobContainerClient);
+        testUtil.checkIfUploadedToStore(filenames, testUtil.cvpBlobContainerClient);
     }
 
     @Test
     public void shouldCreateHearingRecordingSegments() {
-        int hrsOriginalBlobCount = testUtil.getBlobCount(testUtil.hrsBlobContainerClient, FOLDER);
 
         for (int segmentIndex = 0; segmentIndex < SEGMENT_COUNT; segmentIndex++) {
             postRecordingSegment(caseRef, segmentIndex)
@@ -72,13 +73,13 @@ public class IngestScenarios extends BaseTest {
                 .statusCode(202);
         }
 
-        testUtil.checkIfUploadedToStore(FOLDER, hrsOriginalBlobCount, SEGMENT_COUNT, testUtil.hrsBlobContainerClient);
+        testUtil.checkIfUploadedToStore(filenames, testUtil.hrsBlobContainerClient);
 
         getFilenames(FOLDER)
             .assertThat().log().all()
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
-            .body("filenames", hasItem(filenames.get(SEGMENT_COUNT - 1)));
+            .body("filenames", hasItems(filenames.stream().iterator()));
 
         LOGGER.info("*****************************");
         LOGGER.info("*****************************");
@@ -111,6 +112,6 @@ public class IngestScenarios extends BaseTest {
             .assertThat().log().all()
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))
-            .body("filenames", not(hasItem(filenames.get(0))));
+            .body("filenames", not(hasItems(filenames.stream().iterator())));
     }
 }

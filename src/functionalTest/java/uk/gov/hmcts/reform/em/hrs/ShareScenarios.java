@@ -7,6 +7,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
@@ -14,10 +17,11 @@ import static org.hamcrest.Matchers.not;
 public class ShareScenarios extends BaseTest {
 
     @Autowired
-    private BlobUtil testUtil;
+    private BlobUtil blobUtil;
 
     private String caseRef;
     private String filename;
+    private Set<String> filenames = new HashSet<String>();
     private CaseDetails caseDetails;
     private int expectedFileSize;
 
@@ -27,19 +31,18 @@ public class ShareScenarios extends BaseTest {
 
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = timebasedCaseRef();
-        filename = filename(caseRef,0);
+        filename = filename(caseRef, 0);
+        filenames.add(filename);
 
-        int cvpExistingBlobCount = testUtil.getBlobCount(testUtil.cvpBlobContainerClient, FOLDER);
-        testUtil.uploadToCvpContainer(filename);
-        testUtil.checkIfBlobUploadedToCvp(FOLDER, cvpExistingBlobCount);
+        blobUtil.uploadToCvpContainer(filename);
+        blobUtil.checkIfUploadedToStore(filenames, blobUtil.cvpBlobContainerClient);
 
-        int hrsExistingBlobCount = testUtil.getBlobCount(testUtil.hrsBlobContainerClient, FOLDER);
         postRecordingSegment(caseRef, 0).then().statusCode(202);
-        testUtil.checkIfUploadedToHrsStorage(FOLDER, hrsExistingBlobCount);
+        blobUtil.checkIfUploadedToStore(filenames, blobUtil.hrsBlobContainerClient);
 
         caseDetails = findCaseWithAutoRetry(caseRef);
 
-        expectedFileSize = testUtil.getTestFile().readAllBytes().length;
+        expectedFileSize = blobUtil.getTestFile().readAllBytes().length;
         assertThat(expectedFileSize, is(not(0)));
     }
 
@@ -126,7 +129,7 @@ public class ShareScenarios extends BaseTest {
         caseDetails.setId(Long.valueOf(generateUID()));
         final CallbackRequest callbackRequest =
             addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER);
-        LOGGER.info("Sharing case with id 0, by user {}",USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
+        LOGGER.info("Sharing case with id 0, by user {}", USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
         shareRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, callbackRequest)
             .then().log().all()
             .statusCode(404);
