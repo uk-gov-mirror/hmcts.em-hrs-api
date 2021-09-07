@@ -4,19 +4,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.em.hrs.testutil.TestUtil;
+import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 
-public class DownloadHearingRecordingScenarios extends BaseTest {
+public class DownloadNonSharedScenarios extends BaseTest {
 
-    @Autowired
-    private TestUtil testUtil;
 
-    private String caseRef;
     private String filename;
+    @Autowired
+    private BlobUtil blobUtil;
+    private String caseRef;
     private CaseDetails caseDetails;
     private int expectedFileSize;
 
@@ -24,19 +24,20 @@ public class DownloadHearingRecordingScenarios extends BaseTest {
     public void setup() throws Exception {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = timebasedCaseRef();
-        filename = filename(caseRef);
+        filename = filename(caseRef, 0);
 
-        int cvpBlobCount = testUtil.getCvpBlobCount(FOLDER);
-        testUtil.uploadToCvpContainer(filename);
-        testUtil.checkIfUploadedToCvp(FOLDER, cvpBlobCount);
+        int cvpBlobCount = blobUtil.getBlobCount(blobUtil.cvpBlobContainerClient, FOLDER);
+        blobUtil.uploadToCvpContainer(filename);
+        blobUtil.checkIfBlobUploadedToCvp(FOLDER, cvpBlobCount);
 
-        int hrsBlobCount = testUtil.getHrsBlobCount(FOLDER);
-        postRecordingSegment(caseRef).then().statusCode(202);
-        testUtil.checkIfUploadedToHrs(FOLDER, hrsBlobCount);
 
-        caseDetails = findCase(caseRef);
+        int hrsBlobCount = blobUtil.getBlobCount(blobUtil.hrsBlobContainerClient, FOLDER);
+        postRecordingSegment(caseRef, 0).then().statusCode(202);
+        blobUtil.checkIfUploadedToHrsStorage(FOLDER, hrsBlobCount);
 
-        expectedFileSize = testUtil.getTestFile().readAllBytes().length;
+        caseDetails = findCaseWithAutoRetry(caseRef);
+
+        expectedFileSize = blobUtil.getTestFile().readAllBytes().length;
         assertThat(expectedFileSize, is(not(0)));
     }
 

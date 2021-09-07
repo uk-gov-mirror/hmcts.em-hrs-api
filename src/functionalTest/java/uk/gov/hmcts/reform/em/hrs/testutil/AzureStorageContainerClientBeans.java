@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
-public class HrsAzureClient {
+public class AzureStorageContainerClientBeans {
 
-    private static final Logger LOGGER = getLogger(HrsAzureClient.class);
+    private static final Logger LOGGER = getLogger(AzureStorageContainerClientBeans.class);
 
     @Value("${azure.storage.hrs.connection-string}")
     private String hrsConnectionString;
@@ -28,7 +28,7 @@ public class HrsAzureClient {
 
     @Bean(name = "hrsBlobContainerClient")
     public BlobContainerClient hrsBlobContainerClient() {
-        LOGGER.info("HRS ConnectionString: {}, HRS Container: {} ",hrsConnectionString, hrsContainer);
+        LOGGER.info("HRS ConnectionString: {}, HRS Container: {} ", hrsConnectionString, hrsContainer);
         return new BlobContainerClientBuilder()
             .connectionString(hrsConnectionString)
             .containerName(hrsContainer)
@@ -37,7 +37,7 @@ public class HrsAzureClient {
 
     @Bean(name = "cvpBlobContainerClient")
     public BlobContainerClient cvpBlobContainerClient() {
-        LOGGER.info("CVP ConnectionString: {}, CVP Container: {} ",cvpConnectionString, cvpContainer);
+        LOGGER.info("CVP ConnectionString: {}, CVP Container: {} ", cvpConnectionString, cvpContainer);
         return new BlobContainerClientBuilder()
             .connectionString(cvpConnectionString)
             .containerName(cvpContainer)
