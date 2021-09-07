@@ -26,8 +26,8 @@ public class CcdDataStoreApiClient {
     private static final String USER = "user";
     private static final String USER_ID = "userId";
     private static final String CASE_TYPE = "HearingRecordings";
-    private static final String CREATE_CASE = "createCase";
-    private static final String ADD_RECORDING_FILE = "manageFiles";
+    private static final String EVENT_CREATE_CASE = "createCase";
+    private static final String EVENT_MANAGE_FILES = "manageFiles";
     private final SecurityService securityService;
     private final CaseDataContentCreator caseDataCreator;
     private final CoreCaseDataApi coreCaseDataApi;
@@ -44,7 +44,7 @@ public class CcdDataStoreApiClient {
         Map<String, String> tokens = securityService.getTokens();
 
         StartEventResponse startEventResponse =
-            coreCaseDataApi.startCase(tokens.get(USER), tokens.get(SERVICE), CASE_TYPE, CREATE_CASE);
+            coreCaseDataApi.startCase(tokens.get(USER), tokens.get(SERVICE), CASE_TYPE, EVENT_CREATE_CASE);
 
         CaseDataContent caseData = CaseDataContent.builder()
             .event(Event.builder().id(startEventResponse.getEventId()).build())
@@ -69,7 +69,7 @@ public class CcdDataStoreApiClient {
         Map<String, String> tokens = securityService.getTokens();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEvent(tokens.get(USER), tokens.get(SERVICE),
-                                                                           caseId.toString(), ADD_RECORDING_FILE
+                                                                           caseId.toString(), EVENT_MANAGE_FILES
         );
 
         CaseDataContent caseData = CaseDataContent.builder()
