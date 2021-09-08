@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper.sleepForSeconds;
 @Component
 public class BlobUtil {
 
-    public static final int FIND_BLOB_TIMEOUT = 3;
+    public static final int FIND_BLOB_TIMEOUT = 5;
     public final BlobContainerClient hrsBlobContainerClient;
     public final BlobContainerClient cvpBlobContainerClient;
 
@@ -69,11 +69,8 @@ public class BlobUtil {
         int filesToCheckCount = fileNames.size();
         while (retryCount <= 20 && filesFound < filesToCheckCount) {
             sleepForSeconds(FIND_BLOB_TIMEOUT);
-            LOGGER.debug(
-                "checking for upload of {} files...{} found", filesToCheckCount,
-                filesFound
-            );
             filesFound = getBlobCount(containerClient, fileNames);
+            LOGGER.info("checked for upload of {} files...{} found", filesToCheckCount, filesFound);
             retryCount++;
         }
         if (retryCount > 20) {

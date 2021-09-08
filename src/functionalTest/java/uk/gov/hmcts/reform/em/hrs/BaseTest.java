@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
-import liquibase.pro.packaged.x;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
@@ -66,7 +65,7 @@ import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
 @WithTags({@WithTag("testType:Functional")})
 public abstract class BaseTest {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
     protected static final String JURISDICTION = "HRS";
     protected static final String LOCATION_CODE = "0123";
@@ -98,7 +97,7 @@ public abstract class BaseTest {
     DateTimeFormatter timePartFormatter = DateTimeFormatter.ofPattern("HH-MM-ss---SSS");
 
     @Rule
-    public RetryRule retryRule = new RetryRule(3);
+    public RetryRule retryRule = new RetryRule(3);//3 is standard across hmcts projects
 
     @Value("${test.url}")
     protected String testUrl;
@@ -350,12 +349,10 @@ public abstract class BaseTest {
     }
 
 
-
-
-
     /**
      * below three methods denerate a random valid UID.
      * ripped from uk.gov.hmcts.ccd.domain.service.common TODO consider importing this as a library if it exists
+     *
      * @return A randomly generated, valid, UID.
      */
     public String generateUID() {

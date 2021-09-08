@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.hrs;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
@@ -15,6 +17,7 @@ import static org.hamcrest.Matchers.not;
 
 public class DownloadNonSharedScenarios extends BaseTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DownloadNonSharedScenarios.class);
 
     private String filename;
     private Set<String> filenames = new HashSet<String>();

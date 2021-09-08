@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.em.hrs;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -24,6 +26,8 @@ public class ShareScenarios extends BaseTest {
     private Set<String> filenames = new HashSet<String>();
     private CaseDetails caseDetails;
     private int expectedFileSize;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShareScenarios.class);
 
     @Before
     public void setup() throws Exception {
