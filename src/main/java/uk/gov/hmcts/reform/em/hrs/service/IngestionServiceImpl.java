@@ -33,7 +33,9 @@ public class IngestionServiceImpl implements IngestionService {
         String cvpFileUrl = hearingRecordingDto.getCvpFileUrl();
         String filename = hearingRecordingDto.getFilename();
 
+        LOGGER.info("Ingestion: Copying File: {}",filename);
         hearingRecordingStorage.copyRecording(cvpFileUrl, filename);
+        LOGGER.info("Queueing ccd upload: {}",filename);
         boolean accepted = ccdUploadQueue.offer(hearingRecordingDto);
 
         if (!accepted) {

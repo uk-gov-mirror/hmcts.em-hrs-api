@@ -29,7 +29,7 @@ public class CcdUploadJobScheduler {
     public void start() throws SchedulerException {
         final String nameElement = "CCD-Upload";
         final String groupElement = "HRS-Ingestion-Jobs";
-        final JobDetail jobDetail = JobBuilder.newJob(IngestionJob.class)
+        final JobDetail jobDetail = JobBuilder.newJob(CcdUploadJob.class)
             .withIdentity(nameElement, groupElement)
             .withDescription("Ingests hearing recordings from CVP into HRS")
             .build();
