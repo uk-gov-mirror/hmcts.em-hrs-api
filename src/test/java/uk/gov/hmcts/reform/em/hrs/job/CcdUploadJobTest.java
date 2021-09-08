@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.quartz.JobExecutionContext;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.service.JobInProgressService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdUploadService;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -39,10 +40,10 @@ class CcdUploadJobTest {
 
     private LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue = new LinkedBlockingQueue<>(1000);
 
-
+    private final JobInProgressService jobInProgressService = mock(JobInProgressService.class);
     private final CcdUploadService ccdUploadService = mock(CcdUploadService.class);
     private final JobExecutionContext context = mock(JobExecutionContext.class);
-    private final CcdUploadJob underTest = new CcdUploadJob(ccdUploadQueue, ccdUploadService);
+    private final CcdUploadJob underTest = new CcdUploadJob(ccdUploadQueue, ccdUploadService, jobInProgressService);
 
     @BeforeEach
     void prepare() {
@@ -57,6 +58,7 @@ class CcdUploadJobTest {
         underTest.executeInternal(context);
 
         verify(ccdUploadService, times(1)).upload(HEARING_RECORDING_DTO);
+        verify(jobInProgressService, times(1)).deRegister(HEARING_RECORDING_DTO);
     }
 
     @Test
@@ -66,17 +68,17 @@ class CcdUploadJobTest {
         underTest.executeInternal(context);
 
         verify(ccdUploadService, never()).upload(any(HearingRecordingDto.class));
+        verify(jobInProgressService, never()).deRegister(HEARING_RECORDING_DTO);
     }
 
-    //TODO discuss with team...is this actually testing correctly...its ensuring code coverage is exercised and that
-    // no exceptions are
-    //thrown during exception handling, but it doesn't actually test the queue being full....
+
     @Test
     void testShouldHandleGracefullyWhenAysncQueueIsFull() {
         ccdUploadQueue.offer(HEARING_RECORDING_DTO);
         doThrow(RejectedExecutionException.class).when(ccdUploadService).upload(any(HearingRecordingDto.class));
         underTest.executeInternal(context);
         verify(ccdUploadService, times(1)).upload(any(HearingRecordingDto.class));
+        verify(jobInProgressService, times(1)).deRegister(HEARING_RECORDING_DTO);
     }
 
     @Test
@@ -85,6 +87,7 @@ class CcdUploadJobTest {
         doThrow(RuntimeException.class).when(ccdUploadService).upload(any(HearingRecordingDto.class));
         underTest.executeInternal(context);
         verify(ccdUploadService, times(1)).upload(any(HearingRecordingDto.class));
+        verify(jobInProgressService, times(1)).deRegister(HEARING_RECORDING_DTO);
     }
 
 

@@ -36,10 +36,14 @@ public class IngestionJob extends QuartzJobBean {
     public IngestionJob() {
     }
 
+    //POJO Constructor for mocked tests without dependency injection
     IngestionJob(final LinkedBlockingQueue<HearingRecordingDto> ingestionQueue,
-                 final IngestionService ingestionService) {
+                 final IngestionService ingestionService, final JobInProgressService jobInProgressService,
+                 LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue) {
         this.ingestionQueue = ingestionQueue;
         this.ingestionService = ingestionService;
+        this.jobInProgressService = jobInProgressService;
+        this.ccdUploadQueue = ccdUploadQueue;
     }
 
     @Override
@@ -56,6 +60,7 @@ public class IngestionJob extends QuartzJobBean {
             boolean accepted = ccdUploadQueue.offer(hrDto);
             if (!accepted) {
                 LOGGER.warn("CCD Upload Queue Full. Not uploading file: {} " + hrDto.getFilename());
+                jobInProgressService.deRegister(hrDto);
             }
         } catch (RejectedExecutionException re) {
             LOGGER.warn("Execution Rejected: {}", re);//likely to be timeouts with blobstore

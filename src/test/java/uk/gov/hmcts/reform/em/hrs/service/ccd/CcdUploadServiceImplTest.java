@@ -69,7 +69,7 @@ class CcdUploadServiceImplTest {
                 anyLong(),
                 eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()),
                 eq(HEARING_RECORDING_DTO)
-            );
+        );
         doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));
 
         underTest.upload(HEARING_RECORDING_DTO);

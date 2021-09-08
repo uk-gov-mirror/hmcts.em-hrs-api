@@ -35,10 +35,13 @@ public class CcdUploadJob extends QuartzJobBean {
     public CcdUploadJob() {
     }
 
+    //POJO Constructor for mocked tests without dependency injection
     CcdUploadJob(final LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue,
-                 final CcdUploadService ccdUploadService) {
+                 final CcdUploadService ccdUploadService,
+                 final JobInProgressService jobInProgressService) {
         this.ccdUploadQueue = ccdUploadQueue;
         this.ccdUploadService = ccdUploadService;
+        this.jobInProgressService = jobInProgressService;
     }
 
     @Override
