@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper.sleepForSeconds;
 @Component
 public class BlobUtil {
 
-    public static final int FIND_BLOB_TIMEOUT = 5;
+    public static final int FIND_BLOB_TIMEOUT = 10;
     public final BlobContainerClient hrsBlobContainerClient;
     public final BlobContainerClient cvpBlobContainerClient;
 
@@ -67,13 +67,13 @@ public class BlobUtil {
         int retryCount = 0;
         int filesFound = 0;
         int filesToCheckCount = fileNames.size();
-        while (retryCount <= 20 && filesFound < filesToCheckCount) {
+        while (retryCount <= 30 && filesFound < filesToCheckCount) {
             sleepForSeconds(FIND_BLOB_TIMEOUT);
             filesFound = getBlobCount(containerClient, fileNames);
             LOGGER.info("checked for upload of {} files...{} found", filesToCheckCount, filesFound);
             retryCount++;
         }
-        if (retryCount > 20) {
+        if (retryCount > 30) {
             throw new IllegalStateException(
                 "Could not find files within test.\nActual count =" + filesFound + ", Expected Total = " +
                     filesToCheckCount);
