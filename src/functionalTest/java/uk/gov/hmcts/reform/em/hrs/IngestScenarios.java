@@ -88,7 +88,7 @@ public class IngestScenarios extends BaseTest {
         LOGGER.info("************* CHECKING HRS HAS COPIED **********");
         testUtil.checkIfUploadedToStore(filenames, testUtil.hrsBlobContainerClient);
 
-        getFilenames(FOLDER)
+        getFilenamesCompletedOrInProgress(FOLDER)
             .assertThat().log().all()
             .statusCode(200)
             .body("folder-name", equalTo(FOLDER))

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.service.JobInProgressService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdUploadService;
 
 import java.util.Optional;
@@ -24,6 +25,8 @@ public class CcdUploadJob extends QuartzJobBean {
     @Qualifier("ccdUploadQueue")
     private LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue;
 
+    @Inject
+    private JobInProgressService jobInProgressService;
 
     @Inject
     private CcdUploadService ccdUploadService;
@@ -52,6 +55,8 @@ public class CcdUploadJob extends QuartzJobBean {
         } catch (Exception e) {
             LOGGER.error("Unhandled Exception: {}", e);
         }
+
+        jobInProgressService.deRegister(hrDto);
     }
 }
 

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.exception.CcdUploadException;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
@@ -116,16 +117,21 @@ public class CcdUploadServiceImpl implements CcdUploadService {
             //the recording has already been persisted by another cluster - do not proceed as waiting for CCD id
             LOGGER
                 .info(
-                    "create case Hearing Recording already exists in database, not persisting recording, nor segment "
+                    "create case Hearing Recording already exists in database, not persisting new recording, nor "
+                        + "segment "
                         + "at this time");
+            throw new CcdUploadException(
+                "Hearing Recording already exists - likely race condition from another server node");
         } catch (Exception e) {
-            LOGGER.info(
+            LOGGER.warn(
                 "create case Unhandled Exception whilst adding segment to DB (ref {}) to case(ccdId {})",
                 recordingDto.getRecordingRef(),
                 recording.getCcdCaseId()
             );
+            throw new CcdUploadException("Unhandled Exception trying to persist case");
         }
 
+        LOGGER.info("About to create case in CCD");
 
         final Long caseId = ccdDataStoreApiClient.createCase(recording.getId(), recordingDto);
         recording.setCcdCaseId(caseId);

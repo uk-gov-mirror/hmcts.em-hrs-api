@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.IngestionService;
+import uk.gov.hmcts.reform.em.hrs.service.JobInProgressService;
 
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,15 +22,22 @@ public class IngestionJob extends QuartzJobBean {
     @Qualifier("ingestionQueue")
     private LinkedBlockingQueue<HearingRecordingDto> ingestionQueue;
 
+    @Inject
+    private JobInProgressService jobInProgressService;
 
     @Inject
     private IngestionService ingestionService;
+
+    @Inject
+    @Qualifier("ccdUploadQueue")
+    private LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue;
 
     // Required by Quartz
     public IngestionJob() {
     }
 
-    IngestionJob(final LinkedBlockingQueue<HearingRecordingDto> ingestionQueue, final IngestionService ingestionService) {
+    IngestionJob(final LinkedBlockingQueue<HearingRecordingDto> ingestionQueue,
+                 final IngestionService ingestionService) {
         this.ingestionQueue = ingestionQueue;
         this.ingestionService = ingestionService;
     }
@@ -41,12 +49,20 @@ public class IngestionJob extends QuartzJobBean {
     }
 
     private void ingestGracefully(HearingRecordingDto hrDto) {
+        jobInProgressService.register(hrDto);
+
         try {
             ingestionService.ingest(hrDto);
+            boolean accepted = ccdUploadQueue.offer(hrDto);
+            if (!accepted) {
+                LOGGER.warn("CCD Upload Queue Full. Not uploading file: {} " + hrDto.getFilename());
+            }
         } catch (RejectedExecutionException re) {
             LOGGER.warn("Execution Rejected: {}", re);//likely to be timeouts with blobstore
+            jobInProgressService.deRegister(hrDto);//remove from job in progress
         } catch (Exception e) {
             LOGGER.error("Unhandled Exception: {}", e);
+            jobInProgressService.deRegister(hrDto);
         }
     }
 }

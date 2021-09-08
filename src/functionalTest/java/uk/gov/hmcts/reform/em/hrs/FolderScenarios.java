@@ -16,7 +16,7 @@ public class FolderScenarios extends BaseTest {
     public void shouldCreateFolderWhenDoesNotExistAndReturnEmptyFileNames() {
         final String nonExistentFolder = "audiostream000000";
 
-        getFilenames(nonExistentFolder)
+        getFilenamesCompletedOrInProgress(nonExistentFolder)
             .assertThat().log().all()
             .statusCode(200)
             .body("folder-name", equalTo(nonExistentFolder))

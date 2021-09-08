@@ -97,7 +97,8 @@ public abstract class BaseTest {
     DateTimeFormatter timePartFormatter = DateTimeFormatter.ofPattern("HH-MM-ss---SSS");
 
     @Rule
-    public RetryRule retryRule = new RetryRule(3);//3 is standard across hmcts projects
+    public RetryRule retryRule = new RetryRule(1);//3 is standard across hmcts projects,
+    // but confusing this sort of testing when new files are repeatedly added.
 
     @Value("${test.url}")
     protected String testUrl;
@@ -161,7 +162,7 @@ public abstract class BaseTest {
             .header("ServiceAuthorization", s2sAuth);
     }
 
-    protected ValidatableResponse getFilenames(String folder) {
+    protected ValidatableResponse getFilenamesCompletedOrInProgress(String folder) {
         return authRequest()
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
@@ -252,7 +253,7 @@ public abstract class BaseTest {
     }
 
     protected void createFolderIfDoesNotExistInHrsDB(final String folderName) {
-        getFilenames(folderName)
+        getFilenamesCompletedOrInProgress(folderName)
             .log().all()
             .assertThat()
             .statusCode(200);
