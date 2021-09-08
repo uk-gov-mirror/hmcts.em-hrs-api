@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.repository;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
-import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
 
 import java.time.LocalDateTime;
