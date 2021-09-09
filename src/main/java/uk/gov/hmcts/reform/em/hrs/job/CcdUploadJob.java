@@ -47,7 +47,7 @@ public class CcdUploadJob extends QuartzJobBean {
     @Override
     protected void executeInternal(final JobExecutionContext context) {
         Optional.ofNullable(ccdUploadQueue.poll())
-            .ifPresent(hrDto -> uploadGracefully(hrDto));
+            .ifPresent(this::uploadGracefully);
     }
 
     private void uploadGracefully(HearingRecordingDto hrDto) {

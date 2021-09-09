@@ -59,7 +59,7 @@ public class IngestionJob extends QuartzJobBean {
             ingestionService.ingest(hrDto);
             boolean accepted = ccdUploadQueue.offer(hrDto);
             if (!accepted) {
-                LOGGER.warn("CCD Upload Queue Full. Not uploading file: {} " + hrDto.getFilename());
+                LOGGER.warn("CCD Upload Queue Full. Not uploading file: {} ", hrDto.getFilename());
                 jobInProgressService.deRegister(hrDto);
             }
         } catch (RejectedExecutionException re) {

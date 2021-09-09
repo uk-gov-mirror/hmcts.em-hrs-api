@@ -8,9 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.exception.DatabaseStorageException;
 import uk.gov.hmcts.reform.em.hrs.repository.FolderRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.JobInProgressRepository;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -36,9 +38,13 @@ public class JobInProgressServiceImpl implements JobInProgressService {
         String folderName = hrDto.getFolder();
 
         LOGGER.info("Ingestion: Registering Job In Progress for folderName/filename: {}/{}", filename, folderName);
-        Folder folder = folderRepository.findByName(folderName).get();
-        JobInProgress job = JobInProgress.builder().folder(folder).filename(filename).build();
-        jobInProgressRepository.save(job);
+        Optional<Folder> folder = folderRepository.findByName(folderName);
+        if (folder.isEmpty()) {
+            throw new DatabaseStorageException("IllegalState - Folder not found in DB: " + String.valueOf(folderName));
+        } else {
+            JobInProgress job = JobInProgress.builder().folder(folder.get()).filename(filename).build();
+            jobInProgressRepository.save(job);
+        }
     }
 
     @Override
