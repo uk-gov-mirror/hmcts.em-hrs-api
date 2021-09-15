@@ -18,9 +18,9 @@ import static org.mockito.Mockito.verify;
 class CcdUploadJobSchedulerTest {
     private final Scheduler scheduler = mock(Scheduler.class);
 
-    private final int rate = 1;
+    private final int interval_in_seconds = 1;
 
-    private final CcdUploadJobScheduler underTest = new CcdUploadJobScheduler(scheduler, rate);
+    private final CcdUploadJobScheduler underTest = new CcdUploadJobScheduler(scheduler, interval_in_seconds);
 
     @Test
     void testShouldStartTheScheduler() throws Exception {

@@ -8,13 +8,11 @@ import uk.gov.hmcts.reform.em.hrs.service.JobInProgressService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdUploadService;
 
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.CASE_REFERENCE;
@@ -58,26 +56,6 @@ class CcdUploadJobTest {
         underTest.executeInternal(context);
 
         verify(ccdUploadService, times(1)).upload(HEARING_RECORDING_DTO);
-        verify(jobInProgressService, times(1)).deRegister(HEARING_RECORDING_DTO);
-    }
-
-    @Test
-    void testShouldNotInvokeuploadionServiceWhenNullIsPolled() {
-        doNothing().when(ccdUploadService).upload(any(HearingRecordingDto.class));
-
-        underTest.executeInternal(context);
-
-        verify(ccdUploadService, never()).upload(any(HearingRecordingDto.class));
-        verify(jobInProgressService, never()).deRegister(HEARING_RECORDING_DTO);
-    }
-
-
-    @Test
-    void testShouldHandleGracefullyWhenAysncQueueIsFull() {
-        ccdUploadQueue.offer(HEARING_RECORDING_DTO);
-        doThrow(RejectedExecutionException.class).when(ccdUploadService).upload(any(HearingRecordingDto.class));
-        underTest.executeInternal(context);
-        verify(ccdUploadService, times(1)).upload(any(HearingRecordingDto.class));
         verify(jobInProgressService, times(1)).deRegister(HEARING_RECORDING_DTO);
     }
 

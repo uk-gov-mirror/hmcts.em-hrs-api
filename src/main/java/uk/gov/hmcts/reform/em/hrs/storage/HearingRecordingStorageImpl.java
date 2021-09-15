@@ -37,8 +37,8 @@ import javax.inject.Named;
 import static uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver.extractAccountFromUrl;
 
 @Named
-public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHearingRecordingStorage.class);
+public class HearingRecordingStorageImpl implements HearingRecordingStorage {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HearingRecordingStorageImpl.class);
     private static final int BLOB_LIST_TIMEOUT = 5;
     private final BlobContainerClient hrsBlobContainerClient;
     private final BlobContainerClient cvpBlobContainerClient;
@@ -47,11 +47,11 @@ public class DefaultHearingRecordingStorage implements HearingRecordingStorage {
     private final String cvpConnectionString;
 
     @Inject
-    public DefaultHearingRecordingStorage(final BlobContainerAsyncClient hrsContainerAsyncClient,
-                                          final @Named("HrsBlobContainerClient") BlobContainerClient hrsContainerClient,
-                                          final @Named("CvpBlobContainerClient") BlobContainerClient cvpContainerClient,
+    public HearingRecordingStorageImpl(final BlobContainerAsyncClient hrsContainerAsyncClient,
+                                       final @Named("HrsBlobContainerClient") BlobContainerClient hrsContainerClient,
+                                       final @Named("CvpBlobContainerClient") BlobContainerClient cvpContainerClient,
 
-                                          @Value("${azure.storage.cvp.connection-string}") String cvpConnectionString) {
+                                       @Value("${azure.storage.cvp.connection-string}") String cvpConnectionString) {
         this.hrsBlobContainerClient = hrsContainerClient;
         this.cvpBlobContainerClient = cvpContainerClient;
         this.cvpConnectionString = cvpConnectionString;
