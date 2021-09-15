@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdUploadService;
 
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -53,8 +52,6 @@ public class CcdUploadJob extends QuartzJobBean {
     private void uploadGracefully(HearingRecordingDto hrDto) {
         try {
             ccdUploadService.upload(hrDto);
-        } catch (RejectedExecutionException re) {
-            LOGGER.warn("Execution Rejected: {}", re);//likely to be timeouts with blobstore
         } catch (Exception e) {
             LOGGER.error("Unhandled Exception: {}", e);
         }

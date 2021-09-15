@@ -91,7 +91,6 @@ class IngestionJobTest {
         verify(ingestionService, times(1)).ingest(any(HearingRecordingDto.class));
         verify(jobInProgressService, times(1)).deRegister(HEARING_RECORDING_DTO);
         verify(ccdUploadQueue, never()).offer(any(HearingRecordingDto.class));
-
     }
 
     @Test

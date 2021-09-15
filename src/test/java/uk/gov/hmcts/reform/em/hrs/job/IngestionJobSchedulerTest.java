@@ -25,18 +25,14 @@ class IngestionJobSchedulerTest {
     @Test
     void testShouldStartTheScheduler() throws Exception {
         doReturn(new Date()).when(scheduler).scheduleJob(any(JobDetail.class), any(Trigger.class));
-
         underTest.start();
-
         verify(scheduler, times(1)).scheduleJob(any(JobDetail.class), any(Trigger.class));
     }
 
     @Test
     void testShouldStopTheScheduler() throws Exception {
         doNothing().when(scheduler).shutdown(anyBoolean());
-
         underTest.stop();
-
         verify(scheduler, times(1)).shutdown(anyBoolean());
     }
 }
