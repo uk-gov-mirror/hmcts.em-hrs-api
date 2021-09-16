@@ -22,18 +22,16 @@ class IngestionServiceImplTest {
     private Snooper snooper;
 
     @InjectMocks
-    private IngestionServiceImpl underTest;
+    private IngestionServiceImpl sutIngestionService;
 
     @Test
     void testShouldCopyToAzureStorageAndJobToCcdQueueWhenHearingRecordingIsNew() {
 
-        doNothing().when(hearingRecordingStorage)
-            .copyRecording(
-                HEARING_RECORDING_DTO.getCvpFileUrl(),
-                HEARING_RECORDING_DTO.getFilename()
-            );
+        doNothing().
+            when(hearingRecordingStorage)
+            .copyRecording(HEARING_RECORDING_DTO.getCvpFileUrl(), HEARING_RECORDING_DTO.getFilename());
 
-        underTest.ingest(HEARING_RECORDING_DTO);
+        sutIngestionService.ingest(HEARING_RECORDING_DTO);
 
         verify(hearingRecordingStorage).copyRecording(
             HEARING_RECORDING_DTO.getCvpFileUrl(),
