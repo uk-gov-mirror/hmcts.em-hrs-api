@@ -85,11 +85,11 @@ public abstract class BaseTest {
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
     protected static final String CLOSE_CASE = "closeCase";
 
-    int FIND_CASE_TIMEOUT = 30;
+    protected static final int FIND_CASE_TIMEOUT = 30;
 
-    protected String idamAuth_hrs_tester;
+    protected String idamAuthHrsTester;
     protected String s2sAuth;
-    protected String userId_hrs_tester;
+    protected String userIdHrsTester;
 
 
     //yyyy-MM-dd---HH-MM-ss---SSS=07-30-2021---16-07-35---485
@@ -125,9 +125,9 @@ public abstract class BaseTest {
     public void init() {
         LOGGER.info("POST CONSTRUCT INITIALISATIONS....");
         SerenityRest.useRelaxedHTTPSValidation();
-        idamAuth_hrs_tester = idamHelper.authenticateUser(HRS_TESTER);
+        idamAuthHrsTester = idamHelper.authenticateUser(HRS_TESTER);
         s2sAuth = BEARER + s2sHelper.getS2sToken();
-        userId_hrs_tester = idamHelper.getUserId(HRS_TESTER);
+        userIdHrsTester = idamHelper.getUserId(HRS_TESTER);
 
         idamHelper.createUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_ROLE);
         idamHelper.createUser(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
@@ -143,7 +143,7 @@ public abstract class BaseTest {
 
 
     private RequestSpecification authRequest(String username) {
-        String userToken = idamAuth_hrs_tester;
+        String userToken = idamAuthHrsTester;
         if (!HRS_TESTER.equals(username)) {
             userToken = idamHelper.authenticateUser(username);
         }
@@ -285,7 +285,7 @@ public abstract class BaseTest {
         String uid = idamClient.getUserInfo(userToken).getUid();
 
         LOGGER.info("searching for case by ref ({}) with userToken ({}) and serviceToken ({})",
-                    caseRef, idamAuth_hrs_tester.substring(0, 12), s2sToken.substring(0, 12)
+                    caseRef, idamAuthHrsTester.substring(0, 12), s2sToken.substring(0, 12)
         );
         return coreCaseDataApi
             .searchForCaseworker(userToken, s2sToken, uid,
@@ -356,7 +356,7 @@ public abstract class BaseTest {
      *
      * @return A randomly generated, valid, UID.
      */
-    public String generateUID() {
+    public String generateUid() {
         SecureRandom random = new SecureRandom();
         String currentTime10OfSeconds = String.valueOf(System.currentTimeMillis()).substring(0, 11);
         StringBuilder builder = new StringBuilder(currentTime10OfSeconds);

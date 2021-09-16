@@ -43,7 +43,7 @@ public class IngestScenarios extends BaseTest {
 
     @Test
     public void shouldCreateHearingRecordingSegments() throws Exception {
-        String caseRef;
+        String caseRef= timebasedCaseRef();
         Set<String> filenames = new HashSet<>();
 
         ZonedDateTime now = ZonedDateTime.now();
@@ -69,7 +69,7 @@ public class IngestScenarios extends BaseTest {
             fileNamePrefixToNotDelete
         );
 
-        caseRef = timebasedCaseRef();
+
 
 
         for (int segmentIndex = 0; segmentIndex < SEGMENT_COUNT; segmentIndex++) {
@@ -95,11 +95,11 @@ public class IngestScenarios extends BaseTest {
 
         //IN AAT hrs is running on 8 / minute uploads, so need to wait at least 8 secs per segment
         //giving it 10 secs per segment, plus an additional segment
-        int secondsToWaitForCCDUploadsToComplete =
+        int secondsToWaitForCcdUploadsToComplete =
             (SEGMENT_COUNT * CCD_UPLOAD_WAIT_PER_SEGMENT_IN_SECONDS) + CCD_UPLOAD_WAIT_MARGIN_IN_SECONDS;
         LOGGER.info("************* Sleeping for {} seconds to allow CCD uploads to complete **********",
-                    secondsToWaitForCCDUploadsToComplete);
-        SleepHelper.sleepForSeconds(secondsToWaitForCCDUploadsToComplete);
+                    secondsToWaitForCcdUploadsToComplete);
+        SleepHelper.sleepForSeconds(secondsToWaitForCcdUploadsToComplete);
 
         //not yet in hrs at this point, so test is failing
 

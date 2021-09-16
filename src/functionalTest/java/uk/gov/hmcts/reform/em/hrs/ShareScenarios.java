@@ -130,7 +130,7 @@ public class ShareScenarios extends BaseTest {
 
     @Test
     public void shouldReturn404WhenShareHearingRecordingsToEmailAddressWithNonExistentCaseId() {
-        Long randomCcdId = Long.valueOf(generateUID());
+        Long randomCcdId = Long.valueOf(generateUid());
         caseDetails.setId(randomCcdId);
         final CallbackRequest callbackRequest =
             addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER);

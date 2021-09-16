@@ -49,8 +49,8 @@ public class BlobUtil {
         containerClient.listBlobs()
             .stream()
             .filter(blobItem ->
-                        blobItem.getName().startsWith(folderName) &&
-                            !blobItem.getName().startsWith(pathPrefix)
+                        blobItem.getName().startsWith(folderName)
+                            && !blobItem.getName().startsWith(pathPrefix)
             )
             .forEach(blobItem -> {
                 LOGGER.info("Deleting old blob: {}", blobItem.getName());
@@ -75,8 +75,8 @@ public class BlobUtil {
         }
         if (retryCount > 30) {
             throw new IllegalStateException(
-                "Could not find files within test.\nActual count =" + filesFound + ", Expected Total = " +
-                    filesToCheckCount);
+                "Could not find files within test.\nActual count =" + filesFound + ", Expected Total = "
+                    + filesToCheckCount);
         }
     }
 
