@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
+import uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -24,6 +25,10 @@ public class IngestScenarios extends BaseTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(IngestScenarios.class);
 
     public static final int SEGMENT_COUNT = 2;//TODO set this 10 11 to test CCD validation changes
+    public static final int CCD_UPLOAD_WAIT_PER_SEGMENT_IN_SECONDS = 15;
+    public static final int CCD_UPLOAD_WAIT_MARGIN_IN_SECONDS = 35;
+    //AAT averages at 8/second if evenly spread across servers - 30 seconds if they all were served by 1 server
+    //chosing 15 seconds as with 2 segments + 35 second margin = 65 seconds in total 0 more than enough
 
     @Autowired
     private BlobUtil testUtil;
@@ -85,9 +90,20 @@ public class IngestScenarios extends BaseTest {
                 .statusCode(202);
         }
 
-        LOGGER.info("************* CHECKING HRS HAS COPIED **********");
+        LOGGER.info("************* CHECKING HRS HAS COPIED TO STORE **********");
         testUtil.checkIfUploadedToStore(filenames, testUtil.hrsBlobContainerClient);
 
+        //IN AAT hrs is running on 8 / minute uploads, so need to wait at least 8 secs per segment
+        //giving it 10 secs per segment, plus an additional segment
+        int secondsToWaitForCCDUploadsToComplete =
+            (SEGMENT_COUNT * CCD_UPLOAD_WAIT_PER_SEGMENT_IN_SECONDS) + CCD_UPLOAD_WAIT_MARGIN_IN_SECONDS;
+        LOGGER.info("************* Sleeping for {} seconds to allow CCD uploads to complete **********",
+                    secondsToWaitForCCDUploadsToComplete);
+        SleepHelper.sleepForSeconds(secondsToWaitForCCDUploadsToComplete);
+
+        //not yet in hrs at this point, so test is failing
+
+        LOGGER.info("************* CHECKING HRS HAS IT IN DATABASE AND RETURNS EXPECTED FILES VIA API**********");
         getFilenamesCompletedOrInProgress(FOLDER)
             .assertThat().log().all()
             .statusCode(200)

@@ -97,8 +97,8 @@ public abstract class BaseTest {
     DateTimeFormatter timePartFormatter = DateTimeFormatter.ofPattern("HH-MM-ss---SSS");
 
     @Rule
-    public RetryRule retryRule = new RetryRule(1);//3 is standard across hmcts projects,
-    // but confusing this sort of testing when new files are repeatedly added.
+    public RetryRule retryRule = new RetryRule(3);//3 is standard across hmcts projects
+
 
     @Value("${test.url}")
     protected String testUrl;
