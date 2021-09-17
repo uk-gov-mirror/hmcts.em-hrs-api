@@ -82,15 +82,13 @@ public class CcdUploadServiceImpl implements CcdUploadService {
             HearingRecordingSegment segment = createSegment(recording, recordingDto);
             segmentRepository.save(segment);
 
-        } catch (Exception e) {
-            LOGGER.info(
-                "segment not added to database, probably duplicate entry (ref {}) to case(ccdId {})",
+        } catch (ConstraintViolationException e) {
+            LOGGER.warn(
+                "Segment not added to database, which is acceptable for duplicate segments (ref {}), (ccdId {})",
                 recordingRef,
                 ccdCaseId
             );
         }
-
-        LOGGER.info("updateCase end");
     }
 
     private void createCaseinCcdAndPersist(final HearingRecordingDto recordingDto) {
@@ -115,13 +113,8 @@ public class CcdUploadServiceImpl implements CcdUploadService {
 
         } catch (ConstraintViolationException e) {
             //the recording has already been persisted by another cluster - do not proceed as waiting for CCD id
-            LOGGER
-                .info(
-                    "create case Hearing Recording already exists in database, not persisting new recording, nor "
-                        + "segment "
-                        + "at this time");
-            throw new CcdUploadException(
-                "Hearing Recording already exists - likely race condition from another server node");
+            LOGGER.warn("Hearing Recording already exists in database.");
+            throw new CcdUploadException("Hearing Recording already exists. Likely race condition from another server");
         } catch (Exception e) {
             LOGGER.warn(
                 "create case Unhandled Exception whilst adding segment to DB (ref {}) to case(ccdId {})",

@@ -9,5 +9,7 @@ import java.util.UUID;
 
 public interface JobInProgressRepository extends PagingAndSortingRepository<JobInProgress, UUID> {
     void deleteByCreatedOnLessThan(LocalDateTime dateTime);
+
+    //TODO filename also contains the folder name - possibly this should be removed as a low value tech debt
     Set<JobInProgress> findByFolderNameAndFilename(String folderName, String fileName);
 }

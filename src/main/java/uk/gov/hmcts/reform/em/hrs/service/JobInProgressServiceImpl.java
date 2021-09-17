@@ -33,7 +33,7 @@ public class JobInProgressServiceImpl implements JobInProgressService {
     }
 
     @Override
-    public void register(final HearingRecordingDto hrDto) {
+    public void register(final HearingRecordingDto hrDto) throws DatabaseStorageException {
         String filename = hrDto.getFilename();
         String folderName = hrDto.getFolder();
 
