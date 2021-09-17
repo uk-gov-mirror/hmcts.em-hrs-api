@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,28 +30,22 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.TEST_FOLDER_1_N
 
 @ExtendWith(MockitoExtension.class)
 class JobsInProgressServiceImplTests {
+
     @Mock
     private FolderRepository folderRepository;
 
-    //    @Mock
-    //    private HearingRecordingSegmentRepository segmentRepository;
-
     @Mock
     private JobInProgressRepository jobInProgressRepository;
-    //    @Mock
-    //    private HearingRecordingStorage blobStorage;
-
 
     @InjectMocks
     private JobInProgressServiceImpl jobInProgressServiceImpl;
 
-    //    @BeforeEach
-    //    void prepare() {
-    //        lenient().doNothing().when(jobInProgressRepository).deleteByCreatedOnLessThan(any(LocalDateTime.class));
-    //    }
-    //
+    @BeforeEach
+    void prepare() {
+        lenient().doNothing().when(jobInProgressRepository).deleteAll();
+    }
 
-    //
+    
     @Test
     @DisplayName("When folder does not exist in database, an exception should be thrown and no entry saved")
     void testRegisterWithNonExistantFolder() {
