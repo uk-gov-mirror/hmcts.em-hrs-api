@@ -57,14 +57,19 @@ public class IngestionJob extends QuartzJobBean {
             jobInProgressService.register(hrDto);
             ingestionService.ingest(hrDto);
             boolean accepted = ccdUploadQueue.offer(hrDto);
-            if (!accepted) {
+            if (accepted) {
+                LOGGER.warn("CCD Upload Job accepted for file: {} ", hrDto.getFilename());
+            } else {
                 LOGGER.warn("CCD Upload Queue Full. Not uploading file: {} ", hrDto.getFilename());
+                jobInProgressService.deRegister(hrDto);
             }
-        } catch (RejectedExecutionException re) {
+        } catch (
+            RejectedExecutionException re) {
             LOGGER.warn("Execution Rejected: {}", re);//likely to be timeouts with azure copies of blobstore
-        } catch (Exception e) {
+            jobInProgressService.deRegister(hrDto);
+        } catch (
+            Exception e) {
             LOGGER.error("Unhandled Exception: {}", e);
-        } finally {
             jobInProgressService.deRegister(hrDto);
         }
     }

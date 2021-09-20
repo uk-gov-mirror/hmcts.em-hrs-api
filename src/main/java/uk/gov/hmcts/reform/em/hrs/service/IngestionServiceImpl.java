@@ -30,8 +30,7 @@ public class IngestionServiceImpl implements IngestionService {
 
         LOGGER.info("Ingestion: Copying File: {}", filename);
         hearingRecordingStorage.copyRecording(cvpFileUrl, filename);
-
-        LOGGER.info("Queueing ccd upload: {}", filename);
+        LOGGER.info("Ingestion: Completed Copying File: {}", filename);
     }
 
 }

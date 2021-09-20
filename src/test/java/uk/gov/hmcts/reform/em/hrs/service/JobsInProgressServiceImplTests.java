@@ -45,7 +45,7 @@ class JobsInProgressServiceImplTests {
         lenient().doNothing().when(jobInProgressRepository).deleteAll();
     }
 
-    
+
     @Test
     @DisplayName("When folder does not exist in database, an exception should be thrown and no entry saved")
     void testRegisterWithNonExistantFolder() {
