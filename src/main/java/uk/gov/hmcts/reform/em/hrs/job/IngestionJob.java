@@ -5,15 +5,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.IngestionService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
 import java.util.Optional;
 import java.util.concurrent.RejectedExecutionException;
-import javax.inject.Named;
 
-@Named
+@Component
 public class IngestionJob extends QuartzJobBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(IngestionJob.class);
 

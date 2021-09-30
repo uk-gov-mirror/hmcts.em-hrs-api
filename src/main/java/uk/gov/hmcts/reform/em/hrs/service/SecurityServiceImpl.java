@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -15,10 +16,9 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Map;
 import java.util.Objects;
-import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-@Named
+@Component
 public class SecurityServiceImpl implements SecurityService {
 
     static final String DUMMY_NAME = "dummyName";

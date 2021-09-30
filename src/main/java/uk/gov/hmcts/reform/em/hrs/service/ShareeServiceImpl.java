@@ -1,14 +1,13 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
 import uk.gov.hmcts.reform.em.hrs.repository.ShareesRepository;
 
-import javax.inject.Named;
-
-@Named
+@Component
 @Transactional
 public class ShareeServiceImpl implements ShareeService {
     private final ShareesRepository shareesRepository;

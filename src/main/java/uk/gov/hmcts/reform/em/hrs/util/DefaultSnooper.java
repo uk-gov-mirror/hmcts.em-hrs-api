@@ -1,10 +1,9 @@
 package uk.gov.hmcts.reform.em.hrs.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
-import javax.inject.Named;
-
-@Named
+@Component
 @Slf4j
 public class DefaultSnooper implements Snooper {
 
