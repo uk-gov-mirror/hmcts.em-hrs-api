@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Map;
 import java.util.Objects;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,7 +33,7 @@ public class SecurityServiceImpl implements SecurityService {
     private final String systemUsername;
     private final String systemUserPassword;
 
-    @Inject
+    @Autowired
     public SecurityServiceImpl(final IdamClient idamClient,
                                final AuthTokenGenerator authTokenGenerator,
                                final AuthTokenValidator authTokenValidator,

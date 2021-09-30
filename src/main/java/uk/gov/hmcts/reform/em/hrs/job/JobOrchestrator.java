@@ -7,11 +7,11 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
@@ -19,7 +19,7 @@ public class JobOrchestrator {
     private final Scheduler scheduler;
     private final int rate;
 
-    @Inject
+    @Autowired
     public JobOrchestrator(final Scheduler scheduler, @Value("${hrs.ingestion-frequency}") final int rate) {
         this.scheduler = scheduler;
         this.rate = rate;

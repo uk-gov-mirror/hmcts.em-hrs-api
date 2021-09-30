@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.hrs.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +22,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,7 +56,7 @@ class SegmentDownloadServiceImplTest {
 
     private HearingRecordingSegment segment;
 
-    @Inject
+    @Autowired
     private SegmentDownloadServiceImpl segmentDownloadService;
 
     private Enumeration<String> generateEmptyHeaders() {

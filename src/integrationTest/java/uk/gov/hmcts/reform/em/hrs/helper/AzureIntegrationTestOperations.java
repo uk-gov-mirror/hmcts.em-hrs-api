@@ -8,6 +8,7 @@ import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.blob.specialized.BlockBlobClient;
 import com.devskiller.jfairy.Fairy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -16,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
@@ -26,7 +26,7 @@ public class AzureIntegrationTestOperations {
     private final BlobContainerClient cvpBlobContainerClient;
     private final Fairy fairy;
 
-    @Inject
+    @Autowired
     public AzureIntegrationTestOperations(
         final @Named("HrsBlobContainerClient") BlobContainerClient hrsBlobContainerClient,
         final @Named("CvpBlobContainerClient") BlobContainerClient cvpBlobContainerClient) {
