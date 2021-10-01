@@ -33,14 +33,19 @@ public class DownloadNonSharedScenarios extends BaseTest {
         caseRef = timebasedCaseRef();
         filename = filename(caseRef, 0);
 
+        LOGGER.info("Priming CVP Container");
         blobUtil.uploadToCvpContainer(filename);
         blobUtil.checkIfUploadedToStore(filenames, blobUtil.cvpBlobContainerClient);
 
+        LOGGER.info("Priming HRS API With Posted Segments");
         postRecordingSegment(caseRef, 0).then().statusCode(202);
         blobUtil.checkIfUploadedToStore(filenames, blobUtil.hrsBlobContainerClient);
 
+
+        LOGGER.info("Checking CCD and populating default caseDetails");
         caseDetails = findCaseWithAutoRetry(caseRef);
 
+        //used in tests to verify file is fully downloaded
         expectedFileSize = blobUtil.getTestFile().readAllBytes().length;
         assertThat(expectedFileSize, is(not(0)));
     }

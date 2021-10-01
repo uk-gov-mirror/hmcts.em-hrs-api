@@ -46,6 +46,7 @@ public class ShareScenarios extends BaseTest {
 
         caseDetails = findCaseWithAutoRetry(caseRef);
 
+        //used in tests to verify file is fully downloaded
         expectedFileSize = blobUtil.getTestFile().readAllBytes().length;
         assertThat(expectedFileSize, is(not(0)));
     }

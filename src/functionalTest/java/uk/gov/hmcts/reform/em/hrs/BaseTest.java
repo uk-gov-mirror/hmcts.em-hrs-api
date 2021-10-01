@@ -50,6 +50,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
+import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER_ROLES;
 
 @SpringBootTest(classes = {
     ExtendedCcdHelper.class,
@@ -125,6 +126,8 @@ public abstract class BaseTest {
     public void init() {
         LOGGER.info("POST CONSTRUCT INITIALISATIONS....");
         SerenityRest.useRelaxedHTTPSValidation();
+        idamHelper.createUser(HRS_TESTER, HRS_TESTER_ROLES);
+
         idamAuthHrsTester = idamHelper.authenticateUser(HRS_TESTER);
         s2sAuth = BEARER + s2sHelper.getS2sToken();
         userIdHrsTester = idamHelper.getUserId(HRS_TESTER);
@@ -275,6 +278,8 @@ public abstract class BaseTest {
         assertNotNull(caseDetails);
         assertNotNull(caseDetails.getId());
         assertNotNull(caseDetails.getData());
+
+        LOGGER.info("Found case - id: {}",caseDetails.getId());
         return caseDetails;
     }
 
