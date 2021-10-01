@@ -103,6 +103,7 @@ tasks.withType(Test) {
 }
 
 task functional(type: Test) {
+  failFast = true
   testLogging {
     events = ["passed", "failed", "skipped"]
     showStandardStreams = true
@@ -120,14 +121,15 @@ task functional(type: Test) {
 
 
 task integration(type: Test) {
+  failFast = true
   description = "Runs integration tests"
   group = "Verification"
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
-  failFast = true
 }
 
 task smoke(type: Test) {
+  failFast = true
   group = 'Delivery pipeline'
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
