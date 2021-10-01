@@ -45,7 +45,10 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
 
         var userInfo = securityService.getUserInfo(token);
 
-        LOGGER.info("User with roles ({}) attempting to access recording", userInfo.getRoles());
+        LOGGER.info("********************************");
+        LOGGER.info("SECURITY FILTER");
+        LOGGER.info("********************************");
+        LOGGER.info("User ({}:{}) with roles ({}) attempting to access recording", userInfo.getUid(), userInfo.getName(), userInfo.getRoles());
 
         if (CollectionUtils.isNotEmpty(userInfo.getRoles())) {
             Optional<String> userRole = userInfo.getRoles().stream()

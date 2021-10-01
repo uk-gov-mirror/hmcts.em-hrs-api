@@ -49,8 +49,7 @@ import javax.annotation.PostConstruct;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
-import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER_ROLES;
+import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_SYSTEM_API_USER;
 
 @SpringBootTest(classes = {
     ExtendedCcdHelper.class,
@@ -73,8 +72,8 @@ public abstract class BaseTest {
     protected static final String CASE_TYPE = "HearingRecordings";
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
-    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em.hrs.api@hmcts.net.internal";
-    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "hrs-test-caseworker@hmcts.net";
+    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "hrs-test-searcher@hmcts.net";
+    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "hrs-test-requestor@hmcts.net";
     protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "hrs-test-citizen@hmcts.net";
     protected static final String EMAIL_ADDRESS_INVALID_FORMAT = "invalid@emailaddress";
     protected static final int SEGMENT = 0;
@@ -82,7 +81,7 @@ public abstract class BaseTest {
     protected static final String TIME = "2020-11-04-14.56.32.819";
     public static final String CASEREF_PREFIX = "FUNCTEST_";
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
-    protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker-hrs");
+    protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker","caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
     protected static final String CLOSE_CASE = "closeCase";
 
@@ -126,28 +125,28 @@ public abstract class BaseTest {
     public void init() {
         LOGGER.info("POST CONSTRUCT INITIALISATIONS....");
         SerenityRest.useRelaxedHTTPSValidation();
-        idamHelper.createUser(HRS_TESTER, HRS_TESTER_ROLES);
-
-        idamAuthHrsTester = idamHelper.authenticateUser(HRS_TESTER);
-        s2sAuth = BEARER + s2sHelper.getS2sToken();
-        userIdHrsTester = idamHelper.getUserId(HRS_TESTER);
 
         idamHelper.createUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_ROLE);
         idamHelper.createUser(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
         idamHelper.createUser(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
 
 
+        idamAuthHrsTester = idamHelper.authenticateUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
+        s2sAuth = BEARER + s2sHelper.getS2sToken();
+        userIdHrsTester = idamHelper.getUserId(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
+
+
     }
 
 
     public RequestSpecification authRequest() {
-        return authRequest(HRS_TESTER);
+        return authRequest(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
     }
 
 
     private RequestSpecification authRequest(String username) {
         String userToken = idamAuthHrsTester;
-        if (!HRS_TESTER.equals(username)) {
+        if (!USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS.equals(username)) {
             userToken = idamHelper.authenticateUser(username);
         }
 
@@ -286,7 +285,7 @@ public abstract class BaseTest {
     protected Optional<CaseDetails> searchForCase(String caseRef) {
         Map<String, String> searchCriteria = Map.of("case.recordingReference", caseRef);
         String s2sToken = extendedCcdHelper.getCcdS2sToken();
-        String userToken = idamClient.getAccessToken(HRS_TESTER, "4590fgvhbfgbDdffm3lk4j");
+        String userToken = idamClient.getAccessToken(HRS_SYSTEM_API_USER, "4590fgvhbfgbDdffm3lk4j");
         String uid = idamClient.getUserInfo(userToken).getUid();
 
         LOGGER.info("searching for case by ref ({}) with userToken ({}) and serviceToken ({})",
@@ -325,7 +324,7 @@ public abstract class BaseTest {
     public String closeCase(final String caseRef, CaseDetails caseDetails) {
 
         String s2sToken = extendedCcdHelper.getCcdS2sToken();
-        String userToken = idamClient.getAccessToken(HRS_TESTER, "4590fgvhbfgbDdffm3lk4j");
+        String userToken = idamClient.getAccessToken(HRS_SYSTEM_API_USER, "4590fgvhbfgbDdffm3lk4j");
         String uid = idamClient.getUserInfo(userToken).getUid();
 
         StartEventResponse startEventResponse =

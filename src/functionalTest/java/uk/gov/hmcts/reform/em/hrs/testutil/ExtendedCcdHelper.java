@@ -36,12 +36,11 @@ public class ExtendedCcdHelper {
     protected String ccdDefinitionFile;
 
 
-    public static String HRS_TESTER = "hrs.test.user@hmcts.net";
-    public static List<String> HRS_TESTER_ROLES = List.of("caseworker", "caseworker-hrs", "ccd-import");
+    public static String HRS_SYSTEM_API_USER = "em.hrs.api@hmcts.net.internal";
+    public static List<String> HRS_SYSTEM_API_USER_ROLES = List.of("caseworker", "caseworker-hrs", "ccd-import");
 
     @PostConstruct
     public void init() throws Exception {
-        idamHelper.createUser(HRS_TESTER, HRS_TESTER_ROLES);
         importDefinitionFile();
     }
 
@@ -50,9 +49,10 @@ public class ExtendedCcdHelper {
     }
 
     private void importDefinitionFile() throws IOException {
-
+        idamHelper.createUser(HRS_SYSTEM_API_USER, HRS_SYSTEM_API_USER_ROLES);
         createUserRole("caseworker");
         createUserRole("caseworker-hrs");
+
 
         MultipartFile multipartFile = new MockMultipartFile(
             "x",
@@ -60,7 +60,7 @@ public class ExtendedCcdHelper {
             "application/octet-stream",
             getHrsDefinitionFile());
 
-        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(HRS_TESTER),
+        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(HRS_SYSTEM_API_USER),
                                              ccdAuthTokenGenerator.generate(), multipartFile);
     }
 
@@ -70,6 +70,6 @@ public class ExtendedCcdHelper {
 
     private void createUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
-                                         idamHelper.authenticateUser(HRS_TESTER), ccdAuthTokenGenerator.generate());
+                                         idamHelper.authenticateUser(HRS_SYSTEM_API_USER), ccdAuthTokenGenerator.generate());
     }
 }
