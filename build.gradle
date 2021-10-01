@@ -16,7 +16,7 @@ plugins {
   id 'org.sonarqube' version '3.1.1'
   id 'org.liquibase.gradle' version '2.0.4'
   id 'groovy'
-  id 'au.com.dius.pact' version '4.2.9'
+  id 'au.com.dius.pact' version '4.2.11'
   id "info.solidsoft.pitest" version '1.6.0'
 }
 
@@ -319,8 +319,8 @@ def versions = [
   serenity           : '2.3.12',
   serenityRestAssured: '2.3.4',
   serenityreporter   : '2.3.12',
-  junit              : '5.7.0',
-  junitPlatform      : '1.7.1',
+  junit              : '5.8.1',
+  junitPlatform      : '1.8.1',
   springSecurity     : '5.3.8.RELEASE'
 
 ]
@@ -363,7 +363,7 @@ dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  implementation "ch.qos.logback:logback-classic:1.2.5"
+  implementation "ch.qos.logback:logback-classic:1.2.6"
 
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
@@ -471,13 +471,13 @@ dependencies {
   }
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.6.0'
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.6.8'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.7.0'
   testImplementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: '0.5'
 
   functionalTestRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.6.3'
   functionalTestImplementation 'org.junit.vintage:junit-vintage-engine:5.6.3'
-  functionalTestImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.3'
-  functionalTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.3'
+  functionalTestImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+  functionalTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.3'
@@ -525,14 +525,14 @@ dependencies {
   contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-provider-junit5', version: '4.0.10'
   contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-provider-gradle', version: '4.0.10'
 
-  contractTestImplementation "org.junit.jupiter:junit-jupiter-api:5.6.2"
+  contractTestImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
   contractTestImplementation "org.junit.vintage:junit-vintage-engine:5.6.2"
   contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
-  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
   contractTestImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.2.0'
 
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  contractTestImplementation "ch.qos.logback:logback-classic:1.2.3"
+  contractTestImplementation "ch.qos.logback:logback-classic:1.2.6"
 
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath

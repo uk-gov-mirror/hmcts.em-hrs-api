@@ -243,5 +243,5 @@ withPipeline(type, product, component) {
       reportName           : "HRS API Contract Test Report AAT"
     ]
   }
-
+  syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
 }
