@@ -49,9 +49,15 @@ public class ExtendedCcdHelper {
     }
 
     private void importDefinitionFile() throws IOException {
+
+         String ORIGINAL_CCD_UPLOADER_EMAIL = "hrs.test.user@hmcts.net";
+
+//        String ccdAuthorisedUser = HRS_SYSTEM_API_USER; // this ought to be the account that creates the CCD def
+        String ccdAuthorisedUser = ORIGINAL_CCD_UPLOADER_EMAIL;
+
         idamHelper.createUser(HRS_SYSTEM_API_USER, HRS_SYSTEM_API_USER_ROLES);
-        createUserRole("caseworker");
-        createUserRole("caseworker-hrs");
+        createCcdUserRole("caseworker");
+        createCcdUserRole("caseworker-hrs");
 
 
         MultipartFile multipartFile = new MockMultipartFile(
@@ -68,7 +74,7 @@ public class ExtendedCcdHelper {
         return ClassLoader.getSystemResourceAsStream(ccdDefinitionFile);
     }
 
-    private void createUserRole(String userRole) {
+    private void createCcdUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
                                          idamHelper.authenticateUser(HRS_SYSTEM_API_USER), ccdAuthTokenGenerator.generate());
     }
