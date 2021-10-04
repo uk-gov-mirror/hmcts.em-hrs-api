@@ -41,7 +41,7 @@ public class ExtendedCcdHelper {
 
     @PostConstruct
     public void init() throws Exception {
-        importDefinitionFile();
+//        importDefinitionFile();
     }
 
     public String getCcdS2sToken() {
@@ -52,8 +52,8 @@ public class ExtendedCcdHelper {
 
          String ORIGINAL_CCD_UPLOADER_EMAIL = "hrs.test.user@hmcts.net";
 
-//        String ccdAuthorisedUser = HRS_SYSTEM_API_USER; // this ought to be the account that creates the CCD def
-        String ccdAuthorisedUser = ORIGINAL_CCD_UPLOADER_EMAIL;
+//        String ccdAuthorisedUser = HRS_SYSTEM_API_USER; // gets 403 error
+        String ccdAuthorisedUser = ORIGINAL_CCD_UPLOADER_EMAIL; //also gets 403 error
 
         idamHelper.createUser(HRS_SYSTEM_API_USER, HRS_SYSTEM_API_USER_ROLES);
         createCcdUserRole("caseworker");
