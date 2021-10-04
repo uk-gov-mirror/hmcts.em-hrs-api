@@ -142,7 +142,7 @@ public abstract class BaseTest {
 
         LOGGER.info("getting roles for caseworker user");
         UserDetails caseworkerDetails =
-            idamClient.getUserDetails(idamHelper.getUserId(USER_WITH_REQUESTOR_ROLE__CASEWORKER));
+            idamClient.getUserDetails(s2sAuth);
 
         LOGGER.info("Name: {}, roles: {}",caseworkerDetails.getFullName(), caseworkerDetails.getRoles());
 
@@ -150,7 +150,7 @@ public abstract class BaseTest {
 
         LOGGER.info("getting roles for searcher user");
         UserDetails searcherDetails =
-            idamClient.getUserDetails(idamHelper.getUserId(USER_WITH_REQUESTOR_ROLE__CASEWORKER));
+            idamClient.getUserDetails(s2sAuth);
 
         LOGGER.info("Name: {}, roles: {}",searcherDetails.getFullName(), searcherDetails.getRoles());
 
