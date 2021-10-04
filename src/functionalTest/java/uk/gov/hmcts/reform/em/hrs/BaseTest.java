@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Service;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -119,6 +121,7 @@ public abstract class BaseTest {
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
 
+
     @PostConstruct
     public void init() {
         SerenityRest.useRelaxedHTTPSValidation();
@@ -126,9 +129,32 @@ public abstract class BaseTest {
         s2sAuth = BEARER + s2sHelper.getS2sToken();
         userId_hrs_tester = idamHelper.getUserId(HRS_TESTER);
 
+
+
+        LOGGER.info("creating user: {}",USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
         idamHelper.createUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_ROLE);
+
+        LOGGER.info("creating user: {}",USER_WITH_REQUESTOR_ROLE__CASEWORKER);
         idamHelper.createUser(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
+
+        LOGGER.info("creating user: {}",USER_WITH_NONACCESS_ROLE__CITIZEN);
         idamHelper.createUser(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
+
+        LOGGER.info("getting roles for caseworker user");
+        UserDetails caseworkerDetails =
+            idamClient.getUserDetails(idamHelper.getUserId(USER_WITH_REQUESTOR_ROLE__CASEWORKER));
+
+        LOGGER.info("Name: {}, roles: {}",caseworkerDetails.getFullName(), caseworkerDetails.getRoles());
+
+
+
+        LOGGER.info("getting roles for searcher user");
+        UserDetails searcherDetails =
+            idamClient.getUserDetails(idamHelper.getUserId(USER_WITH_REQUESTOR_ROLE__CASEWORKER));
+
+        LOGGER.info("Name: {}, roles: {}",searcherDetails.getFullName(), searcherDetails.getRoles());
+
+
 
 
     }
