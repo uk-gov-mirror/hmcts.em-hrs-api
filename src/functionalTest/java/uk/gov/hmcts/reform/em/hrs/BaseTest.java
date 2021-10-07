@@ -137,21 +137,6 @@ public abstract class BaseTest {
         LOGGER.info("creating user: {}", USER_WITH_NONACCESS_ROLE__CITIZEN);
         idamHelper.createUser(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
 
-        //        LOGGER.info("getting roles for caseworker user");
-        //        UserDetails caseworkerDetails =
-        //            idamClient.getUserDetails(s2sAuth);
-        //
-        //        LOGGER.info("Name: {}, roles: {}",caseworkerDetails.getFullName(), caseworkerDetails.getRoles());
-        //
-        //
-        //
-        //        LOGGER.info("getting roles for searcher user");
-        //        UserDetails searcherDetails =
-        //            idamClient.getUserDetails(s2sAuth);
-        //
-        //        LOGGER.info("Name: {}, roles: {}",searcherDetails.getFullName(), searcherDetails.getRoles());
-
-
     }
 
 
