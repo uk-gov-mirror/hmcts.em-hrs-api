@@ -71,9 +71,9 @@ public abstract class BaseTest {
     protected static final String CASE_TYPE = "HearingRecordings";
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
-    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em.hrs.api@hmcts.net.internal";
-    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "hrs-test-caseworker@hmcts.net";
-    protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "hrs-test-citizen@hmcts.net";
+    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-caseworker-hrs@test.email";
+    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "em-test-caseworker@test.email";
+    protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "em-test-citizen@test.email";
     protected static final String EMAIL_ADDRESS_INVALID_FORMAT = "invalid@emailaddress";
     protected static final int SEGMENT = 0;
     protected static final String FOLDER = "audiostream123455";
@@ -119,6 +119,7 @@ public abstract class BaseTest {
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
 
+
     @PostConstruct
     public void init() {
         SerenityRest.useRelaxedHTTPSValidation();
@@ -126,10 +127,15 @@ public abstract class BaseTest {
         s2sAuth = BEARER + s2sHelper.getS2sToken();
         userId_hrs_tester = idamHelper.getUserId(HRS_TESTER);
 
-        idamHelper.createUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_ROLE);
-        idamHelper.createUser(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
-        idamHelper.createUser(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
 
+        LOGGER.info("creating user: {}", USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
+        idamHelper.createUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_ROLE);
+
+        LOGGER.info("creating user: {}", USER_WITH_REQUESTOR_ROLE__CASEWORKER);
+        idamHelper.createUser(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
+
+        LOGGER.info("creating user: {}", USER_WITH_NONACCESS_ROLE__CITIZEN);
+        idamHelper.createUser(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
 
     }
 
