@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestApplicationConfig;
 import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestAzureStorageConfig;
@@ -16,7 +17,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -34,9 +34,9 @@ class DefaultHearingRecordingStorageIntegrationTest {
     private static final String ONE_ITEM_FOLDER = "folder-1";
     private static final String MANY_ITEMS_FOLDER = "folder-2";
 
-    @Inject
+    @Autowired
     private AzureIntegrationTestOperations azureIntegrationTestOperations;
-    @Inject
+    @Autowired
     private DefaultHearingRecordingStorage underTest;
     @Captor
     private ArgumentCaptor<String> snoopCaptor;

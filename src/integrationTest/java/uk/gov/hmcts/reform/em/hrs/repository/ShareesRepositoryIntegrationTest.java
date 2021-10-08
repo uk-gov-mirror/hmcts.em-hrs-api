@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.em.hrs.repository;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.HEARING_RECORDING;
@@ -13,7 +13,8 @@ import static uk.gov.hmcts.reform.em.hrs.componenttests.TestUtil.SHAREE_EMAIL_AD
 
 class ShareesRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
     private static final String EMAIL_ADDRESS = "test@testEmail.com";
-    @Inject
+
+    @Autowired
     private ShareesRepository underTest;
 
     @Test

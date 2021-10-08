@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 import uk.gov.hmcts.reform.em.hrs.util.IngestionQueue;
 
 import java.util.Map;
-import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -36,7 +36,7 @@ class GlobalExceptionHandlerTest extends AbstractBaseTest {
     @MockBean
     private ShareAndNotifyService shareService;
 
-    @Inject
+    @Autowired
     private IngestionQueue ingestionQueue;
 
     @Test

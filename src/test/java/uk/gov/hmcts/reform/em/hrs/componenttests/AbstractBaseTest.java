@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
@@ -16,13 +17,11 @@ import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestAzureStorageConfig;
 import uk.gov.hmcts.reform.em.hrs.componenttests.config.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.hrs.config.security.JwtGrantedAuthoritiesConverter;
 
-import javax.inject.Inject;
-
 @SpringBootTest(classes = {TestApplicationConfig.class, TestSecurityConfiguration.class, TestAzureStorageConfig.class})
 @ExtendWith({MockitoExtension.class})
 public abstract class AbstractBaseTest extends AbstractDataSourceTest {
 
-    @Inject
+    @Autowired
     private WebApplicationContext context;
 
     @MockBean
