@@ -3,6 +3,9 @@
   <suppress>
     <cve>CVE-2018-1258</cve>
     <cve>CVE-2020-23171</cve>
+    <!-- netty cve -->
+    <cve>CVE-2021-37136</cve>
+    <cve>CVE-2021-37137</cve>
   </suppress>
 
   <suppress>
