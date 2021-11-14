@@ -144,7 +144,7 @@ public abstract class BaseTest {
         should the roles change for users, then the recreateUsers flag will need to be true before merging to master
          */
 
-        boolean recreateUsers = false;
+        boolean recreateUsers = true;
 
         if (recreateUsers) {
             idamHelper.createUser(email, roles);
