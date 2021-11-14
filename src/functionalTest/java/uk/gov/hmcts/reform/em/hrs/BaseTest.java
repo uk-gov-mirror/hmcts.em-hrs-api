@@ -80,7 +80,7 @@ public abstract class BaseTest {
     protected static final String TIME = "2020-11-04-14.56.32.819";
     public static final String CASEREF_PREFIX = "FUNCTEST_";
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
-    protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker-hrs");
+    protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker","caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
     protected static final String CLOSE_CASE = "closeCase";
 
