@@ -48,7 +48,6 @@ import javax.annotation.PostConstruct;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
 
 @SpringBootTest(classes = {
     ExtendedCcdHelper.class,
@@ -75,12 +74,11 @@ public abstract class BaseTest {
     protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "em-test-caseworker@test.email";
     protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "em-test-citizen@test.email";
     protected static final String EMAIL_ADDRESS_INVALID_FORMAT = "invalid@emailaddress";
-    protected static final int SEGMENT = 0;
     protected static final String FOLDER = "audiostream123455";
     protected static final String TIME = "2020-11-04-14.56.32.819";
     public static final String CASEREF_PREFIX = "FUNCTEST_";
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
-    protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker","caseworker-hrs");
+    protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker", "caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
     protected static final String CLOSE_CASE = "closeCase";
 
