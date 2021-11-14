@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import javax.inject.Inject;
 
 import static org.mockito.Mockito.when;
 
@@ -54,7 +54,7 @@ public class PermissionEvaluatorImplTest {
     private String shareeEmail = "sharee@sharee.com";
     private List<HearingRecordingSharee> hearingRecordingSharees;
 
-    @Inject
+    @Autowired
     PermissionEvaluatorImpl permissionEvaluator;
 
     @BeforeEach

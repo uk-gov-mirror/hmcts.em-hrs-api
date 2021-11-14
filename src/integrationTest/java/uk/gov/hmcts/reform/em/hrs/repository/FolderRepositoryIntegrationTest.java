@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.em.hrs.repository;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import uk.gov.hmcts.reform.em.hrs.domain.Folder;
 
 import java.util.Optional;
 import java.util.UUID;
-import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 @Sql({"/data/create-folder.sql"})
@@ -14,7 +14,7 @@ class FolderRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest 
     private static final String EMPTY_FOLDER = "folder-0";
     private static final String TEST_FOLDER = "folder-1";
 
-    @Inject
+    @Autowired
     private FolderRepository underTest;
 
     @Test

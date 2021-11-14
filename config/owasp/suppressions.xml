@@ -3,6 +3,9 @@
   <suppress>
     <cve>CVE-2018-1258</cve>
     <cve>CVE-2020-23171</cve>
+    <!-- netty cve -->
+    <cve>CVE-2021-37136</cve>
+    <cve>CVE-2021-37137</cve>
   </suppress>
 
   <suppress>
@@ -35,5 +38,11 @@
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.glassfish/jakarta\.el@.*$</packageUrl>
     <cve>CVE-2021-28170</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      Springframework - review when upgrading boot
+    </notes>
+    <cve>CVE-2021-22096</cve>
   </suppress>
 </suppressions>

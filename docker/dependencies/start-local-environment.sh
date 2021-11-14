@@ -99,7 +99,8 @@ docker-compose ${COMPOSE_FILE} up -d shared-database \
   ccd-definition-store-api \
   ccd-data-store-api \
   ccd-api-gateway \
-  smtp-server
+  smtp-server \
+  ccd-case-document-am-api
 
 echo "LOCAL ENVIRONMENT BOOT UP SUCCESSFULLY STARTED, about to tail logs whilst apps intialise. CCD Data API is the longest running to  initialise"
 

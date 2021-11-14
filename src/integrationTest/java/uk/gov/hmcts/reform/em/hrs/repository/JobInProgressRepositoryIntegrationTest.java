@@ -2,18 +2,19 @@ package uk.gov.hmcts.reform.em.hrs.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JobInProgressRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
-    @Inject
+
+    @Autowired
     private JobInProgressRepository underTest;
 
     @BeforeEach

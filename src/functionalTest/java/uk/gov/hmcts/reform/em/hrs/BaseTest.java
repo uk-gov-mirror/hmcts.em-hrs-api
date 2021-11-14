@@ -48,6 +48,7 @@ import javax.annotation.PostConstruct;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper.HRS_TESTER;
 
 @SpringBootTest(classes = {
     ExtendedCcdHelper.class,
@@ -70,9 +71,9 @@ public abstract class BaseTest {
     protected static final String CASE_TYPE = "HearingRecordings";
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
-    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em.hrs.api@hmcts.net.internal";
-    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "hrs-test-caseworker@hmcts.net";
-    protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "hrs-test-citizen@hmcts.net";
+    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-caseworker-hrs@test.email";
+    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "em-test-caseworker@test.email";
+    protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "em-test-citizen@test.email";
     protected static final String EMAIL_ADDRESS_INVALID_FORMAT = "invalid@emailaddress";
     protected static final int SEGMENT = 0;
     protected static final String FOLDER = "audiostream123455";
@@ -117,7 +118,6 @@ public abstract class BaseTest {
 
     @Autowired
     protected CoreCaseDataApi coreCaseDataApi;
-
 
     @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;

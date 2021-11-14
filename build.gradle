@@ -103,6 +103,7 @@ tasks.withType(Test) {
 }
 
 task functional(type: Test) {
+  failFast = true
   testLogging {
     events = ["passed", "failed", "skipped"]
     showStandardStreams = true
@@ -120,14 +121,15 @@ task functional(type: Test) {
 
 
 task integration(type: Test) {
+  failFast = true
   description = "Runs integration tests"
   group = "Verification"
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
-  failFast = true
 }
 
 task smoke(type: Test) {
+  failFast = true
   group = 'Delivery pipeline'
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
@@ -222,8 +224,8 @@ dependencyManagement {
       entry 'json-smart'
     }
 
-    //CVE-2021-33037
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.48') {
+    //CVE-2021-42340
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.54') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-websocket'
     }
@@ -317,8 +319,8 @@ def versions = [
   serenity           : '2.3.12',
   serenityRestAssured: '2.3.4',
   serenityreporter   : '2.3.12',
-  junit              : '5.7.0',
-  junitPlatform      : '1.8.0',
+  junit              : '5.8.1',
+  junitPlatform      : '1.8.1',
   springSecurity     : '5.3.8.RELEASE'
 
 ]
@@ -361,10 +363,7 @@ dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  implementation "ch.qos.logback:logback-classic:1.2.5"
-
-  implementation group: 'javax.inject', name: 'javax.inject', version: '1'
-
+  implementation "ch.qos.logback:logback-classic:1.2.6"
 
   implementation "org.springframework.boot:spring-boot-starter-actuator"
   implementation "org.springframework.boot:spring-boot-starter-aop"
@@ -419,14 +418,14 @@ dependencies {
  **********************************************************************************************************************/
 
   implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-  implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.5.5.Final'
-  implementation "org.liquibase:liquibase-core:4.4.2"
+  implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.5.7.Final'
+  implementation "org.liquibase:liquibase-core:4.6.1"
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation "org.springframework.boot:spring-boot-starter-jdbc"
 
   liquibaseRuntime "com.h2database:h2"
   liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.4.2"
-  liquibaseRuntime "org.liquibase:liquibase-core:4.3.4"
+  liquibaseRuntime "org.liquibase:liquibase-core:4.6.1"
   liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.1"
   liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
 
@@ -460,7 +459,7 @@ dependencies {
   functionalTestImplementation 'com.github.hmcts:em-test-helper:1.18.2'
   functionalTestImplementation 'net.serenity-bdd:serenity-rest-assured:2.3.4', withoutStuff
 
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.21.0'
   testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.16.0'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.3'
@@ -474,8 +473,8 @@ dependencies {
 
   functionalTestRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.6.3'
   functionalTestImplementation 'org.junit.vintage:junit-vintage-engine:5.6.3'
-  functionalTestImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.3'
-  functionalTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.3'
+  functionalTestImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+  functionalTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.3'
@@ -523,14 +522,14 @@ dependencies {
   contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-provider-junit5', version: '4.0.10'
   contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-provider-gradle', version: '4.0.10'
 
-  contractTestImplementation "org.junit.jupiter:junit-jupiter-api:5.6.2"
+  contractTestImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
   contractTestImplementation "org.junit.vintage:junit-vintage-engine:5.6.2"
   contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
-  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
   contractTestImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.2.0'
 
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  contractTestImplementation "ch.qos.logback:logback-classic:1.2.3"
+  contractTestImplementation "ch.qos.logback:logback-classic:1.2.6"
 
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath
