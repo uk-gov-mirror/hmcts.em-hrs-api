@@ -72,7 +72,7 @@ class CcdUploadServiceImplTest {
                 anyLong(),
                 eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()),
                 eq(HEARING_RECORDING_DTO)
-            );
+        );
         doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));
 
         underTest.upload(HEARING_RECORDING_DTO);
@@ -83,7 +83,7 @@ class CcdUploadServiceImplTest {
                 anyLong(),
                 eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()),
                 eq(HEARING_RECORDING_DTO)
-            );
+        );
         verify(ccdDataStoreApiClient, never())
             .createCase(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId(), HEARING_RECORDING_DTO);
         verify(recordingRepository, never()).save(any(HearingRecording.class));
@@ -100,8 +100,8 @@ class CcdUploadServiceImplTest {
         underTest.upload(HEARING_RECORDING_DTO);
 
         verify(recordingRepository).findByRecordingRefAndFolderName(RECORDING_REFERENCE, TEST_FOLDER_1.getName());
-        verify(ccdDataStoreApiClient, never()).
-            updateCaseData(
+        verify(ccdDataStoreApiClient, never())
+            .updateCaseData(
                 anyLong(),
                 any(UUID.class),
                 any(HearingRecordingDto.class)
