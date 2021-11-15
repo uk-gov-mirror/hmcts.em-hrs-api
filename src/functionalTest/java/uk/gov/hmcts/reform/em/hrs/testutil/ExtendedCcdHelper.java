@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static uk.gov.hmcts.reform.em.hrs.BaseTest.HRS_TESTER;
+import static uk.gov.hmcts.reform.em.hrs.BaseTest.SYSUSER_HRSAPI_USER;
 
 @Service
 public class ExtendedCcdHelper {
@@ -53,7 +53,7 @@ public class ExtendedCcdHelper {
         );
 
         //TODO Should HRS_TESTER be used here? getting 403s when trying anything else
-        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(HRS_TESTER),
+        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(SYSUSER_HRSAPI_USER),
                                              ccdAuthTokenGenerator.generate(), multipartFile
         );
     }
@@ -64,7 +64,8 @@ public class ExtendedCcdHelper {
 
     private void createCcdUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
-                                         idamHelper.authenticateUser(HRS_TESTER), ccdAuthTokenGenerator.generate()
+                                         idamHelper.authenticateUser(SYSUSER_HRSAPI_USER),
+                                         ccdAuthTokenGenerator.generate()
         );
     }
 }
