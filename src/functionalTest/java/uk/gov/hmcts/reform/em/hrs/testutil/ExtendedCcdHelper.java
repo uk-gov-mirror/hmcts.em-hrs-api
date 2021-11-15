@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import javax.annotation.PostConstruct;
+
+import static uk.gov.hmcts.reform.em.hrs.BaseTest.HRS_TESTER;
 
 @Service
 public class ExtendedCcdHelper {
@@ -36,38 +36,26 @@ public class ExtendedCcdHelper {
     protected String ccdDefinitionFile;
 
 
-    public static String HRS_SYSTEM_API_USER = "em.hrs.api@hmcts.net.internal";
-    public static List<String> HRS_SYSTEM_API_USER_ROLES = List.of("caseworker", "caseworker-hrs", "ccd-import");
-
-    @PostConstruct
-    public void init() throws Exception {
-        importDefinitionFile();
-    }
-
     public String getCcdS2sToken() {
         return ccdAuthTokenGenerator.generate();
     }
 
-    private void importDefinitionFile() throws IOException {
+    public void importDefinitionFile() throws IOException {
 
-         String ORIGINAL_CCD_UPLOADER_EMAIL = "hrs.test.user@hmcts.net";
-
-//        String ccdAuthorisedUser = HRS_SYSTEM_API_USER; // gets 403 error
-        String ccdAuthorisedUser = ORIGINAL_CCD_UPLOADER_EMAIL; //also gets 403 error
-
-        idamHelper.createUser(HRS_SYSTEM_API_USER, HRS_SYSTEM_API_USER_ROLES);
         createCcdUserRole("caseworker");
         createCcdUserRole("caseworker-hrs");
-
 
         MultipartFile multipartFile = new MockMultipartFile(
             "x",
             "x",
             "application/octet-stream",
-            getHrsDefinitionFile());
+            getHrsDefinitionFile()
+        );
 
-        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(HRS_SYSTEM_API_USER),
-                                             ccdAuthTokenGenerator.generate(), multipartFile);
+        //TODO Should HRS_TESTER be used here? getting 403s when trying anything else
+        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(HRS_TESTER),
+                                             ccdAuthTokenGenerator.generate(), multipartFile
+        );
     }
 
     private InputStream getHrsDefinitionFile() {
@@ -76,6 +64,7 @@ public class ExtendedCcdHelper {
 
     private void createCcdUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
-                                         idamHelper.authenticateUser(HRS_SYSTEM_API_USER), ccdAuthTokenGenerator.generate());
+                                         idamHelper.authenticateUser(HRS_TESTER), ccdAuthTokenGenerator.generate()
+        );
     }
 }
