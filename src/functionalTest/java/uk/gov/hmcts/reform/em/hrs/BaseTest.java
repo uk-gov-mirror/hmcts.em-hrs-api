@@ -141,12 +141,6 @@ public abstract class BaseTest {
         s2sAuth = BEARER + s2sHelper.getS2sToken();
         userIdHrsTester = idamHelper.getUserId(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
 
-
-        idamHelper.createUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_ROLE);
-        idamHelper.createUser(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
-        idamHelper.createUser(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
-
-
         try {
             extendedCcdHelper.importDefinitionFile();
         } catch (IOException e) {
