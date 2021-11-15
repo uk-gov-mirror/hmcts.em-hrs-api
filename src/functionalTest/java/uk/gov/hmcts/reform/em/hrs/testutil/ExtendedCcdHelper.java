@@ -52,7 +52,6 @@ public class ExtendedCcdHelper {
             getHrsDefinitionFile()
         );
 
-        //TODO Should HRS_TESTER be used here? getting 403s when trying anything else
         ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(SYSUSER_HRSAPI_USER),
                                              ccdAuthTokenGenerator.generate(), multipartFile
         );
@@ -63,9 +62,10 @@ public class ExtendedCcdHelper {
     }
 
     private void createCcdUserRole(String userRole) {
-        ccdDefUserRoleApi.createUserRole(new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
-                                         idamHelper.authenticateUser(SYSUSER_HRSAPI_USER),
-                                         ccdAuthTokenGenerator.generate()
+        ccdDefUserRoleApi.createUserRole(
+            new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
+            idamHelper.authenticateUser(SYSUSER_HRSAPI_USER),
+            ccdAuthTokenGenerator.generate()
         );
     }
 }
