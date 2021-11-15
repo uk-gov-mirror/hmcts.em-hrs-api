@@ -10,6 +10,7 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
 import uk.gov.hmcts.reform.em.hrs.repository.ShareesRepository;
@@ -48,7 +49,12 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
         LOGGER.info("********************************");
         LOGGER.info("SECURITY FILTER");
         LOGGER.info("********************************");
-        LOGGER.info("User ({}:{}) with roles ({}) attempting to access recording", userInfo.getUid(), userInfo.getName(), userInfo.getRoles());
+        LOGGER.info(
+            "User ({}:{}) with roles ({}) attempting to access recording",
+            userInfo.getUid(),
+            userInfo.getName(),
+            userInfo.getRoles()
+        );
 
         if (CollectionUtils.isNotEmpty(userInfo.getRoles())) {
             Optional<String> userRole = userInfo.getRoles().stream()
@@ -61,9 +67,15 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
         }
 
         if (segment instanceof HearingRecordingSegment) {
-            UUID recordingId = ((HearingRecordingSegment) segment).getHearingRecording().getId();
+            HearingRecordingSegment hrSegment = ((HearingRecordingSegment) segment);
+            HearingRecording hr = hrSegment.getHearingRecording();
+            UUID recordingId = hr.getId();
             String shareeEmail = securityService.getUserEmail(token);
-            LOGGER.info("User attempting to access recording with email ({})", shareeEmail);
+            LOGGER.info(
+                "User attempting to access recording ref ({}) with email ({})",
+                hr.getRecordingRef(),
+                shareeEmail
+            );
             List<HearingRecordingSharee> sharedRecordings = shareesRepository.findByShareeEmail(shareeEmail);
             LOGGER.info(
                 "recordings that are shared with the user: ({})",

@@ -41,7 +41,7 @@ public class ExtendedCcdHelper {
 
     @PostConstruct
     public void init() throws Exception {
-//        importDefinitionFile();
+        importDefinitionFile();
     }
 
     public String getCcdS2sToken() {

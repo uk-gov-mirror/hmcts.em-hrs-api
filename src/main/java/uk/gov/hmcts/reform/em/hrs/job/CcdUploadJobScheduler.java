@@ -7,20 +7,22 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.inject.Named;
 
-@Named
+
+@Component
 public class CcdUploadJobScheduler {
     private final Scheduler scheduler;
     private final int intervalInSeconds;
 
-    @Inject
-    public CcdUploadJobScheduler(final Scheduler scheduler, @Value("${hrs.ccdupload-interval-in-seconds}") final int intervalInSeconds) {
+    @Autowired
+    public CcdUploadJobScheduler(final Scheduler scheduler,
+                                 @Value("${hrs.ccdupload-interval-in-seconds}") final int intervalInSeconds) {
         this.scheduler = scheduler;
         this.intervalInSeconds = intervalInSeconds;
     }

@@ -226,8 +226,8 @@ dependencyManagement {
       entry 'json-smart'
     }
 
-    //CVE-2021-33037
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.48') {
+    //CVE-2021-42340
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.54') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-websocket'
     }
@@ -367,9 +367,6 @@ dependencies {
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation "ch.qos.logback:logback-classic:1.2.6"
 
-  implementation group: 'javax.inject', name: 'javax.inject', version: '1'
-
-
   implementation "org.springframework.boot:spring-boot-starter-actuator"
   implementation "org.springframework.boot:spring-boot-starter-aop"
   implementation "org.springframework.boot:spring-boot-starter-json"
@@ -423,14 +420,14 @@ dependencies {
  **********************************************************************************************************************/
 
   implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-  implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.5.5.Final'
-  implementation "org.liquibase:liquibase-core:4.4.2"
+  implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.5.7.Final'
+  implementation "org.liquibase:liquibase-core:4.6.1"
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation "org.springframework.boot:spring-boot-starter-jdbc"
 
   liquibaseRuntime "com.h2database:h2"
   liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.4.2"
-  liquibaseRuntime "org.liquibase:liquibase-core:4.3.4"
+  liquibaseRuntime "org.liquibase:liquibase-core:4.6.1"
   liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.1"
   liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
 
@@ -464,7 +461,7 @@ dependencies {
   functionalTestImplementation 'com.github.hmcts:em-test-helper:1.18.2'
   functionalTestImplementation 'net.serenity-bdd:serenity-rest-assured:2.3.4', withoutStuff
 
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.21.0'
   testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.16.0'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.3'

@@ -72,20 +72,22 @@ public abstract class BaseTest {
     protected static final String CASE_TYPE = "HearingRecordings";
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
-    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "hrs-test-searcher@hmcts.net";
-    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "hrs-test-requestor@hmcts.net";
-    protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "hrs-test-citizen@hmcts.net";
+    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-caseworker-hrs@test.internal";
+    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "em-test-caseworker@test.internal";
+    protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "em-test-citizen@test.internal";
     protected static final String EMAIL_ADDRESS_INVALID_FORMAT = "invalid@emailaddress";
-    protected static final int SEGMENT = 0;
     protected static final String FOLDER = "audiostream123455";
     protected static final String TIME = "2020-11-04-14.56.32.819";
     public static final String CASEREF_PREFIX = "FUNCTEST_";
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
-    protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker","caseworker-hrs");
+    protected static List<String> CASE_WORKER_HRS_ROLE = List.of("caseworker", "caseworker-hrs");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
     protected static final String CLOSE_CASE = "closeCase";
 
-    protected static final int FIND_CASE_TIMEOUT = 30;
+    public static String HRS_TESTER = "hrs.test.user@hmcts.net";
+    public static List<String> HRS_TESTER_ROLES = List.of("caseworker", "caseworker-hrs", "ccd-import");
+
+    int FIND_CASE_TIMEOUT = 30;
 
     protected String idamAuthHrsTester;
     protected String s2sAuth;
@@ -126,16 +128,40 @@ public abstract class BaseTest {
         LOGGER.info("POST CONSTRUCT INITIALISATIONS....");
         SerenityRest.useRelaxedHTTPSValidation();
 
-        idamHelper.createUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_ROLE);
-        idamHelper.createUser(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
-        idamHelper.createUser(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
-
+        createUserIfNotExists(HRS_TESTER, HRS_TESTER_ROLES);
+        createUserIfNotExists(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_ROLE);
+        createUserIfNotExists(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
+        createUserIfNotExists(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
 
         idamAuthHrsTester = idamHelper.authenticateUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
         s2sAuth = BEARER + s2sHelper.getS2sToken();
         userIdHrsTester = idamHelper.getUserId(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
 
 
+        idamHelper.createUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_ROLE);
+        idamHelper.createUser(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
+        idamHelper.createUser(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
+    }
+
+    private void createUserIfNotExists(String email, List<String> roles) {
+        /* in some cases, there were conflicts between PR branches being built
+        due to users being deleted / recreated
+
+        as the roles are static they do not need to be deleted each time
+        should the roles change for users, then the recreateUsers flag will need to be true before merging to master
+         */
+
+        boolean recreateUsers = false;
+
+        if (recreateUsers) {
+            idamHelper.createUser(email, roles);
+        } else {
+            try {
+                idamHelper.getUserId(email);
+            } catch (Exception e) {//if user does not exist
+                idamHelper.createUser(email, roles);
+            }
+        }
     }
 
 

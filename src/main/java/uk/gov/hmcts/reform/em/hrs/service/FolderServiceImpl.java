@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -21,11 +23,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 
-@Named
+@Component
 @Transactional
 public class FolderServiceImpl implements FolderService {
 
@@ -37,7 +37,7 @@ public class FolderServiceImpl implements FolderService {
     private final HearingRecordingRepository hearingRecordingRepository;
     private final HearingRecordingSegmentRepository hearingRecordingSegmentRepository;
 
-    @Inject
+    @Autowired
     public FolderServiceImpl(FolderRepository folderRepository,
                              JobInProgressRepository jobInProgressRepository,
                              HearingRecordingStorage hearingRecordingStorage,

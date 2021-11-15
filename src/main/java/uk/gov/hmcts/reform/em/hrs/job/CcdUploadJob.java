@@ -4,37 +4,38 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.JobInProgressService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdUploadService;
 
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
-import javax.inject.Inject;
-import javax.inject.Named;
 
-@Named
+
+@Component
 @DisallowConcurrentExecution
 public class CcdUploadJob extends QuartzJobBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CcdUploadJob.class);
 
-    @Inject
+    @Autowired
     @Qualifier("ccdUploadQueue")
     private LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue;
 
-    @Inject
+    @Autowired
     private JobInProgressService jobInProgressService;
 
-    @Inject
+    @Autowired
     private CcdUploadService ccdUploadService;
 
     // Required by Quartz
     public CcdUploadJob() {
     }
 
-    //POJO Constructor for mocked tests without dependency injection
+    //POJO Constructor for mocked tests without dependency Autowiredion
     CcdUploadJob(final LinkedBlockingQueue<HearingRecordingDto> ccdUploadQueue,
                  final CcdUploadService ccdUploadService,
                  final JobInProgressService jobInProgressService) {
