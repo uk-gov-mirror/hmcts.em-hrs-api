@@ -70,9 +70,9 @@ public abstract class BaseTest {
     protected static final String CASE_TYPE = "HearingRecordings";
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
-    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-caseworker-hrs@hmcts.net";
-    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "em-test-caseworker@hmcts.net";
-    protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "em-test-citizen@hmcts.net";
+    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-caseworker-hrs@test.internal";
+    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "em-test-caseworker@test.internal";
+    protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "em-test-citizen@test.internal";
     protected static final String EMAIL_ADDRESS_INVALID_FORMAT = "invalid@emailaddress";
     protected static final String FOLDER = "audiostream123455";
     protected static final String TIME = "2020-11-04-14.56.32.819";
