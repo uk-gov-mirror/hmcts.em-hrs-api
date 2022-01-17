@@ -12,8 +12,10 @@ COMPOSE_FILE="-f docker-compose-dependencies.yml"
 IDAM_URI="http://localhost:5000"
 IDAM_USERNAME="idamOwner@hmcts.net"
 IDAM_PASSWORD="Ref0rmIsFun"
-SYSTEM_USER_NAME="em.hrs.api@hmcts.net.local"
-SYSTEM_USER_PASSWORD="localPass0!"
+SYSTEM_USER_NAME="idam-system-user@mailinator.com"
+SYSTEM_USER_PASSWORD="4590fgvhbfgbDdffm3lk4j"
+
+
 export DOCMOSIS_ACCESS_KEY=$1
 
 echo "****************************************************************************************************************"
@@ -44,6 +46,10 @@ echo "az acr login --name hmctspublic && az acr login --name hmctsprivate"
 echo ""
 echo "****************************************************************************************************************"
 
+
+echo "Logging into Azure Container Repository"
+az acr login --name hmctspublic && az acr login --name hmctsprivate
+
 # Start IDAM setup
 echo "Starting shared-db..."
 docker-compose ${COMPOSE_FILE} up -d shared-db
@@ -64,28 +70,45 @@ sleep 5
 
 echo "Starting IDAM API..."
 docker-compose ${COMPOSE_FILE} up -d idam-api
-echo "sleeping 30 seconds to allow idam API to be ready"
+echo "sleeping 30 seconds to allow idam API to be ready. If anything fails, just cancel and rerun this script"
 sleep 30
-#read -p "Press enter to continue 2".
+#read -p "Press enter to continue".
 
-echo "Testing IDAM Authentication..."
+echo "Getting IDAM Authentication Token ..."
 token=$(./docker/dependencies/idam-authenticate.sh ${IDAM_URI} ${IDAM_USERNAME} ${IDAM_PASSWORD})
 while [ "_${token}" = "_" ]; do
   sleep 10
   echo "idam-api is not running! Check logs, you may need to restart..reattempting in 10 seconds"
   token=$(./docker/dependencies/idam-authenticate.sh ${IDAM_URI} ${IDAM_USERNAME} ${IDAM_PASSWORD})
 done
+
+#echo "token is $token"
 #read -p "Press enter to continue"
 
 # Set up IDAM client with services and roles
-echo "Setting up IDAM client..."
+echo "Setting up IDAM clients, users and roles used for ccd import (needs to match the roles in the spreadsheet)"
+echo "error 409 means the user is already in the system, so ignore"
 
+echo "Setting up IDAM client...oauth em"
 (./docker/dependencies/idam-client-setup.sh ${IDAM_URI} services ${token} '{"description": "em", "label": "em", "oauth2ClientId": "webshow", "oauth2ClientSecret": "AAAAAAAAAAAAAAAA", "oauth2RedirectUris": ["http://localhost:8080/oauth2redirect"], "selfRegistrationAllowed": true}')
+echo "Setting up IDAM client...oauth ccd"
 (./docker/dependencies/idam-client-setup.sh ${IDAM_URI} services ${token} '{"description": "ccd gateway", "label": "ccd gateway", "oauth2ClientId": "ccd_gateway", "oauth2ClientSecret": "AAAAAAAAAAAAAAAA", "oauth2RedirectUris": ["http://localhost:3451/oauth2redirect"], "selfRegistrationAllowed": true}')
+echo "Setting up IDAM role caseworker"
 (./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker)
+echo "Setting up IDAM role caseworker-hrs (deprecated)"
+(./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker-hrs)
+echo "Setting up IDAM role caseworker-hrs-searcher"
 (./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker-hrs-searcher)
+echo "Setting up IDAM role ccd-import"
 (./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} ccd-import)
+echo "Setting up IDAM user hrs system user"
 (./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} ${SYSTEM_USER_NAME} ${SYSTEM_USER_PASSWORD})
+
+echo "Setting up IDAM user hrs.tester@hmcts.net for ccd creation and querying as per ccd defination file userprofile"
+(./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} hrs.tester@hmcts.net ${SYSTEM_USER_PASSWORD})
+
+(./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} ccd-system-user@mailinator.com ${SYSTEM_USER_PASSWORD})
+
 
 # Start all other images
 echo "Starting dependencies..."

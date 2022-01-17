@@ -101,6 +101,8 @@ services:
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
       IDAM_USER_URL: http://idam-api:5000
       IDAM_S2S_URL: http://service-auth-provider-api:8489
+      IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ccd-system-user@mailinator.com
+      IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: 4590fgvhbfgbDdffm3lk4j
       REFORM_SERVICE_NAME: ccd-definition-store-api
       REFORM_TEAM: ccd
       REFORM_ENVIRONMENT: local

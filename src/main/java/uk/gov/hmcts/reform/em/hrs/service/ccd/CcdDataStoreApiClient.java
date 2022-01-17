@@ -41,8 +41,9 @@ public class CcdDataStoreApiClient {
     }
 
     public Long createCase(final UUID recordingId, final HearingRecordingDto hearingRecordingDto) {
+        LOGGER.info("Getting Tokens");
         Map<String, String> tokens = securityService.getTokens();
-
+        LOGGER.info("Starting Case Event");
         StartEventResponse startEventResponse =
             coreCaseDataApi.startCase(tokens.get(USER), tokens.get(SERVICE), CASE_TYPE, EVENT_CREATE_CASE);
 

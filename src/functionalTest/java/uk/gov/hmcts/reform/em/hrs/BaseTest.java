@@ -74,12 +74,13 @@ public abstract class BaseTest {
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
 
-    public static String SYSUSER_HRSAPI_USER = "emhrsapi@test.internal";
-    public static List<String> SYSUSER_HRSAPI_USER_ROLES = List.of("caseworker", "caseworker-hrs-searcher", "ccd-import");
+    public static String SYSUSER_HRS_FTESTS_API_USER = "hrs.tester@hmcts.net";//as per defination file "UserProfile" tab
+    public static List<String> SYSUSER_FTESTS_HRSAPI_USER_ROLES = List.of("caseworker", "caseworker-hrs", "caseworker-hrs-searcher", "ccd-import");
 
-    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-searcher@test.internal";
-    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "em-test-requestor@test.internal";
-    protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "em-test-citizen@test.internal";
+
+    protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-searcher@test.hmcts.net";
+    protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "em-test-requestor@test.hmcts.net";
+    protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "em-test-citizen@test.hmcts.net";
     protected static final String EMAIL_ADDRESS_INVALID_FORMAT = "invalid@emailaddress";
 
     protected static final String FOLDER = "audiostream123455";
@@ -92,7 +93,7 @@ public abstract class BaseTest {
 
     int FIND_CASE_TIMEOUT = 30;
 
-    protected String idamAuthHrsTester;
+    protected String idamAuthHrsTesterToken;
     protected String s2sAuth;
     protected String userIdHrsTester;
 
@@ -131,15 +132,14 @@ public abstract class BaseTest {
         LOGGER.info("BASE TEST POST CONSTRUCT INITIALISATIONS....");
         SerenityRest.useRelaxedHTTPSValidation();
 
-        createUserIfNotExists(SYSUSER_HRSAPI_USER, SYSUSER_HRSAPI_USER_ROLES);
+        LOGGER.info("CREATING USERS");
 
-        createUserIfNotExists(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_SEARCHER_ROLE);
-        createUserIfNotExists(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
-        createUserIfNotExists(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
+//        createIDAMUserIfNotExists(SYSUSER_HRS_FTESTS_API_USER, SYSUSER_FTESTS_HRSAPI_USER_ROLES);
+        createIDAMUserIfNotExists(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_SEARCHER_ROLE);
+        createIDAMUserIfNotExists(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
+        createIDAMUserIfNotExists(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
 
-        idamAuthHrsTester = idamHelper.authenticateUser(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
-        s2sAuth = BEARER + s2sHelper.getS2sToken();
-        userIdHrsTester = idamHelper.getUserId(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
+        LOGGER.info("IMPORTING CCD DEFINITION");
 
         try {
             extendedCcdHelper.importDefinitionFile();
@@ -147,9 +147,15 @@ public abstract class BaseTest {
             e.printStackTrace();
         }
 
+        LOGGER.info("AUTHENTICATING TEST USER FOR CCD CALLS");
+
+        idamAuthHrsTesterToken = idamHelper.authenticateUser(SYSUSER_HRS_FTESTS_API_USER);
+        s2sAuth = BEARER + s2sHelper.getS2sToken();
+        userIdHrsTester = idamHelper.getUserId(SYSUSER_HRS_FTESTS_API_USER);
+
     }
 
-    private void createUserIfNotExists(String email, List<String> roles) {
+    private void createIDAMUserIfNotExists(String email, List<String> roles) {
         /* in some cases, there were conflicts between PR branches being built
         due to users being deleted / recreated
 
@@ -157,9 +163,11 @@ public abstract class BaseTest {
         should the roles change for users, then the recreateUsers flag will need to be true before merging to master
          */
 
-        boolean recreateUsers = false;
+        boolean recreateUsers = true;
 
         if (recreateUsers) {
+            LOGGER.info("CREATING USER {} with roles {}",email,roles);
+
             idamHelper.createUser(email, roles);
         } else {
             try {
@@ -177,7 +185,7 @@ public abstract class BaseTest {
 
 
     private RequestSpecification authRequest(String username) {
-        String userToken = idamAuthHrsTester;
+        String userToken = idamAuthHrsTesterToken;
         if (!USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS.equals(username)) {
             userToken = idamHelper.authenticateUser(username);
         }
@@ -317,12 +325,14 @@ public abstract class BaseTest {
     protected Optional<CaseDetails> searchForCase(String caseRef) {
         Map<String, String> searchCriteria = Map.of("case.recordingReference", caseRef);
         String s2sToken = extendedCcdHelper.getCcdS2sToken();
-        String userToken = idamClient.getAccessToken(SYSUSER_HRSAPI_USER, "4590fgvhbfgbDdffm3lk4j");
+        String userToken = idamClient.getAccessToken(SYSUSER_HRS_FTESTS_API_USER, "4590fgvhbfgbDdffm3lk4j");
         String uid = idamClient.getUserInfo(userToken).getUid();
 
         LOGGER.info("searching for case by ref ({}) with userToken ({}) and serviceToken ({})",
-                    caseRef, idamAuthHrsTester.substring(0, 12), s2sToken.substring(0, 12)
+                    caseRef, idamAuthHrsTesterToken.substring(0, 12), s2sToken.substring(0, 12)
+
         );
+        LOGGER.info("with Jurisdiction {} and casetype {}",JURISDICTION,CASE_TYPE);
         return coreCaseDataApi
             .searchForCaseworker(userToken, s2sToken, uid,
                                  JURISDICTION, CASE_TYPE, searchCriteria
@@ -356,7 +366,7 @@ public abstract class BaseTest {
     public String closeCase(final String caseRef, CaseDetails caseDetails) {
 
         String s2sToken = extendedCcdHelper.getCcdS2sToken();
-        String userToken = idamClient.getAccessToken(SYSUSER_HRSAPI_USER, "4590fgvhbfgbDdffm3lk4j");
+        String userToken = idamClient.getAccessToken(SYSUSER_HRS_FTESTS_API_USER, "4590fgvhbfgbDdffm3lk4j");
         String uid = idamClient.getUserInfo(userToken).getUid();
 
         StartEventResponse startEventResponse =

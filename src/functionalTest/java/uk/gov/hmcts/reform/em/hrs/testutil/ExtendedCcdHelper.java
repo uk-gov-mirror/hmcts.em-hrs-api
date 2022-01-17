@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static uk.gov.hmcts.reform.em.hrs.BaseTest.SYSUSER_HRSAPI_USER;
+import static uk.gov.hmcts.reform.em.hrs.BaseTest.SYSUSER_HRS_FTESTS_API_USER;
 
 @Service
 public class ExtendedCcdHelper {
@@ -42,18 +42,23 @@ public class ExtendedCcdHelper {
 
     public void importDefinitionFile() throws IOException {
 
+        //These roles need to exist in both IDAM and CCD
+        //They are created in idam as part of docker/dependencies/start-local-environment.sh
         createCcdUserRole("caseworker");
+        createCcdUserRole("caseworker-hrs");//deprecated
         createCcdUserRole("caseworker-hrs-searcher");
 
-        MultipartFile multipartFile = new MockMultipartFile(
+        MultipartFile ccdDefinitionRequest = new MockMultipartFile(
             "x",
             "x",
             "application/octet-stream",
             getHrsDefinitionFile()
         );
 
-        ccdDefImportApi.importCaseDefinition(idamHelper.authenticateUser(SYSUSER_HRSAPI_USER),
-                                             ccdAuthTokenGenerator.generate(), multipartFile
+        String ccdUserForImportCaseAuthenticatedToken = idamHelper.authenticateUser(SYSUSER_HRS_FTESTS_API_USER);
+        String microserviceEmHrsApiAuthenticatedToken = ccdAuthTokenGenerator.generate();
+        ccdDefImportApi.importCaseDefinition(ccdUserForImportCaseAuthenticatedToken,
+                                             microserviceEmHrsApiAuthenticatedToken, ccdDefinitionRequest
         );
     }
 
@@ -64,7 +69,7 @@ public class ExtendedCcdHelper {
     private void createCcdUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(
             new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
-            idamHelper.authenticateUser(SYSUSER_HRSAPI_USER),
+            idamHelper.authenticateUser(SYSUSER_HRS_FTESTS_API_USER),
             ccdAuthTokenGenerator.generate()
         );
     }
