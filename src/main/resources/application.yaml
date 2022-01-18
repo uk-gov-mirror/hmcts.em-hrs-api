@@ -71,7 +71,7 @@ idam:
   api:
     url: ${IDAM_API_BASE_URI:http://localhost:5000}
   system-user:
-    username: ${HRS_SYSTEM_USER:idam-system-user@mailinator.com}
+    username: ${HRS_SYSTEM_USER:hrs.tester@hmcts.net} #hrs.tester@hmcts.net in all non prod environments
     password: ${HRS_SYSTEM_USER_PASSWORD:4590fgvhbfgbDdffm3lk4j} #password only used locally with docker containers
   s2s-auth:
     url: ${S2S_BASE_URI:http://localhost:4502}

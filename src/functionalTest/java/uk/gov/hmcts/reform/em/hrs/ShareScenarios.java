@@ -38,15 +38,15 @@ public class ShareScenarios extends BaseTest {
         caseRef = timebasedCaseRef();
         filename = filename(caseRef, 0);
         filenames.add(filename);
-//
-//
-//        LOGGER.info("SET UP: UPLOADING TO CVP");
-//        blobUtil.uploadToCvpContainer(filename);
-//        blobUtil.checkIfUploadedToStore(filenames, blobUtil.cvpBlobContainerClient);
-//
-//        LOGGER.info("SET UP: POSTING TO HRS");
-//        postRecordingSegment(caseRef, 0).then().statusCode(202);
-//        blobUtil.checkIfUploadedToStore(filenames, blobUtil.hrsBlobContainerClient);
+
+
+        LOGGER.info("SET UP: UPLOADING TO CVP");
+        blobUtil.uploadToCvpContainer(filename);
+        blobUtil.checkIfUploadedToStore(filenames, blobUtil.cvpBlobContainerClient);
+
+        LOGGER.info("SET UP: POSTING TO HRS");
+        postRecordingSegment(caseRef, 0).then().statusCode(202);
+        blobUtil.checkIfUploadedToStore(filenames, blobUtil.hrsBlobContainerClient);
 
         LOGGER.info("SET UP: CHECKING CASE IN CCD");
         caseDetails = findCaseWithAutoRetry(caseRef);

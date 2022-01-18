@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static uk.gov.hmcts.reform.em.hrs.BaseTest.SYSUSER_HRS_FTESTS_API_USER;
+import static uk.gov.hmcts.reform.em.hrs.BaseTest.HRS_SYSTEM_IDAM_USER;
 
 @Service
 public class ExtendedCcdHelper {
@@ -55,7 +55,7 @@ public class ExtendedCcdHelper {
             getHrsDefinitionFile()
         );
 
-        String ccdUserForImportCaseAuthenticatedToken = idamHelper.authenticateUser(SYSUSER_HRS_FTESTS_API_USER);
+        String ccdUserForImportCaseAuthenticatedToken = idamHelper.authenticateUser(HRS_SYSTEM_IDAM_USER);
         String microserviceEmHrsApiAuthenticatedToken = ccdAuthTokenGenerator.generate();
         ccdDefImportApi.importCaseDefinition(ccdUserForImportCaseAuthenticatedToken,
                                              microserviceEmHrsApiAuthenticatedToken, ccdDefinitionRequest
@@ -69,7 +69,7 @@ public class ExtendedCcdHelper {
     private void createCcdUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(
             new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
-            idamHelper.authenticateUser(SYSUSER_HRS_FTESTS_API_USER),
+            idamHelper.authenticateUser(HRS_SYSTEM_IDAM_USER),
             ccdAuthTokenGenerator.generate()
         );
     }
