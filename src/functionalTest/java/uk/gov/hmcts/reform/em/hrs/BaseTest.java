@@ -175,7 +175,7 @@ public abstract class BaseTest {
         should the roles change for users, then the recreateUsers flag will need to be true before merging to master
          */
 
-        boolean recreateUsers = true;
+        boolean recreateUsers = false;
 
         if (recreateUsers) {
             LOGGER.info("CREATING USER {} with roles {}", email, roles);
@@ -183,7 +183,7 @@ public abstract class BaseTest {
             idamHelper.createUser(email, roles);
         } else {
             try {
-                idamHelper.getUserId(email);
+                idamHelper.getUserId(email); 
             } catch (Exception e) {//if user does not exist
                 idamHelper.createUser(email, roles);
             }
