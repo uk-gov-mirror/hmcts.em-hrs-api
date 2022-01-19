@@ -137,6 +137,12 @@ public abstract class BaseTest {
         LOGGER.info("BASE TEST POST CONSTRUCT INITIALISATIONS....");
         SerenityRest.useRelaxedHTTPSValidation();
 
+
+        LOGGER.info("CREATING HRS SYSTEM USER");//Although this role is created in the local idam scripts, this role
+        //still needs creating on preview & aat environments.
+        createIDAMUserIfNotExists(HRS_SYSTEM_IDAM_USER, HRS_SYSTEM_IDAM_USER_ROLES);
+
+
         LOGGER.info("CREATING REGULAR TEST USERS");
 
 
