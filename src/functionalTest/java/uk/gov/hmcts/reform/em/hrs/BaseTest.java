@@ -83,6 +83,7 @@ public abstract class BaseTest {
         HRS_SYSTEM_IDAM_USER_ROLES = List.of("caseworker", "caseworker-hrs", "caseworker-hrs-searcher", "ccd-import");
 
 
+
     protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-searcher@test.hmcts.net";
     protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "em-test-requestor@test.hmcts.net";
     protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "em-test-citizen@test.hmcts.net";
@@ -97,6 +98,8 @@ public abstract class BaseTest {
     protected static final String CLOSE_CASE = "closeCase";
 
     int FIND_CASE_TIMEOUT = 30;
+
+    static int createUsersBaseTestRunCount=0;
 
     protected String hrsSystemIdamUserToken;
     protected String s2sAuth;
@@ -139,7 +142,8 @@ public abstract class BaseTest {
 
 
         LOGGER.info("CREATING HRS SYSTEM USER");//Although this role is created in the local idam scripts, this role
-        //still needs creating on preview & aat environments.
+        //still needs creating on new environments.
+        //currently vault passwords are set to a different password than this script provides (passwOrd01hrs)
         createIDAMUserIfNotExists(HRS_SYSTEM_IDAM_USER, HRS_SYSTEM_IDAM_USER_ROLES);
 
 
@@ -175,18 +179,29 @@ public abstract class BaseTest {
         should the roles change for users, then the recreateUsers flag will need to be true before merging to master
          */
 
-        boolean recreateUsers = false;
+        boolean recreateUsers = true;
+        int maxRuns=1;
 
-        if (recreateUsers) {
-            LOGGER.info("CREATING USER {} with roles {}", email, roles);
-
-            idamHelper.createUser(email, roles);
-        } else {
-            try {
-                idamHelper.getUserId(email); 
-            } catch (Exception e) {//if user does not exist
+        if (createUsersBaseTestRunCount<maxRuns) {
+            if (recreateUsers) {
+                LOGGER.info("CREATING USER {} with roles {}", email, roles);
                 idamHelper.createUser(email, roles);
+            } else {
+                try {
+                    String userId = idamHelper.getUserId(email);
+                    LOGGER.info("User {} already exists: id={}", email, userId);
+                } catch (Exception e) {//if user does not exist
+                    LOGGER.info("Exception thrown, likely user does not exist so will create. Exception:{}", e);
+                    idamHelper.createUser(email, roles);
+                }
             }
+
+            createUsersBaseTestRunCount++;
+        }
+        else
+        {
+            LOGGER.info("create user count {} >= maxruns {}",createUsersBaseTestRunCount,maxRuns);
+
         }
     }
 
