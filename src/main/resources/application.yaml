@@ -54,7 +54,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${OPEN_ID_API_BASE_URI:http://localhost:5000/o}
+            issuer-uri: ${OPEN_ID_API_BASE_URI:http://localhost:5001/o}
         registration:
           oidc:
             client-id: microservicekey-em-hrs-api
@@ -69,7 +69,7 @@ idam:
     grant_type: password
     scope: openid roles profile
   api:
-    url: ${IDAM_API_BASE_URI:http://localhost:5000}
+    url: ${IDAM_API_BASE_URI:http://localhost:5001}
   system-user:
     username: ${HRS_SYSTEM_USER:hrs.tester@hmcts.net} #hrs.tester@hmcts.net in all non prod environments
     password: ${HRS_SYSTEM_USER_PASSWORD:4590fgvhbfgbDdffm3lk4j} #password only used locally with docker containers

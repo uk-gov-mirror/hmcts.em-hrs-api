@@ -1,5 +1,5 @@
 #!/bin/bash
-export IDAM_URI="http://localhost:5000"
+export IDAM_URI="http://localhost:5001"
 export IDAM_USERNAME="idamOwner@hmcts.net"
 export IDAM_PASSWORD="Ref0rmIsFun"
 export HRS_SYSTEM_USER_NAME="hrs.tester@hmcts.net"

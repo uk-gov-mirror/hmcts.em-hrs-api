@@ -51,8 +51,9 @@ services:
       - IDAM_SPI_FORGEROCK_IDM_USERNAME=openidm-admin
       - IDAM_SPI_FORGEROCK_IDM_PASSWORD=openidm-admin
       - IDAM_SPI_FORGEROCK_IDM_PIN_DEFAULTPASSWORD=BlaBlaBlackSh33p
+      - SERVER_PORT=5001
     ports:
-      - 5000:5000
+      - 5001:5001
     depends_on:
       -  fr-idm
 
@@ -102,7 +103,7 @@ services:
       DEFINITION_STORE_IDAM_KEY: AAAAAAAAAAAAAAAA
       DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,em_gw,em_hrs_api
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
-      IDAM_USER_URL: http://idam-api:5000
+      IDAM_USER_URL: http://idam-api:5001
       IDAM_S2S_URL: http://service-auth-provider-api:8489
 #      IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ccd-system-user@mailinator.com
 #      IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: 4590fgvhbfgbDdffm3lk4j
@@ -135,10 +136,14 @@ services:
       DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,em_gw,em_hrs_api,ccd_case_document_am_api
       DEFINITION_STORE_HOST: http://ccd-definition-store-api:4451
       USER_PROFILE_HOST: http://ccd-user-profile-api:4453
-      IDAM_USER_URL: http://idam-api:5000
-      IDAM_API_BASE_URL: http://idam-api:5000
-      IDAM_OIDC_URL: http://idam-api:5000
+      IDAM_USER_URL: http://idam-api:5001
+      IDAM_API_BASE_URL: http://idam-api:5001
+      IDAM_OIDC_URL: http://idam-api:5001
       IDAM_S2S_URL: http://service-auth-provider-api:8489
+
+      OIDC_ISSUER_URL: http://idam-api:8080/openam/oauth2/hmcts
+      OPEN_ID_API_BASE_URI: http://idam-api:5001/o
+
       REFORM_SERVICE_NAME: ccd-data-store-api
       REFORM_TEAM: ccd
       REFORM_ENVIRONMENT: local
@@ -175,11 +180,11 @@ services:
       ROLE_ASSIGNMENT_IDAM_KEY:
       ROLE_ASSIGNMENT_TOKEN_SECRET:
       ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,xui_webapp,ccd_data,aac_manage_case_assignment
-      IDAM_USER_URL: http://idam-api:5000
       OIDC_ISSUER_URL: http://idam-api:8080/openam/oauth2/hmcts
-      OPEN_ID_API_BASE_URI: http://idam-api:5000/o
-      IDAM_API_BASE_URL: http://idam-api:5000
-      IDAM_OIDC_URL: http://idam-api:5000
+      IDAM_USER_URL: http://idam-api:5001
+      OPEN_ID_API_BASE_URI: http://idam-api:5001/o
+      IDAM_API_BASE_URL: http://idam-api:5001
+      IDAM_OIDC_URL: http://idam-api:5001
       IDAM_S2S_URL: http://service-auth-provider-api:8489
       ROLE_ASSIGNMENT_IDAM_CLIENT_ID: am_role_assignment
       ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET: am_role_assignment_secret
@@ -203,14 +208,14 @@ services:
   ccd-api-gateway:
     image: hmctspublic.azurecr.io/ccd/api-gateway-web:latest
     environment:
-      IDAM_BASE_URL: http://idam-api:5000
-      IDAM_USER_URL: http://idam-api:5000
+      IDAM_BASE_URL: http://idam-api:5001
+      IDAM_USER_URL: http://idam-api:5001
       IDAM_S2S_URL: http://service-auth-provider-api:8489
       IDAM_SERVICE_KEY: AAAAAAAAAAAAAAAA
-      IDAM_OAUTH2_LOGOUT_ENDPOINT: http://idam-api:5000/session/:token
+      IDAM_OAUTH2_LOGOUT_ENDPOINT: http://idam-api:5001/session/:token
       IDAM_OAUTH2_CLIENT_ID: ccd_gateway
       IDAM_OAUTH2_CLIENT_SECRET: AAAAAAAAAAAAAAAA
-      IDAM_OAUTH2_TOKEN_ENDPOINT: http://idam-api:5000/oauth2/token
+      IDAM_OAUTH2_TOKEN_ENDPOINT: http://idam-api:5001/oauth2/token
       PROXY_DOCUMENT_MANAGEMENT: http://dm-store:8080
       ADDRESS_LOOKUP_TOKEN:
       PROXY_AGGREGATED: http://ccd-data-store-api:4452
@@ -231,8 +236,8 @@ services:
     environment:
       CASE_DOCUMENT_AM_API_S2S_SECRET: AAAAAAAAAAAAAAAA
       CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_gw
-      IDAM_API_URL: http://idam-api:5000
-      IDAM_OIDC_URL: http://idam-api:5000
+      IDAM_API_URL: http://idam-api:5001
+      IDAM_OIDC_URL: http://idam-api:5001
       S2S_URL: http://service-auth-provider-api:8489
       DM_STORE_BASE_URL: http://dm-store:8080
       CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api:4452
@@ -290,7 +295,7 @@ services:
     volumes:
       - ./docker/postgres9-shared-dbs:/docker-entrypoint-initdb.d
     environment:
-      - POSTGRES_MULTIPLE_DATABASES=idam,emhrs,ccd_data,ccd_user_profile,ccd_definition,ccd_definition_designer,role_assignment
+      - POSTGRES_MULTIPLE_DATABASES=idam,emhrs,ccd_data,ccd_user_profile,ccd_definition,ccd_definition_designer,role_assignment,fridam
       - POSTGRES_USER=shared
       - POSTGRES_PASSWORD=shared
     ports:

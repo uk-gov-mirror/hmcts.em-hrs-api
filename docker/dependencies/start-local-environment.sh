@@ -48,8 +48,8 @@ echo "**************************************************************************
 echo "Logging into Azure Container Repository"
 az acr login --name hmctspublic && az acr login --name hmctsprivate
 
-echo "Pulling latest containers!"
-./docker/dependencies/pull-latest-dependencies.sh
+#echo "Pulling latest containers!"
+#./docker/dependencies/pull-latest-dependencies.sh
 
 echo "start idam containers"
 ./docker/dependencies/start-idam-containers.sh
@@ -92,8 +92,7 @@ read -p "Press the ENTER key to continue"
 
 echo "uploading test file until this is done as part of the tests"
 
-echo "adding all remaining services (if any)"
-
-docker-compose ${COMPOSE_FILE} up -d --scale em-hrs-api=0
+#echo "adding all remaining services (if any)"
+#docker-compose ${COMPOSE_FILE} up -d --scale em-hrs-api=0
 
 docker-compose ${COMPOSE_FILE} logs -f
