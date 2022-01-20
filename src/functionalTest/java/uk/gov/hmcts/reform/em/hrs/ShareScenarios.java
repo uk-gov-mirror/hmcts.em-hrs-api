@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import static org.hamcrest.CoreMatchers.is;

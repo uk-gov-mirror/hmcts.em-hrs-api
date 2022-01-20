@@ -75,13 +75,12 @@ public abstract class BaseTest {
     protected static final String FILE_EXT = "mp4";
 
     public static String HRS_SYSTEM_IDAM_USER = "hrs.tester@hmcts.net";
-        //SYSTEM account - is same for all non prod accounts
+    //SYSTEM account - is same for all non prod accounts
     //and is em-hrs-api@hmcts.net in prod
     //in all of the ccd defintion spreadsheets its hrs.tester@hmcts.net, even in prod. no idea what this is for in
-        // the spreadsheet
+    // the spreadsheet
     public static List<String>
         HRS_SYSTEM_IDAM_USER_ROLES = List.of("caseworker", "caseworker-hrs", "caseworker-hrs-searcher", "ccd-import");
-
 
 
     protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-searcher@test.hmcts.net";
@@ -99,7 +98,7 @@ public abstract class BaseTest {
 
     int FIND_CASE_TIMEOUT = 30;
 
-    static int createUsersBaseTestRunCount=0;
+    static int createUsersBaseTestRunCount = 0;
 
     protected String hrsSystemIdamUserToken;
     protected String s2sAuth;
@@ -180,9 +179,9 @@ public abstract class BaseTest {
          */
 
         boolean recreateUsers = true;
-        int maxRuns=1;
+        int maxRuns = 1;
 
-        if (createUsersBaseTestRunCount<maxRuns) {
+        if (createUsersBaseTestRunCount < maxRuns) {
             if (recreateUsers) {
                 LOGGER.info("CREATING USER {} with roles {}", email, roles);
                 idamHelper.createUser(email, roles);
@@ -197,10 +196,8 @@ public abstract class BaseTest {
             }
 
             createUsersBaseTestRunCount++;
-        }
-        else
-        {
-            LOGGER.info("create user count {} >= maxruns {}",createUsersBaseTestRunCount,maxRuns);
+        } else {
+            LOGGER.info("create user count {} >= maxruns {}", createUsersBaseTestRunCount, maxRuns);
 
         }
     }
@@ -334,7 +331,7 @@ public abstract class BaseTest {
         int count = 0;
         while (count <= 10 && optionalCaseDetails.isEmpty()) {
             SleepHelper.sleepForSeconds(FIND_CASE_TIMEOUT);
-            LOGGER.info("Search attempt # {}",count);
+            LOGGER.info("Search attempt # {}", count);
             optionalCaseDetails = searchForCase(caseRef);
             count++;
         }
