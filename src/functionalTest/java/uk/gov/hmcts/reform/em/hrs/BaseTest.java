@@ -167,7 +167,7 @@ public abstract class BaseTest {
         s2sAuth = BEARER + s2sHelper.getS2sToken();
         hrsSystemIdamUserId = idamHelper.getUserId(HRS_SYSTEM_IDAM_USER);
 
-
+        createUsersBaseTestRunCount++;
     }
 
     private void createIDAMUserIfNotExists(String email, List<String> roles) {
@@ -195,7 +195,7 @@ public abstract class BaseTest {
                 }
             }
 
-            createUsersBaseTestRunCount++;
+
         } else {
             LOGGER.info("create user count {} >= maxruns {}", createUsersBaseTestRunCount, maxRuns);
 
