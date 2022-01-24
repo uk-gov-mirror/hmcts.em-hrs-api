@@ -81,6 +81,9 @@ public class BlobUtil {
     }
 
 
+
+
+
     private int getBlobCount(BlobContainerClient client, Set<String> fileNames) {
         return (int) client.listBlobs()
             .stream()
@@ -89,8 +92,8 @@ public class BlobUtil {
     }
 
 
-    public void uploadToCvpContainer(final String blobName) throws Exception {
-        final FileInputStream fileInputStream = getTestFile();
+    public void uploadFileFromPathToCvpContainer(final String blobName, final String pathToFile) throws Exception {
+        final FileInputStream fileInputStream = getFilefromPath("data/test_data.mp4");
         final byte[] bytes = fileInputStream.readAllBytes();
         final InputStream inStream = new ByteArrayInputStream(bytes);
 
@@ -99,9 +102,25 @@ public class BlobUtil {
         blobClient.upload(new BufferedInputStream(inStream), bytes.length);
     }
 
-    public FileInputStream getTestFile() throws Exception {
-        final URL resource = BlobUtil.class.getClassLoader().getResource("data/test_data.mp4");
+
+    public void uploadFileFromPathToHrsContainer(final String blobName, final String pathToFile) throws Exception {
+        final FileInputStream fileInputStream =  getFilefromPath("data/test_data.mp4");
+        final byte[] bytes = fileInputStream.readAllBytes();
+        final InputStream inStream = new ByteArrayInputStream(bytes);
+
+        final BlobClient blobClient = hrsBlobContainerClient.getBlobClient(blobName);
+        LOGGER.debug("hrsBlobContainerClient.getBlobContainerUrl() ~{}", hrsBlobContainerClient.getBlobContainerUrl());
+        blobClient.upload(new BufferedInputStream(inStream), bytes.length);
+    }
+
+
+    public FileInputStream getFilefromPath(final String pathToFile) throws Exception {
+        final URL resource = BlobUtil.class.getClassLoader().getResource(pathToFile);
         final File file = new File(Objects.requireNonNull(resource).toURI());
         return new FileInputStream(file);
+    }
+
+    public long getFileSizeFromStore(String filename, BlobContainerClient hrsBlobContainerClient) {
+        return hrsBlobContainerClient.getBlobClient(filename).getProperties().getBlobSize();
     }
 }

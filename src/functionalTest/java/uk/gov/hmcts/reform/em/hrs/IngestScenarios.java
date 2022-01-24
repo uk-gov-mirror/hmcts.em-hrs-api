@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import javax.annotation.PostConstruct;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
+import static uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper.sleepForSeconds;
 
 public class IngestScenarios extends BaseTest {
 
@@ -36,13 +38,7 @@ public class IngestScenarios extends BaseTest {
     @PostConstruct
     public void setup() throws Exception {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
-    }
 
-
-    @Test
-    public void shouldCreateHearingRecordingSegments() throws Exception {
-        String caseRef = timebasedCaseRef();
-        Set<String> filenames = new HashSet<>();
 
         ZonedDateTime now = ZonedDateTime.now();
         String fileNamePrefixToNotDelete = JURISDICTION + "-" + LOCATION_CODE + "-" + CASEREF_PREFIX
@@ -68,10 +64,19 @@ public class IngestScenarios extends BaseTest {
         );
 
 
+    }
+
+
+    @Test
+    public void shouldCreateHearingRecordingSegments() throws Exception {
+        String caseRef = timebasedCaseRef();
+        Set<String> filenames = new HashSet<>();
+
+
         for (int segmentIndex = 0; segmentIndex < SEGMENT_COUNT; segmentIndex++) {
             String filename = filename(caseRef, segmentIndex);
             filenames.add(filename);
-            testUtil.uploadToCvpContainer(filename);
+            testUtil.uploadFileFromPathToCvpContainer(filename,"data/test_data.mp4");
         }
 
         LOGGER.info("************* CHECKING CVP HAS UPLOADED **********");
@@ -123,4 +128,84 @@ public class IngestScenarios extends BaseTest {
         LOGGER.info("num recordings: " + recordingFiles.size());
 
     }
+
+
+    @Test
+    public void shouldIngestPartiallyCopiedHearingRecordingSegments() throws Exception {
+        //Partially copied *should* result in a file size of 0 bytes
+        //TODO put link to MS doco describing this
+        String caseRef = timebasedCaseRef();
+        Set<String> filenames = new HashSet<>();
+
+
+        //upload empty file to hrs
+
+        String filename = filename(caseRef, 0);
+        testUtil.uploadFileFromPathToHrsContainer(filename, "data/empty_file.mp4");
+        testUtil.uploadFileFromPathToCvpContainer(filename,"data/test_data.mp4");
+
+
+        LOGGER.info("************* CHECKING CVP HAS UPLOADED **********");
+        long cvpFileSize = testUtil.getFileSizeFromStore(filename, testUtil.cvpBlobContainerClient);
+        LOGGER.info("************* Files loaded to cvp storage **********");
+
+        //TODO check the empty file has uploaded to HRS storage
+
+
+            postRecordingSegment(caseRef, 0)
+                .then()
+                .log().all()
+                .statusCode(202);
+
+
+
+       //TODO wait until the ingestion has triggered the copy
+        sleepForSeconds(10);
+
+        LOGGER.info("************* CHECKING HRS HAS COPIED THE FULL LENGTH FILE TO STORE **********");
+        long hrsFileSize = testUtil.getFileSizeFromStore(filename, testUtil.hrsBlobContainerClient);
+
+        Assert.assertEquals(hrsFileSize,cvpFileSize);
+
+
+
+        //NO POINT CHECKING CCD, AS THIS TEST IS ABOUT STORAGE
+        //HOWEVER UNTIL THE FILE IS IN CCD, IT IS ON THE QUEUE AND AFFECTING THE THROTTLING / THROUGHPUT
+
+//        //IN AAT hrs is running on 8 / minute uploads, so need to wait at least 8 secs per segment
+//        //giving it 10 secs per segment, plus an additional segment
+//        int secondsToWaitForCcdUploadsToComplete =
+//            (SEGMENT_COUNT * CCD_UPLOAD_WAIT_PER_SEGMENT_IN_SECONDS) + CCD_UPLOAD_WAIT_MARGIN_IN_SECONDS;
+//        LOGGER.info(
+//            "************* Sleeping for {} seconds to allow CCD uploads to complete **********",
+//            secondsToWaitForCcdUploadsToComplete
+//        );
+//        SleepHelper.sleepForSeconds(secondsToWaitForCcdUploadsToComplete);
+//
+//
+//        LOGGER.info("************* CHECKING HRS HAS IT IN DATABASE AND RETURNS EXPECTED FILES VIA API**********");
+//        getFilenamesCompletedOrInProgress(FOLDER)
+//            .assertThat().log().all()
+//            .statusCode(200)
+//            .body("folder-name", equalTo(FOLDER))
+//            .body("filenames", hasItems(filenames.toArray()));
+//
+//        LOGGER.info("*****************************");
+//        LOGGER.info("*****************************");
+//        LOGGER.info("*****************************");
+//        LOGGER.info("*****************************");
+//        LOGGER.info("*****************************");
+//
+//
+//        CaseDetails caseDetails = findCaseWithAutoRetry(caseRef);
+//
+//
+//        Map<String, Object> data = caseDetails.getData();
+//        LOGGER.info("data size: " + data.size()); //TODO when posting multisegment - this needs to match
+//        List recordingFiles = (ArrayList) data.get("recordingFiles");
+//        LOGGER.info("num recordings: " + recordingFiles.size());
+
+    }
+
+
 }
