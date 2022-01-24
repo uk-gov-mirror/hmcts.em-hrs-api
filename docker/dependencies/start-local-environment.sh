@@ -7,13 +7,13 @@ date
 ##
 ## Start local environment including idam client setup.
 
+## DOES NOT START UP HRS API
+
 # Set variables
-COMPOSE_FILE="-f docker-compose-dependencies.yml"
-IDAM_URI="http://localhost:5000"
-IDAM_USERNAME="idamOwner@hmcts.net"
-IDAM_PASSWORD="Ref0rmIsFun"
-SYSTEM_USER_NAME="em.hrs.api@hmcts.net.local"
-SYSTEM_USER_PASSWORD="localPass0!"
+export COMPOSE_FILE="-f docker-compose-dependencies.yml"
+
+
+
 export DOCMOSIS_ACCESS_KEY=$1
 
 echo "****************************************************************************************************************"
@@ -44,48 +44,19 @@ echo "az acr login --name hmctspublic && az acr login --name hmctsprivate"
 echo ""
 echo "****************************************************************************************************************"
 
-# Start IDAM setup
-echo "Starting shared-db..."
-docker-compose ${COMPOSE_FILE} up -d shared-db
-echo "sleeping 10 seconds to allow db to be ready"
-sleep 10
-#read -p "Press enter to continue 0".
 
-echo "Starting IDAM(ForgeRock)..."
-docker-compose ${COMPOSE_FILE} up -d fr-am
-echo "sleeping 30 seconds to allow idam fr-AM to be ready"
-sleep 30
-#read -p "Press enter to continue idam forge rock".
+echo "Logging into Azure Container Repository"
+az acr login --name hmctspublic && az acr login --name hmctsprivate
 
-docker-compose ${COMPOSE_FILE} up -d fr-idm
-echo "sleeping 5 seconds to allow idam fr-idm to be ready"
-sleep 5
-#read -p "Press enter to continue 1".
+echo "Pulling latest containers!"
+./docker/dependencies/pull-latest-dependencies.sh
 
-echo "Starting IDAM API..."
-docker-compose ${COMPOSE_FILE} up -d idam-api
-echo "sleeping 30 seconds to allow idam API to be ready"
-sleep 30
-#read -p "Press enter to continue 2".
+echo "start idam containers"
+./docker/dependencies/start-idam-containers.sh
 
-echo "Testing IDAM Authentication..."
-token=$(./docker/dependencies/idam-authenticate.sh ${IDAM_URI} ${IDAM_USERNAME} ${IDAM_PASSWORD})
-while [ "_${token}" = "_" ]; do
-  sleep 10
-  echo "idam-api is not running! Check logs, you may need to restart..reattempting in 10 seconds"
-  token=$(./docker/dependencies/idam-authenticate.sh ${IDAM_URI} ${IDAM_USERNAME} ${IDAM_PASSWORD})
-done
-#read -p "Press enter to continue"
 
-# Set up IDAM client with services and roles
-echo "Setting up IDAM client..."
-
-(./docker/dependencies/idam-client-setup.sh ${IDAM_URI} services ${token} '{"description": "em", "label": "em", "oauth2ClientId": "webshow", "oauth2ClientSecret": "AAAAAAAAAAAAAAAA", "oauth2RedirectUris": ["http://localhost:8080/oauth2redirect"], "selfRegistrationAllowed": true}')
-(./docker/dependencies/idam-client-setup.sh ${IDAM_URI} services ${token} '{"description": "ccd gateway", "label": "ccd gateway", "oauth2ClientId": "ccd_gateway", "oauth2ClientSecret": "AAAAAAAAAAAAAAAA", "oauth2RedirectUris": ["http://localhost:3451/oauth2redirect"], "selfRegistrationAllowed": true}')
-(./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker)
-(./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker-hrs-searcher)
-(./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} ccd-import)
-(./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} ${SYSTEM_USER_NAME} ${SYSTEM_USER_PASSWORD})
+echo "intialise idam users and roles"
+./docker/dependencies/intialise-users.sh
 
 # Start all other images
 echo "Starting dependencies..."
@@ -100,6 +71,7 @@ docker-compose ${COMPOSE_FILE} up -d shared-database \
   ccd-data-store-api \
   ccd-api-gateway \
   smtp-server \
+  am-role-assignment-service \
   ccd-case-document-am-api
 
 echo "LOCAL ENVIRONMENT BOOT UP SUCCESSFULLY STARTED, about to tail logs whilst apps intialise. CCD Data API is the longest running to  initialise"
@@ -119,5 +91,8 @@ echo ""
 read -p "Press the ENTER key to continue"
 
 echo "uploading test file until this is done as part of the tests"
+
+#echo "adding all remaining services (if any)"
+#docker-compose ${COMPOSE_FILE} up -d --scale em-hrs-api=0
 
 docker-compose ${COMPOSE_FILE} logs -f
