@@ -74,8 +74,9 @@ public abstract class BaseTest {
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
 
+    //THIS USER MUST BE in the format/parrtern of first.second@hmcts.net
     public static String SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION =
-        "hrs.functional.tester@hmcts.net";
+        "hrs.functionaltester@hmcts.net";
 
     public static List<String>
         SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES =
@@ -143,18 +144,15 @@ public abstract class BaseTest {
             SerenityRest.useRelaxedHTTPSValidation();
 
 
-            LOGGER.info("CREATING HRS FUNCTIONAL TEST SYSTEM USER");//Although this role is created in the local idam
-            // scripts, this role
-            //still needs creating on new environments.
-            //currently vault passwords are set to a different password than this script provides (passwOrd01hrs)
-            createIDAMUserIfNotExists(
-                SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION,
-                SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES
-            );
-
-            LOGGER.info("CREATING REGULAR TEST USERS");
-
-
+//            LOGGER.info("CREATING HRS FUNCTIONAL TEST SYSTEM USER");
+//            createIDAMUserIfNotExists(
+//                SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION,
+//                SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES
+//            );
+//
+//            LOGGER.info("CREATING REGULAR TEST USERS");
+//
+//
             createIDAMUserIfNotExists(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_SEARCHER_ROLE);
             createIDAMUserIfNotExists(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
             createIDAMUserIfNotExists(USER_WITH_NONACCESS_ROLE__CITIZEN, CITIZEN_ROLE);
