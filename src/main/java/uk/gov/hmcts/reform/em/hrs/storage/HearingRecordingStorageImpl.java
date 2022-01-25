@@ -182,15 +182,15 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
         final Duration duration = Duration.ofMinutes(BLOB_LIST_TIMEOUT);
 
         final PagedIterable<BlobItem> cvpBlobItemsByPage = cvpBlobContainerClient.listBlobs(options, duration);
+        long cvpItemByPageCount = cvpBlobItemsByPage.streamByPage().count();
         final PagedIterable<BlobItem> cvpBlobItems = cvpBlobContainerClient.listBlobs(options, duration);
-        long cvpItemByPageCount = cvpBlobItems.streamByPage().count();
         long cvpItemCount = cvpBlobItems.stream().count();
 
 
         final PagedIterable<BlobItem> hrsBlobItemsByPage = hrsBlobContainerClient.listBlobs(options, duration);
+        long hrsItemByPageCount = hrsBlobItemsByPage.streamByPage().count();
         final PagedIterable<BlobItem> hrsBlobItems = hrsBlobContainerClient.listBlobs(options, duration);
-        long hrsItemByPageCount = cvpBlobItemsByPage.streamByPage().count();
-        long hrsItemCount = cvpBlobItems.stream().count();
+        long hrsItemCount = hrsBlobItems.stream().count();
 
         String report = "CVP Count StreamByPage= " + cvpItemByPageCount;
         report += "\nCVP Count = " + cvpItemCount;

@@ -3,7 +3,7 @@ export IDAM_URI="http://localhost:5001"
 export IDAM_USERNAME="idamOwner@hmcts.net"
 export IDAM_PASSWORD="Ref0rmIsFun"
 export HRS_SYSTEM_USER_NAME="hrs.tester@hmcts.net"
-export HRS_SYSTEM_FUNCTIONAL_USER_NAME="hrs.functester@hmcts.net"
+#export HRS_SYSTEM_FUNCTIONAL_USER_NAME="hrs.functionaltester@hmcts.net"
 export HRS_SYSTEM_USER_PASSWORD="4590fgvhbfgbDdffm3lk4j"
 
 
@@ -55,16 +55,16 @@ echo "Setting up IDAM role ccd-import"
 echo
 echo
 
-echo "Setting up IDAM user hrs system user"
+echo "Setting up IDAM user hrs system user with caseworker and casework hrs roles"
 ./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} ${HRS_SYSTEM_USER_NAME} ${HRS_SYSTEM_USER_PASSWORD}
 echo
 echo
 
 
-echo "Setting up IDAM user hrs system user for functional tests"
-./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} ${HRS_SYSTEM_FUNCTIONAL_USER_NAME} ${HRS_SYSTEM_USER_PASSWORD}
-echo
-echo
+#echo "Setting up IDAM user hrs system user for functional tests"
+#./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} ${HRS_SYSTEM_FUNCTIONAL_USER_NAME} ${HRS_SYSTEM_USER_PASSWORD}
+#echo
+#echo
 
 
 #echo "Setting up IDAM user cdd-system user (tbc if needed)"

@@ -43,7 +43,7 @@ public class DownloadNonSharedScenarios extends BaseTest {
 
 
         LOGGER.info("Checking CCD and populating default caseDetails");
-        caseDetails = findCaseWithAutoRetry(caseRef);
+        caseDetails = findCaseWithAutoRetryWithUserWithSearcherRole(caseRef);
 
         //used in tests to verify file is fully downloaded
         expectedFileSize = blobUtil.getTestFile().readAllBytes().length;

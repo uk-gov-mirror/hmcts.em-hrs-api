@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static uk.gov.hmcts.reform.em.hrs.BaseTest.SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION;
+import static uk.gov.hmcts.reform.em.hrs.BaseTest.SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION;
 
 @Service
 public class ExtendedCcdHelper {
@@ -56,7 +56,7 @@ public class ExtendedCcdHelper {
         );
 
         String ccdUserForImportCaseAuthenticatedToken = idamHelper.authenticateUser(
-            SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
+            SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
         String microserviceEmHrsApiAuthenticatedToken = ccdAuthTokenGenerator.generate();
         ccdDefImportApi.importCaseDefinition(ccdUserForImportCaseAuthenticatedToken,
                                              microserviceEmHrsApiAuthenticatedToken, ccdDefinitionRequest
@@ -70,7 +70,7 @@ public class ExtendedCcdHelper {
     private void createCcdUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(
             new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
-            idamHelper.authenticateUser(SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION),
+            idamHelper.authenticateUser(SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION),
             ccdAuthTokenGenerator.generate()
         );
     }

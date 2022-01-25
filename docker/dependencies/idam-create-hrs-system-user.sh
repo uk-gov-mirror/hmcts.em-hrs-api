@@ -14,7 +14,9 @@ echo "IDAM_URI: $IDAM_URI"
 echo "USERNAME: $USERNAME"
 echo "PASSWORD: $PASSWORD"
 
-DATA='{"email":"'${USERNAME}'", "password":"'${PASSWORD}'", "surname":"system" , "forename":"user", "roles":[{"code":"caseworker"},{"code":"caseworker-hrs-searcher"},{"code":"ccd-import"}]}'
+
+
+DATA='{"email":"'${USERNAME}'", "password":"'${PASSWORD}'", "surname":"system" , "forename":"user", "roles":[{"code":"caseworker"},{"code":"caseworker-hrs"}]}'
 
 echo "JSON DATA: $DATA"
 

@@ -48,7 +48,7 @@ public class ShareScenarios extends BaseTest {
         blobUtil.checkIfUploadedToStore(filenames, blobUtil.hrsBlobContainerClient);
 
         LOGGER.info("SET UP: CHECKING CASE IN CCD");
-        caseDetails = findCaseWithAutoRetry(caseRef);
+        caseDetails = findCaseWithAutoRetryWithUserWithSearcherRole(caseRef);
 
         //used in tests to verify file is fully downloaded
         LOGGER.info("SET UP: CHECKING FILE SIZE UPLOADED TO CVP");

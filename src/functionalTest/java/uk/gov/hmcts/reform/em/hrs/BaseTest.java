@@ -78,24 +78,26 @@ public abstract class BaseTest {
     //THIS USER MUST BE CREATED VIA THE IDAM CURL SCRIPTS AS THE HELPER IDAM USER CREATION DOESNT SEEM TO WORK
     //(RESULTING IN A "Unauthorised roles or userId in the request path" Error when searching for case)
     //see https://tools.hmcts.net/confluence/pages/viewpage.action?pageId=1535416974 on how to form those curl commands
-    public static String SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION =
-        "hrs.functester@hmcts.net";
+    public static String SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION =
+        "hrs.functionaltester@hmcts.net";
 
     public static List<String>
         SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES =
-        List.of("caseworker", "caseworker-hrs-searcher", "ccd-import");
+        List.of("caseworker", "caseworker-hrs", "caseworker-hrs-searcher", "ccd-import");
 
 
     protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-searcher@test.hmcts.net";
     protected static final String USER_WITH_REQUESTOR_ROLE__CASEWORKER = "em-test-requestor@test.hmcts.net";
     protected static final String USER_WITH_NONACCESS_ROLE__CITIZEN = "em-test-citizen@test.hmcts.net";
+    protected static final String USER_DEFAULT_PASSWORD = "4590fgvhbfgbDdffm3lk4j";//USED ONLY FOR TESTS in IDAM HELPER
     protected static final String EMAIL_ADDRESS_INVALID_FORMAT = "invalid@emailaddress";
 
     protected static final String FOLDER = "audiostream123455";
     protected static final String TIME = "2020-11-04-14.56.32.819";
     public static final String CASEREF_PREFIX = "FUNCTEST_";
     protected static List<String> CASE_WORKER_ROLE = List.of("caseworker");
-    protected static List<String> CASE_WORKER_HRS_SEARCHER_ROLE = List.of("caseworker", "caseworker-hrs-searcher");
+    protected static List<String> CASE_WORKER_HRS_SEARCHER_ROLE =
+        List.of("caseworker", "caseworker-hrs", "caseworker-hrs-searcher");
     protected static List<String> CITIZEN_ROLE = List.of("citizen");
     protected static final String CLOSE_CASE = "closeCase";
 
@@ -105,7 +107,7 @@ public abstract class BaseTest {
 
     protected String functionalTestsSystemUserToken;
     protected String s2sAuth;
-    protected String functionalTestsSystemUserId;
+    //    protected String functionalTestsSystemUserId;
 
 
     //yyyy-MM-dd---HH-MM-ss---SSS=07-30-2021---16-07-35---485
@@ -146,6 +148,13 @@ public abstract class BaseTest {
             LOGGER.info("BASE TEST POST CONSTRUCT INITIALISATIONS....");
             SerenityRest.useRelaxedHTTPSValidation();
 
+
+            LOGGER.info("CREATING HRS FUNCTIONAL TEST SYSTEM USER");
+            createIDAMUserIfNotExists(
+                SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION,
+                SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES
+            );
+
             LOGGER.info("CREATING REGULAR TEST USERS");
 
             createIDAMUserIfNotExists(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_SEARCHER_ROLE);
@@ -166,13 +175,13 @@ public abstract class BaseTest {
         LOGGER.info("AUTHENTICATING TEST USER FOR CCD CALLS");
 
         functionalTestsSystemUserToken = idamHelper.authenticateUser(
-            SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
+            SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
         //assumes this system user exists!
 
         s2sAuth = BEARER + s2sHelper.getS2sToken();
 
-        functionalTestsSystemUserId =
-            idamHelper.getUserId(SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
+        //        functionalTestsSystemUserId =
+        //            idamHelper.getUserId(SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
 
     }
 
@@ -190,7 +199,7 @@ public abstract class BaseTest {
 
          */
 
-        boolean recreateUsers = false;
+        boolean recreateUsers = true;
 
         if (recreateUsers) {
             LOGGER.info("CREATING USER {} with roles {}", email, roles);
@@ -200,7 +209,10 @@ public abstract class BaseTest {
                 String userId = idamHelper.getUserId(email);
                 LOGGER.info("User {} already exists: id={}", email, userId);
             } catch (Exception e) {//if user does not exist
-                LOGGER.info("Exception thrown, likely user does not exist so will create. Ignore the above Exception:{}", e.getMessage());
+                LOGGER.info(
+                    "Exception thrown, likely user does not exist so will create. Ignore the above Exception:{}",
+                    e.getMessage()
+                );
                 LOGGER.info("CREATING USER {} with roles {}", email, roles);
                 idamHelper.createUser(email, roles);
             }
@@ -209,16 +221,16 @@ public abstract class BaseTest {
     }
 
 
-    public RequestSpecification authRequest() {
-        return authRequest(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
+    public RequestSpecification authRequestForSearcherRole() {
+        return authRequestForUsername(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS);
     }
 
 
-    private RequestSpecification authRequest(String username) {
-        String userToken = functionalTestsSystemUserToken;
-        if (!SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION.equals(username)) {
-            userToken = idamHelper.authenticateUser(username);
-        }
+    private RequestSpecification authRequestForUsername(String username) {
+        //        String userToken = functionalTestsSystemUserToken;
+        //        if (!SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION.equals(username)) {
+        String userToken = idamHelper.authenticateUser(username);
+        //        }
 
         return SerenityRest
             .given()
@@ -235,7 +247,7 @@ public abstract class BaseTest {
     }
 
     protected ValidatableResponse getFilenamesCompletedOrInProgress(String folder) {
-        return authRequest()
+        return authRequestForSearcherRole() //TODO this is something ingestor would call not searcher
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
@@ -261,7 +273,7 @@ public abstract class BaseTest {
 
     protected Response shareRecording(String email, CallbackRequest callbackRequest) {
         JsonNode reqBody = new ObjectMapper().convertValue(callbackRequest, JsonNode.class);
-        return authRequest(email)
+        return authRequestForUsername(email)
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
@@ -281,7 +293,7 @@ public abstract class BaseTest {
             .findFirst()
             .orElseThrow();
 
-        return authRequest(email)
+        return authRequestForUsername(email)
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
@@ -331,14 +343,14 @@ public abstract class BaseTest {
             .statusCode(200);
     }
 
-    CaseDetails findCaseWithAutoRetry(String caseRef) {
-        Optional<CaseDetails> optionalCaseDetails = searchForCase(caseRef);
+    CaseDetails findCaseWithAutoRetryWithUserWithSearcherRole(String caseRef) {
+        Optional<CaseDetails> optionalCaseDetails = searchForCaseWithUserWithSearcherRole(caseRef);
 
         int count = 0;
         while (count <= 10 && optionalCaseDetails.isEmpty()) {
             SleepHelper.sleepForSeconds(FIND_CASE_TIMEOUT);
             LOGGER.info("Search attempt # {}", count);
-            optionalCaseDetails = searchForCase(caseRef);
+            optionalCaseDetails = searchForCaseWithUserWithSearcherRole(caseRef);
             count++;
         }
 
@@ -353,17 +365,13 @@ public abstract class BaseTest {
         return caseDetails;
     }
 
-    protected Optional<CaseDetails> searchForCase(String caseRef) {
+    protected Optional<CaseDetails> searchForCaseWithUserWithSearcherRole(String caseRef) {
         Map<String, String> searchCriteria = Map.of("case.recordingReference", caseRef);
         String s2sToken = extendedCcdHelper.getCcdS2sToken();
         String userToken = idamClient.getAccessToken(
-            SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION, "4590fgvhbfgbDdffm3lk4j");
+            USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, USER_DEFAULT_PASSWORD);
         String uid = idamClient.getUserInfo(userToken).getUid();
 
-        LOGGER.info("searching for case by ref ({}) with userToken ({}) and serviceToken ({})",
-                    caseRef, functionalTestsSystemUserToken.substring(0, 12), s2sToken.substring(0, 12)
-
-        );
         LOGGER.info("with Jurisdiction {} and casetype {}", JURISDICTION, CASE_TYPE);
         return coreCaseDataApi
             .searchForCaseworker(userToken, s2sToken, uid,
@@ -399,7 +407,7 @@ public abstract class BaseTest {
 
         String s2sToken = extendedCcdHelper.getCcdS2sToken();
         String userToken = idamClient.getAccessToken(
-            SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION, "4590fgvhbfgbDdffm3lk4j");
+            SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION, USER_DEFAULT_PASSWORD);
         String uid = idamClient.getUserInfo(userToken).getUid();
 
         StartEventResponse startEventResponse =
