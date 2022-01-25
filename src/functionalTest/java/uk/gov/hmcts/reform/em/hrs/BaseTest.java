@@ -74,9 +74,12 @@ public abstract class BaseTest {
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
 
-    //THIS USER MUST BE in the format/parrtern of first.second@hmcts.net
+    //THIS USER MUST BE in the format/pattern of first.second@hmcts.net
+    //THIS USER MUST BE CREATED VIA THE IDAM CURL SCRIPTS AS THE HELPER IDAM USER CREATION DOESNT SEEM TO WORK
+    //(RESULTING IN A "Unauthorised roles or userId in the request path" Error when searching for case)
+    //see https://tools.hmcts.net/confluence/pages/viewpage.action?pageId=1535416974 on how to form those curl commands
     public static String SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION =
-        "hrs.functionaltester@hmcts.net";
+        "hrs.functester@hmcts.net";
 
     public static List<String>
         SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES =
@@ -143,15 +146,7 @@ public abstract class BaseTest {
             LOGGER.info("BASE TEST POST CONSTRUCT INITIALISATIONS....");
             SerenityRest.useRelaxedHTTPSValidation();
 
-
-            LOGGER.info("CREATING HRS FUNCTIONAL TEST SYSTEM USER");
-            createIDAMUserIfNotExists(
-                SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION,
-                SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES
-            );
-
             LOGGER.info("CREATING REGULAR TEST USERS");
-
 
             createIDAMUserIfNotExists(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, CASE_WORKER_HRS_SEARCHER_ROLE);
             createIDAMUserIfNotExists(USER_WITH_REQUESTOR_ROLE__CASEWORKER, CASE_WORKER_ROLE);
@@ -205,7 +200,8 @@ public abstract class BaseTest {
                 String userId = idamHelper.getUserId(email);
                 LOGGER.info("User {} already exists: id={}", email, userId);
             } catch (Exception e) {//if user does not exist
-                LOGGER.info("Exception thrown, likely user does not exist so will create. Exception:{}", e);
+                LOGGER.info("Exception thrown, likely user does not exist so will create. Ignore the above Exception:{}", e.getMessage());
+                LOGGER.info("CREATING USER {} with roles {}", email, roles);
                 idamHelper.createUser(email, roles);
             }
         }
