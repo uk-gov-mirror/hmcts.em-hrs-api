@@ -136,6 +136,10 @@ public abstract class BaseTest {
 
     @PostConstruct
     public void init() {
+        int maxRuns = 1;
+
+        if (createUsersBaseTestRunCount < maxRuns) {
+
         LOGGER.info("BASE TEST POST CONSTRUCT INITIALISATIONS....");
         SerenityRest.useRelaxedHTTPSValidation();
 
@@ -168,20 +172,27 @@ public abstract class BaseTest {
         hrsSystemIdamUserId = idamHelper.getUserId(HRS_SYSTEM_IDAM_USER);
 
         createUsersBaseTestRunCount++;
+
+        }
+
     }
 
     private void createIDAMUserIfNotExists(String email, List<String> roles) {
-        /* in some cases, there were conflicts between PR branches being built
-        due to users being deleted / recreated
+        /*
 
-        as the roles are static they do not need to be deleted each time
-        should the roles change for users, then the recreateUsers flag will need to be true before merging to master
+        TODO unknown if the tests should attempt to delete & recreate users or not
+
+        if multiple PR branches are triggered, then it means the user token cache used by em-test-helper
+        will become stale
+
+        potential for conflict with hrs-api using the hrs.tester@hmcts.net system user
+        probably these tests should not use that user, however many issues arose when
+        trying to refactor this logic and there was not enough time to see it through.
+
          */
 
-        boolean recreateUsers = true;
-        int maxRuns = 1;
+        boolean recreateUsers = false;
 
-        if (createUsersBaseTestRunCount < maxRuns) {
             if (recreateUsers) {
                 LOGGER.info("CREATING USER {} with roles {}", email, roles);
                 idamHelper.createUser(email, roles);
@@ -195,11 +206,6 @@ public abstract class BaseTest {
                 }
             }
 
-
-        } else {
-            LOGGER.info("create user count {} >= maxruns {}", createUsersBaseTestRunCount, maxRuns);
-
-        }
     }
 
 
