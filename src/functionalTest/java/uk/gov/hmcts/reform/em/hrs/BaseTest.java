@@ -74,12 +74,8 @@ public abstract class BaseTest {
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
 
-    //THIS USER MUST BE in the format/pattern of first.second@hmcts.net
-    //THIS USER MUST BE CREATED VIA THE IDAM CURL SCRIPTS AS THE HELPER IDAM USER CREATION DOESNT SEEM TO WORK
-    //(RESULTING IN A "Unauthorised roles or userId in the request path" Error when searching for case)
-    //see https://tools.hmcts.net/confluence/pages/viewpage.action?pageId=1535416974 on how to form those curl commands
     public static String SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION =
-        "hrs.functionaltester@hmcts.net";
+        "hrs.functional.tester@hmcts.net";
 
     public static List<String>
         SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES =
@@ -105,12 +101,10 @@ public abstract class BaseTest {
 
     static int createUsersBaseTestRunCount = 0;
 
-    protected String functionalTestsSystemUserToken;
     protected String s2sAuth;
-    //    protected String functionalTestsSystemUserId;
 
 
-    //yyyy-MM-dd---HH-MM-ss---SSS=07-30-2021---16-07-35---485
+    //The format "yyyy-MM-dd---HH-MM-ss---SSS" will render "07-30-2021---16-07-35---485"
     DateTimeFormatter datePartFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     DateTimeFormatter timePartFormatter = DateTimeFormatter.ofPattern("HH-MM-ss---SSS");
 
@@ -174,21 +168,17 @@ public abstract class BaseTest {
         }
         LOGGER.info("AUTHENTICATING TEST USER FOR CCD CALLS");
 
-        functionalTestsSystemUserToken = idamHelper.authenticateUser(
-            SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
-        //assumes this system user exists!
+        //        functionalTestsSystemUserToken = idamHelper.authenticateUser(
+        //            SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
+
 
         s2sAuth = BEARER + s2sHelper.getS2sToken();
 
-        //        functionalTestsSystemUserId =
-        //            idamHelper.getUserId(SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
 
     }
 
     private void createIDAMUserIfNotExists(String email, List<String> roles) {
         /*
-
-        TODO unknown if the tests should attempt to delete & recreate users or not
 
         if multiple PR branches are triggered, then it means the user token cache used by em-test-helper
         will become stale
@@ -197,8 +187,10 @@ public abstract class BaseTest {
         probably these tests should not use that user, however many issues arose when
         trying to refactor this logic and there was not enough time to see it through.
 
-         */
+        good to have set to true for local environments, when testing role changes etc
 
+        TODO make recreateUsers an environment value so that it is true for local dev, and false for AAT
+         */
         boolean recreateUsers = true;
 
         if (recreateUsers) {
@@ -227,10 +219,8 @@ public abstract class BaseTest {
 
 
     private RequestSpecification authRequestForUsername(String username) {
-        //        String userToken = functionalTestsSystemUserToken;
-        //        if (!SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION.equals(username)) {
         String userToken = idamHelper.authenticateUser(username);
-        //        }
+
 
         return SerenityRest
             .given()

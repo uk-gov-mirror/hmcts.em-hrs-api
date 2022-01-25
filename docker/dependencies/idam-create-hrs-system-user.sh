@@ -16,7 +16,7 @@ echo "PASSWORD: $PASSWORD"
 
 
 
-DATA='{"email":"'${USERNAME}'", "password":"'${PASSWORD}'", "surname":"system" , "forename":"user", "roles":[{"code":"caseworker"},{"code":"caseworker-hrs"}]}'
+DATA='{"email":"'${USERNAME}'", "password":"'${PASSWORD}'", "surname":"system" , "forename":"user", "roles":[{"code":"caseworker"},{"code":"caseworker-hrs"},{"code":"caseworker-hrs-searcher"}]}'
 
 echo "JSON DATA: $DATA"
 
