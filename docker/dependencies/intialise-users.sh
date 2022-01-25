@@ -3,7 +3,7 @@ export IDAM_URI="http://localhost:5001"
 export IDAM_USERNAME="idamOwner@hmcts.net"
 export IDAM_PASSWORD="Ref0rmIsFun"
 export HRS_SYSTEM_USER_NAME="hrs.tester@hmcts.net"
-export HRS_SYSTEM_FUNCTIONAL_USER_NAME="hrs.functional.tester@hmcts.net"
+export HRS_SYSTEM_FUNCTIONAL_USER_NAME="hrs.functionaltester@hmcts.net"
 export HRS_SYSTEM_USER_PASSWORD="4590fgvhbfgbDdffm3lk4j"
 
 
