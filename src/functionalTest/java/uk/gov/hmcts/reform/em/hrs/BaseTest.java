@@ -74,13 +74,12 @@ public abstract class BaseTest {
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
 
-    public static String HRS_SYSTEM_IDAM_USER = "hrs.tester@hmcts.net";
-    //SYSTEM account - is same for all non prod accounts
-    //and is em-hrs-api@hmcts.net in prod
-    //in all of the ccd defintion spreadsheets its hrs.tester@hmcts.net, even in prod. no idea what this is for in
-    // the spreadsheet
+    public static String SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION =
+        "hrs.functional.tester@hmcts.net";
+
     public static List<String>
-        HRS_SYSTEM_IDAM_USER_ROLES = List.of("caseworker", "caseworker-hrs", "caseworker-hrs-searcher", "ccd-import");
+        SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES =
+        List.of("caseworker", "caseworker-hrs-searcher", "ccd-import");
 
 
     protected static final String USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS = "em-test-searcher@test.hmcts.net";
@@ -100,9 +99,9 @@ public abstract class BaseTest {
 
     static int createUsersBaseTestRunCount = 0;
 
-    protected String hrsSystemIdamUserToken;
+    protected String functionalTestsSystemUserToken;
     protected String s2sAuth;
-    protected String hrsSystemIdamUserId;
+    protected String functionalTestsSystemUserId;
 
 
     //yyyy-MM-dd---HH-MM-ss---SSS=07-30-2021---16-07-35---485
@@ -144,11 +143,14 @@ public abstract class BaseTest {
             SerenityRest.useRelaxedHTTPSValidation();
 
 
-            LOGGER.info("CREATING HRS SYSTEM USER");//Although this role is created in the local idam scripts, this role
+            LOGGER.info("CREATING HRS FUNCTIONAL TEST SYSTEM USER");//Although this role is created in the local idam
+            // scripts, this role
             //still needs creating on new environments.
             //currently vault passwords are set to a different password than this script provides (passwOrd01hrs)
-            createIDAMUserIfNotExists(HRS_SYSTEM_IDAM_USER, HRS_SYSTEM_IDAM_USER_ROLES);
-
+            createIDAMUserIfNotExists(
+                SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION,
+                SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES
+            );
 
             LOGGER.info("CREATING REGULAR TEST USERS");
 
@@ -165,16 +167,19 @@ public abstract class BaseTest {
                 e.printStackTrace();
             }
 
-            LOGGER.info("AUTHENTICATING TEST USER FOR CCD CALLS");
-
-            hrsSystemIdamUserToken =
-                idamHelper.authenticateUser(HRS_SYSTEM_IDAM_USER);//assumes this system user exists!
-            s2sAuth = BEARER + s2sHelper.getS2sToken();
-            hrsSystemIdamUserId = idamHelper.getUserId(HRS_SYSTEM_IDAM_USER);
-
             createUsersBaseTestRunCount++;
 
         }
+        LOGGER.info("AUTHENTICATING TEST USER FOR CCD CALLS");
+
+        functionalTestsSystemUserToken = idamHelper.authenticateUser(
+            SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
+        //assumes this system user exists!
+
+        s2sAuth = BEARER + s2sHelper.getS2sToken();
+
+        functionalTestsSystemUserId =
+            idamHelper.getUserId(SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
 
     }
 
@@ -216,8 +221,8 @@ public abstract class BaseTest {
 
 
     private RequestSpecification authRequest(String username) {
-        String userToken = hrsSystemIdamUserToken;
-        if (!HRS_SYSTEM_IDAM_USER.equals(username)) {
+        String userToken = functionalTestsSystemUserToken;
+        if (!SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION.equals(username)) {
             userToken = idamHelper.authenticateUser(username);
         }
 
@@ -357,11 +362,12 @@ public abstract class BaseTest {
     protected Optional<CaseDetails> searchForCase(String caseRef) {
         Map<String, String> searchCriteria = Map.of("case.recordingReference", caseRef);
         String s2sToken = extendedCcdHelper.getCcdS2sToken();
-        String userToken = idamClient.getAccessToken(HRS_SYSTEM_IDAM_USER, "4590fgvhbfgbDdffm3lk4j");
+        String userToken = idamClient.getAccessToken(
+            SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION, "4590fgvhbfgbDdffm3lk4j");
         String uid = idamClient.getUserInfo(userToken).getUid();
 
         LOGGER.info("searching for case by ref ({}) with userToken ({}) and serviceToken ({})",
-                    caseRef, hrsSystemIdamUserToken.substring(0, 12), s2sToken.substring(0, 12)
+                    caseRef, functionalTestsSystemUserToken.substring(0, 12), s2sToken.substring(0, 12)
 
         );
         LOGGER.info("with Jurisdiction {} and casetype {}", JURISDICTION, CASE_TYPE);
@@ -398,7 +404,8 @@ public abstract class BaseTest {
     public String closeCase(final String caseRef, CaseDetails caseDetails) {
 
         String s2sToken = extendedCcdHelper.getCcdS2sToken();
-        String userToken = idamClient.getAccessToken(HRS_SYSTEM_IDAM_USER, "4590fgvhbfgbDdffm3lk4j");
+        String userToken = idamClient.getAccessToken(
+            SYSTEM_USER_WITH_CCDIMPORT_AND_SEARCHER_ROLES_FOR_FUNCTIONAL_TEST_ORCHESTRATION, "4590fgvhbfgbDdffm3lk4j");
         String uid = idamClient.getUserInfo(userToken).getUid();
 
         StartEventResponse startEventResponse =
