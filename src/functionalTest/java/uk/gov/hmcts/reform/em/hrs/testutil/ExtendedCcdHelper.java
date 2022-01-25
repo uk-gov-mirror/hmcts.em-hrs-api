@@ -45,7 +45,7 @@ public class ExtendedCcdHelper {
         //These roles need to exist in both IDAM and CCD
         //They are created in idam as part of docker/dependencies/start-local-environment.sh
         createCcdUserRole("caseworker");
-        createCcdUserRole("caseworker-hrs");//deprecated
+        createCcdUserRole("caseworker-hrs");//required as is 'parent' of caseworker-hrs-searcher
         createCcdUserRole("caseworker-hrs-searcher");
 
         MultipartFile ccdDefinitionRequest = new MockMultipartFile(
