@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static uk.gov.hmcts.reform.em.hrs.BaseTest.SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION;
+import static uk.gov.hmcts.reform.em.hrs.BaseTest.SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION;
 
 @Service
 public class ExtendedCcdHelper {
@@ -43,7 +43,7 @@ public class ExtendedCcdHelper {
     public void importDefinitionFile() throws IOException {
 
         //These roles need to exist in both IDAM and CCD
-        //They are created in idam as part of docker/dependencies/start-local-environment.sh
+        //Their counterparts are created in idam as part of docker/dependencies/start-local-environment.sh
         createCcdUserRole("caseworker");
         createCcdUserRole("caseworker-hrs");//required as is 'parent' of caseworker-hrs-searcher
         createCcdUserRole("caseworker-hrs-searcher");
@@ -55,10 +55,10 @@ public class ExtendedCcdHelper {
             getHrsDefinitionFile()
         );
 
-        String ccdUserForImportCaseAuthenticatedToken = idamHelper.authenticateUser(
-            SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
+        String systemUserAuthenticatedToken = idamHelper.authenticateUser(
+            SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
         String microserviceEmHrsApiAuthenticatedToken = ccdAuthTokenGenerator.generate();
-        ccdDefImportApi.importCaseDefinition(ccdUserForImportCaseAuthenticatedToken,
+        ccdDefImportApi.importCaseDefinition(systemUserAuthenticatedToken,
                                              microserviceEmHrsApiAuthenticatedToken, ccdDefinitionRequest
         );
     }
@@ -70,7 +70,7 @@ public class ExtendedCcdHelper {
     private void createCcdUserRole(String userRole) {
         ccdDefUserRoleApi.createUserRole(
             new CcdDefUserRoleApi.CreateUserRoleBody(userRole, "PUBLIC"),
-            idamHelper.authenticateUser(SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION),
+            idamHelper.authenticateUser(SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION),
             ccdAuthTokenGenerator.generate()
         );
     }

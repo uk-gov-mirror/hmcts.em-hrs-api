@@ -74,8 +74,8 @@ public abstract class BaseTest {
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
 
-    public static String SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION =
-        "hrs.functional.tester@hmcts.net";
+    public static String SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION =
+        "hrs.functional.system.user@hmcts.net";
 
     public static List<String>
         SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES =
@@ -101,7 +101,7 @@ public abstract class BaseTest {
 
     static int createUsersBaseTestRunCount = 0;
 
-    protected String s2sAuth;
+    protected String hrsS2sAuth;
 
 
     //The format "yyyy-MM-dd---HH-MM-ss---SSS" will render "07-30-2021---16-07-35---485"
@@ -145,7 +145,7 @@ public abstract class BaseTest {
 
             LOGGER.info("CREATING HRS FUNCTIONAL TEST SYSTEM USER");
             createIDAMUserIfNotExists(
-                SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION,
+                SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION,
                 SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES
             );
 
@@ -167,14 +167,7 @@ public abstract class BaseTest {
 
         }
         LOGGER.info("AUTHENTICATING TEST USER FOR CCD CALLS");
-
-        //        functionalTestsSystemUserToken = idamHelper.authenticateUser(
-        //            SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION);
-
-
-        s2sAuth = BEARER + s2sHelper.getS2sToken();
-
-
+        hrsS2sAuth = BEARER + s2sHelper.getS2sToken();
     }
 
     private void createIDAMUserIfNotExists(String email, List<String> roles) {
@@ -227,13 +220,13 @@ public abstract class BaseTest {
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .header("Authorization", userToken)
-            .header("ServiceAuthorization", s2sAuth);
+            .header("ServiceAuthorization", hrsS2sAuth);
     }
 
     public RequestSpecification s2sAuthRequest() {
         return SerenityRest
             .given()
-            .header("ServiceAuthorization", s2sAuth);
+            .header("ServiceAuthorization", hrsS2sAuth);
     }
 
     protected ValidatableResponse getFilenamesCompletedOrInProgress(String folder) {
@@ -261,9 +254,9 @@ public abstract class BaseTest {
             .post("/segments");
     }
 
-    protected Response shareRecording(String email, CallbackRequest callbackRequest) {
+    protected Response shareRecording(String sharerUserName, CallbackRequest callbackRequest) {
         JsonNode reqBody = new ObjectMapper().convertValue(callbackRequest, JsonNode.class);
-        return authRequestForUsername(email)
+        return authRequestForUsername(sharerUserName)
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
@@ -272,7 +265,7 @@ public abstract class BaseTest {
             .post("/sharees");
     }
 
-    protected Response downloadRecording(String email, Map<String, Object> caseData) {
+    protected Response downloadRecording(String userName, Map<String, Object> caseData) {
         @SuppressWarnings("unchecked")
         List<Map> segmentNodes = (ArrayList) caseData.getOrDefault("recordingFiles", new ArrayList());
 
@@ -283,7 +276,7 @@ public abstract class BaseTest {
             .findFirst()
             .orElseThrow();
 
-        return authRequestForUsername(email)
+        return authRequestForUsername(userName)
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
@@ -393,11 +386,11 @@ public abstract class BaseTest {
             + "-UTC_" + segment + ".mp4";
     }
 
-    public String closeCase(final String caseRef, CaseDetails caseDetails) {
+    public String closeCaseWithSystemUser(final String caseRef, CaseDetails caseDetails) {
 
         String s2sToken = extendedCcdHelper.getCcdS2sToken();
         String userToken = idamClient.getAccessToken(
-            SYSTEM_USER_WITH_CCDIMPORT_ROLE_FOR_FUNCTIONAL_TEST_ORCHESTRATION, USER_DEFAULT_PASSWORD);
+            SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION, USER_DEFAULT_PASSWORD);
         String uid = idamClient.getUserInfo(userToken).getUid();
 
         StartEventResponse startEventResponse =
