@@ -51,7 +51,7 @@ public class DownloadNonSharedScenarios extends BaseTest {
     }
 
     @Test
-    public void userWithCaseWorkerHrsRoleShouldBeAbleToDownloadHearingRecordings() {
+    public void userWithCaseWorkerHrsSearcherRoleShouldBeAbleToDownloadHearingRecordings() {
         final byte[] downloadedFileBytes =
             downloadRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, caseDetails.getData())
                 .then()
@@ -64,14 +64,14 @@ public class DownloadNonSharedScenarios extends BaseTest {
     }
 
     @Test
-    public void userWithCaseWorkerRoleShouldNotBeAbleToDownloadHearingRecordings() {
-        downloadRecording(USER_WITH_REQUESTOR_ROLE__CASEWORKER, caseDetails.getData())
+    public void userWithOnlyCaseWorkerRoleShouldNotBeAbleToDownloadHearingRecordings() {
+        downloadRecording(USER_WITH_REQUESTOR_ROLE__CASEWORKER_ONLY, caseDetails.getData())
             .then()
             .statusCode(403);
     }
 
     @Test
-    public void userWithCitizenRoleShouldNotBeAbleToDownloadHearingRecordings() {
+    public void userWithOnlyCitizenRoleShouldNotBeAbleToDownloadHearingRecordings() {
         downloadRecording(USER_WITH_NONACCESS_ROLE__CITIZEN, caseDetails.getData())
             .then()
             .statusCode(403);
