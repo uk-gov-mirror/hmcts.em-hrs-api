@@ -137,33 +137,37 @@ public class IngestScenarios extends BaseTest {
         String caseRef = timebasedCaseRef();
         Set<String> filenames = new HashSet<>();
 
-
         //upload empty file to hrs
-
         String filename = filename(caseRef, 0);
+
+        System.out.println("FILE: " + filename);
+
         testUtil.uploadFileFromPathToHrsContainer(filename, "data/empty_file.mp4");
+
+        //upload empty file to cvp??
         testUtil.uploadFileFromPathToCvpContainer(filename,"data/test_data.mp4");
 
-
         LOGGER.info("************* CHECKING CVP HAS UPLOADED **********");
-        long cvpFileSize = testUtil.getFileSizeFromStore(filename, testUtil.cvpBlobContainerClient);
+        long cvpFileSize = testUtil.getFileSizeFromCVPStore(filename, testUtil.cvpBlobContainerClient);
         LOGGER.info("************* Files loaded to cvp storage **********");
 
         //TODO check the empty file has uploaded to HRS storage
+        long emptyHRSFile = testUtil.getFileSizeFromHRSStore(filename, testUtil.hrsBlobContainerClient);
+        Assert.assertNull(emptyHRSFile);
 
-
-            postRecordingSegment(caseRef, 0)
-                .then()
-                .log().all()
-                .statusCode(202);
-
-
+        postRecordingSegment(caseRef, 0)
+            .then()
+            .log().all()
+            .statusCode(202);
 
        //TODO wait until the ingestion has triggered the copy
         sleepForSeconds(10);
 
         LOGGER.info("************* CHECKING HRS HAS COPIED THE FULL LENGTH FILE TO STORE **********");
-        long hrsFileSize = testUtil.getFileSizeFromStore(filename, testUtil.hrsBlobContainerClient);
+        long hrsFileSize = testUtil.getFileSizeFromHRSStore(filename, testUtil.hrsBlobContainerClient);
+        //Or the following? Is this HRS or CVP?
+//        int expectedFileSize = testUtil.getFilefromPath("data/test_data.mp4").readAllBytes().length;
+
 
         Assert.assertEquals(hrsFileSize,cvpFileSize);
 

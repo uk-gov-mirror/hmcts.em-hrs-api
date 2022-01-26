@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.Base64;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,7 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
 
 
     private final String cvpConnectionString;
+    public static final String NULLMD_5 = "NULLMD5";
 
     @Autowired
     public HearingRecordingStorageImpl(final BlobContainerAsyncClient hrsContainerAsyncClient,
@@ -81,10 +83,23 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
             .collect(Collectors.toUnmodifiableSet());
     }
 
+    static String getMd5Hash(final byte[] digest) {
+        if (digest == null) {
+            return NULLMD_5;
+        }
+        return Base64.getEncoder().encodeToString(digest);
+    }
+
     @Override
     public void copyRecording(String sourceUri, final String filename) {
 
         BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
+
+        final String hrsMD5Hash = getMd5Hash(hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
+        final String cvpMD5Hash = getMd5Hash(cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
+
+//        byte[] hrsMD5Sum = hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5();
+//        byte[] cvpMD5Sum = cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5();
 
         LOGGER.info("############## Trying copy from URL for sourceUri {}", sourceUri);
 
@@ -96,7 +111,6 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
 //
 //        boolean fileNotCopiedToHrsStorage = !destinationBlobClient.exists();
 //        boolean fileNotCopiedCorrectly = destinationBlobSize==0;
-
 
         boolean shouldCopyToHrsStorage = false;//TODO fileNotCopiedToHrsStorage | fileNotCopiedCorrectly;
         if (shouldCopyToHrsStorage) {
