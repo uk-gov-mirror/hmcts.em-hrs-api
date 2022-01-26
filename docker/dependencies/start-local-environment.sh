@@ -1,13 +1,8 @@
 #!/bin/bash
 date
-## Usage: ./docker/dependencies/start-local-environment DOCMOSIS_ACCESS_KEY
-##
-## Options:
-##    - DOCMOSIS_ACCESS_KEY: Access key for docmosis development environment.
-##
-## Start local environment including idam client setup.
+## Usage: ./docker/dependencies/start-local-environment
 
-## DOES NOT START UP HRS API
+## DOES NOT START UP HRS API - run hrs-api using ./gradlew app-run, or run the docker image
 
 # Set variables
 export COMPOSE_FILE="-f docker-compose-dependencies.yml"
@@ -55,8 +50,8 @@ echo "start idam containers"
 ./docker/dependencies/start-idam-containers.sh
 
 
-echo "intialise idam users and roles"
-./docker/dependencies/intialise-users.sh
+echo "initialise idam users and roles"
+./docker/dependencies/initialise-users.sh
 
 # Start all other images
 echo "Starting dependencies..."
@@ -74,7 +69,7 @@ docker-compose ${COMPOSE_FILE} up -d shared-database \
   am-role-assignment-service \
   ccd-case-document-am-api
 
-echo "LOCAL ENVIRONMENT BOOT UP SUCCESSFULLY STARTED, about to tail logs whilst apps intialise. CCD Data API is the longest running to  initialise"
+echo "LOCAL ENVIRONMENT BOOT UP SUCCESSFULLY STARTED, about to tail logs whilst apps initialise. CCD Data API is the longest running to  initialise"
 
 
 
@@ -91,8 +86,5 @@ echo ""
 read -p "Press the ENTER key to continue"
 
 echo "uploading test file until this is done as part of the tests"
-
-#echo "adding all remaining services (if any)"
-#docker-compose ${COMPOSE_FILE} up -d --scale em-hrs-api=0
 
 docker-compose ${COMPOSE_FILE} logs -f
