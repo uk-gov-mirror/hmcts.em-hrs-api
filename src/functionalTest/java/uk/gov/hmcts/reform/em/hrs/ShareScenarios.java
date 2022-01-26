@@ -48,7 +48,7 @@ public class ShareScenarios extends BaseTest {
         blobUtil.checkIfUploadedToStore(filenames, blobUtil.hrsBlobContainerClient);
 
         LOGGER.info("SET UP: CHECKING CASE IN CCD");
-        caseDetails = findCaseWithAutoRetry(caseRef);
+        caseDetails = findCaseWithAutoRetryWithUserWithSearcherRole(caseRef);
 
         //used in tests to verify file is fully downloaded
         LOGGER.info("SET UP: CHECKING FILE SIZE UPLOADED TO CVP");
@@ -60,7 +60,7 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
-    public void shareeWithCaseworkerHrsRoleShouldBeAbleToDownloadRecordings() {
+    public void shareeWithCaseworkerHrsSearcherRoleShouldBeAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest = addEmailRecipientToCaseDetailsCallBack(
             caseDetails,
             USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS
@@ -83,9 +83,9 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
-    public void shareeWithCaseworkerRoleShouldBeAbleToDownloadRecordings() {
+    public void shareeWithOnlyCaseworkerRoleShouldBeAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest =
-            addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER);
+            addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER_ONLY);
         shareRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, callbackRequest)
             .then()
             .log().all()
@@ -93,7 +93,7 @@ public class ShareScenarios extends BaseTest {
             .statusCode(200);
 
         final byte[] downloadedFileBytes =
-            downloadRecording(USER_WITH_REQUESTOR_ROLE__CASEWORKER, caseDetails.getData())
+            downloadRecording(USER_WITH_REQUESTOR_ROLE__CASEWORKER_ONLY, caseDetails.getData())
                 .then()
                 .statusCode(200)
                 .extract().response()
@@ -142,7 +142,7 @@ public class ShareScenarios extends BaseTest {
         Long randomCcdId = Long.valueOf(generateUid());
         caseDetails.setId(randomCcdId);
         final CallbackRequest callbackRequest =
-            addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER);
+            addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER_ONLY);
         LOGGER.info(
             "Sharing case with new timebased random ccd id {}, by user {}",
             randomCcdId,

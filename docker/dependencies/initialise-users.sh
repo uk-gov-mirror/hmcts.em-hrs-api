@@ -6,7 +6,7 @@ export HRS_SYSTEM_USER_NAME="hrs.tester@hmcts.net"
 export HRS_SYSTEM_USER_PASSWORD="4590fgvhbfgbDdffm3lk4j"
 
 
-echo "NOTE AS OF 18th Jan 2022 you get a 403 error when you try to create a user that already exists"
+echo "NOTE AS OF 18th Jan 2022 you get a 403 error instead of a 401 error, when you try to create a user that already exists"
 
 
 echo "Getting IDAM Authentication Token ..."
@@ -17,8 +17,6 @@ while [ "_${token}" = "_" ]; do
   token=$(./docker/dependencies/idam-authenticate.sh ${IDAM_URI} ${IDAM_USERNAME} ${IDAM_PASSWORD})
 done
 
-#echo "token is $token"
-#read -p "Press enter to continue"
 
 # Set up IDAM client with services and roles
 echo "Setting up IDAM clients, users and roles used for ccd import (needs to match the roles in the spreadsheet)"
@@ -34,33 +32,12 @@ echo "Setting up IDAM client...oauth ccd"
 echo
 echo
 
-echo "Setting up IDAM role caseworker"
 ./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker
-echo
-echo
 
-echo "Setting up IDAM role caseworker-hrs (deprecated)"
 ./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker-hrs
-echo
-echo
 
-echo "Setting up IDAM role caseworker-hrs-searcher"
 ./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker-hrs-searcher
-echo
-echo
 
-echo "Setting up IDAM role ccd-import"
 ./docker/dependencies/idam-client-setup-roles.sh ${IDAM_URI} ${token} ccd-import
-echo
-echo
 
-echo "Setting up IDAM user hrs system user"
 ./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} ${HRS_SYSTEM_USER_NAME} ${HRS_SYSTEM_USER_PASSWORD}
-echo
-echo
-
-echo "Setting up IDAM user cdd-system user (tbc if needed)"
-./docker/dependencies/idam-create-hrs-system-user.sh ${IDAM_URI} ccd-system-user@mailinator.com ${HRS_SYSTEM_USER_PASSWORD}
-echo
-echo
-
