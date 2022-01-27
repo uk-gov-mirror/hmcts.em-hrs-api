@@ -86,23 +86,10 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
     public void copyRecording(String sourceUri, final String filename) {
 
         BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
-
-//        final String hrsMD5Hash = getMd5Hash(hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
-//        final String cvpMD5Hash = getMd5Hash(cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
-
-//        byte[] hrsMD5Sum = hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5();
-//        byte[] cvpMD5Sum = cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5();
-
         LOGGER.info("############## Trying copy from URL for sourceUri {}", sourceUri);
 
         //TODO should we compare md5sum of destination as well or
         // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
-
-//
-//        long destinationBlobSize = destinationBlobClient.getProperties().getBlobSize();
-//
-//        boolean fileNotCopiedToHrsStorage = !destinationBlobClient.exists();
-//        boolean fileNotCopiedCorrectly = destinationBlobSize==0;
 
         boolean shouldCopyToHrsStorage = false;//TODO fileNotCopiedToHrsStorage | fileNotCopiedCorrectly;
         if (shouldCopyToHrsStorage) {
@@ -111,7 +98,6 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
                 String sasToken = generateReadSasForCvp(filename);
                 sourceUri = sourceUri + "?" + sasToken;
             }
-
 
             try {
 

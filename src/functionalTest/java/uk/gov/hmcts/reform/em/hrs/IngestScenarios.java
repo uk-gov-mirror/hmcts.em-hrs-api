@@ -152,10 +152,6 @@ public class IngestScenarios extends BaseTest {
         testUtil.checkIfUploadedToStore(filenames, testUtil.cvpBlobContainerClient);
         LOGGER.info("************* Files loaded to cvp storage **********");
 
-        //TODO check the empty file has uploaded to HRS storage
-        long emptyHRSFile = testUtil.getFileSizeFromHRSStore(filename, testUtil.hrsBlobContainerClient);
-//        Assert.assertNull(emptyHRSFile);
-
         postRecordingSegment(caseRef, 0)
             .then()
             .log().all()
@@ -168,52 +164,12 @@ public class IngestScenarios extends BaseTest {
         testUtil.checkIfUploadedToStore(filenames, testUtil.hrsBlobContainerClient);
 
         final String hrsMD5Hash = getMd5Hash(testUtil.hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
-        LOGGER.info("The MD5 Hash for hrs is: " + hrsMD5Hash);
-
         final String cvpMD5Hash = getMd5Hash(testUtil.cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
-        LOGGER.info("The MD5 Hash for cvp is: " + cvpMD5Hash);
-
-
-//        Assert.assertEquals(hrsFileSize,cvpFileSize);
         Assert.assertEquals(hrsMD5Hash,cvpMD5Hash);
 
-
-        //NO POINT CHECKING CCD, AS THIS TEST IS ABOUT STORAGE
-        //HOWEVER UNTIL THE FILE IS IN CCD, IT IS ON THE QUEUE AND AFFECTING THE THROTTLING / THROUGHPUT
-
-//        //IN AAT hrs is running on 8 / minute uploads, so need to wait at least 8 secs per segment
-//        //giving it 10 secs per segment, plus an additional segment
-//        int secondsToWaitForCcdUploadsToComplete =
-//            (SEGMENT_COUNT * CCD_UPLOAD_WAIT_PER_SEGMENT_IN_SECONDS) + CCD_UPLOAD_WAIT_MARGIN_IN_SECONDS;
-//        LOGGER.info(
-//            "************* Sleeping for {} seconds to allow CCD uploads to complete **********",
-//            secondsToWaitForCcdUploadsToComplete
-//        );
-//        SleepHelper.sleepForSeconds(secondsToWaitForCcdUploadsToComplete);
-//
-//
-//        LOGGER.info("************* CHECKING HRS HAS IT IN DATABASE AND RETURNS EXPECTED FILES VIA API**********");
-//        getFilenamesCompletedOrInProgress(FOLDER)
-//            .assertThat().log().all()
-//            .statusCode(200)
-//            .body("folder-name", equalTo(FOLDER))
-//            .body("filenames", hasItems(filenames.toArray()));
-//
-//        LOGGER.info("*****************************");
-//        LOGGER.info("*****************************");
-//        LOGGER.info("*****************************");
-//        LOGGER.info("*****************************");
-//        LOGGER.info("*****************************");
-//
-//
-//        CaseDetails caseDetails = findCaseWithAutoRetry(caseRef);
-//
-//
-//        Map<String, Object> data = caseDetails.getData();
-//        LOGGER.info("data size: " + data.size()); //TODO when posting multisegment - this needs to match
-//        List recordingFiles = (ArrayList) data.get("recordingFiles");
-//        LOGGER.info("num recordings: " + recordingFiles.size());
-
+        final long hrsFileSize = testUtil.getFileSizeFromHRSStore(filename, testUtil.hrsBlobContainerClient);
+        final long cvpFileSize = testUtil.getFileSizeFromCVPStore(filename, testUtil.hrsBlobContainerClient);
+        Assert.assertEquals(hrsFileSize, cvpFileSize);
     }
 
 
