@@ -119,7 +119,7 @@ public class IngestScenarios extends BaseTest {
         LOGGER.info("*****************************");
 
 
-        CaseDetails caseDetails = findCaseWithAutoRetry(caseRef);
+        CaseDetails caseDetails = findCaseWithAutoRetryWithUserWithSearcherRole(caseRef);
 
 
         Map<String, Object> data = caseDetails.getData();
