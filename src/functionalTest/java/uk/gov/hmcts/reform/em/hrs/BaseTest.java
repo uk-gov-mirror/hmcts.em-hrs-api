@@ -42,6 +42,7 @@ import java.security.SecureRandom;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -73,6 +74,7 @@ public abstract class BaseTest {
     protected static final String CASE_TYPE = "HearingRecordings";
     protected static final String BEARER = "Bearer ";
     protected static final String FILE_EXT = "mp4";
+    protected static final String NULLMD_5 = "NULLMD5";
 
     public static String HRS_SYSTEM_IDAM_USER = "hrs.tester@hmcts.net";
     //SYSTEM account - is same for all non prod accounts
@@ -479,5 +481,12 @@ public abstract class BaseTest {
         }
 
         return sumToSingleDigit(k / 10) + (k % 10);
+    }
+
+    static String getMd5Hash(final byte[] digest) {
+        if (digest == null) {
+            return NULLMD_5;
+        }
+        return Base64.getEncoder().encodeToString(digest);
     }
 }

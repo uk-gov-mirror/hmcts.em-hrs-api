@@ -142,18 +142,19 @@ public class IngestScenarios extends BaseTest {
 
         System.out.println("FILE: " + filename);
 
+        //upload an empty file to hrs
         testUtil.uploadFileFromPathToHrsContainer(filename, "data/empty_file.mp4");
 
-        //upload empty file to cvp??
+        //upload a real file to cvp
         testUtil.uploadFileFromPathToCvpContainer(filename,"data/test_data.mp4");
 
         LOGGER.info("************* CHECKING CVP HAS UPLOADED **********");
-        long cvpFileSize = testUtil.getFileSizeFromCVPStore(filename, testUtil.cvpBlobContainerClient);
+        testUtil.checkIfUploadedToStore(filenames, testUtil.cvpBlobContainerClient);
         LOGGER.info("************* Files loaded to cvp storage **********");
 
         //TODO check the empty file has uploaded to HRS storage
         long emptyHRSFile = testUtil.getFileSizeFromHRSStore(filename, testUtil.hrsBlobContainerClient);
-        Assert.assertNull(emptyHRSFile);
+//        Assert.assertNull(emptyHRSFile);
 
         postRecordingSegment(caseRef, 0)
             .then()
@@ -163,14 +164,18 @@ public class IngestScenarios extends BaseTest {
        //TODO wait until the ingestion has triggered the copy
         sleepForSeconds(10);
 
-        LOGGER.info("************* CHECKING HRS HAS COPIED THE FULL LENGTH FILE TO STORE **********");
-        long hrsFileSize = testUtil.getFileSizeFromHRSStore(filename, testUtil.hrsBlobContainerClient);
-        //Or the following? Is this HRS or CVP?
-//        int expectedFileSize = testUtil.getFilefromPath("data/test_data.mp4").readAllBytes().length;
+        LOGGER.info("************* CHECKING HRS HAS COPIED TO STORE **********");
+        testUtil.checkIfUploadedToStore(filenames, testUtil.hrsBlobContainerClient);
+
+        final String hrsMD5Hash = getMd5Hash(testUtil.hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
+        LOGGER.info("The MD5 Hash for hrs is: " + hrsMD5Hash);
+
+        final String cvpMD5Hash = getMd5Hash(testUtil.cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
+        LOGGER.info("The MD5 Hash for cvp is: " + cvpMD5Hash);
 
 
-        Assert.assertEquals(hrsFileSize,cvpFileSize);
-
+//        Assert.assertEquals(hrsFileSize,cvpFileSize);
+        Assert.assertEquals(hrsMD5Hash,cvpMD5Hash);
 
 
         //NO POINT CHECKING CCD, AS THIS TEST IS ABOUT STORAGE
