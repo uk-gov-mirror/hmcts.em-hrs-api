@@ -45,6 +45,7 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
     private static final int BLOB_LIST_TIMEOUT = 5;
     private final BlobContainerClient hrsBlobContainerClient;
     private final BlobContainerClient cvpBlobContainerClient;
+    private static final String NULLMD_5 = "NULLMD5";
 
 
     private final String cvpConnectionString;
@@ -86,14 +87,16 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
     public void copyRecording(String sourceUri, final String filename) {
 
         BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
+        final String destinationMD5Hash = getMd5Hash(hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
+        final String sourceMD5Hash = getMd5Hash(cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
         LOGGER.info("############## Trying copy from URL for sourceUri {}", sourceUri);
 
         //TODO should we compare md5sum of destination as well or
         // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
 
-//        if (!destinationBlobClient.exists()) {
-        boolean shouldCopyToHrsStorage = false;//TODO fileNotCopiedToHrsStorage | fileNotCopiedCorrectly;
-        if (shouldCopyToHrsStorage) {
+//        boolean shouldCopyToHrsStorage = false;//TODO fileNotCopiedToHrsStorage | fileNotCopiedCorrectly;
+//        if (shouldCopyToHrsStorage) {
+        if(!destinationBlobClient.exists() || !sourceMD5Hash.equals(destinationMD5Hash)) {
             if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
                 LOGGER.info("Generating and appending SAS token for copy");
                 String sasToken = generateReadSasForCvp(filename);
@@ -201,5 +204,11 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
         return report;
     }
 
+    static String getMd5Hash(final byte[] digest) {
+        if (digest == null) {
+            return NULLMD_5;
+        }
+        return Base64.getEncoder().encodeToString(digest);
+    }
 
 }
