@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.hrs.config;
 
 import com.azure.identity.DefaultAzureCredential;
 import com.azure.identity.DefaultAzureCredentialBuilder;
-import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -12,8 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.em.hrs.util.CvpConnectionResolver;
-
-import java.util.Optional;
 
 @Configuration
 public class AzureStorageConfig {
