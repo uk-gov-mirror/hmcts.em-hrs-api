@@ -165,6 +165,39 @@ public class IngestScenarios extends BaseTest {
         final String cvpMD5Hash = getMd5Hash(testUtil.cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
         Assert.assertEquals(hrsMD5Hash,cvpMD5Hash);
 
+        //IN AAT hrs is running on 8 / minute uploads, so need to wait at least 8 secs per segment
+        //giving it 10 secs per segment, plus an additional segment
+        int secondsToWaitForCcdUploadsToComplete =
+            (SEGMENT_COUNT * CCD_UPLOAD_WAIT_PER_SEGMENT_IN_SECONDS) + CCD_UPLOAD_WAIT_MARGIN_IN_SECONDS;
+        LOGGER.info(
+            "************* Sleeping for {} seconds to allow CCD uploads to complete **********",
+            secondsToWaitForCcdUploadsToComplete
+        );
+        SleepHelper.sleepForSeconds(secondsToWaitForCcdUploadsToComplete);
+
+
+        LOGGER.info("************* CHECKING HRS HAS IT IN DATABASE AND RETURNS EXPECTED FILES VIA API**********");
+        getFilenamesCompletedOrInProgress(FOLDER)
+            .assertThat().log().all()
+            .statusCode(200)
+            .body("folder-name", equalTo(FOLDER))
+            .body("filenames", hasItems(filenames.toArray()));
+
+        LOGGER.info("*****************************");
+        LOGGER.info("*****************************");
+        LOGGER.info("*****************************");
+        LOGGER.info("*****************************");
+        LOGGER.info("*****************************");
+
+
+        CaseDetails caseDetails = findCaseWithAutoRetryWithUserWithSearcherRole(caseRef);
+
+
+        Map<String, Object> data = caseDetails.getData();
+        LOGGER.info("data size: " + data.size()); //TODO when posting multisegment - this needs to match
+        List recordingFiles = (ArrayList) data.get("recordingFiles");
+        LOGGER.info("num recordings: " + recordingFiles.size());
+
     }
 
 }
