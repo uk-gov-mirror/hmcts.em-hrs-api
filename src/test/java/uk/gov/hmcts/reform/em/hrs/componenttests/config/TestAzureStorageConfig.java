@@ -11,6 +11,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -57,10 +58,21 @@ public class TestAzureStorageConfig {
     @Primary
     @Bean("HrsBlobContainerClient")
     public BlobContainerClient provideHrsBlobContainerClient() {
-        return new BlobContainerClientBuilder()
+        BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
             .connectionString(connectionString)
             .containerName(HRS_CONTAINER)
             .buildClient();
+
+
+        final boolean containerExists = Optional.ofNullable(blobContainerClient.exists())
+            .orElse(false);
+
+        if (!containerExists) {
+            LOGGER.info("Creating container {} in HRS Storage", HRS_CONTAINER);
+            blobContainerClient.create();
+        }
+        return blobContainerClient;
+
     }
 
     @Primary
