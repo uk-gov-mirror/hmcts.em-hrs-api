@@ -31,36 +31,6 @@ public class AzureStorageConfig {
     @Value("${azure.storage.cvp.blob-container-reference}")
     private String cvpContainer;
 
-
-    @Bean
-    public BlobContainerAsyncClient provideBlobContainerAsyncClient() {
-
-        BlobContainerClientBuilder blobContainerAsyncClientBuilder = new BlobContainerClientBuilder()
-            .connectionString(hrsConnectionString)
-            .containerName(hrsContainer);
-
-        LOGGER.info("Container settings:");
-        LOGGER.info("hrsContainer: {}", hrsContainer);
-        LOGGER.info("cvpContainer: {}", cvpContainer);
-
-        LOGGER.info("****************************");
-
-        final BlobContainerAsyncClient blobContainerAsyncClient = blobContainerAsyncClientBuilder.buildAsyncClient();
-
-        final boolean containerExists = Optional.ofNullable(blobContainerAsyncClient.exists().block())
-            .orElse(false);
-
-        if (!containerExists) {
-            blobContainerAsyncClient.create()
-                .subscribe(
-                    response -> LOGGER.info("Create {} container completed", hrsContainer),
-                    error -> LOGGER.error("Error while creating container {}::: ", hrsContainer, error)
-                );
-        }
-        return blobContainerAsyncClient;
-    }
-
-
     @Bean("HrsBlobContainerClient")
     public BlobContainerClient provideBlobContainerClient() {
         return new BlobContainerClientBuilder()
