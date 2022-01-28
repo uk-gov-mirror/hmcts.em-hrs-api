@@ -87,15 +87,18 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
     public void copyRecording(String sourceUri, final String filename) {
 
         BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
-        final String destinationMD5Hash = getMd5Hash(hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
+        boolean destinationFileExists = hrsBlobContainerClient.getBlobClient(filename).exists();
+        String destinationMD5Hash = null;
         final String sourceMD5Hash = getMd5Hash(cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
         LOGGER.info("############## Trying copy from URL for sourceUri {}", sourceUri);
+
+        if (destinationFileExists) {
+            destinationMD5Hash = getMd5Hash(hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
+        }
 
         //TODO should we compare md5sum of destination as well or
         // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
 
-//        boolean shouldCopyToHrsStorage = false;//TODO fileNotCopiedToHrsStorage | fileNotCopiedCorrectly;
-//        if (shouldCopyToHrsStorage) {
         if(!destinationBlobClient.exists() || !sourceMD5Hash.equals(destinationMD5Hash)) {
             if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
                 LOGGER.info("Generating and appending SAS token for copy");

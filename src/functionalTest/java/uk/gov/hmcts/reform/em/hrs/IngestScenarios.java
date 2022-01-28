@@ -124,6 +124,9 @@ public class IngestScenarios extends BaseTest {
         List recordingFiles = (ArrayList) data.get("recordingFiles");
         LOGGER.info("num recordings: " + recordingFiles.size());
 
+        LOGGER.info("************* SLEEPING BEFORE STARTING THE NEXT TEST **********");
+        SleepHelper.sleepForSeconds(20);
+
     }
 
 
@@ -141,7 +144,6 @@ public class IngestScenarios extends BaseTest {
 
         //upload a real file to cvp
         testUtil.uploadFileFromPathToCvpContainer(filename,"data/test_data.mp4");
-//        testUtil.uploadFileFromPathToCvpContainer(filename,"data/empty_file.mp4");
 
         LOGGER.info("************* CHECKING CVP HAS UPLOADED **********");
         testUtil.checkIfUploadedToStore(filenames, testUtil.cvpBlobContainerClient);
@@ -163,10 +165,6 @@ public class IngestScenarios extends BaseTest {
         final String cvpMD5Hash = getMd5Hash(testUtil.cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
         Assert.assertEquals(hrsMD5Hash,cvpMD5Hash);
 
-//        final long hrsFileSize = testUtil.getFileSizeFromHRSStore(filename, testUtil.hrsBlobContainerClient);
-//        final long cvpFileSize = testUtil.getFileSizeFromCVPStore(filename, testUtil.hrsBlobContainerClient);
-//        Assert.assertEquals(hrsFileSize, cvpFileSize);
     }
-
 
 }
