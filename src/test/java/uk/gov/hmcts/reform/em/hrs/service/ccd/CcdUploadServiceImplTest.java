@@ -9,21 +9,17 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
-import uk.gov.hmcts.reform.em.hrs.exception.CcdUploadException;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 import uk.gov.hmcts.reform.em.hrs.service.FolderService;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.RejectedExecutionException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -83,7 +79,7 @@ class CcdUploadServiceImplTest {
                 anyLong(),
                 eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()),
                 eq(HEARING_RECORDING_DTO)
-        );
+            );
         doReturn(SEGMENT_1).when(segmentRepository).save(any(HearingRecordingSegment.class));
 
         underTest.upload(HEARING_RECORDING_DTO);
@@ -94,7 +90,7 @@ class CcdUploadServiceImplTest {
                 anyLong(),
                 eq(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId()),
                 eq(HEARING_RECORDING_DTO)
-        );
+            );
         verify(ccdDataStoreApiClient, never())
             .createCase(HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3.getId(), HEARING_RECORDING_DTO);
         verify(recordingRepository, never()).save(any(HearingRecording.class));
