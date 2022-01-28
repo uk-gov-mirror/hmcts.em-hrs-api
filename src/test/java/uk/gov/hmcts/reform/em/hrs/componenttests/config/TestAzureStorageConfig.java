@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.componenttests.config;
 
-import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import org.slf4j.Logger;
@@ -53,23 +52,6 @@ public class TestAzureStorageConfig {
             ACCOUNT_NAME
         );
         connectionString = String.format(AZURITE_CREDENTIALS, ACCOUNT_NAME, ACCOUNT_KEY, blobServiceUrl);
-    }
-
-    @Bean
-    @Primary
-    public BlobContainerAsyncClient provideBlobContainerAsyncClient() {
-        final BlobContainerAsyncClient blobContainerAsyncClient = new BlobContainerClientBuilder()
-            .connectionString(connectionString)
-            .containerName(HRS_CONTAINER)
-            .buildAsyncClient();
-
-        blobContainerAsyncClient.create()
-            .subscribe(
-                response -> LOGGER.info("Create {} container completed", HRS_CONTAINER),
-                error -> LOGGER.error("Error while creating container {}::: ", HRS_CONTAINER, error)
-            );
-
-        return blobContainerAsyncClient;
     }
 
     @Primary
