@@ -93,7 +93,7 @@ public class BlobUtil {
 
 
     public void uploadFileFromPathToCvpContainer(final String blobName, final String pathToFile) throws Exception {
-        final FileInputStream fileInputStream = getFilefromPath("data/test_data.mp4");
+        final FileInputStream fileInputStream = getFileFromPath(pathToFile);
         final byte[] bytes = fileInputStream.readAllBytes();
         final InputStream inStream = new ByteArrayInputStream(bytes);
 
@@ -104,7 +104,7 @@ public class BlobUtil {
 
 
     public void uploadFileFromPathToHrsContainer(final String blobName, final String pathToFile) throws Exception {
-        final FileInputStream fileInputStream =  getFilefromPath("data/test_data.mp4");
+        final FileInputStream fileInputStream =  getFileFromPath(pathToFile);
         final byte[] bytes = fileInputStream.readAllBytes();
         final InputStream inStream = new ByteArrayInputStream(bytes);
 
@@ -114,17 +114,10 @@ public class BlobUtil {
     }
 
 
-    public FileInputStream getFilefromPath(final String pathToFile) throws Exception {
+    public FileInputStream getFileFromPath(final String pathToFile) throws Exception {
         final URL resource = BlobUtil.class.getClassLoader().getResource(pathToFile);
         final File file = new File(Objects.requireNonNull(resource).toURI());
         return new FileInputStream(file);
     }
 
-    public long getFileSizeFromCVPStore(String filename, BlobContainerClient cvpBlobContainerClient) {
-        return cvpBlobContainerClient.getBlobClient(filename).getProperties().getBlobSize();
-    }
-
-    public long getFileSizeFromHRSStore(String filename, BlobContainerClient hrsBlobContainerClient) {
-        return hrsBlobContainerClient.getBlobClient(filename).getProperties().getBlobSize();
-    }
 }

@@ -52,7 +52,7 @@ public class ShareScenarios extends BaseTest {
 
         //used in tests to verify file is fully downloaded
         LOGGER.info("SET UP: CHECKING FILE SIZE UPLOADED TO CVP");
-        expectedFileSize = blobUtil.getFilefromPath("data/test_data.mp4").readAllBytes().length;
+        expectedFileSize = blobUtil.getFileFromPath("data/test_data.mp4").readAllBytes().length;
         assertThat(expectedFileSize, is(not(0)));
 
         LOGGER.info("SET UP: SCENARIO DATA READY FOR TESTING");

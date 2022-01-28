@@ -91,6 +91,7 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
         //TODO should we compare md5sum of destination as well or
         // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
 
+//        if (!destinationBlobClient.exists()) {
         boolean shouldCopyToHrsStorage = false;//TODO fileNotCopiedToHrsStorage | fileNotCopiedCorrectly;
         if (shouldCopyToHrsStorage) {
             if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {

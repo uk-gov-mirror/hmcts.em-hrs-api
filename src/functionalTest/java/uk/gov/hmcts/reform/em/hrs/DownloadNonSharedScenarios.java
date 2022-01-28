@@ -46,7 +46,7 @@ public class DownloadNonSharedScenarios extends BaseTest {
         caseDetails = findCaseWithAutoRetryWithUserWithSearcherRole(caseRef);
 
         //used in tests to verify file is fully downloaded
-        expectedFileSize = blobUtil.getFilefromPath("data/test_data.mp4").readAllBytes().length;
+        expectedFileSize = blobUtil.getFileFromPath("data/test_data.mp4").readAllBytes().length;
         assertThat(expectedFileSize, is(not(0)));
     }
 

@@ -19,7 +19,6 @@ import javax.annotation.PostConstruct;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
-import static uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper.sleepForSeconds;
 
 public class IngestScenarios extends BaseTest {
 
@@ -63,7 +62,6 @@ public class IngestScenarios extends BaseTest {
             fileNamePrefixToNotDelete
         );
 
-
     }
 
 
@@ -71,7 +69,6 @@ public class IngestScenarios extends BaseTest {
     public void shouldCreateHearingRecordingSegments() throws Exception {
         String caseRef = timebasedCaseRef();
         Set<String> filenames = new HashSet<>();
-
 
         for (int segmentIndex = 0; segmentIndex < SEGMENT_COUNT; segmentIndex++) {
             String filename = filename(caseRef, segmentIndex);
@@ -137,28 +134,27 @@ public class IngestScenarios extends BaseTest {
         String caseRef = timebasedCaseRef();
         Set<String> filenames = new HashSet<>();
 
-        //upload empty file to hrs
         String filename = filename(caseRef, 0);
 
-        System.out.println("FILE: " + filename);
-
-        //upload an empty file to hrs
+        //upload corrupt file to hrs
         testUtil.uploadFileFromPathToHrsContainer(filename, "data/empty_file.mp4");
 
         //upload a real file to cvp
         testUtil.uploadFileFromPathToCvpContainer(filename,"data/test_data.mp4");
+//        testUtil.uploadFileFromPathToCvpContainer(filename,"data/empty_file.mp4");
 
         LOGGER.info("************* CHECKING CVP HAS UPLOADED **********");
         testUtil.checkIfUploadedToStore(filenames, testUtil.cvpBlobContainerClient);
         LOGGER.info("************* Files loaded to cvp storage **********");
 
+        //Wait until the ingestion has triggered the copy
         postRecordingSegment(caseRef, 0)
             .then()
             .log().all()
             .statusCode(202);
 
        //TODO wait until the ingestion has triggered the copy
-        sleepForSeconds(10);
+        SleepHelper.sleepForSeconds(10);
 
         LOGGER.info("************* CHECKING HRS HAS COPIED TO STORE **********");
         testUtil.checkIfUploadedToStore(filenames, testUtil.hrsBlobContainerClient);
@@ -167,9 +163,9 @@ public class IngestScenarios extends BaseTest {
         final String cvpMD5Hash = getMd5Hash(testUtil.cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
         Assert.assertEquals(hrsMD5Hash,cvpMD5Hash);
 
-        final long hrsFileSize = testUtil.getFileSizeFromHRSStore(filename, testUtil.hrsBlobContainerClient);
-        final long cvpFileSize = testUtil.getFileSizeFromCVPStore(filename, testUtil.hrsBlobContainerClient);
-        Assert.assertEquals(hrsFileSize, cvpFileSize);
+//        final long hrsFileSize = testUtil.getFileSizeFromHRSStore(filename, testUtil.hrsBlobContainerClient);
+//        final long cvpFileSize = testUtil.getFileSizeFromCVPStore(filename, testUtil.hrsBlobContainerClient);
+//        Assert.assertEquals(hrsFileSize, cvpFileSize);
     }
 
 
