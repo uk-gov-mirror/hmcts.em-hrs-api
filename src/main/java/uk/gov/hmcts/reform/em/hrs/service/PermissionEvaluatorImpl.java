@@ -10,6 +10,7 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.em.hrs.domain.AuditActions;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSharee;
@@ -35,6 +36,10 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
 
     @Autowired
     private ShareesRepository shareesRepository;
+
+    @Autowired
+    private AuditEntryService auditEntryService;
+
 
     @Override
     public boolean hasPermission(@NotNull Authentication authentication,
@@ -92,9 +97,11 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
                     return true;
                 }
             }
+            auditEntryService.createAndSaveEntry(hrSegment, AuditActions.USER_DOWNLOAD_UNAUTHORIZED);
+
         }
 
-
+        //TODO THIS SHOU
         return false;
     }
 
