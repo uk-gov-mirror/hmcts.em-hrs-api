@@ -36,6 +36,9 @@ public class PermissionEvaluatorImplTest {
     @MockBean
     private ShareesRepository shareesRepository;
 
+    @MockBean
+    private AuditEntryService auditEntryService;
+
     private JwtAuthenticationToken authentication;
 
     private static final String USER_ID = UUID.randomUUID().toString();
