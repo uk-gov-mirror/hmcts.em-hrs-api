@@ -42,11 +42,11 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
 
 
     @Override
-    public boolean hasPermission(@NotNull Authentication authentication,
+    public boolean hasPermission(@NotNull Authentication authenticationToken,
                                  @NotNull Object segment,
                                  @NotNull Object permissionString) {
 
-        var jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+        var jwtAuthenticationToken = (JwtAuthenticationToken) authenticationToken;
         String token = "Bearer " + jwtAuthenticationToken.getToken().getTokenValue();
 
         var userInfo = securityService.getUserInfo(token);
@@ -98,11 +98,8 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
                 }
             }
             auditEntryService.createAndSaveEntry(hrSegment, AuditActions.USER_DOWNLOAD_UNAUTHORIZED);
-
         }
-
-        //TODO THIS SHOU
-        return false;
+        return false;//Not a segment
     }
 
     @Override
