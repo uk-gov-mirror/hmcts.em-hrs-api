@@ -7,7 +7,6 @@ import com.azure.core.util.polling.SyncPoller;
 import com.azure.identity.DefaultAzureCredential;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobContainerAsyncClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
@@ -49,8 +48,7 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
     private final String cvpConnectionString;
 
     @Autowired
-    public HearingRecordingStorageImpl(final BlobContainerAsyncClient hrsContainerAsyncClient,
-                                       final @Qualifier("HrsBlobContainerClient")
+    public HearingRecordingStorageImpl(final @Qualifier("HrsBlobContainerClient")
                                            BlobContainerClient hrsContainerClient,
                                        final @Qualifier("CvpBlobContainerClient")
                                            BlobContainerClient cvpContainerClient,
