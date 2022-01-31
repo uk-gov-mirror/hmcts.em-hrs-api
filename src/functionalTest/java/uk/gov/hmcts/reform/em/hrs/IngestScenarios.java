@@ -140,7 +140,7 @@ public class IngestScenarios extends BaseTest {
 
     }
 
-    void uploadToCcd(Set<String> filenames, String caseRef) {
+    private void uploadToCcd(Set<String> filenames, String caseRef) {
         //IN AAT hrs is running on 8 / minute uploads, so need to wait at least 8 secs per segment
         //giving it 10 secs per segment, plus an additional segment
         int secondsToWaitForCcdUploadsToComplete =

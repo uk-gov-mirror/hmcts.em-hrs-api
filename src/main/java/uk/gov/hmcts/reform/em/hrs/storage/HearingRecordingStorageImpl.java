@@ -87,21 +87,21 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
         BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
         boolean destinationFileExists = hrsBlobContainerClient.getBlobClient(filename).exists();
         String destinationMD5Hash = null;
-        final String sourceMD5Hash = getMd5Hash(cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
-        LOGGER.info("############## Trying copy from URL for sourceUri {}", sourceUri);
 
-        if (destinationFileExists) {
-            destinationMD5Hash = getMd5Hash(hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
-        }
+        try {
+            final String sourceMD5Hash = getMd5Hash(cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
+            LOGGER.info("############## Trying copy from URL for sourceUri {}", sourceUri);
 
-        if(!destinationBlobClient.exists() || !sourceMD5Hash.equals(destinationMD5Hash)) {
-            if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
-                LOGGER.info("Generating and appending SAS token for copy");
-                String sasToken = generateReadSasForCvp(filename);
-                sourceUri = sourceUri + "?" + sasToken;
+            if (destinationFileExists) {
+                destinationMD5Hash = getMd5Hash(hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
             }
 
-            try {
+            if (!destinationBlobClient.exists() || !sourceMD5Hash.equals(destinationMD5Hash)) {
+                if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
+                    LOGGER.info("Generating and appending SAS token for copy");
+                    String sasToken = generateReadSasForCvp(filename);
+                    sourceUri = sourceUri + "?" + sasToken;
+                }
 
                 BlockBlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
                 LOGGER.info("sourceBlob.exists() {}", sourceBlob.exists());
@@ -112,19 +112,17 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
                     filename,
                     poll.getStatus()
                 );
-            } catch (BlobStorageException be) {
-                LOGGER.info("Blob Copy BlobStorageException code {}, message{}", be.getErrorCode(), be.getMessage());
-                throw new BlobCopyException(be.getMessage(), be);
-                //TODO should we try and clean up the destination blob? can it be partially present?
-            } catch (Exception e) {
-                LOGGER.info("Unhandled Exception during Blob Copy {}", e.getMessage());
-                throw new BlobCopyException(e.getMessage(), e);
-                //TODO should we try and clean up the destination blob? can it be partially present?
+            } else {
+                LOGGER.info("############## target blobstore already has file: {}", filename);
             }
-
-
-        } else {
-            LOGGER.info("############## target blobstore already has file: {}", filename);
+        } catch (BlobStorageException be) {
+            LOGGER.info("Blob Copy BlobStorageException code {}, message{}", be.getErrorCode(), be.getMessage());
+            throw new BlobCopyException(be.getMessage(), be);
+            //TODO should we try and clean up the destination blob? can it be partially present?
+        } catch (Exception e) {
+            LOGGER.info("Unhandled Exception during Blob Copy {}", e.getMessage());
+            throw new BlobCopyException(e.getMessage(), e);
+            //TODO should we try and clean up the destination blob? can it be partially present?
         }
 
     }
