@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,10 +130,6 @@ public class IngestScenarios extends BaseTest {
 
         LOGGER.info("************* CHECKING HRS HAS COPIED TO STORE **********");
         testUtil.checkIfUploadedToStore(filenames, testUtil.hrsBlobContainerClient);
-
-        final String hrsMD5Hash = getMd5Hash(testUtil.hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
-        final String cvpMD5Hash = getMd5Hash(testUtil.cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
-        Assert.assertEquals(hrsMD5Hash,cvpMD5Hash);
 
         uploadToCcd(filenames, caseRef);
 
