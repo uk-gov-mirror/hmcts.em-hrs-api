@@ -94,9 +94,6 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
             destinationMD5Hash = getMd5Hash(hrsBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
         }
 
-        //TODO should we compare md5sum of destination as well or
-        // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
-
         if(!destinationBlobClient.exists() || !sourceMD5Hash.equals(destinationMD5Hash)) {
             if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
                 LOGGER.info("Generating and appending SAS token for copy");

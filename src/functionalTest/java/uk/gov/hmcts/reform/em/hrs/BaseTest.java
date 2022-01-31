@@ -482,7 +482,7 @@ public abstract class BaseTest {
         return sumToSingleDigit(k / 10) + (k % 10);
     }
 
-    static String getMd5Hash(final byte[] digest) {
+    protected static String getMd5Hash(final byte[] digest) {
         if (digest == null) {
             return NULLMD_5;
         }

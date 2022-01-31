@@ -91,38 +91,7 @@ public class IngestScenarios extends BaseTest {
         LOGGER.info("************* CHECKING HRS HAS COPIED TO STORE **********");
         testUtil.checkIfUploadedToStore(filenames, testUtil.hrsBlobContainerClient);
 
-        //IN AAT hrs is running on 8 / minute uploads, so need to wait at least 8 secs per segment
-        //giving it 10 secs per segment, plus an additional segment
-        int secondsToWaitForCcdUploadsToComplete =
-            (SEGMENT_COUNT * CCD_UPLOAD_WAIT_PER_SEGMENT_IN_SECONDS) + CCD_UPLOAD_WAIT_MARGIN_IN_SECONDS;
-        LOGGER.info(
-            "************* Sleeping for {} seconds to allow CCD uploads to complete **********",
-            secondsToWaitForCcdUploadsToComplete
-        );
-        SleepHelper.sleepForSeconds(secondsToWaitForCcdUploadsToComplete);
-
-
-        LOGGER.info("************* CHECKING HRS HAS IT IN DATABASE AND RETURNS EXPECTED FILES VIA API**********");
-        getFilenamesCompletedOrInProgress(FOLDER)
-            .assertThat().log().all()
-            .statusCode(200)
-            .body("folder-name", equalTo(FOLDER))
-            .body("filenames", hasItems(filenames.toArray()));
-
-        LOGGER.info("*****************************");
-        LOGGER.info("*****************************");
-        LOGGER.info("*****************************");
-        LOGGER.info("*****************************");
-        LOGGER.info("*****************************");
-
-
-        CaseDetails caseDetails = findCaseWithAutoRetryWithUserWithSearcherRole(caseRef);
-
-
-        Map<String, Object> data = caseDetails.getData();
-        LOGGER.info("data size: " + data.size()); //TODO when posting multisegment - this needs to match
-        List recordingFiles = (ArrayList) data.get("recordingFiles");
-        LOGGER.info("num recordings: " + recordingFiles.size());
+        uploadToCcd(filenames, caseRef);
 
         LOGGER.info("************* SLEEPING BEFORE STARTING THE NEXT TEST **********");
         SleepHelper.sleepForSeconds(20);
@@ -139,11 +108,14 @@ public class IngestScenarios extends BaseTest {
 
         String filename = filename(caseRef, 0);
 
-        //upload corrupt file to hrs
+        //Upload corrupt file to hrs
         testUtil.uploadFileFromPathToHrsContainer(filename, "data/empty_file.mp4");
 
-        //upload a real file to cvp
+        //Upload a real file to cvp
         testUtil.uploadFileFromPathToCvpContainer(filename,"data/test_data.mp4");
+
+        //Sleep for 10 seconds to see the empty file in the Azure Blob Storage - HRS container
+        SleepHelper.sleepForSeconds(10);
 
         LOGGER.info("************* CHECKING CVP HAS UPLOADED **********");
         testUtil.checkIfUploadedToStore(filenames, testUtil.cvpBlobContainerClient);
@@ -155,7 +127,6 @@ public class IngestScenarios extends BaseTest {
             .log().all()
             .statusCode(202);
 
-       //TODO wait until the ingestion has triggered the copy
         SleepHelper.sleepForSeconds(10);
 
         LOGGER.info("************* CHECKING HRS HAS COPIED TO STORE **********");
@@ -165,6 +136,11 @@ public class IngestScenarios extends BaseTest {
         final String cvpMD5Hash = getMd5Hash(testUtil.cvpBlobContainerClient.getBlobClient(filename).getProperties().getContentMd5());
         Assert.assertEquals(hrsMD5Hash,cvpMD5Hash);
 
+        uploadToCcd(filenames, caseRef);
+
+    }
+
+    void uploadToCcd(Set<String> filenames, String caseRef) {
         //IN AAT hrs is running on 8 / minute uploads, so need to wait at least 8 secs per segment
         //giving it 10 secs per segment, plus an additional segment
         int secondsToWaitForCcdUploadsToComplete =
@@ -197,7 +173,6 @@ public class IngestScenarios extends BaseTest {
         LOGGER.info("data size: " + data.size()); //TODO when posting multisegment - this needs to match
         List recordingFiles = (ArrayList) data.get("recordingFiles");
         LOGGER.info("num recordings: " + recordingFiles.size());
-
     }
 
 }
