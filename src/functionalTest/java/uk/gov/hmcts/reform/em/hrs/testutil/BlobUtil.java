@@ -115,7 +115,7 @@ public class BlobUtil {
 
 
     public FileInputStream getFileFromPath(final String pathToFile) throws Exception {
-        final URL resource = BlobUtil.class.getClassLoader().getResource(pathToFile);
+        final URL resource = ClassLoader.getSystemResource(pathToFile);
         final File file = new File(Objects.requireNonNull(resource).toURI());
         return new FileInputStream(file);
     }
