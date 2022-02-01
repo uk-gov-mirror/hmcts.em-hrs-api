@@ -103,11 +103,7 @@ module "storage_account" {
   team_contact = var.team_contact
   destroy_me   = var.destroy_me
 
-  blob_properties {
-    delete_retention_policy {
-      days = 10
-    }
-  }
+  enable_data_protection = true
 }
 
 resource "azurerm_key_vault_secret" "storage_account_id" {
