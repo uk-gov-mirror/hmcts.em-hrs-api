@@ -102,6 +102,12 @@ module "storage_account" {
   common_tags  = local.tags
   team_contact = var.team_contact
   destroy_me   = var.destroy_me
+
+  blob_properties {
+    delete_retention_policy {
+      days = 10
+    }
+  }
 }
 
 resource "azurerm_key_vault_secret" "storage_account_id" {
