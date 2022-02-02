@@ -96,14 +96,14 @@ module "storage_account" {
 
   enable_https_traffic_only = true
 
+  enable_data_protection    = true
+
   default_action = "Allow"
 
   // Tags
   common_tags  = local.tags
   team_contact = var.team_contact
   destroy_me   = var.destroy_me
-
-  enable_data_protection = true
 }
 
 resource "azurerm_key_vault_secret" "storage_account_id" {
