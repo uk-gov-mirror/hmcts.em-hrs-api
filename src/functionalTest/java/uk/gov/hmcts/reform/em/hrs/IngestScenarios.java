@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
+import com.azure.storage.blob.specialized.BlockBlobClient;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -69,10 +70,9 @@ public class IngestScenarios extends BaseTest {
     public void shouldCreateHearingRecordingSegments() throws Exception {
         String caseRef = timebasedCaseRef();
         Set<String> filenames = new HashSet<>();
-        String filename = filename(caseRef, 0);
 
         for (int segmentIndex = 0; segmentIndex < SEGMENT_COUNT; segmentIndex++) {
-            filename = filename(caseRef, segmentIndex);
+            String filename = filename(caseRef, segmentIndex);
             filenames.add(filename);
             testUtil.uploadFileFromPathToCvpContainer(filename,"data/test_data.mp4");
         }
@@ -92,8 +92,8 @@ public class IngestScenarios extends BaseTest {
         LOGGER.info("************* CHECKING HRS HAS COPIED TO STORE **********");
         testUtil.checkIfUploadedToStore(filenames, testUtil.hrsBlobContainerClient);
 
-        long cvpFileSize = testUtil.getFileSizeFromStore(filename, testUtil.cvpBlobContainerClient);
-        long hrsFileSize = testUtil.getFileSizeFromStore(filename, testUtil.hrsBlobContainerClient);
+        long cvpFileSize = testUtil.getFileSizeFromStore(filenames, testUtil.cvpBlobContainerClient);
+        long hrsFileSize = testUtil.getFileSizeFromStore(filenames, testUtil.hrsBlobContainerClient);
         Assert.assertEquals(hrsFileSize, cvpFileSize);
 
         uploadToCcd(filenames, caseRef);
