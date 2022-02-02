@@ -120,4 +120,8 @@ public class BlobUtil {
         return new FileInputStream(file);
     }
 
+    public long getFileSizeFromStore(String filename, BlobContainerClient hrsBlobContainerClient) {
+        return hrsBlobContainerClient.getBlobClient(filename).getProperties().getBlobSize();
+    }
+
 }
