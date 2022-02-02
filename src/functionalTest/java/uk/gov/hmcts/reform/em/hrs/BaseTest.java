@@ -479,5 +479,4 @@ public abstract class BaseTest {
 
         return sumToSingleDigit(k / 10) + (k % 10);
     }
-
 }
