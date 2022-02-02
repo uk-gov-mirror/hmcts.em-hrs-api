@@ -83,44 +83,43 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
     public void copyRecording(String sourceUri, final String filename) {
 
         BlockBlobClient destinationBlobClient = hrsBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
-        boolean destinationFileExists = hrsBlobContainerClient.getBlobClient(filename).exists();
-        long destinationSize = 0;
 
         LOGGER.info("############## Trying copy from URL for sourceUri {}", sourceUri);
 
-        try {
-            final long sourceSize = cvpBlobContainerClient.getBlobClient(filename).getProperties().getBlobSize();
-            if (destinationFileExists) {
-                destinationSize = hrsBlobContainerClient.getBlobClient(filename).getProperties().getBlobSize();
-            }
-            if (!destinationBlobClient.exists() || sourceSize != destinationSize) {
-                if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
-                    LOGGER.info("Generating and appending SAS token for copy");
-                    String sasToken = generateReadSasForCvp(filename);
-                    sourceUri = sourceUri + "?" + sasToken;
-                }
-            } else {
-                LOGGER.info("############## target blobstore already has file: {}", filename);
+        if (!destinationBlobClient.exists() || destinationBlobClient.getProperties().getBlobSize() == 0) {
+            if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
+                LOGGER.info("Generating and appending SAS token for copy");
+                String sasToken = generateReadSasForCvp(filename);
+                sourceUri = sourceUri + "?" + sasToken;
             }
 
-            BlockBlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
-            LOGGER.info("sourceBlob.exists() {}", sourceBlob.exists());
-            SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
-            PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
-            LOGGER.info(
-                "File copy completed for {} with status {}",
-                filename,
-                poll.getStatus()
-            );
-        } catch (BlobStorageException be) {
-            LOGGER.info("Blob Copy BlobStorageException code {}, message{}", be.getErrorCode(), be.getMessage());
-            throw new BlobCopyException(be.getMessage(), be);
-            //TODO should we try and clean up the destination blob? can it be partially present?
-        } catch (Exception e) {
-            LOGGER.info("Unhandled Exception during Blob Copy {}", e.getMessage());
-            throw new BlobCopyException(e.getMessage(), e);
-            //TODO should we try and clean up the destination blob? can it be partially present?
+
+            try {
+
+                BlockBlobClient sourceBlob = cvpBlobContainerClient.getBlobClient(filename).getBlockBlobClient();
+                LOGGER.info("sourceBlob.exists() {}", sourceBlob.exists());
+                SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, null);
+                PollResponse<BlobCopyInfo> poll = poller.waitForCompletion();
+                LOGGER.info(
+                    "File copy completed for {} with status {}",
+                    filename,
+                    poll.getStatus()
+                );
+            } catch (BlobStorageException be) {
+                LOGGER.info("Blob Copy BlobStorageException code {}, message{}", be.getErrorCode(), be.getMessage());
+                throw new BlobCopyException(be.getMessage(), be);
+                //TODO should we try and clean up the destination blob? can it be partially present?
+            } catch (Exception e) {
+                LOGGER.info("Unhandled Exception during Blob Copy {}", e.getMessage());
+                throw new BlobCopyException(e.getMessage(), e);
+                //TODO should we try and clean up the destination blob? can it be partially present?
+            }
+
+
+        } else {
+            LOGGER.info("############## target blobstore already has file: {}", filename);
         }
+
     }
 
 
