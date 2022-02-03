@@ -422,7 +422,7 @@ dependencies {
  **********************************************************************************************************************/
 
   implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-  implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.5.7.Final'
+  implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.6.5.Final'
   implementation "org.liquibase:liquibase-core:4.6.1"
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation "org.springframework.boot:spring-boot-starter-jdbc"
@@ -463,7 +463,7 @@ dependencies {
 
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.21.0'
   testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '2.25.0'
-  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.16.0'
+  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.16.3'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.3'
   testImplementation group: 'com.devskiller', name: 'jfairy', version: '0.6.4', {
     exclude group: 'com.google.guava', module: 'guava'
