@@ -96,6 +96,8 @@ module "storage_account" {
 
   enable_https_traffic_only = true
 
+  enable_data_protection    = true
+
   default_action = "Allow"
 
   // Tags
