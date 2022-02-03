@@ -218,6 +218,10 @@ dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
 }
 
+configurations.all {
+  exclude group: 'com.vaadin.external.google',module: 'android-json'
+}
+
 dependencyManagement {
   dependencies {
 
@@ -342,7 +346,6 @@ dependencies {
 
   def withoutStuff = {
     exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
-    exclude group: 'com.vaadin.external.google', module: 'android-json'
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
     exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
   }
@@ -448,13 +451,11 @@ dependencies {
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    exclude group: 'com.vaadin.external.google', module: 'android-json'
   }
 
   functionalTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    exclude group: 'com.vaadin.external.google', module: 'android-json'
   }
 
   functionalTestImplementation 'com.github.hmcts:em-test-helper:1.18.2'
@@ -472,7 +473,7 @@ dependencies {
   testImplementation group: 'org.pitest', name: 'pitest', version: '1.7.3'
   testImplementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: '0.5'
 
-  functionalTestRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.8.1'
+  functionalTestRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.6.3'
   functionalTestImplementation 'org.junit.vintage:junit-vintage-engine:5.6.3'
   functionalTestImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
   functionalTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
@@ -512,7 +513,6 @@ dependencies {
   contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    exclude group: 'com.vaadin.external.google', module: 'android-json'
   }
   contractTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
   contractTestImplementation group: 'io.rest-assured', name: 'json-schema-validator', version: versions.restAssured
@@ -524,7 +524,7 @@ dependencies {
   contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-provider-gradle', version: '4.0.10'
 
   contractTestImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
-  contractTestImplementation "org.junit.vintage:junit-vintage-engine:5.8.1"
+  contractTestImplementation "org.junit.vintage:junit-vintage-engine:5.6.3"
   contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
   contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
   contractTestImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.8.2'

@@ -86,9 +86,7 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
 
         LOGGER.info("############## Trying copy from URL for sourceUri {}", sourceUri);
 
-        //TODO should we compare md5sum of destination as well or
-        // Or always overwrite (assume ingestor knows if it should be replaced or not, so md5 checksum done there)?
-        if (!destinationBlobClient.exists()) {
+        if (!destinationBlobClient.exists() || destinationBlobClient.getProperties().getBlobSize() == 0) {
             if (CvpConnectionResolver.isACvpEndpointUrl(cvpConnectionString)) {
                 LOGGER.info("Generating and appending SAS token for copy");
                 String sasToken = generateReadSasForCvp(filename);
