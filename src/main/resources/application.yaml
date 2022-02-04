@@ -59,6 +59,10 @@ spring:
           oidc:
             client-id: microservicekey-em-hrs-api
             client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
+  mail:
+    host: ${SMTP_HOST:false}
+    username: ${SMTP_USERNAME:xxx}
+    password: ${SMTP_PASSWORD:xxx}
 
 # service-auth-provider-client lib
 idam:
