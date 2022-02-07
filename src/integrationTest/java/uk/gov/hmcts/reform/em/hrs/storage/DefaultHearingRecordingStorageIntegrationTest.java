@@ -49,8 +49,10 @@ class DefaultHearingRecordingStorageIntegrationTest {
 
     @Test
     void testStorageReport() {
-        final String report = underTest.getStorageReport();
-        assertThat(report).startsWith("CVP Count");
+        final StorageReport report = underTest.getStorageReport();
+        assertThat(report).isNotNull();
+        assertThat(report.cvpItemCount).isEqualTo(0);
+        assertThat(report.hrsItemCount).isEqualTo(0);
     }
 
     @Test
@@ -71,7 +73,6 @@ class DefaultHearingRecordingStorageIntegrationTest {
         assertThat(filesWithoutTrailingSlash).singleElement().isEqualTo(filePath);
         assertThat(filesWithTrailingSlash).singleElement().isEqualTo(filePath);
     }
-
 
     @Test
     void testShouldFindCompleteSetOfUploadedFiles() {
