@@ -5,8 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.hrs.exception.EmailRecipientNotFoundException;
 import uk.gov.hmcts.reform.em.hrs.storage.HearingRecordingStorage;
 import uk.gov.hmcts.reform.em.hrs.storage.StorageReport;
+
+import java.util.Arrays;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyMap;
@@ -31,13 +34,19 @@ public class SummaryReportService {
         HearingRecordingStorage hearingRecordingStorage
     ) {
         this.emailSender = emailSender;
-        this.recipients = recipients;
+        if (recipients == null || recipients.length == 0) {
+            throw new EmailRecipientNotFoundException("No recipients configured for reports");
+        } else {
+            this.recipients = Arrays.copyOf(recipients, recipients.length);
+        }
         this.hearingRecordingStorage = hearingRecordingStorage;
     }
 
     public void sendReport() {
         try {
             var report = hearingRecordingStorage.getStorageReport();
+            LOGGER.info("Report recipients: {}", this.recipients[0]);
+
             emailSender.sendMessageWithAttachments(
                 SUBJECT_PREFIX + now(),
                 createBody(report),
