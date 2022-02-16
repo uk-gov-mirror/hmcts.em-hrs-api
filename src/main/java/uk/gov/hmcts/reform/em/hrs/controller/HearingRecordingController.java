@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
+import uk.gov.hmcts.reform.em.hrs.service.Constants;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 
@@ -41,7 +42,6 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
 public class HearingRecordingController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HearingRecordingController.class);
-
 
     private final ShareAndNotifyService shareAndNotifyService;
     private final SegmentDownloadService segmentDownloadService;
@@ -133,12 +133,15 @@ public class HearingRecordingController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Return the requested hearing recording segment")})
     public ResponseEntity getSegmentBinary(@PathVariable("recordingId") UUID recordingId,
                                            @PathVariable("segment") Integer segmentNo,
+                                           @RequestHeader(Constants.AUTHORIZATION) final String userToken,
                                            HttpServletRequest request,
                                            HttpServletResponse response) {
         try {
             //TODO this should return a 403 if its not in database
             HearingRecordingSegment segment = segmentDownloadService
-                .fetchSegmentByRecordingIdAndSegmentNumber(recordingId, segmentNo);
+                .fetchSegmentByRecordingIdAndSegmentNumber(recordingId, segmentNo, userToken);
+
+
             segmentDownloadService.download(segment, request, response);
         } catch (AccessDeniedException e) {
             LOGGER.warn(
