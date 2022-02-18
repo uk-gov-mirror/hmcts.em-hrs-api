@@ -48,18 +48,6 @@ class DefaultHearingRecordingStorageIntegrationTest {
     }
 
     @Test
-    void testStorageReport() {
-        final String filePath = ONE_ITEM_FOLDER + "/" + UUID.randomUUID().toString() + ".mp4";
-        azureIntegrationTestOperations.uploadToHrsContainer(filePath);
-        azureIntegrationTestOperations.uploadToCvpContainer(filePath);
-        final StorageReport report = underTest.getStorageReport();
-
-        assertThat(report).isNotNull();
-        assertThat(report.cvpItemCount).isEqualTo(1);
-        assertThat(report.hrsItemCount).isEqualTo(1);
-    }
-
-    @Test
     void testShouldReturnEmptySetWhenFolderDoesNotExist() {
         final Set<String> files = underTest.findByFolderName(EMPTY_FOLDER);
 
