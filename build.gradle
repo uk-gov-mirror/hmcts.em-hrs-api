@@ -221,12 +221,6 @@ dependencyManagement {
       // Guava CVE-2018-10237 - Unbounded memory allocation
       entry 'guava'
     }
-
-    //CVE-2021-29425
-    dependencySet(group: 'commons-io', version: '2.11.0') {
-      entry 'commons-io'
-    }
-
   }
 }
 
