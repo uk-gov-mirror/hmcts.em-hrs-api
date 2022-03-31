@@ -10,8 +10,6 @@ variable "env" {}
 
 variable "subscription" {}
 
-variable "deployment_namespace" {}
-
 variable "tenant_id" {}
 
 variable "jenkins_AAD_objectId" {
