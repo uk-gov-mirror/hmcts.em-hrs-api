@@ -6,4 +6,4 @@ pluginManagement {
     }
   }
 }
-
+rootProject.name = 'em-hrs-api'
