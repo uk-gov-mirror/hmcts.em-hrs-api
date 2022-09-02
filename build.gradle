@@ -228,6 +228,12 @@ dependencyManagement {
       // Guava CVE-2018-10237 - Unbounded memory allocation
       entry 'guava'
     }
+    
+    //CVE-2022-25857
+    dependencySet(group: 'org.yaml', version: '1.31') {
+      entry 'snakeyaml'
+    }
+    
   }
 }
 
@@ -271,7 +277,6 @@ dependencies {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
     exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
   }
-
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
