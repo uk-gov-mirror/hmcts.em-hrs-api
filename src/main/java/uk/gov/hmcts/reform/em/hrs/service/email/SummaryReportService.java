@@ -64,18 +64,18 @@ public class SummaryReportService {
 
     private String createBody(StorageReport report) {
 
-        var messageHtml = new StringBuffer("<html><body><h1>Blobstores Inspected</h1><h4>TOTAL</h4> CVP Count = ")
+        var messageHtml = new StringBuffer("<html><body><h1>Blobstores Inspected</h1><h5>TOTAL</h5> CVP Count = ")
             .append(report.cvpItemCount)
             .append(" vs HRS Count = ")
             .append(report.hrsItemCount)
             .append("<br><br>")
-            .append("<h4>TODAY ")
+            .append("<h5>TODAY ")
             .append(report.today)
-            .append("</h4> CVP Count = ")
+            .append("</h5> CVP Count = ")
             .append(report.cvpItemCountToday)
             .append(" vs HRS Count = ")
             .append(report.hrsItemCountToday)
-            .append("<br></body></html>");
+            .append("<br><br><br></body></html>");
 
 
         return messageHtml.toString();
