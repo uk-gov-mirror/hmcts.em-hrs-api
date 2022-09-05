@@ -207,8 +207,6 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
                     hrsTodayItemCounter.count++;
                 }
             }).count();
-        LOGGER.info("StorageReport HRS done");
-
 
         LOGGER.info(
             "StorageReport CVP Total Count= {} vs HRS Total Count= {}, Today CVP= {} vs HRS= {} ",
