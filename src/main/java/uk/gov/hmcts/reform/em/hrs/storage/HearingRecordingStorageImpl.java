@@ -192,10 +192,16 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
             }).count();
         LOGGER.info("StorageReport CVP done");
 
+        final BlobListDetails hrsBlobListDetails = new BlobListDetails()
+            .setRetrieveDeletedBlobs(false)
+            .setRetrieveSnapshots(false);
+        final ListBlobsOptions hrsOptions = new ListBlobsOptions()
+            .setDetails(hrsBlobListDetails);
         var hrsTodayItemCounter = new Counter();
 
-        long hrsItemCount = hrsBlobContainerClient.listBlobs(options, duration)
+        long hrsItemCount = hrsBlobContainerClient.listBlobs(hrsOptions, duration)
             .stream()
+            .filter(blobItem -> blobItem.getName().contains("/"))
             .peek(blob -> {
                 if (isCreatedToday(blob, today)) {
                     hrsTodayItemCounter.count++;
