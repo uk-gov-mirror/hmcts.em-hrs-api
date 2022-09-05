@@ -169,7 +169,7 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
 
     @Override
     public synchronized StorageReport getStorageReport() {
-
+        LOGGER.info("StorageReport Creating storage report");
         final BlobListDetails blobListDetails = new BlobListDetails()
             .setRetrieveDeletedBlobs(false)
             .setRetrieveSnapshots(false);
@@ -190,6 +190,7 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
                     cvpTodayItemCounter.count++;
                 }
             }).count();
+        LOGGER.info("StorageReport CVP done");
 
         var hrsTodayItemCounter = new Counter();
 
@@ -200,10 +201,11 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
                     hrsTodayItemCounter.count++;
                 }
             }).count();
+        LOGGER.info("StorageReport HRS done");
 
 
         LOGGER.info(
-            "CVP Total Count= {} vs HRS Total Count= {}, Today CVP= {} vs HRS= {} ",
+            "StorageReport CVP Total Count= {} vs HRS Total Count= {}, Today CVP= {} vs HRS= {} ",
             cvpItemCount,
             hrsItemCount,
             cvpTodayItemCounter.count,
