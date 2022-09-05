@@ -23,6 +23,7 @@ public class BlobStoreInspectorController {
     @GetMapping(value = "/inspect", consumes = MediaType.ALL_VALUE)
     public ResponseEntity<String> inspect() {
 
+        log.info("BlobStoreInspector Controller");
         StorageReport report = hearingRecordingStorage.getStorageReport();
         String reportStr = "CVP Count = " + report.cvpItemCount;
         reportStr += " vs HRS Count = " + report.hrsItemCount;
