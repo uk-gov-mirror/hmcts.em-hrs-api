@@ -18,7 +18,7 @@ plugins {
   id 'au.com.dius.pact' version '4.3.6'
   id "info.solidsoft.pitest" version '1.9.0'
   id 'org.owasp.dependencycheck' version '7.1.2'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.352'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.355'
   id 'uk.gov.hmcts.java' version '0.12.29'
 }
 
@@ -236,7 +236,7 @@ dependencyManagement {
     }
 
     //CVE-2022-25857
-    dependencySet(group: 'org.yaml', version: '1.31') {
+    dependencySet(group: 'org.yaml', version: '1.32') {
       entry 'snakeyaml'
     }
 
@@ -313,7 +313,7 @@ dependencies {
 
   implementation group: 'com.github.hmcts', name: 'properties-volume-spring-boot-starter', version: '0.1.1'
 //hmcts autho
-  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '2.0.1'
+  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '2.1.1'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.3'
   implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.5', {
     exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
