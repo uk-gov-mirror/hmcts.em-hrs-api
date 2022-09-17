@@ -9,10 +9,12 @@ import uk.gov.hmcts.reform.em.hrs.domain.JobInProgress;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
+import javax.transaction.Transactional;
 
 public interface JobInProgressRepository extends PagingAndSortingRepository<JobInProgress, UUID> {
 
     @Modifying
+    @Transactional
     @Query("delete from JobInProgress s where s.createdOn < :#{#dateTime} or s.createdOn is null")
     void deleteByCreatedOnLessThan(@Param("dateTime") LocalDateTime dateTime);
 

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.em.hrs.domain.HearingRecording;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import javax.transaction.Transactional;
 
 @Repository
 public interface HearingRecordingRepository extends JpaRepository<HearingRecording, UUID> {
@@ -19,6 +20,7 @@ public interface HearingRecordingRepository extends JpaRepository<HearingRecordi
     Optional<HearingRecording> findByCcdCaseId(Long caseId);
 
     @Modifying
+    @Transactional
     @Query("delete from HearingRecording s where s.createdOn < :#{#createddate} and s.ccdCaseId is null")
     void deleteStaleRecordsWithNullCcdCaseId(@Param("createddate") LocalDateTime createddate);
 }
