@@ -68,9 +68,10 @@ public class FolderServiceImpl implements FolderService {
 
         Tuple2<FilesInDatabase, Set<String>> databaseRecords = getFilesetsFromDatabase(folder);
         FilesInDatabase filesInDatabase = databaseRecords.getT1();
-        
+        LOGGER.info("Files In Database folder={}, {}", folder.getName(), filesInDatabase);
+
         Set<String> filesInBlobstore = hearingRecordingStorage.findByFolderName(folder.getName());
-        LOGGER.info("Files In Blob Store for folder={}, {}", folder.getName(), filesInDatabase);
+        LOGGER.info("Files In Blob Store for folder={}, {}", folder.getName(), filesInBlobstore);
 
         Set<String> completedFiles = filesInDatabase.intersect(filesInBlobstore);
         LOGGER.info("Completed Files={}", completedFiles);
