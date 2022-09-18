@@ -104,7 +104,7 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
             PollResponse<BlobCopyInfo> poll;
             try {
 
-                LOGGER.info("get cvpBlobContainerClient for filename{}", filename);
+                LOGGER.info("get cvpBlobContainerClient for filename {}", filename);
 
                 LOGGER.info(
                     "file name {}, getBlobContainerName {}, exists {}",
@@ -113,6 +113,8 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
                     cvpBlobContainerClient.exists()
                 );
                 SyncPoller<BlobCopyInfo, Void> poller = destinationBlobClient.beginCopy(sourceUri, POLLING_INTERVAL);
+                LOGGER.info("Wait For Completion filename {}", filename);
+
                 poll = poller.waitForCompletion(POLLER_WAIT);
                 LOGGER.info(
                     "File copy completed for {} with status {}",
