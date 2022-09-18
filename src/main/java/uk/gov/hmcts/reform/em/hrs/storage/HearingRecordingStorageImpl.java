@@ -50,7 +50,7 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
 
 
     private final String cvpConnectionString;
-    private static final Duration POLLER_WAIT = Duration.ofMinutes(5);
+    private static final Duration POLLER_WAIT = Duration.ofMinutes(15);
     private static final Duration POLLING_INTERVAL = Duration.ofSeconds(3);
 
     @Autowired
