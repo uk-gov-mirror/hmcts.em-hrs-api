@@ -171,8 +171,8 @@ scheduling:
       cron:  ${SUMMARY_REPORT_CRON:0 0 6 ? * *}
     delete-inprogress-jobs:
       enabled: ${DELETE_INPROGRESS_ENABLED:true}
-      cron:  ${DELETE_INPROGRESS_CRON:0 0 */1 * * *}
-      ttl-hours: 2
+      cron:  ${DELETE_INPROGRESS_CRON:0 0 */3 * * *}
+      ttl-hours: 3
 
 
 
