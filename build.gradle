@@ -243,6 +243,10 @@ dependencyManagement {
     dependencySet(group: 'org.springframework.cloud', version: '3.1.4') {
       entry 'spring-cloud-starter-openfeign'
     }
+    //CVE-2022-42003
+    dependencySet(group: 'com.fasterxml.jackson.core', version: '2.14.0-rc1') {
+      entry 'jackson-databind'
+    }
 
   }
 }
@@ -302,8 +306,6 @@ dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-
-  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.4'
 
   implementation "org.springframework.boot:spring-boot-starter-actuator"
   implementation "org.springframework.boot:spring-boot-starter-aop"
