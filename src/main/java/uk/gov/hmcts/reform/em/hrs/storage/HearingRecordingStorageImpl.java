@@ -98,6 +98,8 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
                     LOGGER.info("Generating and appending SAS token for copy for filename{}", filename);
                     String sasToken = generateReadSasForCvp(filename);
                     sourceUri = sourceUri + "?" + sasToken;
+                    LOGGER.info("Generated SasToken {}", sasToken);
+
                 }
 
                 LOGGER.info("SAS token created for filename{}", filename);
