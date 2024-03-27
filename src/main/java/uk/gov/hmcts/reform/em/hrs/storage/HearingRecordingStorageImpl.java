@@ -407,6 +407,11 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
             .setDetails(hrsBlobListDetails);
         final Duration duration = Duration.ofMinutes(BLOB_LIST_TIMEOUT);
 
+        LOGGER.info(
+            "VH container detail {}",
+            hrsVhBlobContainerClient.getBlobContainerName(),
+            hrsVhBlobContainerClient.getBlobContainerUrl()
+        );
         long hrsVhItemCount = hrsVhBlobContainerClient.listBlobs(hrsOptions, duration)
             .stream()
             .map(blob -> {
