@@ -22,7 +22,7 @@ public class DeleteVhBlobsTask {
         this.hearingRecordingStorage = hearingRecordingStorage;
     }
 
-    @Scheduled(cron = "${scheduling.delete-vh-blobs.cron}", zone = "Europe/London")
+    @Scheduled(cron = "${scheduling.task.delete-vh-blobs.cron}", zone = "Europe/London")
     @SchedulerLock(name = TASK_NAME)
     public void run() {
         logger.info("Started {} job", TASK_NAME);

@@ -24,7 +24,7 @@ public class DeleteVhRecordingTask {
         this.hearingRecordingRepository = hearingRecordingRepository;
     }
 
-    @Scheduled(cron = "${scheduling.delete-vh-recordings.cron}", zone = "Europe/London")
+    @Scheduled(cron = "${scheduling.task.delete-vh-recordings.cron}", zone = "Europe/London")
     @SchedulerLock(name = TASK_NAME)
     public void run() {
         logger.info("Started {} job", TASK_NAME);
