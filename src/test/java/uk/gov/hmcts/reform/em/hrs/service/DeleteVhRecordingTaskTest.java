@@ -27,6 +27,6 @@ class DeleteVhRecordingTaskTest {
         verify(hearingRecordingRepository, times(1))
             .listVhRecordingsToDelete();
         verify(hearingRecordingRepository, times(1))
-            .deleteVhRecordings(UUID.fromString("e1d00616-d98a-41db-b2bf-4a9a836265fe"));
+            .deleteById(UUID.fromString("e1d00616-d98a-41db-b2bf-4a9a836265fe"));
     }
 }
