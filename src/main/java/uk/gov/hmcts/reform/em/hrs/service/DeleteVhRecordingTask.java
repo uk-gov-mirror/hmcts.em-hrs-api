@@ -42,8 +42,9 @@ public class DeleteVhRecordingTask {
         logger.info("Started {} job", TASK_NAME);
         List<UUID> recordsToDelete = hearingRecordingRepository.listVhRecordingsToDelete();
         for (var id : recordsToDelete) {
-            logger.info("Deleting id {} ", id);
+            logger.info("hearingRecordingShareeAuditEntryRepository Deleting id {} ", id);
             hearingRecordingShareeAuditEntryRepository.deleteByHeringRef(id);
+            logger.info("shareesRepository Deleting id {} ", id);
             shareesRepository.deleteByHearingRecordingId(id);
             logger.info("sharee deleted for id {} ", id);
             hearingRecordingRepository.deleteById(id);
