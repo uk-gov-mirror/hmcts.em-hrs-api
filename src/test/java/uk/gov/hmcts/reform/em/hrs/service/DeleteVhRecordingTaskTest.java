@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingRepository;
-import uk.gov.hmcts.reform.em.hrs.repository.ShareesAuditEntryRepository;
+import uk.gov.hmcts.reform.em.hrs.repository.ShareesRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,9 +20,8 @@ class DeleteVhRecordingTaskTest {
 
     @Mock
     private HearingRecordingRepository hearingRecordingRepository;
-
     @Mock
-    private ShareesAuditEntryRepository hearingRecordingShareeAuditEntryRepository;
+    private ShareesRepository shareesRepository;
 
     @InjectMocks
     private DeleteVhRecordingTask deleteVhRecordingTask;
@@ -34,6 +33,8 @@ class DeleteVhRecordingTaskTest {
         deleteVhRecordingTask.run();
         verify(hearingRecordingRepository, times(1))
             .listVhRecordingsToDelete();
-        verify(hearingRecordingShareeAuditEntryRepository, times(1)).deleteByHeringRef(uuid);
+        verify(shareesRepository, times(1)).deleteByHearingRecordingId(uuid);
+        verify(hearingRecordingRepository, times(1))
+            .deleteById(uuid);
     }
 }
