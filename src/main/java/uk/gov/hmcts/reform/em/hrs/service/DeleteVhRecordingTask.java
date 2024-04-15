@@ -44,10 +44,6 @@ public class DeleteVhRecordingTask {
         for (var id : recordsToDelete) {
             logger.info("hearingRecordingShareeAuditEntryRepository Deleting id {} ", id);
             hearingRecordingShareeAuditEntryRepository.deleteByHeringRef(id);
-            logger.info("shareesRepository Deleting id {} ", id);
-            shareesRepository.deleteByHearingRecordingId(id);
-            logger.info("sharee deleted for id {} ", id);
-            hearingRecordingRepository.deleteById(id);
             logger.info("Deleted id {} ", id);
         }
         logger.info("Finished {} job,record count {}", TASK_NAME, recordsToDelete);
