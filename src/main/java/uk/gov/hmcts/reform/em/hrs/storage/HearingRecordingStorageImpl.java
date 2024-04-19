@@ -352,7 +352,7 @@ public class HearingRecordingStorageImpl implements HearingRecordingStorage {
                 .map(blb -> {
                     vhCounter.count++;
                     if (vhCounter.count < 5) {
-                        LOGGER.info("VH blob name {]", blb.getName());
+                        LOGGER.info("VH blob name {}", blb.getName());
                     }
                     return blb.getName();
                 }).count();
