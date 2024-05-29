@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.test.idam.client.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
