@@ -29,7 +29,7 @@ public class IdamHelper {
 
     private final OpenIdConfiguration openIdConfiguration;
 
-    private final String password = "4590fgvhbfgbDdffm3lk4j";
+    private final String pname = "4590fgvhbfgbDdffm3lk4j";
 
     private final Map<String, String> idamTokens = new HashMap<>();
 
@@ -46,7 +46,7 @@ public class IdamHelper {
 
         deleteUser(username);
 
-        idamTestApi.createUser(CreateUserRequest.builder().email(username).password(password)
+        idamTestApi.createUser(CreateUserRequest.builder().email(username).password(pname)
                                    .roles(roles.stream().map(UserRole::new).collect(Collectors.toList())).build());
 
     }
@@ -65,9 +65,9 @@ public class IdamHelper {
     }
 
     public String authenticateUser(String username) {
-        LOGGER.info("AUTHENTICATING username {},pass:{}", username, password);
+        LOGGER.info("AUTHENTICATING username {},pass:{}", username, pname);
         if (!idamTokens.containsKey(username)) {
-            String code = authenticateOpenIdUser(username, password);
+            String code = authenticateOpenIdUser(username, pname);
             idamTokens.put(username, code);
         }
         return idamTokens.get(username);
@@ -78,14 +78,14 @@ public class IdamHelper {
         OpenIdAuthUserRequest openIdAuthUserRequest = OpenIdAuthUserRequest.builder()
             .clientId(openIdConfiguration.getClientId())
             .clientSecret(openIdConfiguration.getClient_secret())
-            .grant_type(openIdConfiguration.getGrantType())
+            .grantType(openIdConfiguration.getGrantType())
             .redirectUri(openIdConfiguration.getRedirectUri())
             .scope(openIdConfiguration.getScope())
             .username(username)
             .password(password)
             .build();
         LOGGER.info(
-            "getClientId:{},getClient_secret:{},getGrantType:{},getRedirectUri:{},getScope:{}",
+            "getClienname:{},getClientPname:{},getGrantType:{},getRedirectUri:{},getScope:{}",
             openIdConfiguration.getClientId(),
             openIdConfiguration.getClient_secret(),
             openIdConfiguration.getGrantType(),
