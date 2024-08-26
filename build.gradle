@@ -1,7 +1,7 @@
 
 buildscript {
   dependencies {
-    classpath("org.flywaydb:flyway-database-postgresql:10.13.0")
+    classpath("org.flywaydb:flyway-database-postgresql:10.17.2")
   }
 }
 
@@ -9,15 +9,15 @@ plugins {
   id 'application'
   id 'checkstyle'
   id 'jacoco'
-  id 'io.spring.dependency-management' version '1.1.5'
-  id 'org.springframework.boot' version '3.2.5'
+  id 'io.spring.dependency-management' version '1.1.6'
+  id 'org.springframework.boot' version '3.3.3'
   id 'com.github.ben-manes.versions' version '0.51.0'
-  id 'org.sonarqube' version '5.0.0.4638'
-  id 'org.flywaydb.flyway' version '10.13.0'
+  id 'org.sonarqube' version '5.1.0.4882'
+  id 'org.flywaydb.flyway' version '10.17.2'
   id 'au.com.dius.pact' version '4.2.14'
   id "info.solidsoft.pitest" version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1214'
-  id 'uk.gov.hmcts.java' version '0.12.62'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1332'
+  id 'uk.gov.hmcts.java' version '0.12.63'
   id 'org.owasp.dependencycheck' version '9.2.0'
   id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
@@ -227,16 +227,17 @@ configurations.all {
 dependencyManagement {
   dependencies {
     // CVE-2023-6378
-    dependencySet(group: 'ch.qos.logback', version: '1.5.6') {
+    dependencySet(group: 'ch.qos.logback', version: '1.5.7') {
       entry 'logback-classic'
       entry 'logback-core'
     }
 
     // CVE-2023-35116
-    dependencySet(group: 'com.fasterxml.jackson.core', version: '2.17.1') {
+    dependencySet(group: 'com.fasterxml.jackson.core', version: '2.17.2') {
       entry 'jackson-databind'
       entry 'jackson-annotations'
       entry 'jackson-core'
+      entry 'jackson-datatype-jsr310'
     }
   }
 }
@@ -252,17 +253,17 @@ def versions = [
   serenity           : '3.7.0',
   serenityreporter   : '3.7.0',
   serenityRestAssured : '3.7.0',
-  lombok             : '1.18.32',
-  reformLogging      : '6.1.4',
+  lombok             : '1.18.34',
+  reformLogging      : '6.1.6',
   log4JVersion       : "2.17.1",
-  postgresql         : '42.7.3',
+  postgresql         : '42.7.4',
   pact_version       : '3.6.15',
   restAssured        : '5.3.0',
-  junit              : '5.10.2',
-  junitPlatform      : '1.10.2',
-  springSecurity     : '6.3.0',
-  shedlock           : '5.13.0',
-  testcontainers     : '1.19.8'
+  junit              : '5.11.0',
+  junitPlatform      : '1.11.0',
+  springSecurity     : '6.3.3',
+  shedlock           : '5.15.0',
+  testcontainers     : '1.20.1'
 ]
 
 dependencies {
@@ -281,8 +282,8 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: versions.springSecurity
   implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.2'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.1'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.4'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.3'
 
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -294,13 +295,12 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-validation"
   implementation "org.springframework.boot:spring-boot-starter-web"
 
-  implementation group: 'com.github.hmcts', name: 'properties-volume-spring-boot-starter', version: '0.1.1'
 //hmcts autho
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
-  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.2'
+  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.2.0'
 
 //hmcts ccd
-  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.0.1'
+  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.0.3'
 
 //hmcts logging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
@@ -308,12 +308,12 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-spring', version: '5.1.9'
 
 //gov notify email service
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.1.0-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.0-RELEASE'
 
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
 //azure components
-  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.25.4'
-  implementation group: 'com.azure', name: 'azure-identity', version: '1.12.1'
+  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.27.1'
+  implementation group: 'com.azure', name: 'azure-identity', version: '1.13.2'
 
   // Job scheduling
   implementation group: 'org.quartz-scheduler', name: 'quartz', version: '2.5.0-rc1'
@@ -322,6 +322,9 @@ dependencies {
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: versions.shedlock
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: versions.shedlock
 
+  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.11.0'
+
+
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
 
 /***********************************************************************************************************************
@@ -329,8 +332,8 @@ dependencies {
  **********************************************************************************************************************/
 
   implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.13.0'
-  runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.13.0'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.17.2'
+  runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.17.2'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation "org.springframework.boot:spring-boot-starter-jdbc"
 
@@ -339,7 +342,7 @@ dependencies {
   testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
   testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
   testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.1', classifier: 'all'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.4', classifier: 'all'
 
 /***********************************************************************************************************************
  * TEST DEPENDENCIES
@@ -362,13 +365,13 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
-  functionalTestImplementation 'com.github.hmcts:em-test-helper:2.0.5'
+  functionalTestImplementation 'com.github.hmcts:em-test-helper:2.0.8'
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
 
   testImplementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
 
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
-  testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '3.2.7'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
+  testImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '3.4.1'
 
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: versions.testcontainers
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
@@ -376,15 +379,15 @@ dependencies {
   testImplementation group: 'com.devskiller', name: 'jfairy', version: '0.6.5', {
     exclude group: 'com.google.guava', module: 'guava'
   }
-  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.1'
+  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.2'
 
-  functionalTestRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.10.2'
-  functionalTestImplementation 'org.junit.vintage:junit-vintage-engine:5.10.2'
-  functionalTestImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-  functionalTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+  functionalTestRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.11.0'
+  functionalTestImplementation 'org.junit.vintage:junit-vintage-engine:5.11.0'
+  functionalTestImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
+  functionalTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
 
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
 
 
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
@@ -398,7 +401,7 @@ dependencies {
   smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
   smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
   smokeTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-  smokeTestImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '2.0.4'
+  smokeTestImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '2.0.8'
 
 
 /***********************************************************************************************************************
@@ -422,8 +425,8 @@ dependencies {
   contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-provider-junit5', version: '4.0.10'
   contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-provider-gradle', version: '4.0.10'
 
-  contractTestImplementation "org.junit.jupiter:junit-jupiter-api:5.10.2"
-  contractTestRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.10.2"
+  contractTestImplementation "org.junit.jupiter:junit-jupiter-api:5.11.0"
+  contractTestRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.11.0"
   contractTestImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: versions.junitPlatform
 
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
