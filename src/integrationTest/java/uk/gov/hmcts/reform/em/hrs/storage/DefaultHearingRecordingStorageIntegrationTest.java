@@ -101,6 +101,7 @@ class DefaultHearingRecordingStorageIntegrationTest {
                 .isEqualTo(file));
     }
 
+
     @Test
     void testShouldEnsureOnlyTheSpecifiedCvpBlobIsCopiedToHrsBlobstore() {
         final String folder = UUID.randomUUID().toString();
