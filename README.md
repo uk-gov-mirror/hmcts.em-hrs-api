@@ -15,6 +15,7 @@ You will need to be able to run this command:
 
 az login
 
+
 So standard az cli tools are needed, as well as @hmcts.net log in with appropriate roles
 
 In order for integration tests to run, a docker image is needed for the
