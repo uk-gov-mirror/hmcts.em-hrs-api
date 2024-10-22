@@ -44,12 +44,10 @@ public class SecurityConfiguration {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(
+            "/swagger-ui.html",
             "/swagger-ui/**",
             "/swagger-resources/**",
-            "/swagger-ui.html",
-            "/webjars/springfox-swagger-ui/**",
-            "/swagger-resources/**",
-            "/v2/**",
+            "/v3/api-docs/**",
             "/health",
             "/health/liveness",
             "/health/readiness",
