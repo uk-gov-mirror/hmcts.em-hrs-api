@@ -21,13 +21,17 @@ public class MonthlyHearingReportTask {
 
     private final HearingReportEmailService hearingReportEmailService;
 
+    private final HearingReportService hearingReportService;
+
     private final List<LocalDate> reportStartDateList;
 
     public MonthlyHearingReportTask(
         HearingReportEmailService hearingReportEmailService,
+        HearingReportService hearingReportService,
         @Value("#{dateListConverter.convert('${report.monthly-hearing.reportStartDates}')}")
         List<LocalDate> reportStartDates) {
         this.hearingReportEmailService = hearingReportEmailService;
+        this.hearingReportService = hearingReportService;
         this.reportStartDateList = reportStartDates;
     }
 
@@ -44,7 +48,7 @@ public class MonthlyHearingReportTask {
         for (var reportStartDate : reportStartDateList) {
             try {
                 logger.info("Starting report for {}", reportStartDate);
-                hearingReportEmailService.sendReport(reportStartDate);
+                hearingReportEmailService.sendReport(reportStartDate, this.hearingReportService);
                 logger.info("Finished report for {}", reportStartDate);
             } catch (Exception ex) {
                 logger.error("Failed report for {}", reportStartDate, ex);

@@ -19,14 +19,15 @@ class MonthlyHearingReportTaskTest {
     void should_call_summary_report_service() {
         // given
         var hearingReportEmailService = mock(HearingReportEmailService.class);
-        var task = new MonthlyHearingReportTask(hearingReportEmailService, new ArrayList<>());
+        var hearingReportService = mock(HearingReportService.class);
+        var task = new MonthlyHearingReportTask(hearingReportEmailService, hearingReportService, new ArrayList<>());
 
         // when
         task.run();
 
         // then
         verify(hearingReportEmailService, times(1))
-            .sendReport(LocalDate.now().minusMonths(1));
+            .sendReport(LocalDate.now().minusMonths(1), hearingReportService);
     }
 
     @Test
@@ -39,23 +40,24 @@ class MonthlyHearingReportTaskTest {
             LocalDate.now().minusMonths(2)
         );
         var hearingReportEmailService = mock(HearingReportEmailService.class);
+        var hearingReportService = mock(HearingReportService.class);
 
         doThrow(new RuntimeException("testing dummy error"))
-            .when(hearingReportEmailService).sendReport(any(LocalDate.class));
+            .when(hearingReportEmailService).sendReport(any(LocalDate.class), any(HearingReportService.class));
 
-        var task = new MonthlyHearingReportTask(hearingReportEmailService, reportStartDateList);
+        var task = new MonthlyHearingReportTask(hearingReportEmailService, hearingReportService, reportStartDateList);
 
         // when
         task.run();
 
         // then
-        verify(hearingReportEmailService, times(3)).sendReport(any());
+        verify(hearingReportEmailService, times(3)).sendReport(any(), any());
         verify(hearingReportEmailService, times(1))
-            .sendReport(LocalDate.now());
+            .sendReport(LocalDate.now(), hearingReportService);
         verify(hearingReportEmailService, times(1))
-            .sendReport(LocalDate.now().minusMonths(1));
+            .sendReport(LocalDate.now().minusMonths(1), hearingReportService);
         verify(hearingReportEmailService, times(1))
-            .sendReport(LocalDate.now().minusMonths(2));
+            .sendReport(LocalDate.now().minusMonths(2), hearingReportService);
     }
 
 }

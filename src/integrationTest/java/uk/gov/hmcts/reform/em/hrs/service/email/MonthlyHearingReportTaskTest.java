@@ -31,34 +31,45 @@ public class MonthlyHearingReportTaskTest {
     @MockBean
     private HearingReportEmailService hearingReportEmailService;
 
+    @MockBean
+    private HearingReportService hearingReportService;
+
     @Autowired
     private MonthlyHearingReportTask monthlyHearingReportTask;
 
 
     @Test
     public void testRunSuccess() {
-        doNothing().when(hearingReportEmailService).sendReport(any(LocalDate.class));
+        doNothing().when(hearingReportEmailService).sendReport(any(LocalDate.class), any(HearingReportService.class));
 
         monthlyHearingReportTask.run();
 
-        verify(hearingReportEmailService, times(3)).sendReport(any(LocalDate.class));
-        verify(hearingReportEmailService).sendReport(LocalDate.of(2024, 7, 1));
-        verify(hearingReportEmailService).sendReport(LocalDate.of(2024, 8, 31));
-        verify(hearingReportEmailService).sendReport(LocalDate.of(2024, 9, 15));
+        verify(hearingReportEmailService, times(3))
+            .sendReport(any(LocalDate.class), any(HearingReportService.class));
+        verify(hearingReportEmailService)
+            .sendReport(LocalDate.of(2024, 7, 1), hearingReportService);
+        verify(hearingReportEmailService)
+            .sendReport(LocalDate.of(2024, 8, 31), hearingReportService);
+        verify(hearingReportEmailService)
+            .sendReport(LocalDate.of(2024, 9, 15), hearingReportService);
     }
 
     @Test
     public void testRunWithException() {
         doThrow(new RuntimeException("Testing Exception"))
             .when(hearingReportEmailService)
-            .sendReport(any(LocalDate.class));
+            .sendReport(any(LocalDate.class), any(HearingReportService.class));
 
         monthlyHearingReportTask.run();
 
-        verify(hearingReportEmailService, times(3)).sendReport(any(LocalDate.class));
-        verify(hearingReportEmailService).sendReport(LocalDate.of(2024, 7, 1));
-        verify(hearingReportEmailService).sendReport(LocalDate.of(2024, 8, 31));
-        verify(hearingReportEmailService).sendReport(LocalDate.of(2024, 9, 15));
+        verify(hearingReportEmailService, times(3))
+            .sendReport(any(LocalDate.class), any(HearingReportService.class));
+        verify(hearingReportEmailService)
+            .sendReport(LocalDate.of(2024, 7, 1), hearingReportService);
+        verify(hearingReportEmailService)
+            .sendReport(LocalDate.of(2024, 8, 31), hearingReportService);
+        verify(hearingReportEmailService)
+            .sendReport(LocalDate.of(2024, 9, 15), hearingReportService);
     }
 
 }

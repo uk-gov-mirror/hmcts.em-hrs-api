@@ -7,15 +7,16 @@ import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.YearMonth;
 
 @Service
-public class HearingReportService {
+public class HearingReportService implements MonthlyReportContentCreator {
     private static final Logger LOGGER = LoggerFactory.getLogger(HearingReportService.class);
 
+    private static final String SUBJECT_PREFIX = "Monthly hearing report for ";
+
+    private static final String ATTACHMENT_PREFIX = "Monthly-hearing-report-";
 
     private final HearingRecordingSegmentRepository hearingRecordingSegmentRepository;
     private final HearingReportCsvWriter hearingReportCsvWriter;
@@ -37,13 +38,15 @@ public class HearingReportService {
         return hearingReportCsvWriter.writeHearingRecordingSummaryToCsv(list);
     }
 
-    private LocalDateTime getStartOfMonth(Month month, int year) {
-        LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
-        return firstDayOfMonth.atStartOfDay();
+    @Override
+    public String getSubjectPrefix() {
+        return SUBJECT_PREFIX;
     }
 
-    private LocalDateTime getEndOfMonth(Month month, int year) {
-        LocalDate lastDayOfMonth = YearMonth.of(year, month).atEndOfMonth();
-        return lastDayOfMonth.atTime(23, 59, 59);
+    @Override
+    public String getAttachmentPrefix() {
+        return ATTACHMENT_PREFIX;
     }
+
+
 }

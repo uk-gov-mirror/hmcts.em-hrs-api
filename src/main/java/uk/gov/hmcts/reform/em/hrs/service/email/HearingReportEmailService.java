@@ -17,20 +17,15 @@ import java.util.Map;
 public class HearingReportEmailService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HearingReportEmailService.class);
 
-    private static final String SUBJECT_PREFIX = "Monthly hearing report for ";
-    private static final String ATTACHMENT_PREFIX = "Monthly-hearing-report-";
-
     private final EmailSender emailSender;
 
     private final String[] recipients;
 
-    private final HearingReportService hearingReportService;
     private final String from;
 
     public HearingReportEmailService(
         EmailSender emailSender,
         @Value("${report.monthly-hearing.recipients}") String[] recipients,
-        HearingReportService hearingReportService,
         @Value("${report.from}") String from
     ) {
         this.emailSender = emailSender;
@@ -39,41 +34,24 @@ public class HearingReportEmailService {
         } else {
             this.recipients = Arrays.copyOf(recipients, recipients.length);
         }
-        this.hearingReportService = hearingReportService;
         this.from = from;
     }
 
-    public void sendReport(LocalDate reportDate) {
+    public void sendReport(LocalDate reportDate, MonthlyReportContentCreator hearingReportService) {
         try {
             var reportFile = hearingReportService.createMonthlyReport(reportDate.getMonth(),reportDate.getYear());
             LOGGER.info("Report recipients: {}", this.recipients[0]);
 
             emailSender.sendMessageWithAttachments(
-                SUBJECT_PREFIX + reportDate,
-                createBody(reportDate),
+                hearingReportService.createEmailSubject(reportDate),
+                hearingReportService.createBody(reportDate),
                 from,
                 recipients,
-                Map.of(getReportAttachmentName(reportDate), reportFile)
+                Map.of(hearingReportService.getReportAttachmentName(reportDate), reportFile)
             );
         } catch (Exception ex) {
             LOGGER.error("Report sending failed ", ex);
         }
     }
 
-
-    private String getReportAttachmentName(LocalDate reportDate) {
-        return ATTACHMENT_PREFIX + reportDate.getMonth() + "-" + reportDate.getYear() + ".csv";
-    }
-
-    private String createBody(LocalDate date) {
-        return """
-            <html>
-                <body>
-                    <h1>Hearing Recording Report for %s/%d</h1>
-                    <br>
-                    <br><br>
-                </body>
-            </html>
-            """.formatted(date.getMonth(), date.getYear());
-    }
 }

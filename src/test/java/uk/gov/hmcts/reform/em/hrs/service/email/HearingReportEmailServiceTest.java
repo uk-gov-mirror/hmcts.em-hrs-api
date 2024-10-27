@@ -12,9 +12,6 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,7 +32,6 @@ class HearingReportEmailServiceTest {
         hearingReportEmailService = new HearingReportEmailService(
             emailSender,
             new String[]{"recipient@example.com"},
-            hearingReportService,
             "sender@example.com"
         );
     }
@@ -46,7 +42,6 @@ class HearingReportEmailServiceTest {
             new HearingReportEmailService(
                 emailSender,
                 null,
-                hearingReportService,
                 "sender@example.com"
             );
         });
@@ -58,7 +53,6 @@ class HearingReportEmailServiceTest {
             new HearingReportEmailService(
                 emailSender,
                 new String[]{},
-                hearingReportService,
                 "sender@example.com"
             );
         });
@@ -73,19 +67,21 @@ class HearingReportEmailServiceTest {
 
         when(hearingReportService.createMonthlyReport(reportDate.getMonth(), reportDate.getYear()))
             .thenReturn(reportFile);
+        when(hearingReportService.createEmailSubject(reportDate))
+            .thenReturn("Subject: Monthly hearing report");
+        when(hearingReportService.createBody(reportDate))
+            .thenReturn("Email body");
+        when(hearingReportService.getReportAttachmentName(reportDate))
+            .thenReturn("attachment_report_name.csv");
 
-        hearingReportEmailService.sendReport(reportDate);
+        hearingReportEmailService.sendReport(reportDate, hearingReportService);
 
         verify(emailSender, times(1)).sendMessageWithAttachments(
-            contains("Monthly hearing report "),
-            any(String.class),
-            eq("sender@example.com"),
-            eq(new String[]{"recipient@example.com"}),
-            eq(Map.of(
-                   "Monthly-hearing-report-" + reportDate.getMonth() + "-" + reportDate.getYear() + ".csv",
-                   reportFile
-               )
-            )
+            "Subject: Monthly hearing report",
+            "Email body",
+            "sender@example.com",
+            new String[]{"recipient@example.com"},
+            Map.of("attachment_report_name.csv", reportFile)
         );
     }
 }
