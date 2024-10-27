@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(classes = {
     MonthlyHearingReportTask.class,
-    HearingReportEmailService.class,
+    MonthlyReportEmailSenderService.class,
     DateListConverter.class
 })
 @ActiveProfiles("test")
@@ -29,10 +29,10 @@ import static org.mockito.Mockito.verify;
 public class MonthlyHearingReportTaskTest {
 
     @MockBean
-    private HearingReportEmailService hearingReportEmailService;
+    private MonthlyReportEmailSenderService monthlyReportEmailSenderService;
 
     @MockBean
-    private HearingReportService hearingReportService;
+    private MonthlyHearingReportService monthlyHearingReportService;
 
     @Autowired
     private MonthlyHearingReportTask monthlyHearingReportTask;
@@ -40,36 +40,37 @@ public class MonthlyHearingReportTaskTest {
 
     @Test
     public void testRunSuccess() {
-        doNothing().when(hearingReportEmailService).sendReport(any(LocalDate.class), any(HearingReportService.class));
+        doNothing().when(monthlyReportEmailSenderService)
+            .sendReport(any(LocalDate.class), any(MonthlyHearingReportService.class));
 
         monthlyHearingReportTask.run();
 
-        verify(hearingReportEmailService, times(3))
-            .sendReport(any(LocalDate.class), any(HearingReportService.class));
-        verify(hearingReportEmailService)
-            .sendReport(LocalDate.of(2024, 7, 1), hearingReportService);
-        verify(hearingReportEmailService)
-            .sendReport(LocalDate.of(2024, 8, 31), hearingReportService);
-        verify(hearingReportEmailService)
-            .sendReport(LocalDate.of(2024, 9, 15), hearingReportService);
+        verify(monthlyReportEmailSenderService, times(3))
+            .sendReport(any(LocalDate.class), any(MonthlyHearingReportService.class));
+        verify(monthlyReportEmailSenderService)
+            .sendReport(LocalDate.of(2024, 7, 1), monthlyHearingReportService);
+        verify(monthlyReportEmailSenderService)
+            .sendReport(LocalDate.of(2024, 8, 31), monthlyHearingReportService);
+        verify(monthlyReportEmailSenderService)
+            .sendReport(LocalDate.of(2024, 9, 15), monthlyHearingReportService);
     }
 
     @Test
     public void testRunWithException() {
         doThrow(new RuntimeException("Testing Exception"))
-            .when(hearingReportEmailService)
-            .sendReport(any(LocalDate.class), any(HearingReportService.class));
+            .when(monthlyReportEmailSenderService)
+            .sendReport(any(LocalDate.class), any(MonthlyHearingReportService.class));
 
         monthlyHearingReportTask.run();
 
-        verify(hearingReportEmailService, times(3))
-            .sendReport(any(LocalDate.class), any(HearingReportService.class));
-        verify(hearingReportEmailService)
-            .sendReport(LocalDate.of(2024, 7, 1), hearingReportService);
-        verify(hearingReportEmailService)
-            .sendReport(LocalDate.of(2024, 8, 31), hearingReportService);
-        verify(hearingReportEmailService)
-            .sendReport(LocalDate.of(2024, 9, 15), hearingReportService);
+        verify(monthlyReportEmailSenderService, times(3))
+            .sendReport(any(LocalDate.class), any(MonthlyHearingReportService.class));
+        verify(monthlyReportEmailSenderService)
+            .sendReport(LocalDate.of(2024, 7, 1), monthlyHearingReportService);
+        verify(monthlyReportEmailSenderService)
+            .sendReport(LocalDate.of(2024, 8, 31), monthlyHearingReportService);
+        verify(monthlyReportEmailSenderService)
+            .sendReport(LocalDate.of(2024, 9, 15), monthlyHearingReportService);
     }
 
 }

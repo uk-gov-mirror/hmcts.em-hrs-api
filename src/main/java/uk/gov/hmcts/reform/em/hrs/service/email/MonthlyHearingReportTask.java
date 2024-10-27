@@ -19,19 +19,19 @@ public class MonthlyHearingReportTask {
     private static final String TASK_NAME = "create-monthly-hearing-report";
     private static final Logger logger = getLogger(MonthlyHearingReportTask.class);
 
-    private final HearingReportEmailService hearingReportEmailService;
+    private final MonthlyReportEmailSenderService monthlyReportEmailSenderService;
 
-    private final HearingReportService hearingReportService;
+    private final MonthlyHearingReportService monthlyHearingReportService;
 
     private final List<LocalDate> reportStartDateList;
 
     public MonthlyHearingReportTask(
-        HearingReportEmailService hearingReportEmailService,
-        HearingReportService hearingReportService,
+        MonthlyReportEmailSenderService monthlyReportEmailSenderService,
+        MonthlyHearingReportService monthlyHearingReportService,
         @Value("#{dateListConverter.convert('${report.monthly-hearing.reportStartDates}')}")
         List<LocalDate> reportStartDates) {
-        this.hearingReportEmailService = hearingReportEmailService;
-        this.hearingReportService = hearingReportService;
+        this.monthlyReportEmailSenderService = monthlyReportEmailSenderService;
+        this.monthlyHearingReportService = monthlyHearingReportService;
         this.reportStartDateList = reportStartDates;
     }
 
@@ -48,7 +48,7 @@ public class MonthlyHearingReportTask {
         for (var reportStartDate : reportStartDateList) {
             try {
                 logger.info("Starting report for {}", reportStartDate);
-                hearingReportEmailService.sendReport(reportStartDate, this.hearingReportService);
+                monthlyReportEmailSenderService.sendReport(reportStartDate, this.monthlyHearingReportService);
                 logger.info("Finished report for {}", reportStartDate);
             } catch (Exception ex) {
                 logger.error("Failed report for {}", reportStartDate, ex);

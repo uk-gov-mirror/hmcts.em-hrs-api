@@ -4,15 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
+import uk.gov.hmcts.reform.em.hrs.service.MonthlyReportService;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.Month;
 
 @Service
-public class HearingReportService implements MonthlyReportContentCreator {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HearingReportService.class);
+public class MonthlyHearingReportService extends MonthlyReportService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyHearingReportService.class);
 
     private static final String SUBJECT_PREFIX = "Monthly hearing report for ";
 
@@ -21,7 +21,7 @@ public class HearingReportService implements MonthlyReportContentCreator {
     private final HearingRecordingSegmentRepository hearingRecordingSegmentRepository;
     private final HearingReportCsvWriter hearingReportCsvWriter;
 
-    public HearingReportService(
+    public MonthlyHearingReportService(
         HearingRecordingSegmentRepository hearingRecordingSegmentRepository,
         HearingReportCsvWriter hearingReportCsvWriter
     ) {
@@ -29,13 +29,16 @@ public class HearingReportService implements MonthlyReportContentCreator {
         this.hearingReportCsvWriter = hearingReportCsvWriter;
     }
 
-    public File createMonthlyReport(Month month, int year) throws IOException {
-        LocalDateTime startOfMonth = getStartOfMonth(month, year);
-        LocalDateTime endOfMonth = getEndOfMonth(month, year);
-        LOGGER.info("get records for from: {},to:{}", startOfMonth, endOfMonth);
-        var list = hearingRecordingSegmentRepository
+    @Override
+    protected File generateCsvReport(LocalDateTime startOfMonth, LocalDateTime endOfMonth) throws IOException {
+        var recordings = hearingRecordingSegmentRepository
             .findByCreatedOnBetweenDatesWithHearingRecording(startOfMonth, endOfMonth);
-        return hearingReportCsvWriter.writeHearingRecordingSummaryToCsv(list);
+        return hearingReportCsvWriter.writeHearingRecordingSummaryToCsv(recordings);
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return LOGGER;
     }
 
     @Override

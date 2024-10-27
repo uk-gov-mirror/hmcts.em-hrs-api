@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.exception.EmailRecipientNotFoundException;
+import uk.gov.hmcts.reform.em.hrs.service.MonthlyReportService;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -14,8 +15,8 @@ import java.util.Map;
 
 @Service
 @Lazy
-public class HearingReportEmailService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HearingReportEmailService.class);
+public class MonthlyReportEmailSenderService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyReportEmailSenderService.class);
 
     private final EmailSender emailSender;
 
@@ -23,7 +24,7 @@ public class HearingReportEmailService {
 
     private final String from;
 
-    public HearingReportEmailService(
+    public MonthlyReportEmailSenderService(
         EmailSender emailSender,
         @Value("${report.monthly-hearing.recipients}") String[] recipients,
         @Value("${report.from}") String from
@@ -37,7 +38,7 @@ public class HearingReportEmailService {
         this.from = from;
     }
 
-    public void sendReport(LocalDate reportDate, MonthlyReportContentCreator hearingReportService) {
+    public void sendReport(LocalDate reportDate, MonthlyReportService hearingReportService) {
         try {
             var reportFile = hearingReportService.createMonthlyReport(reportDate.getMonth(),reportDate.getYear());
             LOGGER.info("Report recipients: {}", this.recipients[0]);

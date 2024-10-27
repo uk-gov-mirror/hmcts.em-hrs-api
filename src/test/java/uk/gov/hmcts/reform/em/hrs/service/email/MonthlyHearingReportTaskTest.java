@@ -18,8 +18,8 @@ class MonthlyHearingReportTaskTest {
     @Test
     void should_call_summary_report_service() {
         // given
-        var hearingReportEmailService = mock(HearingReportEmailService.class);
-        var hearingReportService = mock(HearingReportService.class);
+        var hearingReportEmailService = mock(MonthlyReportEmailSenderService.class);
+        var hearingReportService = mock(MonthlyHearingReportService.class);
         var task = new MonthlyHearingReportTask(hearingReportEmailService, hearingReportService, new ArrayList<>());
 
         // when
@@ -39,11 +39,11 @@ class MonthlyHearingReportTaskTest {
             LocalDate.now().minusMonths(1),
             LocalDate.now().minusMonths(2)
         );
-        var hearingReportEmailService = mock(HearingReportEmailService.class);
-        var hearingReportService = mock(HearingReportService.class);
+        var hearingReportEmailService = mock(MonthlyReportEmailSenderService.class);
+        var hearingReportService = mock(MonthlyHearingReportService.class);
 
         doThrow(new RuntimeException("testing dummy error"))
-            .when(hearingReportEmailService).sendReport(any(LocalDate.class), any(HearingReportService.class));
+            .when(hearingReportEmailService).sendReport(any(LocalDate.class), any(MonthlyHearingReportService.class));
 
         var task = new MonthlyHearingReportTask(hearingReportEmailService, hearingReportService, reportStartDateList);
 

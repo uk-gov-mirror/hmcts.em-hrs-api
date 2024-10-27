@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class HearingReportServiceTest {
+class MonthlyHearingReportServiceTest {
 
     @Mock
     private HearingRecordingSegmentRepository hearingRecordingSegmentRepository;
@@ -32,7 +32,7 @@ class HearingReportServiceTest {
     private HearingReportCsvWriter hearingReportCsvWriter;
 
     @InjectMocks
-    private HearingReportService hearingReportService;
+    private MonthlyHearingReportService monthlyHearingReportService;
 
     private List<HearingRecordingSegment> expectedRecords;
 
@@ -59,7 +59,7 @@ class HearingReportServiceTest {
         when(hearingReportCsvWriter.writeHearingRecordingSummaryToCsv(expectedRecords))
             .thenReturn(new File("temp"));
 
-        File csvFile = hearingReportService.createMonthlyReport(month, year);
+        File csvFile = monthlyHearingReportService.createMonthlyReport(month, year);
         assertNotNull(csvFile);
         verify(hearingRecordingSegmentRepository, times(1))
             .findByCreatedOnBetweenDatesWithHearingRecording(startOfMonth, endOfMonth);
@@ -79,7 +79,7 @@ class HearingReportServiceTest {
             .thenThrow(new RuntimeException("Dummy error"));
 
         try {
-            hearingReportService.createMonthlyReport(month, year);
+            monthlyHearingReportService.createMonthlyReport(month, year);
         } catch (RuntimeException exception) {
             assertEquals("Dummy error", exception.getMessage());
         }

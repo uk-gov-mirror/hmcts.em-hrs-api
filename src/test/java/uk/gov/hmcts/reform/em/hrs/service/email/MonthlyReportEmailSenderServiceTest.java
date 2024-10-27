@@ -17,19 +17,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class HearingReportEmailServiceTest {
+class MonthlyReportEmailSenderServiceTest {
 
     @Mock
     private EmailSender emailSender;
 
     @Mock
-    private HearingReportService hearingReportService;
+    private MonthlyHearingReportService monthlyHearingReportService;
 
-    private HearingReportEmailService hearingReportEmailService;
+    private MonthlyReportEmailSenderService monthlyReportEmailSenderService;
 
     @BeforeEach
     void setUp() {
-        hearingReportEmailService = new HearingReportEmailService(
+        monthlyReportEmailSenderService = new MonthlyReportEmailSenderService(
             emailSender,
             new String[]{"recipient@example.com"},
             "sender@example.com"
@@ -39,7 +39,7 @@ class HearingReportEmailServiceTest {
     @Test
     void should_throw_exception_when_recipients_are_null() {
         assertThrows(EmailRecipientNotFoundException.class, () -> {
-            new HearingReportEmailService(
+            new MonthlyReportEmailSenderService(
                 emailSender,
                 null,
                 "sender@example.com"
@@ -50,7 +50,7 @@ class HearingReportEmailServiceTest {
     @Test
     void should_throw_exception_when_recipients_are_empty() {
         assertThrows(EmailRecipientNotFoundException.class, () -> {
-            new HearingReportEmailService(
+            new MonthlyReportEmailSenderService(
                 emailSender,
                 new String[]{},
                 "sender@example.com"
@@ -65,16 +65,16 @@ class HearingReportEmailServiceTest {
 
         File reportFile = new File("report.csv");
 
-        when(hearingReportService.createMonthlyReport(reportDate.getMonth(), reportDate.getYear()))
+        when(monthlyHearingReportService.createMonthlyReport(reportDate.getMonth(), reportDate.getYear()))
             .thenReturn(reportFile);
-        when(hearingReportService.createEmailSubject(reportDate))
+        when(monthlyHearingReportService.createEmailSubject(reportDate))
             .thenReturn("Subject: Monthly hearing report");
-        when(hearingReportService.createBody(reportDate))
+        when(monthlyHearingReportService.createBody(reportDate))
             .thenReturn("Email body");
-        when(hearingReportService.getReportAttachmentName(reportDate))
+        when(monthlyHearingReportService.getReportAttachmentName(reportDate))
             .thenReturn("attachment_report_name.csv");
 
-        hearingReportEmailService.sendReport(reportDate, hearingReportService);
+        monthlyReportEmailSenderService.sendReport(reportDate, monthlyHearingReportService);
 
         verify(emailSender, times(1)).sendMessageWithAttachments(
             "Subject: Monthly hearing report",
