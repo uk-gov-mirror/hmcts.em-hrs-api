@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.hrs.repository.HearingRecordingSegmentRepository;
-import uk.gov.hmcts.reform.em.hrs.service.MonthlyReportService;
 
 import java.io.File;
 import java.io.IOException;
