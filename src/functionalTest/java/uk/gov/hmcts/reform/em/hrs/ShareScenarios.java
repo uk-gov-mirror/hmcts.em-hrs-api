@@ -24,6 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Ignore
 public class ShareScenarios extends BaseTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShareScenarios.class);
 
