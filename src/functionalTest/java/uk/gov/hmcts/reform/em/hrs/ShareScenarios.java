@@ -6,7 +6,6 @@ import net.serenitybdd.rest.SerenityRest;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +73,6 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void shareeWithCaseworkerHrsSearcherRoleShouldBeAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest = addEmailRecipientToCaseDetailsCallBack(
             caseDetails,
@@ -98,7 +96,6 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void shareesShouldReturn401WhenAuthorizationMissing() {
         final CallbackRequest callbackRequest = addEmailRecipientToCaseDetailsCallBack(
             caseDetails,
@@ -122,7 +119,6 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void shareeWithOnlyCaseworkerRoleShouldBeAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest =
             addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER_ONLY);
@@ -173,7 +169,6 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturn400WhenShareHearingRecordingsToInvalidEmailAddress() {
         final CallbackRequest callbackRequest =
             addEmailRecipientToCaseDetailsCallBack(caseDetails, EMAIL_ADDRESS_INVALID_FORMAT);
@@ -184,7 +179,6 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturn404WhenShareHearingRecordingsToEmailAddressWithNonExistentCaseId() {
         Long randomCcdId = Long.valueOf(generateUid());
         caseDetails.setId(randomCcdId);
@@ -203,7 +197,6 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturn204WhenDeletingCaseHearingRecording() {
         Assume.assumeTrue(deleteCaseEndpointEnabled);
         deleteRecordings(List.of(ccdCaseId))
@@ -212,7 +205,6 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturn401WhenDeletingWithS2sInvalid() {
         Assume.assumeTrue(deleteCaseEndpointEnabled);
         deleteRecordingsWithInvalidS2S(List.of(ccdCaseId))
@@ -221,7 +213,6 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void shouldReturn403WhenDeletingWithUnauthorisedService() {
         Assume.assumeTrue(deleteCaseEndpointEnabled);
         deleteRecordingsWithUnauthorisedS2S(List.of(ccdCaseId))
