@@ -25,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@Ignore
+
 public class ShareScenarios extends BaseTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShareScenarios.class);
 
@@ -74,6 +74,7 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
+    @Ignore
     public void shareeWithCaseworkerHrsSearcherRoleShouldBeAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest = addEmailRecipientToCaseDetailsCallBack(
             caseDetails,
@@ -97,6 +98,7 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
+    @Ignore
     public void shareesShouldReturn401WhenAuthorizationMissing() {
         final CallbackRequest callbackRequest = addEmailRecipientToCaseDetailsCallBack(
             caseDetails,
@@ -120,6 +122,7 @@ public class ShareScenarios extends BaseTest {
     }
 
     @Test
+    @Ignore
     public void shareeWithOnlyCaseworkerRoleShouldBeAbleToDownloadRecordings() {
         final CallbackRequest callbackRequest =
             addEmailRecipientToCaseDetailsCallBack(caseDetails, USER_WITH_REQUESTOR_ROLE__CASEWORKER_ONLY);
