@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import jakarta.annotation.PostConstruct;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ public class DownloadNonSharedScenarios extends BaseTest {
     private CaseDetails caseDetails;
     private int expectedFileSize;
 
-    @PostConstruct
     public void setup() throws Exception {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = timebasedCaseRef();
@@ -52,7 +50,8 @@ public class DownloadNonSharedScenarios extends BaseTest {
     }
 
     @Test
-    public void userWithCaseWorkerHrsSearcherRoleShouldBeAbleToDownloadHearingRecordings() {
+    public void userWithCaseWorkerHrsSearcherRoleShouldBeAbleToDownloadHearingRecordings() throws Exception {
+        this.setup();
         final byte[] downloadedFileBytes =
             downloadRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, caseDetails.getData())
                 .then()
