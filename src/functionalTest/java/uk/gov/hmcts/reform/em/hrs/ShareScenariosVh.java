@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.hrs;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class ShareScenariosVh extends BaseTest {
 
     private Long ccdCaseId;
 
-    @BeforeAll
+    @BeforeEach
     public void setup() throws Exception {
         LOGGER.info("SETTING UP SHARE RECORDING SCENARIOS....");
 
