@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import jakarta.annotation.PostConstruct;
 import org.joda.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 import uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,19 +40,9 @@ public class IngestScenarios extends BaseTest {
     @Autowired
     private BlobUtil testUtil;
 
-
-    @PostConstruct
-    public void setup() throws Exception {
+    @BeforeEach
+    public void setup() {
         createFolderIfDoesNotExistInHrsDB(FOLDER);
-
-
-        ZonedDateTime now = ZonedDateTime.now();
-        String fileNamePrefixToNotDelete = JURISDICTION + "-" + LOCATION_CODE + "-" + CASEREF_PREFIX
-            + datePartFormatter.format(now);
-
-        //TODO CCD and postgres database ought to be cleaned out as well, by archiving the case -
-        // however this functionality is not yet available
-
     }
 
 
