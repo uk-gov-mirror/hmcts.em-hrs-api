@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,12 @@ public class DownloadNonSharedScenarios extends BaseTest {
     private CaseDetails caseDetails;
     private int expectedFileSize;
 
+    @BeforeEach
     public void setup() throws Exception {
+        if (caseDetails.getData() != null) {
+            LOGGER.info("CaseDetails is not null, setup done already");
+            return;
+        }
         createFolderIfDoesNotExistInHrsDB(FOLDER);
         caseRef = timebasedCaseRef();
         filename = filename(caseRef, 0);
@@ -50,8 +56,7 @@ public class DownloadNonSharedScenarios extends BaseTest {
     }
 
     @Test
-    public void userWithCaseWorkerHrsSearcherRoleShouldBeAbleToDownloadHearingRecordings() throws Exception {
-        this.setup();
+    public void userWithCaseWorkerHrsSearcherRoleShouldBeAbleToDownloadHearingRecordings() {
         final byte[] downloadedFileBytes =
             downloadRecording(USER_WITH_SEARCHER_ROLE__CASEWORKER_HRS, caseDetails.getData())
                 .then()
