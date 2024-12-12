@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.em.hrs;
 
 import jakarta.annotation.PostConstruct;
 import org.joda.time.LocalDate;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +105,7 @@ public class IngestScenarios extends BaseTest {
 
         long vhFileSize = testUtil.getFileSizeFromStore(filenames, testUtil.vhBlobContainerClient);
         long hrsFileSize = testUtil.getFileSizeFromStore(filenames, testUtil.hrsVhBlobContainerClient);
-        Assert.assertEquals(hrsFileSize, vhFileSize);
+        Assertions.assertEquals(hrsFileSize, vhFileSize);
 
         assertHearingCcdUpload(filenames, caseRef, "VH", 1);
     }
@@ -180,7 +180,7 @@ public class IngestScenarios extends BaseTest {
 
         long cvpFileSize = testUtil.getFileSizeFromStore(filename, testUtil.cvpBlobContainerClient);
         long hrsFileSize = testUtil.getFileSizeFromStore(filename, testUtil.hrsCvpBlobContainerClient);
-        Assert.assertEquals(hrsFileSize, cvpFileSize);
+        Assertions.assertEquals(hrsFileSize, cvpFileSize);
 
         assertHearingCcdUpload(filenames, caseRef, FOLDER, 1);
 
