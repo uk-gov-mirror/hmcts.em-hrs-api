@@ -29,7 +29,7 @@ public class DownloadNonSharedScenarios extends BaseTest {
 
     @BeforeEach
     public void setup() throws Exception {
-        if (caseDetails.getData() != null) {
+        if (caseDetails != null && caseDetails.getData() != null) {
             LOGGER.info("CaseDetails is not null, setup done already");
             return;
         }
