@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
 import org.joda.time.LocalDate;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

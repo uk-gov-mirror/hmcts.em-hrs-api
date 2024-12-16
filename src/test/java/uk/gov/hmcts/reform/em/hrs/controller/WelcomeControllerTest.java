@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
