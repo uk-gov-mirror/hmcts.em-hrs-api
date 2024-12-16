@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +30,7 @@ public class DownloadNonSharedScenarios extends BaseTest {
 
     @BeforeEach
     public void setup() throws Exception {
-        if (caseDetails != null && caseDetails.getData() != null) {
+        if (Objects.nonNull(caseDetails) && Objects.nonNull(caseDetails.getData())) {
             LOGGER.info("CaseDetails is not null, setup done already");
             return;
         }

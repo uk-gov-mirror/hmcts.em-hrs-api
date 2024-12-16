@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IngestScenarios extends BaseTest {
 
@@ -94,7 +95,7 @@ public class IngestScenarios extends BaseTest {
 
         long vhFileSize = testUtil.getFileSizeFromStore(filenames, testUtil.vhBlobContainerClient);
         long hrsFileSize = testUtil.getFileSizeFromStore(filenames, testUtil.hrsVhBlobContainerClient);
-        Assertions.assertEquals(hrsFileSize, vhFileSize);
+        assertEquals(hrsFileSize, vhFileSize);
 
         assertHearingCcdUpload(filenames, caseRef, "VH", 1);
     }
@@ -169,7 +170,7 @@ public class IngestScenarios extends BaseTest {
 
         long cvpFileSize = testUtil.getFileSizeFromStore(filename, testUtil.cvpBlobContainerClient);
         long hrsFileSize = testUtil.getFileSizeFromStore(filename, testUtil.hrsCvpBlobContainerClient);
-        Assertions.assertEquals(hrsFileSize, cvpFileSize);
+        assertEquals(hrsFileSize, cvpFileSize);
 
         assertHearingCcdUpload(filenames, caseRef, FOLDER, 1);
 
