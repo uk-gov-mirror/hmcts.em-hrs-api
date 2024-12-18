@@ -61,7 +61,6 @@ class DefaultHearingRecordingStorageIntegrationTest {
     @Test
     void testShouldReturnEmptySetWhenFolderDoesNotExist() {
         final Set<String> files = underTest.findByFolderName(EMPTY_FOLDER);
-
         assertThat(files).isEmpty();
     }
 
