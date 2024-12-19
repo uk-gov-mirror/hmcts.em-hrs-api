@@ -145,4 +145,3 @@ On local machine with server up and running, link to swagger is as below
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 Refresh staging pod
-
