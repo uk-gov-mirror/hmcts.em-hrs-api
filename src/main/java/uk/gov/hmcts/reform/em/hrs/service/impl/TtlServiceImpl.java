@@ -9,8 +9,6 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.em.hrs.config.ClockConfig.EUROPE_LONDON_ZONE_ID;
-
 @Service
 public class TtlServiceImpl implements TtlService {
 
@@ -27,10 +25,6 @@ public class TtlServiceImpl implements TtlService {
     @Override
     public boolean isTtlEnabled() {
         return ttlEnabled;
-    }
-
-    public LocalDate createTtl(String serviceCode, String jurisdictionCode) {
-        return createTtl(serviceCode, jurisdictionCode, LocalDate.now(EUROPE_LONDON_ZONE_ID));
     }
 
     public LocalDate createTtl(String serviceCode, String jurisdictionCode, LocalDate createdDate) {
