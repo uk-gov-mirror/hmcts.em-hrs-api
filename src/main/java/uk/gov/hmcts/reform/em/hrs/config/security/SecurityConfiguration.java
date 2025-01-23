@@ -36,9 +36,14 @@ public class SecurityConfiguration {
 
     private final ServiceAuthFilter serviceAuthFilter;
 
+    private final UserJwtAuthenticationFilter userJwtAuthenticationFilter;
+
     public SecurityConfiguration(
-        final ServiceAuthFilter serviceAuthFilter) {
+        final ServiceAuthFilter serviceAuthFilter,
+        UserJwtAuthenticationFilter userJwtAuthenticationFilter
+    ) {
         this.serviceAuthFilter = serviceAuthFilter;
+        this.userJwtAuthenticationFilter = userJwtAuthenticationFilter;
     }
 
     @Bean
@@ -65,6 +70,7 @@ public class SecurityConfiguration {
             .formLogin(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable)
             .addFilterBefore(serviceAuthFilter, BearerTokenAuthenticationFilter.class)
+            .addFilterAfter(userJwtAuthenticationFilter, BearerTokenAuthenticationFilter.class)
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(matcherRegistry ->
                                        matcherRegistry.anyRequest().authenticated())
