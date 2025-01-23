@@ -26,7 +26,7 @@ public class UserJwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
-
+        UserContext.clear();
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
@@ -34,18 +34,18 @@ public class UserJwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 Jwt jwt = jwtDecoder.decode(token);
 
-                String userId = jwt.getClaimAsString("sub");
-                String email = jwt.getClaimAsString("email");
+                String email = jwt.getClaimAsString("sub");
+                String userid = jwt.getClaimAsString("uid");
 
+                UserContext.set(new UserContext.UserDetails(userid, email));
 
-                LOGGER.info("UserJwtAuthenticationFilter userId:{},email:{}", userId, email);
+                LOGGER.info("UserJwtAuthenticationFilter ,email:{}, userid: {}", email, userid);
             } catch (Exception e) {
                 // Handle JWT decoding/validation errors if necessary
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
         }
-
         // Proceed with the filter chain
         filterChain.doFilter(request, response);
     }

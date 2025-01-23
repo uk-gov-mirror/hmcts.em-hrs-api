@@ -12,6 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
+import uk.gov.hmcts.reform.em.hrs.config.security.UserContext;
 import uk.gov.hmcts.reform.em.hrs.service.SecurityService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -73,6 +74,15 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public String getUserId(String userAuthorization) {
+
+        UserContext.UserDetails userDetails = UserContext.get();
+        if (userDetails != null) {
+            String userId = userDetails.getUserId();
+            LOGGER.info("GET UserContext userId {}:", userId);
+            return userId;
+        }
+
+        LOGGER.info("getUid from idam");
         return idamClient.getUserInfo(userAuthorization).getUid();
     }
 
@@ -117,11 +127,18 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public String getAuditUserEmail() {
+        UserContext.UserDetails userDetails = UserContext.get();
+        if (userDetails != null) {
+            String email = userDetails.getEmail();
+            LOGGER.info("UserContext User Email {}:", email);
+            return email;
+        }
         HttpServletRequest request = getCurrentRequest();
         if (Objects.isNull(request)) {
             return HRS_INGESTOR;
         }
         String jwt = request.getHeader(USER_AUTH);
+        LOGGER.info("Still getting user info from idam ");
 
         return getUserEmail(jwt);
     }
