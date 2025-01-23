@@ -91,4 +91,9 @@ public class SecurityConfiguration {
 
         return jwtDecoder;
     }
+
+    @Bean
+    UserJwtAuthenticationFilter userJwtAuthenticationFilter(JwtDecoder jwtDecoder) {
+        return new UserJwtAuthenticationFilter(jwtDecoder);
+    }
 }
