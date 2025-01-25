@@ -53,7 +53,7 @@ public class SecurityServiceImpl implements SecurityService {
     public Map<String, String> getTokens() {
         final String token = getUserToken();
         return Map.of("user", token,
-                      "userId", getUserId(token),
+                      "userId", getServiceUserId(token),
                       "service", authTokenGenerator.generate());
     }
 
@@ -67,28 +67,9 @@ public class SecurityServiceImpl implements SecurityService {
         return idamClient.getAccessToken(systemUsername, systemUserPassword);
     }
 
-    @Override
-    public String getUserId() {
-        return getUserId(getUserToken());
-    }
-
-    @Override
-    public String getUserId(String userAuthorization) {
-
-        UserContext.UserDetails userDetails = UserContext.get();
-        if (userDetails != null) {
-            String userId = userDetails.getUserId();
-            LOGGER.info("GET UserContext userId {}:", userId);
-            return userId;
-        }
-
+    private String getServiceUserId(String userAuthorization) {
         LOGGER.info("getUid from idam");
         return idamClient.getUserInfo(userAuthorization).getUid();
-    }
-
-    @Override
-    public String getUserEmail() {
-        return getUserEmail(getUserToken());
     }
 
     @Override

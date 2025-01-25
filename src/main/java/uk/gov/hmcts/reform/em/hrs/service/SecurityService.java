@@ -9,12 +9,6 @@ public interface SecurityService {
 
     String getUserToken();
 
-    String getUserId();
-
-    String getUserId(String userAuthorization);
-
-    String getUserEmail();
-
     String getUserEmail(String userAuthorization);
 
     UserInfo getUserInfo(String jwtToken);
