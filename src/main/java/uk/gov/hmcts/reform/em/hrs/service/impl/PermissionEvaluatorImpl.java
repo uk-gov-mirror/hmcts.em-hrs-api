@@ -68,10 +68,11 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
             userInfo.getRoles()
         );
 
-        var authorities =jwtAuthenticationToken.getAuthorities();
+        var authorities = jwtAuthenticationToken.getAuthorities();
         for (GrantedAuthority authority : authorities) {
             LOGGER.info("Role: " + authority.getAuthority());
         }
+
         if (!isEmpty(userInfo.getRoles())) {
             Optional<String> userRole = userInfo.getRoles().stream()
                 .filter(role -> allowedRoles.contains(role))
