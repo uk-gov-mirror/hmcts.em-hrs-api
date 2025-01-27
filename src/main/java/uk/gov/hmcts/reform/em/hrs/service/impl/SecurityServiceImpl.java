@@ -57,8 +57,7 @@ public class SecurityServiceImpl implements SecurityService {
                       "service", authTokenGenerator.generate());
     }
 
-    @Override
-    public String getUserToken() {
+    private String getUserToken() {
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("retrieving access token with these credentials ({}/{})",
                         systemUsername, systemUserPassword.substring(0, 4).concat("*****")
@@ -73,7 +72,7 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public String getUserEmail(String userAuthorization) {
+    public String  getUserEmail(String userAuthorization) {
         return idamClient.getUserInfo(userAuthorization).getSub();
     }
 
@@ -111,7 +110,7 @@ public class SecurityServiceImpl implements SecurityService {
         UserContext.UserDetails userDetails = UserContext.get();
         if (userDetails != null) {
             String email = userDetails.getEmail();
-            LOGGER.info("UserContext User Email {}:", email);
+            LOGGER.info("UserContext User Email: {}", email);
             return email;
         }
         HttpServletRequest request = getCurrentRequest();

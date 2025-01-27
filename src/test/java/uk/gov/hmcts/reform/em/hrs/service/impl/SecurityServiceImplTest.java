@@ -65,17 +65,6 @@ class SecurityServiceImplTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
-
-    @Test
-    void testShouldGetUserToken() {
-        doReturn(AUTHORIZATION_TOKEN).when(idamClient).getAccessToken(SYSTEM_USER, SYSTEM_USER_PASSWORD);
-
-        final String userToken = underTest.getUserToken();
-
-        assertThat(userToken).isEqualTo(AUTHORIZATION_TOKEN);
-        verify(idamClient, times(1)).getAccessToken(SYSTEM_USER, SYSTEM_USER_PASSWORD);
-    }
-
     @Test
     void testShouldGetUserEmail() {
         doReturn(USER_INFO).when(idamClient).getUserInfo(AUTHORIZATION_TOKEN);

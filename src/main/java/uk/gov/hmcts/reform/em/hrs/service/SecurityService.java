@@ -7,8 +7,6 @@ import java.util.Map;
 public interface SecurityService {
     Map<String, String> getTokens();
 
-    String getUserToken();
-
     String getUserEmail(String userAuthorization);
 
     UserInfo getUserInfo(String jwtToken);
