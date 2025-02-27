@@ -67,7 +67,7 @@ public class TestFileCreationTask {
         List<String> fileNames = new ArrayList<>();
 
         for (int i = 0; i < testCasesToCreate; i++) {
-            String caseRef = "Test-" + i * 1000;
+            String caseRef = "Test" + i * 1000;
             boolean includeLocationCode = i % 3 == 1;
             String segment0 = "audiostream6247/" + generateFileName(caseRef, "0", includeLocationCode);
             fileNames.add(segment0);
