@@ -97,7 +97,8 @@ public class TestFileCreationTask {
         }
 
         stopWatch.stop();
-        LOGGER.info("Test file creation job took {} ms", stopWatch.getDuration().toMillis());
+        LOGGER.info("Test file creation job took {} ms to create {} files",
+                stopWatch.getDuration().toMillis(), testCasesToCreate);
         LOGGER.info("Finished {} job", TASK_NAME);
     }
 
