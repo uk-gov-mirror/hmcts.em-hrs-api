@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -58,10 +60,16 @@ public class TestFileCreationTask {
         LOGGER.info("Started {} job", TASK_NAME);
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        File inputFile = new File(Objects.requireNonNull(
-            getClass().getClassLoader().getResource("test-upload-file.mp4")).getFile());
-        if (!inputFile.exists() || !inputFile.isFile()) {
-            throw new IllegalArgumentException("Invalid input file path");
+
+        File inputFile;
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("test-upload-file.mp4")) {
+            if (Objects.isNull(inputStream)) {
+                throw new IllegalArgumentException("Invalid input file path");
+            }
+            inputFile = File.createTempFile("test-upload-file", ".mp4");
+            Files.copy(inputStream, inputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Failed to load input file", e);
         }
 
         List<String> fileNames = new ArrayList<>();
