@@ -77,12 +77,13 @@ public class TestFileCreationTask {
         for (int i = 0; i < testCasesToCreate; i++) {
             String caseRef = "Test" + i * 1000;
             boolean includeLocationCode = i % 3 == 1;
-            String segment0 = "audiostream6247/" + generateFileName(caseRef, "0", includeLocationCode);
+            String baseFileName = generateBaseFileName(caseRef, includeLocationCode);
+            String segment0 = addSegment(baseFileName, "0");
             fileNames.add(segment0);
 
             // Create an additional file with segment 1 for 10% of the files
             if (i % 10 == 0) {
-                String segment1 = "audiostream6247/" + generateFileName(caseRef, "1", includeLocationCode);
+                String segment1 = addSegment(baseFileName, "1");
                 fileNames.add(segment1);
             }
 
@@ -102,23 +103,21 @@ public class TestFileCreationTask {
         LOGGER.info("Finished {} job", TASK_NAME);
     }
 
-    private String generateFileName(String caseRef, String segment, boolean includeLocationCode) {
+    private String generateBaseFileName(String caseRef, boolean includeLocationCode) {
         LocalDate today = LocalDate.now();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String serviceCode = getRandomElement(ttlMapperConfig.getTtlServiceMap().keySet().toArray(new String[0]));
         String datePart = today.format(dateFormatter) + "-12.00.00.000";
         String locationCodePart = includeLocationCode ? "-" + getRandomElement(LOCATION_CODES) : "";
-        return String.format("%s%s-%s_%s-%s_%s.mp4",
-                             serviceCode,
-                             locationCodePart,
-                             caseRef,
-                             datePart,
-                             "UTC",
-                             segment);
+        return String.format("%s%s-%s_%s-UTC", serviceCode, locationCodePart, caseRef, datePart);
+    }
+
+    private String addSegment(String baseFileName, String segment) {
+        return String.format("%s_%s.mp4", baseFileName, segment);
     }
 
     private String getRandomElement(String[] array) {
-        return array[RandomUtils.secure().randomInt(0,array.length)];
+        return array[RandomUtils.secure().randomInt(0, array.length)];
     }
 
     private void uploadFilesToBlobStorage(File inputFile, List<String> fileNames) {
