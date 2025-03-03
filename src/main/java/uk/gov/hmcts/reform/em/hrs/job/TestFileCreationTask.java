@@ -46,6 +46,7 @@ public class TestFileCreationTask {
 
     private final TTLMapperConfig ttlMapperConfig;
     private final BlobContainerClient cvpBlobContainerClient;
+    private final String folderName = "audiostream6540/";
 
     @Autowired
     public TestFileCreationTask(TTLMapperConfig ttlMapperConfig,
@@ -61,23 +62,14 @@ public class TestFileCreationTask {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        File inputFile;
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("test-upload-file.mp4")) {
-            if (Objects.isNull(inputStream)) {
-                throw new IllegalArgumentException("Invalid input file path");
-            }
-            inputFile = File.createTempFile("test-upload-file", ".mp4");
-            Files.copy(inputStream, inputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Failed to load input file", e);
-        }
+        File inputFile = loadInputFile();
 
         List<String> fileNames = new ArrayList<>();
 
         for (int i = 0; i < testCasesToCreate; i++) {
             String caseRef = "Test" + i * 1000;
             boolean includeLocationCode = i % 3 == 1;
-            String baseFileName = generateBaseFileName(caseRef, includeLocationCode);
+            String baseFileName = folderName + generateBaseFileName(caseRef, includeLocationCode);
             String segment0 = addSegment(baseFileName, "0");
             fileNames.add(segment0);
 
@@ -101,6 +93,20 @@ public class TestFileCreationTask {
         LOGGER.info("Test file creation job took {} ms to create {} files",
                 stopWatch.getDuration().toMillis(), testCasesToCreate);
         LOGGER.info("Finished {} job", TASK_NAME);
+    }
+
+    private File loadInputFile() {
+        File inputFile;
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("test-upload-file.mp4")) {
+            if (Objects.isNull(inputStream)) {
+                throw new IllegalArgumentException("Invalid input file path");
+            }
+            inputFile = File.createTempFile("test-upload-file", ".mp4");
+            Files.copy(inputStream, inputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Failed to load input file", e);
+        }
+        return inputFile;
     }
 
     private String generateBaseFileName(String caseRef, boolean includeLocationCode) {
