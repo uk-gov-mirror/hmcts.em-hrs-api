@@ -66,17 +66,20 @@ public class TestFileCreationTask {
 
         List<String> fileNames = new ArrayList<>();
 
+        int totalFiles = 0;
         for (int i = 0; i < testCasesToCreate; i++) {
             String caseRef = "Test" + i * 1000;
             boolean includeLocationCode = i % 3 == 1;
             String baseFileName = folderName + generateBaseFileName(caseRef, includeLocationCode);
             String segment0 = addSegment(baseFileName, "0");
             fileNames.add(segment0);
+            totalFiles++;
 
             // Create an additional file with segment 1 for 10% of the files
             if (i % 10 == 0) {
                 String segment1 = addSegment(baseFileName, "1");
                 fileNames.add(segment1);
+                totalFiles++;
             }
 
             if (fileNames.size() >= maxConcurrentUploads) {
@@ -90,8 +93,8 @@ public class TestFileCreationTask {
         }
 
         stopWatch.stop();
-        LOGGER.info("Test file creation job took {} ms to create {} files",
-                stopWatch.getDuration().toMillis(), testCasesToCreate);
+        LOGGER.info("Test file creation job took {} ms to create {} files and {} cases",
+                stopWatch.getDuration().toMillis(), totalFiles, testCasesToCreate);
         LOGGER.info("Finished {} job", TASK_NAME);
     }
 
