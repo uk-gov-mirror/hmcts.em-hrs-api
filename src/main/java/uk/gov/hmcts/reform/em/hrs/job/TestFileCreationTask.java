@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,10 +113,10 @@ public class TestFileCreationTask {
     }
 
     private String generateBaseFileName(String caseRef, boolean includeLocationCode) {
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSS");
+        String datePart = now.format(formatter);
         String serviceCode = getRandomElement(ttlMapperConfig.getTtlServiceMap().keySet().toArray(new String[0]));
-        String datePart = today.format(dateFormatter) + "-12.00.00.000";
         String locationCodePart = includeLocationCode ? "-" + getRandomElement(LOCATION_CODES) : "";
         return String.format("%s%s-%s_%s-UTC", serviceCode, locationCodePart, caseRef, datePart);
     }
