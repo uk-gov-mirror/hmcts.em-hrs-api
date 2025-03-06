@@ -226,3 +226,6 @@ endpoint:
 authorisation:
   deleteCase:
     s2s-names-whitelist: ${DELETE_CASE_S2S_WHITELIST:ccd_case_disposer,em_gw}
+
+base:
+    url: ${BASE_URL:http://localhost:8081}
