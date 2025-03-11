@@ -89,8 +89,10 @@ public class UpdateJurisdictionCodesTask {
                     getStringCellValue(row.getCell(2))
                 );
 
+                Long ccdCaseId = hearingRecordingService.findCcdCaseIdByFilename(updateRecordingRecord.filename);
+
                 futures.add(CompletableFuture.supplyAsync(() ->
-                    updateCase(updateRecordingRecord) ? updateRecordingRecord : null, executorService));
+                    updateCase(updateRecordingRecord, ccdCaseId) ? updateRecordingRecord : null, executorService));
 
             }
             List<UpdateRecordingRecord> completedRecords = futures.stream()
@@ -109,9 +111,8 @@ public class UpdateJurisdictionCodesTask {
         logger.info("Finished {} job", TASK_NAME);
     }
 
-    private boolean updateCase(UpdateRecordingRecord recordingRecord) {
+    private boolean updateCase(UpdateRecordingRecord recordingRecord, Long ccdCaseId) {
         String filename = recordingRecord.filename;
-        Long ccdCaseId = hearingRecordingService.findCcdCaseIdByFilename(filename);
         if (Objects.isNull(ccdCaseId)) {
             logger.info("Failed to find ccd case id for filename: {}", filename);
             return false;
