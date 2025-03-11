@@ -79,7 +79,10 @@ public class UpdateJurisdictionCodesTask {
             XSSFSheet sheet = workbook.getSheetAt(0);
             List<CompletableFuture<UpdateRecordingRecord>> futures = new ArrayList<>();
 
+            int count = 0;
+
             for (Row row : sheet) {
+                logger.info("Processing row: {}", count++);
                 UpdateRecordingRecord updateRecordingRecord = new UpdateRecordingRecord(
                     getStringCellValue(row.getCell(0)),
                     getStringCellValue(row.getCell(1)),
