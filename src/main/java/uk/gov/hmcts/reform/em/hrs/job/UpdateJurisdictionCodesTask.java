@@ -105,30 +105,29 @@ public class UpdateJurisdictionCodesTask {
                 }
                 logger.info("Processing ccd case id: {}", ccdCaseId);
                 futures.add(
-                    CompletableFuture.supplyAsync(() -> {
-                        try {
-                            logger.info("Invoking updateCase for {}", updateRecordingRecord.filename);
+                        CompletableFuture.supplyAsync(() ->  {
+                                    try {
+                                        logger.info("Invoking updateCase for {}", updateRecordingRecord.filename);
 
-                            UpdateRecordingRecord updateRecordingRec = updateCase(updateRecordingRecord, ccdCaseId);
-                            if (Objects.isNull(updateRecordingRec)) {
-                                logger.warn("updateCase failed for {}", updateRecordingRecord.filename);
-                            }
-                            return updateRecordingRec;
+                                        UpdateRecordingRecord updateRecordingRec = updateCase(updateRecordingRecord, ccdCaseId);
+                                        if (Objects.isNull(updateRecordingRec)) {
+                                            logger.warn("updateCase failed for {}", updateRecordingRecord.filename);
+                                        }
+                                        return updateRecordingRec;
 
-                        } catch (Exception ex) {
-                            logger.error("Error processing file: {}", ex.getMessage(), ex);
-                            return null;
-                        } finally {
-                            semaphore.release();  // Free up the slot
-                        }
-                    }, executorService)
-                        .orTimeout(15, TimeUnit.SECONDS)  // Fail individual futures if they take too long
-                        .exceptionally(ex -> {
-                            logger.error("Failed processing {}: {}", updateRecordingRecord.filename,
-                                         ex.getMessage(), ex
-                            );
-                            return null;
-                        })
+                                    } catch (Exception ex) {
+                                        logger.error("Error processing file: {}", ex.getMessage(), ex);
+                                        return null;
+                                    } finally {
+                                        semaphore.release();  // Free up the slot
+                                    }
+                                },executorService)
+                                .orTimeout(15, TimeUnit.SECONDS)  // Fail individual futures if they take too long
+                                .exceptionally(ex -> {
+                                    logger.error("Failed processing {}: {}", updateRecordingRecord.filename,
+                                            ex.getMessage(), ex);
+                                    return null;
+                                })
                 );
 
                 if (futures.size() >= batchSize) {
