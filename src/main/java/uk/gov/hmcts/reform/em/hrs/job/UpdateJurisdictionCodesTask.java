@@ -27,15 +27,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -81,62 +80,62 @@ public class UpdateJurisdictionCodesTask {
 
             XSSFSheet sheet = workbook.getSheetAt(0);
             List<CompletableFuture<UpdateRecordingRecord>> futures = new ArrayList<>();
-            Set<Long> ccdCaseIds = ConcurrentHashMap.newKeySet();
+
+            Set<Long> ccdCaseIds = new HashSet<>();
             int count = 0;
 
             for (Row row : sheet) {
                 logger.info("Processing row: {}", count++);
-
                 UpdateRecordingRecord updateRecordingRecord = new UpdateRecordingRecord(
-                        getStringCellValue(row.getCell(0)),
-                        getStringCellValue(row.getCell(1)),
-                        getStringCellValue(row.getCell(2))
+                    getStringCellValue(row.getCell(0)),
+                    getStringCellValue(row.getCell(1)),
+                    getStringCellValue(row.getCell(2))
                 );
 
                 Long ccdCaseId = hearingRecordingService.findCcdCaseIdByFilename(updateRecordingRecord.filename);
-
-                if (!ccdCaseIds.add(ccdCaseId)) {
+                if (ccdCaseIds.contains(ccdCaseId)) {
                     logger.info("Skipping duplicate ccd case id: {}", ccdCaseId);
                     continue;
                 }
-                logger.info("Processing ccd case id: {}", ccdCaseId);
-                futures.add(
-                        CompletableFuture.supplyAsync(() ->
-                                        updateCase(updateRecordingRecord, ccdCaseId), executorService)
-                                .orTimeout(15, TimeUnit.SECONDS)  // Fail individual futures if they take too long
-                                .exceptionally(ex -> {
-                                    logger.error("Failed processing {}: {}", updateRecordingRecord.filename,
-                                            ex.getMessage(), ex);
-                                    return null;
-                                })
-                );
+                ccdCaseIds.add(ccdCaseId);
+
+                futures.add(CompletableFuture.supplyAsync(() ->
+                    updateCase(updateRecordingRecord, ccdCaseId) ? updateRecordingRecord : null, executorService));
 
                 if (futures.size() >= batchSize) {
-                    processBatch(futures);
+                    List<UpdateRecordingRecord> completedRecords = futures.stream()
+                        .map(CompletableFuture::join)
+                        .filter(Objects::nonNull)
+                        .toList();
+
+                    batchUpdate(completedRecords);
+                    futures.clear();
                 }
+
             }
 
-            // Process remaining records
-            if (!futures.isEmpty()) {
-                processBatch(futures);
-            }
+            // Process any remaining records
+            List<UpdateRecordingRecord> completedRecords = futures.stream()
+                .map(CompletableFuture::join)
+                .filter(Objects::nonNull)
+                .toList();
+
+            batchUpdate(completedRecords);
 
         } catch (IOException e) {
-            logger.error("Encountered error updating jurisdiction codes", e);
+            logger.info("Encountered error updating jurisdiction codes: {}", e.getMessage());
         }
-
         csvBlobClient.get().delete();
         stopWatch.stop();
         logger.info("Update job for jurisdiction codes took {} ms", stopWatch.getDuration().toMillis());
         logger.info("Finished {} job", TASK_NAME);
     }
 
-    private UpdateRecordingRecord updateCase(UpdateRecordingRecord recordingRecord, Long ccdCaseId) {
-        logger.info("UpdateCase with ccd case id: {}", ccdCaseId);
+    private boolean updateCase(UpdateRecordingRecord recordingRecord, Long ccdCaseId) {
         String filename = recordingRecord.filename;
         if (Objects.isNull(ccdCaseId)) {
             logger.info("Failed to find ccd case id for filename: {}", filename);
-            return null;
+            return false;
         }
         try {
             ccdDataStoreApiClient.updateCaseWithCodes(
@@ -144,9 +143,9 @@ public class UpdateJurisdictionCodesTask {
         } catch (Exception e) {
             logger.info("Failed to update case with jurisdiction and service codes for filename: {}",
                          filename, e);
-            return null;
+            return false;
         }
-        return recordingRecord;
+        return true;
     }
 
     private String getStringCellValue(Cell cell) {
@@ -192,36 +191,6 @@ public class UpdateJurisdictionCodesTask {
                 Files.deleteIfExists(spreadsheetFile.toPath());
             }
         }
-    }
-
-    private void processBatch(List<CompletableFuture<UpdateRecordingRecord>> futures) {
-        logger.info("Waiting for {} futures to complete", futures.size());
-
-        CompletableFuture<Void> batchFuture = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-
-        try {
-            batchFuture.orTimeout(2, TimeUnit.MINUTES).join();  // Timeout the whole batch
-        } catch (Exception e) {
-            logger.error("Batch failed to complete within timeout", e);
-        }
-
-        List<UpdateRecordingRecord> completedRecords = futures.stream()
-                .map(future -> {
-                    try {
-                        return future.join();  // join is safe here since the batchFuture already joined
-                    } catch (Exception ex) {
-                        logger.error("Future failed during batch join", ex);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .toList();
-
-        logger.info("Batch completed. {} records ready for batch update.", completedRecords.size());
-
-        batchUpdate(completedRecords);
-
-        futures.clear();
     }
 
     private record UpdateRecordingRecord(String filename, String jurisdictionCode, String serviceCode){}
