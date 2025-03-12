@@ -35,7 +35,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -85,10 +84,7 @@ public class UpdateJurisdictionCodesTask {
             Set<Long> ccdCaseIds = ConcurrentHashMap.newKeySet();
             int count = 0;
 
-            Semaphore semaphore = new Semaphore(batchSize);
-
             for (Row row : sheet) {
-                semaphore.acquire();  // Wait if the concurrency limit is hit
                 logger.info("Processing row: {}", count++);
 
                 UpdateRecordingRecord updateRecordingRecord = new UpdateRecordingRecord(
@@ -105,23 +101,8 @@ public class UpdateJurisdictionCodesTask {
                 }
                 logger.info("Processing ccd case id: {}", ccdCaseId);
                 futures.add(
-                        CompletableFuture.supplyAsync(() ->  {
-                                    try {
-                                        logger.info("Invoking updateCase for {}", updateRecordingRecord.filename);
-
-                                        UpdateRecordingRecord updateRecordingRec = updateCase(updateRecordingRecord, ccdCaseId);
-                                        if (Objects.isNull(updateRecordingRec)) {
-                                            logger.warn("updateCase failed for {}", updateRecordingRecord.filename);
-                                        }
-                                        return updateRecordingRec;
-
-                                    } catch (Exception ex) {
-                                        logger.error("Error processing file: {}", ex.getMessage(), ex);
-                                        return null;
-                                    } finally {
-                                        semaphore.release();  // Free up the slot
-                                    }
-                                },executorService)
+                        CompletableFuture.supplyAsync(() ->
+                                        updateCase(updateRecordingRecord, ccdCaseId), executorService)
                                 .orTimeout(15, TimeUnit.SECONDS)  // Fail individual futures if they take too long
                                 .exceptionally(ex -> {
                                     logger.error("Failed processing {}: {}", updateRecordingRecord.filename,
@@ -140,7 +121,7 @@ public class UpdateJurisdictionCodesTask {
                 processBatch(futures);
             }
 
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             logger.error("Encountered error updating jurisdiction codes", e);
         }
 
