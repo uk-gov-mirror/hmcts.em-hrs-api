@@ -102,7 +102,19 @@ public class UpdateJurisdictionCodesTask {
                 futures.add(CompletableFuture.supplyAsync(() ->
                     updateCase(updateRecordingRecord, ccdCaseId) ? updateRecordingRecord : null, executorService));
 
+                if (futures.size() >= batchSize) {
+                    List<UpdateRecordingRecord> completedRecords = futures.stream()
+                        .map(CompletableFuture::join)
+                        .filter(Objects::nonNull)
+                        .toList();
+
+                    batchUpdate(completedRecords);
+                    futures.clear();
+                }
+
             }
+
+            // Process any remaining records
             List<UpdateRecordingRecord> completedRecords = futures.stream()
                 .map(CompletableFuture::join)
                 .filter(Objects::nonNull)
