@@ -27,9 +27,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -79,6 +81,7 @@ public class UpdateJurisdictionCodesTask {
             XSSFSheet sheet = workbook.getSheetAt(0);
             List<CompletableFuture<UpdateRecordingRecord>> futures = new ArrayList<>();
 
+            Set<Long> ccdCaseIds = new HashSet<>();
             int count = 0;
 
             for (Row row : sheet) {
@@ -90,6 +93,11 @@ public class UpdateJurisdictionCodesTask {
                 );
 
                 Long ccdCaseId = hearingRecordingService.findCcdCaseIdByFilename(updateRecordingRecord.filename);
+                if (ccdCaseIds.contains(ccdCaseId)) {
+                    logger.info("Skipping duplicate ccd case id: {}", ccdCaseId);
+                    continue;
+                }
+                ccdCaseIds.add(ccdCaseId);
 
                 futures.add(CompletableFuture.supplyAsync(() ->
                     updateCase(updateRecordingRecord, ccdCaseId) ? updateRecordingRecord : null, executorService));
