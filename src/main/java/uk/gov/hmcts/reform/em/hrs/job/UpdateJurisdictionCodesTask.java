@@ -99,8 +99,15 @@ public class UpdateJurisdictionCodesTask {
                 }
                 ccdCaseIds.add(ccdCaseId);
 
-                futures.add(CompletableFuture.supplyAsync(() ->
-                    updateCase(updateRecordingRecord, ccdCaseId) ? updateRecordingRecord : null, executorService));
+                logger.info("Submitting updateCase task for filename: {}, ccdCaseId: {}",
+                            updateRecordingRecord.filename, ccdCaseId);
+
+
+                futures.add(CompletableFuture.supplyAsync(() -> {
+                    logger.info("Running updateCase in thread: {}", Thread.currentThread().getName());
+                    return updateCase(updateRecordingRecord, ccdCaseId) ? updateRecordingRecord : null;
+                }, executorService));
+
 
                 if (futures.size() >= batchSize) {
                     List<UpdateRecordingRecord> completedRecords = futures.stream()
@@ -132,6 +139,12 @@ public class UpdateJurisdictionCodesTask {
     }
 
     private boolean updateCase(UpdateRecordingRecord recordingRecord, Long ccdCaseId) {
+        Thread currentThread = Thread.currentThread();
+        logger.info("Running updateCase on thread: {}, virtual: {}, threadGroup: {}",
+                    currentThread.getName(),
+                    currentThread.isVirtual(),
+                    currentThread.getThreadGroup().getName()
+        );
         String filename = recordingRecord.filename;
         if (Objects.isNull(ccdCaseId)) {
             logger.info("Failed to find ccd case id for filename: {}", filename);
