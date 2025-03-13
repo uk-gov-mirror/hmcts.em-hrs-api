@@ -81,7 +81,7 @@ public class UpdateJurisdictionCodesTask {
             throw new BlobNotFoundException("blobName", "jurisdictionWorkbook");
         }
 
-        try (ExecutorService executorService = Executors.newFixedThreadPool(defaultThreadLimit);
+        try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
              XSSFWorkbook workbook = loadWorkbook(csvBlobClient.get())) {
 
             int availableCores = Runtime.getRuntime().availableProcessors();
@@ -104,7 +104,7 @@ public class UpdateJurisdictionCodesTask {
             logger.info("Number of rows in unProcessedRecords: {}", unProcessedRecords.size());
 
             List<List<UpdateRecordingRecord>> batches = Lists.partition(unProcessedRecords, batchSize);
-            logger.info("Number of batches created: {}", batches); //300 batches
+            logger.info("Number of batches created: {}", batches.size()); //300 batches
 
             Set<Long> ccdCaseIds = ConcurrentHashMap.newKeySet();
             for (List<UpdateRecordingRecord> batch : batches) {
