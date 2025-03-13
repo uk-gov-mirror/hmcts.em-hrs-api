@@ -94,31 +94,31 @@ public class UpdateJurisdictionCodesTask {
                 unProcessedRecords.add(updateRecordingRecord);
             }
             unProcessedRecords.forEach(
-                    updateRecordingRecord -> {
-                        Long ccdCaseId = hearingRecordingService.findCcdCaseIdByFilename(updateRecordingRecord.filename);
-                        if (ccdCaseIds.contains(ccdCaseId)) {
-                            logger.info("Skipping duplicate ccd case id: {}", ccdCaseId);
-                            return;
-                        }
-                        ccdCaseIds.add(ccdCaseId);
-
-                        logger.info("Submitting updateCase task for filename: {}, ccdCaseId: {}",
-                                updateRecordingRecord.filename, ccdCaseId);
-
-                        futures.add(CompletableFuture.supplyAsync(() ->
-                            updateCase(updateRecordingRecord, ccdCaseId) ? updateRecordingRecord : null
-                            , executorService));
-
-                        if (futures.size() >= batchSize) {
-                            List<UpdateRecordingRecord> completedRecords = futures.stream()
-                                    .map(CompletableFuture::join)
-                                    .filter(Objects::nonNull)
-                                    .toList();
-
-                            batchUpdate(completedRecords);
-                            futures.clear();
-                        }
+                updateRecordingRecord -> {
+                    Long ccdCaseId = hearingRecordingService.findCcdCaseIdByFilename(updateRecordingRecord.filename);
+                    if (ccdCaseIds.contains(ccdCaseId)) {
+                        logger.info("Skipping duplicate ccd case id: {}", ccdCaseId);
+                        return;
                     }
+                    ccdCaseIds.add(ccdCaseId);
+
+                    logger.info("Submitting updateCase task for filename: {}, ccdCaseId: {}",
+                            updateRecordingRecord.filename, ccdCaseId);
+
+                    futures.add(CompletableFuture.supplyAsync(() ->
+                        updateCase(updateRecordingRecord, ccdCaseId) ? updateRecordingRecord : null,
+                            executorService));
+
+                    if (futures.size() >= batchSize) {
+                        List<UpdateRecordingRecord> completedRecords = futures.stream()
+                                .map(CompletableFuture::join)
+                                .filter(Objects::nonNull)
+                                .toList();
+
+                        batchUpdate(completedRecords);
+                        futures.clear();
+                    }
+                }
             );
 
             // Process any remaining records
