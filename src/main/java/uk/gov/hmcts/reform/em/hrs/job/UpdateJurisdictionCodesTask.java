@@ -91,7 +91,6 @@ public class UpdateJurisdictionCodesTask {
 
             XSSFSheet sheet = workbook.getSheetAt(0);
 
-            Set<Long> ccdCaseIds = ConcurrentHashMap.newKeySet();
             List<UpdateRecordingRecord> unProcessedRecords = new ArrayList<>();
 
             for (Row row : sheet) {
@@ -107,6 +106,7 @@ public class UpdateJurisdictionCodesTask {
             List<List<UpdateRecordingRecord>> batches = Lists.partition(unProcessedRecords, batchSize);
             logger.info("Number of batches created: {}", batches); //300 batches
 
+            Set<Long> ccdCaseIds = ConcurrentHashMap.newKeySet();
             for (List<UpdateRecordingRecord> batch : batches) {
                 executorService.submit(() -> processBatch(batch, ccdCaseIds));
             }
