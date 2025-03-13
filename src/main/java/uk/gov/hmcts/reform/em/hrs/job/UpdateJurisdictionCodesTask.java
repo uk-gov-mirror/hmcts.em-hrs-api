@@ -84,11 +84,6 @@ public class UpdateJurisdictionCodesTask {
         try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
              XSSFWorkbook workbook = loadWorkbook(csvBlobClient.get())) {
 
-            int availableCores = Runtime.getRuntime().availableProcessors();
-            int threadPoolSize = availableCores * 4;
-            logger.info("Number of available Cores: {}", availableCores);
-            logger.info("Number of assumed available Threads: {}", threadPoolSize);
-
             XSSFSheet sheet = workbook.getSheetAt(0);
 
             List<UpdateRecordingRecord> unProcessedRecords = new ArrayList<>();
