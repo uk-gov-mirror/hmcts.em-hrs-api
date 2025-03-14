@@ -81,7 +81,7 @@ public class UpdateJurisdictionCodesTask {
             throw new BlobNotFoundException("blobName", "jurisdictionWorkbook");
         }
 
-        try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+        try (ExecutorService executorService = Executors.newFixedThreadPool(defaultThreadLimit);
              XSSFWorkbook workbook = loadWorkbook(csvBlobClient.get())) {
 
             XSSFSheet sheet = workbook.getSheetAt(0);
