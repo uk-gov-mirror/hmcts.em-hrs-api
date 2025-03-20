@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,11 +19,13 @@ public class Application implements CommandLineRunner {
 
     private static final String TASK_NAME = "TASK_NAME";
 
-
     private final ScheduledTaskRunner taskRunner;
 
-    public Application(ScheduledTaskRunner taskRunner) {
+    private final TelemetryClient client;
+
+    public Application(ScheduledTaskRunner taskRunner, TelemetryClient client) {
         this.taskRunner = taskRunner;
+        this.client = client;
     }
 
     public static void main(String[] args) {
@@ -36,9 +39,15 @@ public class Application implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) {
-        if (Objects.nonNull(System.getenv(TASK_NAME))) {
-            taskRunner.run(System.getenv(TASK_NAME));
+    public void run(String... args) throws InterruptedException {
+        try {
+            if (Objects.nonNull(System.getenv(TASK_NAME))) {
+                taskRunner.run(System.getenv(TASK_NAME));
+            }
+        } finally {
+            client.flush();
+            Thread.sleep(10000); //waitTelemetryGracefulPeriod
+            System.exit(0);
         }
     }
 }
