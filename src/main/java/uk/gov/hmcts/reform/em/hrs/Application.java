@@ -4,6 +4,7 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import uk.gov.hmcts.reform.em.hrs.service.ScheduledTaskRunner;
 
 import java.util.Objects;
@@ -23,6 +24,8 @@ public class Application implements CommandLineRunner {
 
     private final TelemetryClient client;
 
+    private static ApplicationContext instance;
+
     public Application(ScheduledTaskRunner taskRunner, TelemetryClient client) {
         this.taskRunner = taskRunner;
         this.client = client;
@@ -30,11 +33,11 @@ public class Application implements CommandLineRunner {
 
     public static void main(String[] args) {
         final var application = new SpringApplication(Application.class);
-        final var instance = application.run(args);
+        instance = application.run(args);
 
         //When TASK_NAME exists, we need the Application to be run as AKS job.
         if (Objects.nonNull(System.getenv(TASK_NAME))) {
-            instance.close();
+            SpringApplication.exit(instance);
         }
     }
 
@@ -46,7 +49,7 @@ public class Application implements CommandLineRunner {
             } finally {
                 client.flush();
                 Thread.sleep(10000); //waitTelemetryGracefulPeriod
-                System.exit(0);
+                SpringApplication.exit(instance);
             }
         }
     }
