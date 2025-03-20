@@ -72,7 +72,7 @@ public class UpdateJurisdictionCodesTask  implements Runnable {
         Optional<BlobClient> csvBlobClient = loadWorkbookBlobClient();
         if (csvBlobClient.isEmpty()) {
             logger.info("No files present for processing");
-            return ;
+            return;
         }
 
         try (ExecutorService executorService = Executors.newFixedThreadPool(defaultThreadLimit);
