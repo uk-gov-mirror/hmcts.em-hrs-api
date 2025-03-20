@@ -15,7 +15,6 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.hrs.exception.BlobCopyException;
-import uk.gov.hmcts.reform.em.hrs.exception.BlobNotFoundException;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
 import uk.gov.hmcts.reform.em.hrs.service.ccd.CcdDataStoreApiClient;
 
@@ -72,7 +71,8 @@ public class UpdateJurisdictionCodesTask  implements Runnable {
 
         Optional<BlobClient> csvBlobClient = loadWorkbookBlobClient();
         if (csvBlobClient.isEmpty()) {
-            throw new BlobNotFoundException("blobName", "jurisdictionWorkbook");
+            logger.info("No files present for processing");
+            return ;
         }
 
         try (ExecutorService executorService = Executors.newFixedThreadPool(defaultThreadLimit);
