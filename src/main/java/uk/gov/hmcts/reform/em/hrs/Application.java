@@ -40,14 +40,14 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws InterruptedException {
-        try {
-            if (Objects.nonNull(System.getenv(TASK_NAME))) {
+        if (Objects.nonNull(System.getenv(TASK_NAME))) {
+            try {
                 taskRunner.run(System.getenv(TASK_NAME));
+            } finally {
+                client.flush();
+                Thread.sleep(10000); //waitTelemetryGracefulPeriod
+                System.exit(0);
             }
-        } finally {
-            client.flush();
-            Thread.sleep(10000); //waitTelemetryGracefulPeriod
-            System.exit(0);
         }
     }
 }
