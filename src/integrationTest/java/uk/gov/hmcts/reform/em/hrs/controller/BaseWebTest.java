@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.controller;
 
-import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -23,9 +22,6 @@ public class BaseWebTest {
 
     @MockitoBean
     public ScheduledTaskRunner taskRunner;
-
-    @MockitoBean
-    public TelemetryClient client;
 
     @Autowired
     private WebApplicationContext context;
