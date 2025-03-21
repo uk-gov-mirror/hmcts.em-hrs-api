@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import com.microsoft.applicationinsights.TelemetryClient;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import uk.gov.hmcts.reform.em.hrs.service.ScheduledTaskRunner;
 
 import java.util.Objects;
@@ -20,37 +18,27 @@ public class Application implements CommandLineRunner {
 
     private static final String TASK_NAME = "TASK_NAME";
 
+
     private final ScheduledTaskRunner taskRunner;
 
-    private final TelemetryClient client;
-
-    private static ApplicationContext instance;
-
-    public Application(ScheduledTaskRunner taskRunner, TelemetryClient client) {
+    public Application(ScheduledTaskRunner taskRunner) {
         this.taskRunner = taskRunner;
-        this.client = client;
     }
 
     public static void main(String[] args) {
         final var application = new SpringApplication(Application.class);
-        instance = application.run(args);
+        final var instance = application.run(args);
 
         //When TASK_NAME exists, we need the Application to be run as AKS job.
         if (Objects.nonNull(System.getenv(TASK_NAME))) {
-            SpringApplication.exit(instance);
+            instance.close();
         }
     }
 
     @Override
-    public void run(String... args) throws InterruptedException {
+    public void run(String... args) {
         if (Objects.nonNull(System.getenv(TASK_NAME))) {
-            try {
-                taskRunner.run(System.getenv(TASK_NAME));
-            } finally {
-                client.flush();
-                Thread.sleep(10000); //waitTelemetryGracefulPeriod
-                SpringApplication.exit(instance);
-            }
+            taskRunner.run(System.getenv(TASK_NAME));
         }
     }
 }
