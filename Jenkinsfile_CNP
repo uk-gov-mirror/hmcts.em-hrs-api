@@ -40,7 +40,7 @@ def secrets = [
   secret('idam-data-store-system-user-username', 'IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
   secret('idam-data-store-system-user-password', 'IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
   secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY')
-],
+  ],
   'em-hrs-api-${env}': [
       secret('cvp-storage-connection-string', 'CVP_STORAGE_CONNECTION_STRING'),
       secret('vh-storage-connection-string', 'VH_STORAGE_CONNECTION_STRING'),
@@ -67,7 +67,16 @@ def secretsForPreview = [
     secret('oauth2-client-id', 'OAUTH_CLIENT_ID'),
     secret('show-oauth2-token', 'IDAM_CLIENT_OAUTH_SECRET')
   ],
-
+  'ccd-${env}'  : [
+    secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
+    secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET'),
+    secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN'),
+    secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET'),
+    secret('idam-data-store-client-secret', 'IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
+    secret('idam-data-store-system-user-username', 'IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
+    secret('idam-data-store-system-user-password', 'IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
+    secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY')
+  ],
   'em-hrs-api-${env}': [
     secret('notification-api-key', 'NOTIFICATION_API_KEY'),
     secret('idam-system-user-name', 'HRS_SYSTEM_USER'),
