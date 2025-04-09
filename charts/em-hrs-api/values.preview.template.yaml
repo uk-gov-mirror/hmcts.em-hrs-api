@@ -128,7 +128,18 @@ ccd:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
-      keyVaults: []
+      keyVaults:
+        ccd-api-gateway-web:
+          secrets:
+            - name: ccd-api-gateway-oauth2-client-secret
+              alias: CCD_API_GATEWAY_IDAM_CLIENT_SECRET
+            - name: postcode-info-address-lookup-token
+              alias: ADDRESS_LOOKUP_TOKEN
+            - name: microservicekey-ccd-gw
+              alias: CCD_API_GATEWAY_S2S_KEY
+            - name: AppInsightsInstrumentationKey
+              alias: CCD_APPINSIGHTS_INSTRUMENTATION_KEY
+
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
