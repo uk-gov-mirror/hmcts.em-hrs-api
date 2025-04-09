@@ -184,10 +184,6 @@ ccd:
               alias: CCD_DRAFT_ENCRYPTION_KEY
             - name: ccd-data-s2s-secret
               alias: DATA_STORE_IDAM_KEY
-#            - name: ccd-ELASTIC-SEARCH-URL
-#              alias: ELASTIC_SEARCH_HOSTS
-#            - name: ccd-ELASTIC-SEARCH-DATA-NODES-URL
-#              alias: ELASTIC_SEARCH_DATA_NODES_HOSTS
             - name: app-insights-connection-string
               alias: APP_INSIGHTS_CONNECTION_STRING
             - name: idam-data-store-client-secret
@@ -219,7 +215,19 @@ ccd:
           secretRef: "{{ .Values.global.postgresSecret }}"
           key: PASSWORD
           disabled: true
-      keyVaults: []
+      keyVaults:
+        ccd-definition-store-api:
+          secrets:
+            - name: definition-store-api-POSTGRES-USER-V15
+              alias: DEFINITION_STORE_DB_USERNAME
+            - name: definition-store-api-POSTGRES-PASS-V15
+              alias: DEFINITION_STORE_DB_PASSWORD
+            - name: ccd-definition-s2s-secret
+              alias: CCD_DEFINITION_STORE_S2S_SECRET
+            - name: dm-store-storage-account-primary-access-key
+              alias: DM_STORE_STORAGE_ACCOUNT_PRIMARY_ACCESS_KEY
+            - name: app-insights-connection-string
+              alias: APP_INSIGHTS_CONNECTION_STRING
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   postgresql:
