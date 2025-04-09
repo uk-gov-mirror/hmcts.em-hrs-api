@@ -128,7 +128,18 @@ ccd:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
-      keyVaults: []
+      keyVaults:
+        ccd:
+          secrets:
+            - name: ccd-api-gateway-oauth2-client-secret
+              alias: IDAM_OAUTH2_CLIENT_SECRET
+            - name: postcode-info-address-lookup-token
+              alias: ADDRESS_LOOKUP_TOKEN
+            - name: microservicekey-ccd-gw
+              alias: IDAM_SERVICE_KEY
+            - name: AppInsightsInstrumentationKey
+              alias: APPINSIGHTS_KEY
+
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
@@ -162,7 +173,15 @@ ccd:
           secretRef: "{{ .Values.global.postgresSecret }}"
           key: PASSWORD
           disabled: true
-      keyVaults: []
+      keyVaults:
+        ccd:
+          secrets:
+            - name: idam-oauth2-data-store-client-secret
+              alias: IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET
+            - name: microservicekey-ccd-data
+              alias: DATA_STORE_IDAM_KEY
+            - name: AppInsightsInstrumentationKey
+              alias: APPINSIGHTS_KEY
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
 
   ccd-definition-store-api:
@@ -185,5 +204,13 @@ ccd:
           secretRef: "{{ .Values.global.postgresSecret }}"
           key: PASSWORD
           disabled: true
-      keyVaults: []
+      keyVaults:
+        ccd:
+          secrets:
+            - name: ccd-definition-store-postgres-password
+              alias: DEFINITION_STORE_DB_PASSWORD
+            - name: microservicekey-ccd-definition
+              alias: DEFINITION_STORE_IDAM_KEY
+            - name: AppInsightsInstrumentationKey
+              alias: APPINSIGHTS_KEY
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
