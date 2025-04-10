@@ -142,8 +142,8 @@ ccd:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
         DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
-        DATA_STORE_DB_USERNAME: "{{ .Values.postgresql.auth.username}}"
-        DATA_STORE_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+        DATA_STORE_DB_USERNAME: ${DATA_STORE_DB_USERNAME}
+        DATA_STORE_DB_PASSWORD: ${DATA_STORE_DB_PASSWORD}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_ps,bulk_scan_orchestrator,ccpay_bubble,ctsc_work_allocation,em_ccd_orchestrator,xui_webapp,civil_service,ccd_case_document_am_api,aac_manage_case_assignment
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -163,6 +163,25 @@ ccd:
           secretRef: "{{ .Values.global.postgresSecret }}"
           key: PASSWORD
           disabled: true
+      keyVaults:
+        ccd-data-store-api:
+          secrets:
+            - name: data-store-api-POSTGRES-USER-V15
+              alias: DATA_STORE_DB_USERNAME
+            - name: data-store-api-POSTGRES-PASS-V15
+              alias: DATA_STORE_DB_PASSWORD
+            - name: data-store-api-draft-key
+              alias: CCD_DRAFT_ENCRYPTION_KEY
+            - name: ccd-data-s2s-secret
+              alias: DATA_STORE_IDAM_KEY
+            - name: app-insights-connection-string
+              alias: APP_INSIGHTS_CONNECTION_STRING
+            - name: idam-data-store-client-secret
+              alias: IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET
+            - name: idam-data-store-system-user-username
+              alias: IDAM_DATA_STORE_SYSTEM_USER_USERNAME
+            - name: idam-data-store-system-user-password
+              alias: IDAM_DATA_STORE_SYSTEM_USER_PASSWORD
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
 
   ccd-definition-store-api:
@@ -175,8 +194,8 @@ ccd:
       environment:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DEFINITION_STORE_DB_OPTIONS: "?stringtype=unspecified"
-        DEFINITION_STORE_DB_USER: "{{ .Values.postgresql.auth.username}}"
-        DEFINITION_STORE_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+        DEFINITION_STORE_DB_USER: ${DEFINITION_STORE_DB_USERNAME}
+        DEFINITION_STORE_DB_PASSWORD: ${DEFINITION_STORE_DB_PASSWORD}
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         DEFINITION_STORE_TX_TIMEOUT_DEFAULT: 60
@@ -186,6 +205,15 @@ ccd:
           secretRef: "{{ .Values.global.postgresSecret }}"
           key: PASSWORD
           disabled: true
+      keyVaults:
+        ccd-definition-store-api:
+          secrets:
+            - name: definition-store-api-POSTGRES-USER-V15
+              alias: DEFINITION_STORE_DB_USERNAME
+            - name: definition-store-api-POSTGRES-PASS-V15
+              alias: DEFINITION_STORE_DB_PASSWORD
+            - name: ccd-definition-s2s-secret
+              alias: CCD_DEFINITION_STORE_S2S_SECRET
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   postgresql:
