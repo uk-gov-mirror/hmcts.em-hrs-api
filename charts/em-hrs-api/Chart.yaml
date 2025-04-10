@@ -12,7 +12,6 @@ dependencies:
   - name: ccd
     version: 9.2.1
     repository: oci://hmctspublic.azurecr.io/helm
-    condition: ccd.enabled
   - name: blobstorage
     alias: hrsblobstorage
     version: 2.1.0
