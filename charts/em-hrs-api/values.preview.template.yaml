@@ -233,3 +233,13 @@ ccd:
   postgresql:
     persistence:
       enabled: false
+
+  draft-store:
+    java:
+      keyvault:
+        draft-store:
+          secrets:
+            - name: service-POSTGRES-PASS-v14
+              alias: DRAFT_STORE_DB_PASSWORD
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
