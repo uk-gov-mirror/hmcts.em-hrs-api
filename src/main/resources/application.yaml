@@ -212,6 +212,13 @@ dbMigration:
 logging:
   level:
     uk.gov.hmcts.reform.authorisation.filters: DEBUG
+    uk.gov.hmcts.reform: DEBUG
+    feign:
+      client:
+        config:
+          core-case-data-api:
+            loggerLevel: FULL
+      Logger: DEBUG
 
 ttl:
   default-ttl: ${DEFAULT_TTL:P7Y}
