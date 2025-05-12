@@ -131,8 +131,9 @@ withPipeline(type, product, component) {
   before('smoketest:preview') {
 
     sh """
+      echo ${env.WORKSPACE}
       cd ${env.WORKSPACE}
-      ./bin/import-ccd-definition.sh "-e src/functionalTest/resources/CCD_HRS_v1.7-AAT.xlsx"
+      ./bin/import-ccd-definition.sh "src/functionalTest/resources/CCD_HRS_v1.7-AAT.xlsx"
     """
     withAksClient('nonprod', product) {
       def dockerImage = new DockerImage(product, component, null, env.BRANCH_NAME, env.GIT_COMMIT, env.LAST_COMMIT_TIMESTAMP)
