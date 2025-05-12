@@ -133,7 +133,8 @@ withPipeline(type, product, component) {
     sh """
       echo ${env.WORKSPACE}
       cd ${env.WORKSPACE}
-      echo pwd
+      pwd
+      ls
       ./bin/import-ccd-definition.sh
     """
     withAksClient('nonprod', product) {
