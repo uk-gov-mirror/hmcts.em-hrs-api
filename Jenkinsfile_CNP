@@ -133,7 +133,8 @@ withPipeline(type, product, component) {
     sh """
       echo ${env.WORKSPACE}
       cd ${env.WORKSPACE}
-      ./bin/import-ccd-definition.sh "src/functionalTest/resources" "CCD_HRS_v1.7-AAT.xlsx" "\$@"
+      echo pwd
+      ./bin/import-ccd-definition.sh
     """
     withAksClient('nonprod', product) {
       def dockerImage = new DockerImage(product, component, null, env.BRANCH_NAME, env.GIT_COMMIT, env.LAST_COMMIT_TIMESTAMP)

@@ -1,24 +1,10 @@
 #!/usr/bin/env bash
 
-set -ex
+definition_input_dir=$(realpath '/src/functionalTest/resources')
+definition_output_file="$(realpath ".")/src/functionalTest/resources/CCD_HRS_v1.7-AAT.xlsx"
+params="$@"
 
-dir=$(dirname ${0})
+echo definition_input_dir
+echo definition_output_file
 
-if [[ ($# -ne 3) && ($# -ne 5) ]]; then
-  echo "Usage: ./import-ccd-definition [-e 'UserProfile.json,*-nonprod.json'] - the -e argument is optional, "\
-  "if provided the files matching the provided patterns will be excluded from processing."
-  exit 1
-fi
-
-definition_input_dir=${1}
-definition_output_file=${2}
-additionalParameters="${@:3}"
-
-echo "Definition directory: ${definition_input_dir}"
-echo "Definition spreadsheet ${definition_output_file}"
-echo "Additional parameters: ${additionalParameters}"
-
-mkdir -p $(dirname ${definition_output_file})
-
-${dir}/process-definition.sh ${definition_input_dir} ${definition_output_file} "${additionalParameters}"
-${dir}/ccd-import-definition.sh ${definition_output_file}
+./bin/import-ccd-definition-validator.sh "${definition_input_dir}" "${definition_output_file}" "${params}"
