@@ -133,7 +133,6 @@ withPipeline(type, product, component) {
     sh """
       echo ${env.WORKSPACE}
       cd ${env.WORKSPACE}
-//      ./bin/import-ccd-definition.sh "src/functionalTest/resources/CCD_HRS_v1.7-AAT.xlsx"
       ./bin/import-ccd-definition.sh "src/functionalTest/resources" "CCD_HRS_v1.7-AAT.xlsx" "\$@"
     """
     withAksClient('nonprod', product) {
