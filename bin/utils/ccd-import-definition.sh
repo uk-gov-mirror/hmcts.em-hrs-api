@@ -2,15 +2,45 @@
 
 #export IDAM_STUB_LOCALHOST=http://localhost:5555
 
-set -eu
+set -euo pipefail
 
-dir=$(dirname ${0})
-filepath=${1}
-filename=$(basename ${filepath})
+dir=$(dirname "${0}")
+filepath="${1}"
+filename=$(basename "${filepath}")
 uploadFilename="$(date +"%Y%m%d-%H%M%S")-${filename}"
 
-userToken=$(${dir}/idam-lease-user-token.sh ${CCD_CONFIGURER_IMPORTER_USERNAME:-ccd.docker.default@hmcts.net} ${CCD_CONFIGURER_IMPORTER_PASSWORD:-Password12!})
-serviceToken=$(${dir}/idam-lease-service-token.sh ccd_gw $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC}))
+# Set default values for local development
+IDAM_API_BASE_URI="${IDAM_API_BASE_URI:-http://localhost:5000}"
+S2S_URL="${S2S_URL:-http://localhost:4502}"
+
+# If running in Jenkins, use the correct service URLs
+if [ -n "${ENVIRONMENT}" ]; then
+    echo "Running in ${ENVIRONMENT} environment"
+    IDAM_API_BASE_URI="https://idam-api.${ENVIRONMENT}.platform.hmcts.net"
+    S2S_URL="http://rpe-service-auth-provider-${ENVIRONMENT}.service.core-compute-${ENVIRONMENT}.internal"
+fi
+
+echo "IDAM API URL: ${IDAM_API_BASE_URI}"
+echo "S2S URL: ${S2S_URL}"
+
+# Export the URLs for use in child scripts
+export IDAM_API_BASE_URI
+
+echo "Getting user token..."
+userToken=$(${dir}/idam-lease-user-token.sh "${CCD_CONFIGURER_IMPORTER_USERNAME:-ccd.docker.default@hmcts.net}" "${CCD_CONFIGURER_IMPORTER_PASSWORD:-Password12!}")
+
+if [ -z "${userToken}" ]; then
+    echo "Failed to get user token"
+    exit 1
+fi
+
+echo "Getting service token..."
+serviceToken=$(${dir}/idam-lease-service-token.sh ccd_gw $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b "${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC}"))
+
+if [ -z "${serviceToken}" ]; then
+    echo "Failed to get service token"
+    exit 1
+fi
 
 version="n/a"
 newVersion="n/a"
