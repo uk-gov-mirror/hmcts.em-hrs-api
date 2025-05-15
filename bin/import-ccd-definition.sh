@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
-definition_input_dir=$(realpath '/src/functionalTest/resources')
-definition_output_file="$(realpath ".")/src/functionalTest/resources/CCD_HRS_v1.7-AAT.xlsx"
+# Get the absolute path of the project root directory
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+definition_input_dir="${PROJECT_ROOT}/src/functionalTest/resources"
+definition_output_file="${PROJECT_ROOT}/src/functionalTest/resources/CCD_HRS_v1.7-AAT.xlsx"
 params="$@"
 
-echo definition_input_dir
-echo definition_output_file
+echo "Definition input directory: ${definition_input_dir}"
+echo "Definition output file: ${definition_output_file}"
 
-./bin/import-ccd-definition-validator.sh "${definition_input_dir}" "${definition_output_file}" "${params}"
+# Execute the import script with the correct paths
+"${PROJECT_ROOT}/bin/utils/import-ccd-definition.sh" "${definition_input_dir}" "${definition_output_file}" "${params}"
