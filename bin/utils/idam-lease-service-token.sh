@@ -13,6 +13,9 @@ oneTimePassword="${2}"
 # Use environment variables set by the parent script or fall back to defaults
 S2S_URL="${S2S_URL:-http://localhost:4502}"
 
+# Ensure IDAM_STUB_LOCALHOST is set with a default empty value
+IDAM_STUB_LOCALHOST="${IDAM_STUB_LOCALHOST:-}"
+
 # Check if we're using stubbed S2S
 if [ -n "${IDAM_STUB_LOCALHOST}" ]; then
     echo "Using stubbed S2S at ${S2S_URL}"

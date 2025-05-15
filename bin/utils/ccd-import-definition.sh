@@ -12,6 +12,7 @@ uploadFilename="$(date +"%Y%m%d-%H%M%S")-${filename}"
 # Set default values for local development
 IDAM_API_BASE_URI="${IDAM_API_BASE_URI:-http://localhost:5000}"
 S2S_URL="${S2S_URL:-http://localhost:4502}"
+CCD_DEFINITION_STORE_API_BASE_URL="${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}"
 
 # If running in Jenkins, use the correct service URLs
 if [ -n "${ENVIRONMENT:-}" ]; then
@@ -50,7 +51,7 @@ newVersion="n/a"
 
 if [ -n "${ENVIRONMENT:-}" ] && { [ "${ENVIRONMENT}" == "preview" ] || [ "${ENVIRONMENT}" == "aat" ]; }; then
   version=$(curl --insecure --silent --show-error -X GET \
-    ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/data/case-type/CIVIL/version \
+    ${CCD_DEFINITION_STORE_API_BASE_URL}/api/data/case-type/CIVIL/version \
     -H "Authorization: Bearer ${userToken}" \
     -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
 
@@ -58,7 +59,7 @@ if [ -n "${ENVIRONMENT:-}" ] && { [ "${ENVIRONMENT}" == "preview" ] || [ "${ENVI
 fi
 
 uploadResponse=$(curl --insecure --silent -w "\n%{http_code}"  --show-error --max-time 60  -X POST \
-  ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/import \
+  ${CCD_DEFINITION_STORE_API_BASE_URL}/import \
   -H "Authorization: Bearer ${userToken}" \
   -H "ServiceAuthorization: Bearer ${serviceToken}" \
   -F "file=@${filepath};filename=${uploadFilename}" || echo 'bypass-if-error')
@@ -74,7 +75,7 @@ if [ -n "${ENVIRONMENT:-}" ] && { [ "${ENVIRONMENT}" == "preview" ] || [ "${ENVI
   sleep 45
 
   newVersion=$(curl --insecure --silent --show-error -X GET \
-    ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/data/case-type/CIVIL/version \
+    ${CCD_DEFINITION_STORE_API_BASE_URL}/api/data/case-type/CIVIL/version \
     -H "Authorization: Bearer ${userToken}" \
     -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
 
@@ -94,7 +95,7 @@ if [[ "${upload_http_code}" == '504' ]]; then
     sleep 5
     echo "Checking status of ${filename} (${uploadFilename}) upload (Try ${try})"
     audit_response=$(curl --insecure --silent --show-error -X GET \
-      ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/import-audits \
+      ${CCD_DEFINITION_STORE_API_BASE_URL}/api/import-audits \
       -H "Authorization: Bearer ${userToken}" \
       -H "ServiceAuthorization: Bearer ${serviceToken}")
 

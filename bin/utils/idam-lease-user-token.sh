@@ -12,13 +12,14 @@ password="${2}"
 
 # Use environment variables set by the parent script or fall back to defaults
 IDAM_API_URL="${IDAM_API_BASE_URI:-http://localhost:5000}"
+IDAM_STUB_LOCALHOST="${IDAM_STUB_LOCALHOST:-}"
 IDAM_URL="${IDAM_STUB_LOCALHOST:-$IDAM_API_URL}"
 CLIENT_ID="${CCD_API_GATEWAY_IDAM_CLIENT:-ccd_gateway}"
 CLIENT_SECRET="${CCD_API_GATEWAY_IDAM_CLIENT_SECRET:-ccd_gateway_secret}"
 REDIRECT_URI="${CCD_IDAM_REDIRECT_URL:-http://localhost:3451/oauth2redirect}"
 
 # Check if we're using the stub IDAM
-if [ -n "${IDAM_STUB_LOCALHOST}" ]; then
+if [ -n "${IDAM_STUB_LOCALHOST:-}" ]; then
     echo "Using stubbed IDAM at ${IDAM_URL}"
     echo "stubbed-user-token"
     exit 0
