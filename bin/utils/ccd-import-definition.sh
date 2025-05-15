@@ -14,10 +14,13 @@ IDAM_API_BASE_URI="${IDAM_API_BASE_URI:-http://localhost:5000}"
 S2S_URL="${S2S_URL:-http://localhost:4502}"
 
 # If running in Jenkins, use the correct service URLs
-if [ -n "${ENVIRONMENT}" ]; then
+if [ -n "${ENVIRONMENT:-}" ]; then
     echo "Running in ${ENVIRONMENT} environment"
     IDAM_API_BASE_URI="https://idam-api.${ENVIRONMENT}.platform.hmcts.net"
     S2S_URL="http://rpe-service-auth-provider-${ENVIRONMENT}.service.core-compute-${ENVIRONMENT}.internal"
+else
+    echo "ENVIRONMENT variable not set, using default service URLs"
+    ENVIRONMENT="local"
 fi
 
 echo "IDAM API URL: ${IDAM_API_BASE_URI}"
@@ -45,7 +48,7 @@ fi
 version="n/a"
 newVersion="n/a"
 
-if [ "${ENVIRONMENT}" == "preview" ] || [ "${ENVIRONMENT}" == "aat" ]; then
+if [ -n "${ENVIRONMENT:-}" ] && { [ "${ENVIRONMENT}" == "preview" ] || [ "${ENVIRONMENT}" == "aat" ]; }; then
   version=$(curl --insecure --silent --show-error -X GET \
     ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/data/case-type/CIVIL/version \
     -H "Authorization: Bearer ${userToken}" \
@@ -65,7 +68,7 @@ echo "Definition Upload response is ${uploadResponse}"
 upload_http_code=$(echo "$uploadResponse" | tail -n1)
 upload_response_content=$(echo "$uploadResponse" | sed '$d')
 
-if [ "${ENVIRONMENT}" == "preview" ] || [ "${ENVIRONMENT}" == "aat" ]; then
+if [ -n "${ENVIRONMENT:-}" ] && { [ "${ENVIRONMENT}" == "preview" ] || [ "${ENVIRONMENT}" == "aat" ]; }; then
  if [ "${upload_http_code}" != "201" ]; then
   echo "Bypassing audit check as on preview - will wait 45s and then verify the version has changed"
   sleep 45
