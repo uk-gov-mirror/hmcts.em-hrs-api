@@ -13,12 +13,15 @@ uploadFilename="$(date +"%Y%m%d-%H%M%S")-${filename}"
 IDAM_API_BASE_URI="${IDAM_API_BASE_URI:-http://localhost:5000}"
 S2S_URL="${S2S_URL:-http://localhost:4502}"
 CCD_DEFINITION_STORE_API_BASE_URL="${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}"
+CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-api.aat.platform.hmcts.net"
+IDAM_API_BASE_URI="https://idam-api.aat.platform.hmcts.net"
+S2S_URL="http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 
 # If running in Jenkins, use the correct service URLs
 if [ -n "${ENVIRONMENT:-}" ]; then
     echo "Running in ${ENVIRONMENT} environment"
-    IDAM_API_BASE_URI="https://idam-api.${ENVIRONMENT}.platform.hmcts.net"
-    S2S_URL="http://rpe-service-auth-provider-${ENVIRONMENT}.service.core-compute-${ENVIRONMENT}.internal"
+    IDAM_API_BASE_URI="https://idam-api.aat.platform.hmcts.net"
+    S2S_URL="http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 else
     echo "ENVIRONMENT variable not set, using default service URLs"
     ENVIRONMENT="local"
