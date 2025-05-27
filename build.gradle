@@ -19,7 +19,7 @@ plugins {
   id 'com.github.hmcts.rse-cft-lib' version '0.19.1697'
   id 'uk.gov.hmcts.java' version '0.12.66'
   id 'org.owasp.dependencycheck' version '12.1.1'
-  id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.26'
+  id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.30'
 }
 
 
@@ -159,7 +159,7 @@ def coverageExclusionList = [
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '10.23.1'
+  toolVersion = '10.24.0'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
@@ -245,7 +245,7 @@ def versions = [
   junit              : '5.12.2',
   junitPlatform      : '1.12.2',
   springSecurity     : '6.4.5',
-  shedlock           : '6.6.1',
+  shedlock           : '6.7.0',
   testcontainers     : '1.21.0'
 ]
 
