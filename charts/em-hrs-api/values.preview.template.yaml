@@ -41,7 +41,7 @@ java:
     SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/javadatabase?ssl=disable
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.auth.username}}"
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.auth.password}}"
-    CCD_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
+    CCD_DATA_API_URL: http://${SERVICE_NAME}..preview.platform.hmcts.net
     OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
     ENABLE_DB_MIGRATE: true
     RUN_DB_MIGRATION_ON_STARTUP: true
@@ -113,10 +113,10 @@ ccd:
     userProfile:
       enabled: false
   global:
-    ccdApiGatewayIngress: http://${SERVICE_NAME}-ccd-api-gw
-    ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
-    ccdStitchUrl: http://${SERVICE_NAME}-emstitch
-    ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
+    ccdApiGatewayIngress: http://${SERVICE_NAME}.preview.platform.hmcts.net
+    ccdDataStoreUrl: http://${SERVICE_NAME}.preview.platform.hmcts.net
+    ccdStitchUrl: http://${SERVICE_NAME}.preview.platform.hmcts.net
+    ccdDefinitionStoreUrl: http://${SERVICE_NAME}.preview.platform.hmcts.net
     ccdUserProfileUrl: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
