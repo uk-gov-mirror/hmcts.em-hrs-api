@@ -41,7 +41,7 @@ java:
     SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/javadatabase?ssl=disable
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.auth.username}}"
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.auth.password}}"
-    CCD_DATA_API_URL: http://${SERVICE_NAME}..preview.platform.hmcts.net
+    CCD_DATA_API_URL: http://${SERVICE_NAME}.preview.platform.hmcts.net
     OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
     ENABLE_DB_MIGRATE: true
     RUN_DB_MIGRATION_ON_STARTUP: true
