@@ -133,6 +133,8 @@ withPipeline(type, product, component) {
     sh """
       echo ${env.WORKSPACE}
       cd ${env.WORKSPACE}
+      echo "jq version, pwd, ls"
+      jq --version
       pwd
       ls
       ./bin/import-ccd-definition.sh
