@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 #export IDAM_STUB_LOCALHOST=http://localhost:5555
+echo "start ccd-import-definition.sh"
 
 set -euo pipefail
 
@@ -76,6 +77,7 @@ if [ -n "${ENVIRONMENT:-}" ] && { [ "${ENVIRONMENT}" == "preview" ] || [ "${ENVI
   exit 0
 fi
 
+echo "before http code upload"
 if [[ "${upload_http_code}" == '504' ]]; then
   for try in {1..10}
   do
@@ -92,6 +94,7 @@ if [[ "${upload_http_code}" == '504' ]]; then
     fi
   done
 else
+  echo "inside ccd upload else statement, http success"
   if [[ "${upload_response_content}" == 'Case Definition data successfully imported' ]]; then
     echo "${filename} (${uploadFilename}) uploaded"
     exit 0
@@ -99,4 +102,6 @@ else
 fi
 
 echo "${filename} (${uploadFilename}) upload failed (${upload_response_content})"
+
+echo "exit 1 failure - upload failed within ccd-improt-definition.sh"
 exit 1;

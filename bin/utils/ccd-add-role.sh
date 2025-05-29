@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -ex
 
 dir=$(dirname ${0})
@@ -20,3 +19,4 @@ curl --insecure --fail --show-error --silent -X PUT \
     "role": "'${role}'",
     "security_classification": "PUBLIC"
   }'
+

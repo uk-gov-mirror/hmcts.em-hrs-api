@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # Exit on error
+echo "start import-ccd-definition.sh"
 set -e
 
 # Get the absolute path of the project root directory
@@ -34,3 +35,4 @@ echo "Processing definition files..."
 # Import the definition file
 echo "Importing definition file..."
 "${PROJECT_ROOT}/bin/utils/ccd-import-definition.sh" "${definition_output_file}"
+
