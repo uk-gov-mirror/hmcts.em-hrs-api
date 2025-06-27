@@ -84,12 +84,14 @@ env.CVP_CONTAINER_URL = 'https://emhrsapiaat.blob.core.windows.net/cvpsimulator/
 env.IDAM_API_BASE_URI = 'https://idam-api.aat.platform.hmcts.net'
 env.IDAM_REDIRECT_URI = 'https://em-hrs-api-aat.service.core-compute-aat.internal/oauth2/callback'
 env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'
-env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 env.XUI_API_URL = 'https://manage-case.aat.platform.hmcts.net'
 env.HRS_VH_DEST_CONTAINER_NAME = 'vhrecordings'
 // Feature Flags
 env.DELETE_CASE_ENDPOINT_ENABLED = false
+env.PACT_BROKER_URL = "pact-broker.platform.hmcts.net"
+env.PACT_BROKER_PORT = "443"
+env.PACT_BROKER_SCHEME = "https"
 
 def vaultOverrides = [
   'preview' : 'aat',
