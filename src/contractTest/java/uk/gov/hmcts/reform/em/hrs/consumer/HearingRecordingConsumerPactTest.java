@@ -36,7 +36,7 @@ public class HearingRecordingConsumerPactTest {
         );
     }
 
-    @Pact(consumer = "em_hrs_hearing_recordings_api_consumer", provider = "em_hrs_hearing_recordings_api")
+    @Pact(consumer = "em_hrs_hearing_recording_api_consumer", provider = "em_hrs_hearing_recording_api")
     public V4Pact deleteHearingRecordingPact(PactBuilder builder) {
         return builder
             .usingLegacyDsl()
