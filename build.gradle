@@ -620,6 +620,7 @@ task runAndPublishConsumerPactTests(type: Test) {
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED']
+  include '**/consumer/**'
 }
 
 runAndPublishConsumerPactTests.dependsOn contract
