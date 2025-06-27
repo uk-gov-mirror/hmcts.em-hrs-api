@@ -42,7 +42,7 @@ public class HearingRecordingConsumerPactTest {
             .usingLegacyDsl()
             .given("Hearing recordings exist for given CCD case IDs to delete")
             .uponReceiving("A request to delete hearing recordings for a case")
-            .path("/hearing-recordings")
+            .path("/delete")
             .query("case_id=123456789")
             .method("DELETE")
             .headers(getHeaders())
