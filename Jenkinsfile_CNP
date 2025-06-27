@@ -90,9 +90,7 @@ env.XUI_API_URL = 'https://manage-case.aat.platform.hmcts.net'
 env.HRS_VH_DEST_CONTAINER_NAME = 'vhrecordings'
 // Feature Flags
 env.DELETE_CASE_ENDPOINT_ENABLED = false
-env.PACT_BROKER_URL = "pact-broker.platform.hmcts.net"
-env.PACT_BROKER_PORT = "443"
-env.PACT_BROKER_SCHEME = "https"
+
 
 def vaultOverrides = [
   'preview' : 'aat',
