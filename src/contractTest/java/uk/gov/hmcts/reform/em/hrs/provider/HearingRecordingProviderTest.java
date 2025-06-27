@@ -34,7 +34,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static org.mockito.Mockito.doNothing;
 
 @ActiveProfiles("contract")
-@Provider("em_hrs_hearing_recording_api")
+@Provider("em_hrs_recording_api")
 @PactBroker(
     url = "${PACT_BROKER_FULL_URL:http://localhost:80}",
     providerBranch = "${pact.provider.branch}"
