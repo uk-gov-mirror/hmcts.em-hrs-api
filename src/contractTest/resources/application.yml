@@ -1,6 +1,5 @@
 ---
 spring:
-  main:
   security:
     oauth2:
       client:

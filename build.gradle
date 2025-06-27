@@ -272,7 +272,7 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-json"
   implementation "org.springframework.boot:spring-boot-starter-validation"
   implementation "org.springframework.boot:spring-boot-starter-web"
-  
+
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
 
 //hmcts autho
@@ -403,6 +403,11 @@ dependencies {
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
 
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
+
+
   contractTestImplementation "org.junit.jupiter:junit-jupiter-api:5.13.2"
   contractTestRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.13.1"
   contractTestImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: versions.junitPlatform
@@ -454,25 +459,13 @@ task contract(type: Test) {
   useJUnitPlatform()
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
-  include "uk/gov/hmcts/reform/em/hrs/consumer/**"
+  include "uk/gov/hmcts/reform/em/hrs/**"
   systemProperty 'pact.rootDir', "pacts"
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
-
-task runAndPublishConsumerPactTests(type: Test){
-  logger.lifecycle("Runs pact Tests")
-  testClassesDirs = sourceSets.contractTest.output.classesDirs
-  classpath = sourceSets.contractTest.runtimeClasspath
-
-}
-
-runAndPublishConsumerPactTests.dependsOn contract
-
-runAndPublishConsumerPactTests.finalizedBy pactPublish
-
 project.ext {
-  pactVersion = getCheckedOutGitCommitHash()
+  pacticipantVersion = getCheckedOutGitCommitHash()
 }
 
 static def getCheckedOutGitCommitHash() {
@@ -555,16 +548,46 @@ serenity {
 }
 
 pact {
-  publish {
-    pactDirectory = 'pacts'
+  broker {
     pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-    version = project.pactVersion
+  }
+  publish {
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    pactDirectory = 'pacts'
+    tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+    version = project.pacticipantVersion
+    consumerBranch = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
   }
 }
 
 pactPublish {
   pactPublish = project.pact.publish
 }
+task runAndPublishConsumerPactTests(type: Test){
+  logger.lifecycle("Runs pact Tests")
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED']
+}
+
+runAndPublishConsumerPactTests.dependsOn contract
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+tasks.register('runProviderPactVerification', Test) {
+  logger.lifecycle("Runs provider pact Tests")
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED']
+  if (project.hasProperty('pact.verifier.publishResults')) {
+    systemProperty 'pact.verifier.publishResults', project.property('pact.verifier.publishResults')
+  }
+
+  systemProperty 'pact.provider.version', project.pacticipantVersion
+
+}
+
+runProviderPactVerification.dependsOn contract
+runProviderPactVerification.finalizedBy pactVerify
 
 compileJava.dependsOn processResources
 

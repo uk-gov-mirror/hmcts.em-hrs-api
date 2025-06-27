@@ -99,7 +99,7 @@ def vaultOverrides = [
 withPipeline(type, product, component) {
   enableDbMigration('em-hrs-api')
   overrideVaultEnvironments(vaultOverrides)
-
+  enablePactAs([AppPipelineDsl.PactRoles.CONSUMER, AppPipelineDsl.PactRoles.PROVIDER])
   onNonPR() {
     loadVaultSecrets(secrets)
   }
@@ -176,7 +176,6 @@ withPipeline(type, product, component) {
 
   onMaster()
     {
-  enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
 
   afterAlways('test') {
