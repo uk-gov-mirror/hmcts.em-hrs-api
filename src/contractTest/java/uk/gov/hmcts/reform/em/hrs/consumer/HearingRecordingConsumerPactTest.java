@@ -43,7 +43,7 @@ public class HearingRecordingConsumerPactTest {
             .given("Hearing recordings exist for given CCD case IDs to delete")
             .uponReceiving("A request to delete hearing recordings for a case")
             .path("/delete")
-            .query("case_id=123456789")
+            .query("ccdCaseIds=123456789,987654321")
             .method("DELETE")
             .headers(getHeaders())
             .willRespondWith()
