@@ -57,7 +57,7 @@ public class HearingRecordingConsumerPactTest {
         SerenityRest
             .given()
             .headers(getHeaders())
-            .delete(mockServer.getUrl() + "/hearing-recordings?case_id=123456789")
+            .delete(mockServer.getUrl() + "/delete?ccdCaseIds=123456789,987654321")
             .then()
             .statusCode(HttpStatus.NO_CONTENT.value())
             .body(equalTo(""));
