@@ -6,7 +6,8 @@ import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
-import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
+import au.com.dius.pact.provider.junitsupport.loader.PactBrokerConsumerVersionSelectors;
+import au.com.dius.pact.provider.junitsupport.loader.SelectorBuilder;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
@@ -35,10 +36,8 @@ import static org.mockito.Mockito.doNothing;
 @ActiveProfiles("contract")
 @Provider("em_hrs_hearing_recording_api")
 @PactBroker(
-    scheme = "${PACT_BROKER_SCHEME:http}",
-    host = "${PACT_BROKER_URL:localhost}",
-    port = "${PACT_BROKER_PORT:80}",
-    consumerVersionSelectors = {@VersionSelector(tag = "master")}
+    url = "${PACT_BROKER_FULL_URL:http://localhost:80}",
+    providerBranch = "${pact.provider.branch}"
 )
 //@PactFolder("pacts")
 @IgnoreNoPactsToVerify
@@ -52,18 +51,22 @@ public class HearingRecordingProviderTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockitoBean
     private HearingRecordingService hearingRecordingService;
-
     @MockitoBean
     private ShareAndNotifyService shareAndNotifyService;
-
     @MockitoBean
     private SegmentDownloadService segmentDownloadService;
-
     @MockitoBean(name = "ingestionQueue")
     private LinkedBlockingQueue<HearingRecordingDto> ingestionQueue;
+
+    @PactBrokerConsumerVersionSelectors
+    public static SelectorBuilder consumerVersionSelectors() {
+        return new SelectorBuilder()
+            .matchingBranch()
+            .mainBranch()
+            .deployedOrReleased();
+    }
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)
