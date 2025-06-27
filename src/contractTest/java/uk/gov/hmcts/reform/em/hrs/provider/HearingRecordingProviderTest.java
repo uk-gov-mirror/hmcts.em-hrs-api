@@ -6,7 +6,6 @@ import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
-import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
 import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,28 +21,26 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.em.hrs.controller.HearingRecordingController;
+import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
 import uk.gov.hmcts.reform.em.hrs.service.ScheduledTaskRunner;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
-import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
 @ActiveProfiles("contract")
 @Provider("em_hrs_hearing_recording_api")
-//@PactBroker(
-//    scheme = "${PACT_BROKER_SCHEME:http}",
-//    host = "${PACT_BROKER_URL:localhost}",
-//    port = "${PACT_BROKER_PORT:80}",
-//    consumerVersionSelectors = {@VersionSelector(tag = "master")}
-//)
-@PactFolder("pacts")
+@PactBroker(
+    scheme = "${PACT_BROKER_SCHEME:http}",
+    host = "${PACT_BROKER_URL:localhost}",
+    port = "${PACT_BROKER_PORT:80}",
+    consumerVersionSelectors = {@VersionSelector(tag = "master")}
+)
+//@PactFolder("pacts")
 @IgnoreNoPactsToVerify
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(
