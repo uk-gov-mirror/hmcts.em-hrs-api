@@ -21,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.em.hrs.config.security.AuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.controller.HearingRecordingController;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
@@ -43,8 +44,9 @@ import static org.mockito.Mockito.doNothing;
 @IgnoreNoPactsToVerify
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(
-    value = { HearingRecordingController.class, ScheduledTaskRunner.class},
-    excludeAutoConfiguration = {SecurityAutoConfiguration.class, OAuth2ClientAutoConfiguration.class}
+    value = {HearingRecordingController.class, ScheduledTaskRunner.class},
+    excludeAutoConfiguration = {SecurityAutoConfiguration.class, OAuth2ClientAutoConfiguration.class,
+        AuthTokenGeneratorConfiguration.class}
 )
 @AutoConfigureMockMvc(addFilters = false)
 public class HearingRecordingProviderTest {
