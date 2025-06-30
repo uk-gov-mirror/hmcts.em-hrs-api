@@ -17,10 +17,13 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2Clien
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.em.hrs.config.WebConfig;
 import uk.gov.hmcts.reform.em.hrs.controller.HearingRecordingController;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
@@ -34,7 +37,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static org.mockito.Mockito.doNothing;
 
 @ActiveProfiles("contract")
-@Provider("em_hrs_recording_api")
+@Provider("em_hrs_recordings_provider")
 @PactBroker(
     url = "${PACT_BROKER_FULL_URL:http://localhost:80}",
     providerBranch = "${pact.provider.branch}"
@@ -44,7 +47,8 @@ import static org.mockito.Mockito.doNothing;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(
     value = {HearingRecordingController.class},
-    excludeAutoConfiguration = {SecurityAutoConfiguration.class, OAuth2ClientAutoConfiguration.class}
+    excludeAutoConfiguration = {SecurityAutoConfiguration.class, OAuth2ClientAutoConfiguration.class},
+    excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = WebConfig.class)
 )
 @AutoConfigureMockMvc(addFilters = false)
 public class HearingRecordingProviderTest {

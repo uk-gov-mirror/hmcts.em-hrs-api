@@ -1,22 +1,26 @@
 package uk.gov.hmcts.reform.em.hrs.consumer;
 
 import au.com.dius.pact.consumer.MockServer;
-import au.com.dius.pact.consumer.dsl.PactBuilder;
+import au.com.dius.pact.consumer.dsl.DslPart;
+import au.com.dius.pact.consumer.dsl.LambdaDsl;
+import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
+import io.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
@@ -29,37 +33,49 @@ public class HearingRecordingConsumerPactTest {
     private static final String SERVICE_AUTH_TOKEN = "Bearer someServiceAuthorizationToken";
     private static final String POST_SEGMENTS_PATH = "/segments";
 
+    private static final String PROVIDER = "em_hrs_api_recordings_provider";
+    private static final String CONSUMER = "em_hrs_api_recordings_consumer";
+    private static final String DELETE_API_PATH = "/delete";
+
     public Map<String, String> getHeaders() {
         return Map.of(
             AUTHORIZATION, AUTH_TOKEN,
-            "ServiceAuthorization", SERVICE_AUTH_TOKEN
+            "ServiceAuthorization", SERVICE_AUTH_TOKEN,
+            "Content-Type", "application/json"
         );
     }
 
-    @Pact(consumer = "em_hrs_recording_api_consumer", provider = "em_hrs_recording_api")
-    public V4Pact deleteHearingRecordingPact(PactBuilder builder) {
+    @Pact(provider = PROVIDER, consumer = CONSUMER)
+    public V4Pact deleteHearingRecordings204(PactDslWithProvider builder) {
+        DslPart requestBody = LambdaDsl.newJsonArrayMinLike(2, array -> {
+            array.numberType(162342324234L).numberType(3423432322333L);
+        }).build();
+
+
         return builder
-            .usingLegacyDsl()
             .given("Hearing recordings exist for given CCD case IDs to delete")
-            .uponReceiving("A request to delete hearing recordings for a case")
-            .path("/delete")
-            .query("ccdCaseIds=123456789,987654321")
-            .method("DELETE")
+            .uponReceiving("A valid delete request for hearing recordings")
+            .path(DELETE_API_PATH)
+            .method(HttpMethod.DELETE.toString())
             .headers(getHeaders())
+            .body(requestBody)
             .willRespondWith()
             .status(HttpStatus.NO_CONTENT.value())
             .toPact(V4Pact.class);
     }
 
     @Test
-    @PactTestFor(pactMethod = "deleteHearingRecordingPact")
-    void testDeleteHearingRecordings(MockServer mockServer) {
+    @PactTestFor(pactMethod = "deleteHearingRecordings204", providerName = PROVIDER)
+    void testDeleteHearingRecordings204(MockServer mockServer) {
+        List<Long> ccdCaseIds = List.of(162342324234L, 3423432322333L);
+
         SerenityRest
             .given()
             .headers(getHeaders())
-            .delete(mockServer.getUrl() + "/delete?ccdCaseIds=123456789,987654321")
-            .then()
-            .statusCode(HttpStatus.NO_CONTENT.value())
-            .body(equalTo(""));
+            .contentType(ContentType.JSON)
+            .body(ccdCaseIds)
+            .when()
+            .delete(mockServer.getUrl() + DELETE_API_PATH)
+            .then().log().all();
     }
 }
