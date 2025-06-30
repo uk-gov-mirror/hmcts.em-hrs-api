@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.em.hrs.controller.HearingRecordingController;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDto;
 import uk.gov.hmcts.reform.em.hrs.service.HearingRecordingService;
+import uk.gov.hmcts.reform.em.hrs.service.ScheduledTaskRunner;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 
@@ -50,6 +51,9 @@ public class HearingRecordingProviderTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private ScheduledTaskRunner scheduledTaskRunner;
     @MockitoBean
     private HearingRecordingService hearingRecordingService;
     @MockitoBean
