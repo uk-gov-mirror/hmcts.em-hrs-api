@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 
 @Configuration
 @EnableMethodSecurity()
-@Profile({"!integration-web-test"})
+@Profile({"!integration-web-test", "!contract"})
 public class MethodSecurityConfig {
     private final PermissionEvaluator permissionEvaluator;
 
