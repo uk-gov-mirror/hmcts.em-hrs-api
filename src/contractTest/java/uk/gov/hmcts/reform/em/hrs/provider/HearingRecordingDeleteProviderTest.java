@@ -37,7 +37,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static org.mockito.Mockito.doNothing;
 
 @ActiveProfiles("contract")
-@Provider("em_hrs_api_recordings_provider")
+@Provider("em_hrs_api_recording_delete_provider")
 @PactBroker(
     url = "${PACT_BROKER_FULL_URL:http://localhost:80}",
     providerBranch = "${pact.provider.branch}"
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.doNothing;
     excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = WebConfig.class)
 )
 @AutoConfigureMockMvc(addFilters = false)
-public class HearingRecordingProviderTest {
+public class HearingRecordingDeleteProviderTest {
 
     @Autowired
     private MockMvc mockMvc;

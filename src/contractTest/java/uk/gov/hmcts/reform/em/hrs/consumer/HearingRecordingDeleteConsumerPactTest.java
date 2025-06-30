@@ -27,14 +27,12 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @ExtendWith(PactConsumerTestExt.class)
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class HearingRecordingConsumerPactTest {
+public class HearingRecordingDeleteConsumerPactTest {
 
     private static final String AUTH_TOKEN = "Bearer someAuthorizationToken";
     private static final String SERVICE_AUTH_TOKEN = "Bearer someServiceAuthorizationToken";
-    private static final String POST_SEGMENTS_PATH = "/segments";
-
-    private static final String PROVIDER = "em_hrs_api_recordings_provider";
-    private static final String CONSUMER = "em_hrs_api_recordings_consumer";
+    private static final String PROVIDER = "em_hrs_api_recording_delete_provider";
+    private static final String CONSUMER = "em_hrs_api_recording_delete_consumer";
     private static final String DELETE_API_PATH = "/delete";
 
     public Map<String, String> getHeaders() {
