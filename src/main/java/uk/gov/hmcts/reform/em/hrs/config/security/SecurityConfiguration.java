@@ -27,7 +27,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@Profile({"!integration-web-test", "!contract"})
+@Profile({"!integration-web-test"})
 public class SecurityConfiguration {
 
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")

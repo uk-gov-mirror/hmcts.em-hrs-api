@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGeneratorFactory;
 @Configuration
 @ComponentScan(basePackages = {"uk.gov.hmcts.reform.idam.client", "uk.gov.hmcts.reform.ccd.client"})
 @EnableFeignClients(basePackages = {"uk.gov.hmcts.reform.idam.client"})
-@Profile({"!integration-web-test", "!contract"})
+@Profile({"!integration-web-test"})
 public class AuthTokenGeneratorConfiguration {
 
     @Bean

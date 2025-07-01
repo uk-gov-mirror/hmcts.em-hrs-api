@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
-@Profile({"!integration-web-test", "!contract"})
+@Profile({"!integration-web-test"})
 public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
     @Override
