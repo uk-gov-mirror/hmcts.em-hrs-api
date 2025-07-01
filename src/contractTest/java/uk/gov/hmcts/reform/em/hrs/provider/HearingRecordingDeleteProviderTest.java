@@ -19,7 +19,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,7 +35,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.mockito.Mockito.doNothing;
 
-@ActiveProfiles("contract")
 @Provider("em_hrs_api_recording_delete_provider")
 @PactBroker(
     url = "${PACT_BROKER_FULL_URL:http://localhost:80}",
