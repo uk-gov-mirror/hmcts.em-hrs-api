@@ -80,25 +80,25 @@ public class HearingRecordingSegmentConsumerPactTest {
     @PactTestFor(pactMethod = "createHearingRecording202", providerName = PROVIDER)
     void testCreateHearingRecording202(MockServer mockServer) {
         String requestBody = """
-        {
-          "folder": "some-folder",
-          "caseRef": "1234567890123456",
-          "recordingSource": {"source": "CVP"},
-          "hearingRoomRef": "room-1",
-          "serviceCode": "BBA3",
-          "jurisdictionCode": "BBA",
-          "courtLocationCode": "123",
-          "recordingRef": "rec-123456",
-          "sourceBlobUrl": "http://blobstorage/rec-123456",
-          "filename": "file.mp3",
-          "filenameExtension": "mp3",
-          "fileSize": 12345678,
-          "segment": 1,
-          "checkSum": "abc123",
-          "interpreter": "none",
-          "recordingDateTime": "2025-07-02-10.30.00.000"
-        }
-        """;
+            {
+              "folder": "some-folder",
+              "caseRef": "1234567890123456",
+              "recordingSource": {"source": "CVP"},
+              "hearingRoomRef": "room-1",
+              "serviceCode": "BBA3",
+              "jurisdictionCode": "BBA",
+              "courtLocationCode": "123",
+              "recordingRef": "rec-123456",
+              "sourceBlobUrl": "http://blobstorage/rec-123456",
+              "filename": "file.mp3",
+              "filenameExtension": "mp3",
+              "fileSize": 12345678,
+              "segment": 1,
+              "checkSum": "abc123",
+              "interpreter": "none",
+              "recordingDateTime": "2025-07-02-10.30.00.000"
+            }
+            """;
 
         SerenityRest
             .given()
