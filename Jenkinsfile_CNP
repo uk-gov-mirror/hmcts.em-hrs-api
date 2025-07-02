@@ -122,6 +122,7 @@ def setPreviewEnvVars() {
   env.UPLOAD_CCD_DEF = true
 }
 
+
 def vaultOverrides = [
   'preview' : 'aat',
   'spreview': 'saat'
@@ -130,7 +131,7 @@ def vaultOverrides = [
 withPipeline(type, product, component) {
   enableDbMigration('em-hrs-api')
   overrideVaultEnvironments(vaultOverrides)
-
+  enablePactAs([AppPipelineDsl.PactRoles.CONSUMER, AppPipelineDsl.PactRoles.PROVIDER])
   onNonPR() {
     loadVaultSecrets(secrets)
   }
@@ -208,7 +209,6 @@ withPipeline(type, product, component) {
 
   onMaster()
     {
-  enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
 
   afterAlways('test') {
@@ -218,6 +218,10 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('pact-consumer-tests') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/**/*'
+  }
+
+  afterAlways('pact-provider-verification') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/**/*'
   }
 
