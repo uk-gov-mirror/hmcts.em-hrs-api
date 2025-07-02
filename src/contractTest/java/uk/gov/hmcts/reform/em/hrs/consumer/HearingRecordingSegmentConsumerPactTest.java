@@ -14,11 +14,9 @@ import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -102,7 +100,7 @@ public class HearingRecordingSegmentConsumerPactTest {
         }
         """;
 
-        io.restassured.RestAssured
+        SerenityRest
             .given()
             .headers(getHeaders())
             .contentType(ContentType.JSON)

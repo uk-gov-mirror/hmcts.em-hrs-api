@@ -30,10 +30,8 @@ import uk.gov.hmcts.reform.em.hrs.service.ScheduledTaskRunner;
 import uk.gov.hmcts.reform.em.hrs.service.SegmentDownloadService;
 import uk.gov.hmcts.reform.em.hrs.service.ShareAndNotifyService;
 
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @Provider("em_hrs_api_recording_segments_provider")
