@@ -63,7 +63,7 @@ public class AzureStorageConfig {
         return blobContainerClient;
     }
 
-    @Bean("CvpBlobContainerClient")
+    @Bean("cvpBlobContainerClient")
     public BlobContainerClient getCvpBlobContainerClient() {
         LOGGER.info("************   CVP   ***********");
 
