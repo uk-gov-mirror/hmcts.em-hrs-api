@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.em.hrs.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.reform.em.hrs.domain.HearingRecordingSegment;
 import uk.gov.hmcts.reform.em.hrs.dto.HearingRecordingDeletionDto;
+import uk.gov.hmcts.reform.em.hrs.dto.SegmentMimeTypeTaskDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,4 +43,16 @@ public interface HearingRecordingSegmentRepository extends JpaRepository<Hearing
             """)
     List<HearingRecordingDeletionDto> findFilenamesByHearingRecordingId(UUID hearingRecordingId);
 
+
+    @Query("""
+        SELECT new uk.gov.hmcts.reform.em.hrs.repository.dto.SegmentMimeTypeTaskDTO(s.id, s.filename)
+        FROM HearingRecordingSegment s
+        WHERE s.mimeType IS NULL AND s.createdOn > :dateTime
+        """)
+    List<SegmentMimeTypeTaskDTO> findSegmentsToProcess(@Param("dateTime") LocalDateTime dateTime);
+
+
+    @Modifying
+    @Query("UPDATE HearingRecordingSegment s SET s.mimeType = :mimeType WHERE s.id = :id")
+    void updateMimeType(@Param("id") UUID id, @Param("mimeType") String mimeType);
 }

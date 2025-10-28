@@ -177,6 +177,11 @@ scheduling:
     jurisdiction-codes:
       batch-size: ${JURISDICTION_CODES_BATCH_SIZE:10}
       thread-limit: ${JURISDICTION_CODES_THREAD_LIMIT:2}
+    mime-types:
+      batch-size: ${UPDATE_MIME_TYPES_BATCH_SIZE:10}
+      thread-limit: ${UPDATE_MIME_TYPES_THREAD_LIMIT:2}
+      processed-since-hours: {UPDATE_MIME_TYPES_HOURS:2}
+
 report:
   recipients: ${SUMMARY_REPORT_RECIPIENTS:xxxx}
   from: ${SMTP_USERNAME:xxxx}

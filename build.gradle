@@ -310,6 +310,7 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.14.1'
   implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.4.1'
+  implementation group: 'org.apache.tika', name: 'tika-core', version: '3.2.3'
 
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.2'
 
@@ -549,9 +550,9 @@ bootWithCCD {
       environment key, value
     }
 
-    exec {
-      commandLine 'docker', 'compose', '-f', 'src/cftlib/resources/docker-compose-local.yml', '-p', 'cftlib', 'up', '-d'
-    }
+//    exec {
+//      commandLine 'docker', 'compose', '-f', 'src/cftlib/resources/docker-compose-local.yml', '-p', 'cftlib', 'up', '-d'
+//    }
 
   }
   environment 'HRS_API_SERVER_PORT', '8081'
