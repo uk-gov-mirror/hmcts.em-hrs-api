@@ -73,7 +73,8 @@ class CcdUploadServiceImplTest {
     void testShouldUpdateCaseWhenHearingRecordingExistsInDatabase() {
         HearingRecording existingRecording = HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3;
 
-        doReturn(Optional.of(existingRecording)).when(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
+        doReturn(Optional.of(existingRecording))
+            .when(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
         doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).updateCaseData(
             existingRecording.getCcdCaseId(),
             existingRecording.getId(),
@@ -106,7 +107,8 @@ class CcdUploadServiceImplTest {
 
         verify(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
         verify(segmentService).createAndSaveSegment(recordingWithNullCcdId, HEARING_RECORDING_DTO);
-        verify(ccdDataStoreApiClient, never()).updateCaseData(anyLong(), any(UUID.class), any(HearingRecordingDto.class));
+        verify(ccdDataStoreApiClient, never())
+            .updateCaseData(anyLong(), any(UUID.class), any(HearingRecordingDto.class));
         verify(ccdDataStoreApiClient, never()).createCase(any(UUID.class), any(HearingRecordingDto.class), any());
     }
 
