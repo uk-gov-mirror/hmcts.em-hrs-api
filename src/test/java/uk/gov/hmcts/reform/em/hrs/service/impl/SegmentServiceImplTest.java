@@ -68,7 +68,8 @@ class SegmentServiceImplTest {
             doThrow(new ConstraintViolationException("test violation", null, null))
                 .when(segmentRepository).saveAndFlush(any(HearingRecordingSegment.class));
 
-            assertThrows(ConstraintViolationException.class, () -> underTest.createAndSaveInitialSegment(recording, dto));
+            assertThrows(ConstraintViolationException.class,
+                         () -> underTest.createAndSaveInitialSegment(recording, dto));
 
             verify(segmentRepository).saveAndFlush(any(HearingRecordingSegment.class));
         }
