@@ -11,5 +11,8 @@ public interface SegmentService {
 
     List<HearingRecordingSegment> findByRecordingId(UUID id);
 
-    void createAndSaveSegment(HearingRecording hearingRecording, HearingRecordingDto recordingDto);
+    void createAndSaveInitialSegment(HearingRecording hearingRecording, HearingRecordingDto recordingDto);
+
+    void createAndSaveAdditionalSegment(HearingRecording hearingRecording, HearingRecordingDto recordingDto);
+
 }

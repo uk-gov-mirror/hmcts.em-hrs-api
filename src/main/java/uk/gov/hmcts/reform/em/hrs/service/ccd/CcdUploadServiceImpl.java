@@ -48,18 +48,13 @@ public class CcdUploadServiceImpl implements CcdUploadService {
         final Optional<HearingRecording> hearingRecordingOptional =
             hearingRecordingService.findHearingRecording(recordingDto);
 
-        HearingRecording hearingRecording;
         Long caseId;
-
         if (hearingRecordingOptional.isPresent()) {
-            hearingRecording = hearingRecordingOptional.get();
-            caseId = updateCase(hearingRecording, recordingDto);
+            caseId = updateCase(hearingRecordingOptional.get(), recordingDto);
         } else {
-            hearingRecording = hearingRecordingService.createHearingRecording(recordingDto);
-            caseId = createCaseInCcd(hearingRecording, recordingDto);
+            HearingRecording newHearingRecording = hearingRecordingService.createHearingRecording(recordingDto);
+            caseId = createCaseInCcd(newHearingRecording, recordingDto);
         }
-
-        segmentService.createAndSaveSegment(hearingRecording, recordingDto);
 
         // this is for dynatrace, do not change
         LOGGER.info(
@@ -92,6 +87,8 @@ public class CcdUploadServiceImpl implements CcdUploadService {
 
         LOGGER.info("Case Details (id {}) updated successfully", caseDetailsId);
 
+        segmentService.createAndSaveAdditionalSegment(recording, recordingDto);
+
         return caseDetailsId;
     }
 
@@ -109,6 +106,8 @@ public class CcdUploadServiceImpl implements CcdUploadService {
         hearingRecordingService.updateCcdCaseId(recording, caseId);
 
         LOGGER.info("Created case in CCD: {} for  {} ", caseId, recordingDto.getRecordingSource());
+
+        segmentService.createAndSaveInitialSegment(recording, recordingDto);
 
         return caseId;
     }

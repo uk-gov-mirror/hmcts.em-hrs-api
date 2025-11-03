@@ -33,17 +33,16 @@ public class SegmentServiceImpl implements SegmentService {
     }
 
     @Override
-    public void createAndSaveSegment(final HearingRecording hearingRecording, final HearingRecordingDto recordingDto) {
-        HearingRecordingSegment segment = HearingRecordingSegment.builder()
-            .filename(recordingDto.getFilename())
-            .fileExtension(recordingDto.getFilenameExtension())
-            .fileSizeMb(recordingDto.getFileSize())
-            .fileMd5Checksum(recordingDto.getCheckSum())
-            .ingestionFileSourceUri(recordingDto.getSourceBlobUrl())
-            .recordingSegment(recordingDto.getSegment())
-            .hearingRecording(hearingRecording)
-            .interpreter(recordingDto.getInterpreter())
-            .build();
+    public void createAndSaveInitialSegment(final HearingRecording hearingRecording,
+                                            final HearingRecordingDto recordingDto) {
+        HearingRecordingSegment segment = createSegment(hearingRecording, recordingDto);
+        segmentRepository.saveAndFlush(segment);
+    }
+
+    @Override
+    public void createAndSaveAdditionalSegment(final HearingRecording hearingRecording,
+                                               final HearingRecordingDto recordingDto) {
+        HearingRecordingSegment segment = createSegment(hearingRecording, recordingDto);
         try {
             segmentRepository.saveAndFlush(segment);
         } catch (ConstraintViolationException e) {
@@ -53,5 +52,19 @@ public class SegmentServiceImpl implements SegmentService {
                 hearingRecording.getCcdCaseId()
             );
         }
+    }
+
+    private HearingRecordingSegment createSegment(final HearingRecording hearingRecording,
+                                                  final HearingRecordingDto recordingDto) {
+        return HearingRecordingSegment.builder()
+            .filename(recordingDto.getFilename())
+            .fileExtension(recordingDto.getFilenameExtension())
+            .fileSizeMb(recordingDto.getFileSize())
+            .fileMd5Checksum(recordingDto.getCheckSum())
+            .ingestionFileSourceUri(recordingDto.getSourceBlobUrl())
+            .recordingSegment(recordingDto.getSegment())
+            .hearingRecording(hearingRecording)
+            .interpreter(recordingDto.getInterpreter())
+            .build();
     }
 }
