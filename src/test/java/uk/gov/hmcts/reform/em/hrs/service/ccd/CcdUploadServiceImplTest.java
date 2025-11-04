@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,10 +67,8 @@ class CcdUploadServiceImplTest {
         verify(hearingRecordingService).createHearingRecording(HEARING_RECORDING_DTO);
         verify(ccdDataStoreApiClient).createCase(newRecording.getId(), HEARING_RECORDING_DTO, A_TTL_DATE);
         verify(hearingRecordingService).updateCcdCaseId(newRecording, CCD_CASE_ID);
-        verify(segmentService).createAndSaveInitialSegment(any(HearingRecording.class), eq(HEARING_RECORDING_DTO));
-
+        verify(segmentService).createAndSaveSegment(any(HearingRecording.class), eq(HEARING_RECORDING_DTO));
         verify(ccdDataStoreApiClient, never()).updateCaseData(anyLong(), any(), any());
-        verify(segmentService, never()).createAndSaveAdditionalSegment(any(), any());
     }
 
     @Test
@@ -78,25 +78,54 @@ class CcdUploadServiceImplTest {
         doReturn(Optional.of(existingRecording))
             .when(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
         doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).updateCaseData(
-            existingRecording.getCcdCaseId(),
-            existingRecording.getId(),
-            HEARING_RECORDING_DTO
+            anyLong(), any(), any()
         );
 
         underTest.upload(HEARING_RECORDING_DTO);
 
-        verify(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
-        verify(ccdDataStoreApiClient).updateCaseData(
-            existingRecording.getCcdCaseId(),
-            existingRecording.getId(),
-            HEARING_RECORDING_DTO
-        );
-        verify(segmentService).createAndSaveAdditionalSegment(existingRecording, HEARING_RECORDING_DTO);
-
-        verify(ccdDataStoreApiClient, never()).createCase(any(), any(), any());
+        verify(ccdDataStoreApiClient).updateCaseData(anyLong(), any(), any());
+        verify(segmentService).createAndSaveSegment(existingRecording, HEARING_RECORDING_DTO);
         verify(hearingRecordingService, never()).createHearingRecording(any());
-        verify(segmentService, never()).createAndSaveInitialSegment(any(), any());
     }
+
+    @Test
+    void testUpdateCaseShouldHandleConstraintViolationExceptionWhenSegmentExists() {
+        HearingRecording existingRecording = HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3;
+        doReturn(Optional.of(existingRecording))
+            .when(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
+        doThrow(new ConstraintViolationException("test violation", null, null))
+            .when(segmentService).createAndSaveSegment(any(), any());
+
+        assertDoesNotThrow(() -> underTest.upload(HEARING_RECORDING_DTO));
+
+        verify(segmentService).createAndSaveSegment(existingRecording, HEARING_RECORDING_DTO);
+    }
+
+    @Test
+    void testUpdateCaseShouldPropagateOtherExceptionsWhenSegmentCreationFails() {
+        HearingRecording existingRecording = HEARING_RECORDING_WITH_SEGMENTS_1_2_and_3;
+        doReturn(Optional.of(existingRecording))
+            .when(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
+        doThrow(new RuntimeException("Generic DB error"))
+            .when(segmentService).createAndSaveSegment(any(), any());
+
+        assertThrows(RuntimeException.class, () -> underTest.upload(HEARING_RECORDING_DTO));
+
+        verify(segmentService).createAndSaveSegment(existingRecording, HEARING_RECORDING_DTO);
+    }
+
+    @Test
+    void testCreateCaseShouldPropagateExceptionWhenSegmentCreationFails() {
+        doReturn(Optional.empty()).when(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
+        doReturn(hearingRecordingWithNoDataBuilder()).when(hearingRecordingService).createHearingRecording(any());
+        doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).createCase(any(), any(), any());
+
+        doThrow(new RuntimeException("Generic DB error"))
+            .when(segmentService).createAndSaveSegment(any(), any());
+
+        assertThrows(RuntimeException.class, () -> underTest.upload(HEARING_RECORDING_DTO));
+    }
+
 
     @Test
     void testShouldNotCallCcdOrSegmentApiWhenRecordingExistsButCcdIdIsNull() {
@@ -109,33 +138,16 @@ class CcdUploadServiceImplTest {
         underTest.upload(HEARING_RECORDING_DTO);
 
         verify(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
-
         verify(ccdDataStoreApiClient, never())
             .updateCaseData(anyLong(), any(UUID.class), any(HearingRecordingDto.class));
         verify(ccdDataStoreApiClient, never()).createCase(any(UUID.class), any(HearingRecordingDto.class), any());
-        verify(segmentService, never()).createAndSaveInitialSegment(any(), any());
-        verify(segmentService, never()).createAndSaveAdditionalSegment(any(), any());
-    }
-
-    @Test
-    void testShouldRethrowExceptionWhenInitialSegmentCreationFails() {
-        HearingRecording newRecording = hearingRecordingWithNoDataBuilder();
-        doReturn(Optional.empty()).when(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
-        doReturn(newRecording).when(hearingRecordingService).createHearingRecording(HEARING_RECORDING_DTO);
-        doReturn(CCD_CASE_ID).when(ccdDataStoreApiClient).createCase(any(), any(), any());
-        doThrow(new RuntimeException("DB connection failed"))
-            .when(segmentService).createAndSaveInitialSegment(any(), any());
-
-        assertThrows(RuntimeException.class, () -> underTest.upload(HEARING_RECORDING_DTO));
-
-        verify(segmentService).createAndSaveInitialSegment(any(), any());
-        verify(segmentService, never()).createAndSaveAdditionalSegment(any(), any());
+        verify(segmentService, never()).createAndSaveSegment(any(), any());
     }
 
     @Test
     void testShouldRethrowCcdUploadExceptionWhenHearingRecordingCreationFails() {
         doReturn(Optional.empty()).when(hearingRecordingService).findHearingRecording(HEARING_RECORDING_DTO);
-        doThrow(new CcdUploadException("Hearing Recording already exists. Likely race condition from another server"))
+        doThrow(new CcdUploadException("Hearing Recording already exists."))
             .when(hearingRecordingService).createHearingRecording(HEARING_RECORDING_DTO);
 
         final CcdUploadException e = assertThrows(
@@ -143,10 +155,8 @@ class CcdUploadServiceImplTest {
             () -> underTest.upload(HEARING_RECORDING_DTO)
         );
 
-        assertEquals("Hearing Recording already exists. Likely race condition from another server", e.getMessage());
-
+        assertEquals("Hearing Recording already exists.", e.getMessage());
         verify(ccdDataStoreApiClient, never()).createCase(any(), any(), any());
-        verify(segmentService, never()).createAndSaveInitialSegment(any(), any());
-        verify(segmentService, never()).createAndSaveAdditionalSegment(any(), any());
+        verify(segmentService, never()).createAndSaveSegment(any(), any());
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.hrs.service.ccd;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,15 @@ public class CcdUploadServiceImpl implements CcdUploadService {
 
         LOGGER.info("Case Details (id {}) updated successfully", caseDetailsId);
 
-        segmentService.createAndSaveAdditionalSegment(recording, recordingDto);
+        try {
+            segmentService.createAndSaveSegment(recording, recordingDto);
+        } catch (ConstraintViolationException e) {
+            LOGGER.warn(
+                "Segment not added to database, which is acceptable for duplicate segments (ref {}), (ccdId {})",
+                recordingDto.getRecordingRef(),
+                recording.getCcdCaseId()
+            );
+        }
 
         return caseDetailsId;
     }
@@ -107,7 +116,7 @@ public class CcdUploadServiceImpl implements CcdUploadService {
 
         LOGGER.info("Created case in CCD: {} for  {} ", caseId, recordingDto.getRecordingSource());
 
-        segmentService.createAndSaveInitialSegment(recording, recordingDto);
+        segmentService.createAndSaveSegment(recording, recordingDto);
 
         return caseId;
     }

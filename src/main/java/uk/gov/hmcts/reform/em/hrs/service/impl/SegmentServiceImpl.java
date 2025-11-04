@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs.service.impl;
 
-import org.hibernate.exception.ConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +16,6 @@ import java.util.UUID;
 @Transactional
 public class SegmentServiceImpl implements SegmentService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SegmentServiceImpl.class);
     private final HearingRecordingSegmentRepository segmentRepository;
 
     @Autowired
@@ -33,25 +29,10 @@ public class SegmentServiceImpl implements SegmentService {
     }
 
     @Override
-    public void createAndSaveInitialSegment(final HearingRecording hearingRecording,
-                                            final HearingRecordingDto recordingDto) {
+    public void createAndSaveSegment(final HearingRecording hearingRecording, final HearingRecordingDto recordingDto) {
         HearingRecordingSegment segment = createSegment(hearingRecording, recordingDto);
-        segmentRepository.saveAndFlush(segment);
-    }
 
-    @Override
-    public void createAndSaveAdditionalSegment(final HearingRecording hearingRecording,
-                                               final HearingRecordingDto recordingDto) {
-        HearingRecordingSegment segment = createSegment(hearingRecording, recordingDto);
-        try {
-            segmentRepository.saveAndFlush(segment);
-        } catch (ConstraintViolationException e) {
-            LOGGER.warn(
-                "Segment not added to database, which is acceptable for duplicate segments (ref {}), (ccdId {})",
-                recordingDto.getRecordingRef(),
-                hearingRecording.getCcdCaseId()
-            );
-        }
+        segmentRepository.saveAndFlush(segment);
     }
 
     private HearingRecordingSegment createSegment(final HearingRecording hearingRecording,
