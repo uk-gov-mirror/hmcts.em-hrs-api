@@ -150,6 +150,11 @@ tasks.register('provisionEnv', Test) {
   }
 }
 
+// Ensure provisioning runs before functional tests (define after both tasks exist)
+tasks.named('functional').configure {
+  dependsOn tasks.named('provisionEnv')
+}
+
 
 tasks.register('integration', Test) {
   failFast = true
