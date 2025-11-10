@@ -89,6 +89,11 @@ withNightlyPipeline(type, product, component) {
   enableFullFunctionalTest(60)
   enableSlackNotifications('#em-dev-chat')
 
+  // Provision IDAM users before functional tests run
+  before('functionalTest:aat') {
+    sh './gradlew --no-daemon provisionEnv'
+  }
+
   afterAlways('functionalTest:aat') {
 
     publishHTML target: [
