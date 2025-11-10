@@ -85,7 +85,6 @@ withNightlyPipeline(type, product, component) {
   enableMutationTest()
   enableSecurityScan()
   enableFortifyScan('em-hrs-api-aat')
-  enableSmokeTest()
   enableFullFunctionalTest(60)
   enableSlackNotifications('#em-dev-chat')
 
