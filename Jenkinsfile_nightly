@@ -85,13 +85,13 @@ withNightlyPipeline(type, product, component) {
   enableMutationTest()
   enableSecurityScan()
   enableFortifyScan('em-hrs-api-aat')
-  enableFullFunctionalTest(60)
-  enableSlackNotifications('#em-dev-chat')
-
-  // Provision IDAM users before functional tests run
+  // Register hook BEFORE the stage is created
   before('functionalTest:aat') {
+    echo 'Running pre-functional provisioning (provisionEnv)'
     sh './gradlew --no-daemon provisionEnv'
   }
+  enableFullFunctionalTest(60)
+  enableSlackNotifications('#em-dev-chat')
 
   afterAlways('functionalTest:aat') {
 
