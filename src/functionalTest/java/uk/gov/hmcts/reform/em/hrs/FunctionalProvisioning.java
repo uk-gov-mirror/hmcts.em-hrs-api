@@ -73,6 +73,19 @@ public class FunctionalProvisioning extends BaseTest {
         createIdamUser(USER_WITH_SEARCHER_ROLE_CASEWORKER_HRS, CASE_WORKER_HRS_SEARCHER_ROLE);
         createIdamUser(USER_WITH_REQUESTOR_ROLE_CASEWORKER_ONLY, CASE_WORKER_ROLE);
         createIdamUser(USER_WITH_NONACCESS_ROLE_CITIZEN, CITIZEN_ROLE);
+
+        // Import CCD definition only when enabled via environment flag
+        String uploadDef = System.getenv("UPLOAD_CCD_DEF");
+        if ("true".equalsIgnoreCase(uploadDef)) {
+            try {
+                LOGGER.info("UPLOAD_CCD_DEF is true - importing CCD definition");
+                extendedCcdHelper.importDefinitionFile();
+            } catch (Exception e) {
+                LOGGER.warn("Failed to import CCD definition", e);
+            }
+        } else {
+            LOGGER.info("UPLOAD_CCD_DEF not enabled - skipping CCD definition import");
+        }
     }
 
     private void createIdamUser(String email, List<String> roles) {
