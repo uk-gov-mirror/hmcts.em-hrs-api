@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.test.idam.IdamConfiguration;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -50,6 +51,24 @@ public class SmokeTest {
     public static final String SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION =
         "hrs.functional.system.user@hmcts.net";
 
+    private static final String ROLE_CASE_WORKER = "caseworker";
+    public static final List<String>
+        SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION_ROLES =
+        List.of(
+            ROLE_CASE_WORKER,
+            "caseworker-hrs",
+            "caseworker-hrs-searcher",
+            "ccd-import",
+            "caseworker-hrs-systemupdate"
+        );
+
+    protected static final String USER_WITH_SEARCHER_ROLE_CASEWORKER_HRS = "em-test-searcher@test.hmcts.net";
+    protected static final String USER_WITH_REQUESTOR_ROLE_CASEWORKER_ONLY = "em-test-requestor@test.hmcts.net";
+    protected static final String USER_WITH_NONACCESS_ROLE_CITIZEN = "em-test-citizen@test.hmcts.net";
+    protected static final List<String> CASE_WORKER_ROLE = List.of(ROLE_CASE_WORKER);
+    protected static final List<String> CASE_WORKER_HRS_SEARCHER_ROLE =
+        List.of(ROLE_CASE_WORKER, "caseworker-hrs", "caseworker-hrs-searcher");
+    protected static final List<String> CITIZEN_ROLE = List.of("citizen");
 
     @Value("${test.url}")
     private String testUrl;

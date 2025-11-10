@@ -68,12 +68,7 @@ public class FunctionalProvisioning extends BaseTest {
         SerenityRest.useRelaxedHTTPSValidation();
 
         createIdamUser(SYSTEM_USER_FOR_FUNCTIONAL_TEST_ORCHESTRATION,
-            List.of(ROLE_CASE_WORKER,
-                    "caseworker-hrs",
-                    "caseworker-hrs-searcher",
-                    "ccd-import",
-                    "caseworker-hrs-systemupdate")
-        );
+            List.of(ROLE_CASE_WORKER, "caseworker-hrs", "caseworker-hrs-searcher", "ccd-import", "caseworker-hrs-systemupdate"));
 
         createIdamUser(USER_WITH_SEARCHER_ROLE_CASEWORKER_HRS, CASE_WORKER_HRS_SEARCHER_ROLE);
         createIdamUser(USER_WITH_REQUESTOR_ROLE_CASEWORKER_ONLY, CASE_WORKER_ROLE);
