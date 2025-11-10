@@ -212,14 +212,10 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('smoketest:preview') {
-    // Provision IDAM users after smoke tests on preview
-    sh './gradlew --no-daemon --rerun-tasks provisionEnv'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/**/*'
   }
 
   afterAlways('smoketest:aat') {
-    // Provision IDAM users after smoke tests on AAT
-    sh './gradlew --no-daemon --rerun-tasks provisionEnv'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/**/*'
   }
 
