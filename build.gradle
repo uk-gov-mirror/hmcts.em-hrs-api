@@ -119,41 +119,11 @@ tasks.register('functional', Test) {
   classpath = sourceSets.functionalTest.runtimeClasspath
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
   include "uk/gov/hmcts/reform/em/hrs/**"
-  // Do not run the provisioning test as part of normal functional tests
-  exclude "**/FunctionalProvisioning*"
   logger.info("Functional tests info:")
   logger.info('A {} log message', 'info')
 }
 
-// Runs only the FunctionalProvisioning class to create required IDAM users
-tasks.register('provisionEnv', Test) {
-  description = "Provision test environment prerequisites (e.g., IDAM users)"
-  group = "Verification"
-  useJUnitPlatform()
-  testClassesDirs = sourceSets.functionalTest.output.classesDirs
-  classpath = sourceSets.functionalTest.runtimeClasspath
-  include "**/FunctionalProvisioning*"
-  testLogging {
-    events = ["passed", "failed", "skipped"]
-    showStandardStreams = true
-  }
-  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
-  doFirst() {
-    if (project.file('./.aat-env').exists()) {
-      project.file('./.aat-env').readLines().each() {
-        def index = it.indexOf("=")
-        def key = it.substring(0, index)
-        def value = it.substring(index + 1)
-        environment key, value
-      }
-    }
-  }
-}
-
-// Ensure provisioning runs before functional tests (define after both tasks exist)
-tasks.named('functional').configure {
-  dependsOn tasks.named('provisionEnv')
-}
+ 
 
 
 tasks.register('integration', Test) {

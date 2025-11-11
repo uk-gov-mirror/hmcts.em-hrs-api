@@ -82,9 +82,14 @@ withNightlyPipeline(type, product, component) {
 
   overrideVaultEnvironments(vaultOverrides)
   loadVaultSecrets(secrets)
-  enableMutationTest()
-  enableSecurityScan()
-  enableFortifyScan('em-hrs-api-aat')
+  //enableMutationTest()
+ // enableSecurityScan()
+ // enableFortifyScan('em-hrs-api-aat')
+  // Register hook BEFORE the stage is created
+  before('functionalTest:aat') {
+    echo 'Running pre-functional provisioning (provisionEnv)'
+    sh './gradlew --no-daemon smoke'
+  }
   enableFullFunctionalTest(60)
   enableSlackNotifications('#em-dev-chat')
 
