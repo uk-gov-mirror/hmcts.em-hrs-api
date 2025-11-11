@@ -85,6 +85,10 @@ withNightlyPipeline(type, product, component) {
   enableMutationTest()
   enableSecurityScan()
   enableFortifyScan('em-hrs-api-aat')
+  before('fullFunctionalTest') {
+    echo 'Running idam user creation by smoke tests'
+    sh './gradlew --no-daemon smoke'
+  }
   enableFullFunctionalTest(60)
   enableSlackNotifications('#em-dev-chat')
 
