@@ -30,7 +30,6 @@ locals {
   db_name                    = "${local.app_full_name}-postgres-db-v15"
   private_endpoint_rg_name   = var.businessArea == "sds" ? "ss-${var.env}-network-rg" : "${var.businessArea}-${var.env}-network-rg"
   private_endpoint_vnet_name = var.businessArea == "sds" ? "ss-${var.env}-vnet" : "${var.businessArea}-${var.env}-vnet"
-  private_dns_zone_ids       = ["/subscriptions/1baf5470-1c3e-40d3-a6f7-74bfbce4b348/resourceGroups/core-infra-intsvc-rg/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"]
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -294,7 +293,7 @@ module "db-v15" {
   force_user_permissions_trigger = "2"
 }
 
-# Private Endpoint in VH Wowza subnet
+# Private Endpoint in VH Wowza subnet - temporarily re-added to allow orphaned state resource destruction
 data "azurerm_subnet" "vh_private_endpoints" {
   provider = azurerm.vh_vnet
   count    = var.create_vh_vnet_private_endpoint == "true" ? 1 : 0
@@ -319,11 +318,6 @@ resource "azurerm_private_endpoint" "vh_vnet_private_endpoint" {
     private_connection_resource_id = module.storage_account.storageaccount_id
     subresource_names              = ["blob"]
   }
-
-  # private_dns_zone_group {
-  #   name                 = "endpoint-dnszonegroup"
-  #   private_dns_zone_ids = local.private_dns_zone_ids
-  # }
 
   tags = var.common_tags
 }
