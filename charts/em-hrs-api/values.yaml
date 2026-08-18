@@ -1,9 +1,10 @@
 java:
+  enabled: true
   applicationPort: 8080
-  image: 'hmctsprod.azurecr.io/em/hrs-api:latest'
+  image: &shared_img 'hmctsprod.azurecr.io/em/hrs-api:latest'
   ingressHost: em-hrs-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-  aadIdentityName: em
-  keyVaults:
+  aadIdentityName: &shared_identity em
+  keyVaults: &shared_kv
     em-hrs-api:
       secrets:
         - name: hrs-api-POSTGRES-PASS
@@ -48,17 +49,18 @@ java:
           alias: APPINSIGHTS_INSTRUMENTATIONKEY
         - name: em-app-insights-connection-string
           alias: app-insights-connection-string
-  environment:
+  environment: &shared_env
     SPRING_DATASOURCE_URL: jdbc:postgresql://em-hrs-api-postgres-db-v15-{{ .Values.global.environment }}.postgres.database.azure.com:5432/emhrs?ssl=disable
     SPRING_DATASOURCE_USERNAME: pgadmin
     RUN_DB_MIGRATION_ON_STARTUP: false
     TIMEOUT_SERVER_SHUTDOWN_PHASE: 1m
     OPEN_ID_API_BASE_URI: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net/o
-    IDAM_API_BASE_URI: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+    IDAM_WEB_API_BASE_URI: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net
     S2S_BASE_URI: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     CCD_DATA_API_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     XUI_API_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
     IDAM_REDIRECT_URI: http://em-hrs-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2redirect
+    IDAM_SECURITY_ALLOWED_ISSUERS_0: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     JSON_CONSOLE_PRETTY_PRINT: false
     LOG_OUTPUT: single
     ROOT_LOGGING_LEVEL: INFO
@@ -83,6 +85,13 @@ java:
     DELETE_CASE_S2S_WHITELIST: ccd_case_disposer,em_gw
     INGESTION_ENABLED: true
     CCDUPLOAD_ENABLED: true
+
+job:
+  enabled: false
+  image: *shared_img
+  aadIdentityName: *shared_identity
+  keyVaults: *shared_kv
+  environment: *shared_env
 
 hrsblobstorage:
   enabled: false

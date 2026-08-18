@@ -5,23 +5,16 @@ provider "azurerm" {
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
-  alias                      = "cft_vnet"
-  subscription_id            = var.aks_subscription_id
+  resource_provider_registrations = "none"
+  alias                           = "cft_vnet"
+  subscription_id                 = var.aks_subscription_id
 }
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
-  alias                      = "vh_vnet"
-  subscription_id            = var.vh_subscription_id
-}
-
-provider "azurerm" {
-  features {}
-  skip_provider_registration = true
-  alias                      = "cvp_vnet"
-  subscription_id            = var.cvp_subscription_id
+  resource_provider_registrations = "none"
+  alias                           = "cvp_vnet"
+  subscription_id                 = var.cvp_subscription_id
 }
 
 locals {
@@ -30,7 +23,6 @@ locals {
   db_name                    = "${local.app_full_name}-postgres-db-v15"
   private_endpoint_rg_name   = var.businessArea == "sds" ? "ss-${var.env}-network-rg" : "${var.businessArea}-${var.env}-network-rg"
   private_endpoint_vnet_name = var.businessArea == "sds" ? "ss-${var.env}-vnet" : "${var.businessArea}-${var.env}-vnet"
-  private_dns_zone_ids       = ["/subscriptions/1baf5470-1c3e-40d3-a6f7-74bfbce4b348/resourceGroups/core-infra-intsvc-rg/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"]
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -40,16 +32,17 @@ resource "azurerm_resource_group" "rg" {
 }
 
 module "key-vault" {
-  source                     = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
-  product                    = local.app_full_name
-  env                        = var.env
-  tenant_id                  = var.tenant_id
-  object_id                  = var.jenkins_AAD_objectId
-  resource_group_name        = azurerm_resource_group.rg.name
-  product_group_object_id    = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
-  common_tags                = var.common_tags
-  managed_identity_object_id = data.azurerm_user_assigned_identity.em-shared-identity.principal_id
-  jenkins_object_id          = data.azurerm_user_assigned_identity.jenkins.principal_id
+  source                       = "git@github.com:hmcts/cnp-module-key-vault?ref=DTSPO-31965/remove-jenkins-ptl-access"
+  product                      = local.app_full_name
+  env                          = var.env
+  tenant_id                    = var.tenant_id
+  object_id                    = var.jenkins_AAD_objectId
+  resource_group_name          = azurerm_resource_group.rg.name
+  product_group_object_id      = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
+  common_tags                  = var.common_tags
+  managed_identity_object_id   = data.azurerm_user_assigned_identity.em-shared-identity.principal_id
+  jenkins_object_id            = data.azurerm_user_assigned_identity.jenkins.principal_id
+  grant_preview_jenkins_access = var.env == "aat"
 }
 
 data "azurerm_user_assigned_identity" "jenkins" {
@@ -128,6 +121,25 @@ module "storage_account" {
   common_tags  = local.tags
   team_contact = var.team_contact
   destroy_me   = var.destroy_me
+}
+
+resource "azurerm_storage_management_policy" "lifecycle_policy" {
+  storage_account_id = module.storage_account.storageaccount_id
+
+  rule {
+    name    = "aging-rule-hot-to-cold"
+    enabled = var.aging_rule_hot_to_cold
+
+    filters {
+      blob_types = ["blockBlob"]
+    }
+
+    actions {
+      base_blob {
+        tier_to_cold_after_days_since_creation_greater_than = var.aging_rule_in_days
+      }
+    }
+  }
 }
 
 resource "azurerm_storage_container" "vh_container" {
@@ -243,7 +255,7 @@ module "db-v15" {
   providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
-  source                     = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source                     = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
   env                        = var.env
   product                    = var.product
   component                  = var.component
@@ -274,42 +286,10 @@ module "db-v15" {
   force_user_permissions_trigger = "2"
 }
 
-# Private Endpoint in VH Wowza subnet
-data "azurerm_subnet" "vh_private_endpoints" {
-  provider = azurerm.vh_vnet
-
-  resource_group_name  = "ss-${var.vh_environment}-network-rg"
-  virtual_network_name = "ss-${var.vh_environment}-vnet"
-  name                 = "vh_private_endpoints"
-}
-
-resource "azurerm_private_endpoint" "vh_vnet_private_endpoint" {
-  provider = azurerm.vh_vnet
-  count    = var.create_vh_vnet_private_endpoint == "true" ? 1 : 0
-
-  name                = module.storage_account.storageaccount_name
-  resource_group_name = data.azurerm_subnet.vh_private_endpoints.resource_group_name
-  location            = var.location
-  subnet_id           = data.azurerm_subnet.vh_private_endpoints.id
-
-  private_service_connection {
-    name                           = module.storage_account.storageaccount_name
-    is_manual_connection           = false
-    private_connection_resource_id = module.storage_account.storageaccount_id
-    subresource_names              = ["blob"]
-  }
-
-  # private_dns_zone_group {
-  #   name                 = "endpoint-dnszonegroup"
-  #   private_dns_zone_ids = local.private_dns_zone_ids
-  # }
-
-  tags = var.common_tags
-}
-
 # Private Endpoint in CVP Wowza subnet
 data "azurerm_subnet" "cvp_private_endpoints" {
   provider = azurerm.cvp_vnet
+  count    = var.create_cvp_vnet_private_endpoint == "true" ? 1 : 0
 
   resource_group_name  = "cvp-recordings-${var.cvp_environment}-rg"
   virtual_network_name = "cvp-recordings-${var.cvp_environment}-vnet"
@@ -321,9 +301,9 @@ resource "azurerm_private_endpoint" "cvp_vnet_private_endpoint" {
   count    = var.create_cvp_vnet_private_endpoint == "true" ? 1 : 0
 
   name                = module.storage_account.storageaccount_name
-  resource_group_name = data.azurerm_subnet.cvp_private_endpoints.resource_group_name
+  resource_group_name = data.azurerm_subnet.cvp_private_endpoints[0].resource_group_name
   location            = var.location
-  subnet_id           = data.azurerm_subnet.cvp_private_endpoints.id
+  subnet_id           = data.azurerm_subnet.cvp_private_endpoints[0].id
 
   private_service_connection {
     name                           = module.storage_account.storageaccount_name

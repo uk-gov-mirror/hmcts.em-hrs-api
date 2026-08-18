@@ -87,7 +87,7 @@ idam:
     cache:
       refresh-before-expire-in-sec: 300
   api:
-    url: ${IDAM_API_BASE_URI:http://localhost:5062}
+    url: ${IDAM_WEB_API_BASE_URI:http://localhost:5062}
   system-user:
     username: ${HRS_SYSTEM_USER:hrs.tester@hmcts.net} #hrs.tester@hmcts.net in all non prod environments
     password: ${HRS_SYSTEM_USER_PASSWORD:4590fgvhbfgbDdffm3lk4j} #password only used locally with docker containers
@@ -101,6 +101,9 @@ idam:
         baseUrl: ${S2S_BASE_URI:http://localhost:8489}
   s2s-authorised:
     services: ${S2S_NAMES_WHITELIST:ccd_gw,em_gw,em_hrs_ingestor,xui_webapp,ccd,ccd_data,ccd_case_disposer}
+  security:
+    allowed-issuers:
+      - http://localhost:5062/o
 
 core_case_data:
   api:

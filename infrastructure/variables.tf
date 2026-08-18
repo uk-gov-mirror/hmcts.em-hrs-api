@@ -46,18 +46,9 @@ variable "sku_capacity" {
 
 variable "aks_subscription_id" {}
 
-variable "vh_subscription_id" {}
-
 variable "cvp_subscription_id" {}
 
-variable "vh_environment" {}
-
 variable "cvp_environment" {}
-
-variable "create_vh_vnet_private_endpoint" {
-  description = "Create a private endpoint for the VNet"
-  default     = "false"
-}
 
 variable "create_cvp_vnet_private_endpoint" {
   description = "Create a private endpoint for the VNet"
@@ -95,4 +86,16 @@ variable "storage_account_allow_public_network_access" {
 
 variable "businessArea" {
   default = "cft"
+}
+
+variable "aging_rule_hot_to_cold" {
+  description = "Controls whether the aging rule for moving hot blobs to cold is enabled."
+  type        = bool
+  default     = true
+}
+
+variable "aging_rule_in_days" {
+  description = "Number of days after which hot blobs are moved to cold."
+  type        = number
+  default     = 120
 }
