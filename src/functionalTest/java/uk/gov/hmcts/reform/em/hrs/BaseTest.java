@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tools.jackson.databind.JsonNode;
@@ -28,7 +29,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.model.CaseDocument;
 import uk.gov.hmcts.reform.em.hrs.model.CaseRecordingFile;
 import uk.gov.hmcts.reform.em.hrs.testutil.AuthTokenGeneratorConfiguration;
@@ -36,7 +36,9 @@ import uk.gov.hmcts.reform.em.hrs.testutil.AzureStorageContainerClientBeans;
 import uk.gov.hmcts.reform.em.hrs.testutil.BlobUtil;
 import uk.gov.hmcts.reform.em.hrs.testutil.CcdAuthTokenGeneratorConfiguration;
 import uk.gov.hmcts.reform.em.hrs.testutil.ExtendedCcdHelper;
+import uk.gov.hmcts.reform.em.hrs.testutil.HrsEmTestConfig;
 import uk.gov.hmcts.reform.em.hrs.testutil.SleepHelper;
+import uk.gov.hmcts.reform.em.test.dm.DmConfiguration;
 import uk.gov.hmcts.reform.em.test.idam.IdamConfiguration;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.retry.RetryExtension;
@@ -66,16 +68,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
     BlobUtil.class,
     AzureStorageContainerClientBeans.class,
     IdamConfiguration.class,
-    EmTestConfig.class
+    HrsEmTestConfig.class
 })
 @TestPropertySource(value = "classpath:application.yml")
 @ExtendWith(SpringExtension.class)
 @WithTags({@WithTag("testType:Functional")})
 @EnableAutoConfiguration
-@ComponentScan(basePackages = {
-    "uk.gov.hmcts.reform.em.test",
-    "uk.gov.hmcts.reform.document"
-})
+@ComponentScan(
+    basePackages = "uk.gov.hmcts.reform.em.test",
+    excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = DmConfiguration.class)
+)
 public abstract class BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
