@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.em.hrs;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
@@ -21,6 +18,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -79,6 +80,7 @@ public abstract class BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
     private static final AtomicBoolean usersCreated = new AtomicBoolean(false);
+    protected static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().findAndAddModules().build();
 
     protected static final String JURISDICTION = "HRS";
     protected static final String LOCATION_CODE = "0123";
@@ -259,7 +261,7 @@ public abstract class BaseTest {
 
 
     protected Response shareRecording(String sharerUserName, CallbackRequest callbackRequest) {
-        JsonNode reqBody = new ObjectMapper().convertValue(callbackRequest, JsonNode.class);
+        JsonNode reqBody = OBJECT_MAPPER.convertValue(callbackRequest, JsonNode.class);
         return authRequest(sharerUserName)
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
@@ -270,7 +272,7 @@ public abstract class BaseTest {
     }
 
     protected Response deleteRecordings(List<Long> ccdCaseIds) {
-        JsonNode reqBody = new ObjectMapper().convertValue(ccdCaseIds, JsonNode.class);
+        JsonNode reqBody = OBJECT_MAPPER.convertValue(ccdCaseIds, JsonNode.class);
         return authRequest(USER_WITH_SEARCHER_ROLE_CASEWORKER_HRS)
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
@@ -281,7 +283,7 @@ public abstract class BaseTest {
     }
 
     protected Response deleteRecordingsWithInvalidS2S(List<Long> ccdCaseIds) {
-        JsonNode reqBody = new ObjectMapper().convertValue(ccdCaseIds, JsonNode.class);
+        JsonNode reqBody = OBJECT_MAPPER.convertValue(ccdCaseIds, JsonNode.class);
         return userAuthRequest(USER_WITH_SEARCHER_ROLE_CASEWORKER_HRS)
             .header(SERVICE_AUTHORIZATION, "invalid")
             .relaxedHTTPSValidation()
@@ -293,7 +295,7 @@ public abstract class BaseTest {
     }
 
     protected Response deleteRecordingsWithUnauthorisedS2S(List<Long> ccdCaseIds) {
-        JsonNode reqBody = new ObjectMapper().convertValue(ccdCaseIds, JsonNode.class);
+        JsonNode reqBody = OBJECT_MAPPER.convertValue(ccdCaseIds, JsonNode.class);
         return userAuthRequest(USER_WITH_SEARCHER_ROLE_CASEWORKER_HRS)
             .header(SERVICE_AUTHORIZATION, extendedCcdHelper.getCcdS2sToken())
             .relaxedHTTPSValidation()
@@ -312,7 +314,7 @@ public abstract class BaseTest {
         );
 
         String recordingUrl = segmentNodes.stream()
-            .map(segmentNode -> new ObjectMapper().convertValue(segmentNode.get("value"), CaseRecordingFile.class))
+            .map(segmentNode -> OBJECT_MAPPER.convertValue(segmentNode.get("value"), CaseRecordingFile.class))
             .map(CaseRecordingFile::getCaseDocument)
             .map(CaseDocument::getBinaryUrl)
             .findFirst()
@@ -332,7 +334,7 @@ public abstract class BaseTest {
             = (ArrayList) caseData.getOrDefault("recordingFiles", new ArrayList<String>());
 
         String recordingUrl = segmentNodes.stream()
-            .map(segmentNode -> new ObjectMapper().convertValue(segmentNode.get("value"), CaseRecordingFile.class))
+            .map(segmentNode -> OBJECT_MAPPER.convertValue(segmentNode.get("value"), CaseRecordingFile.class))
             .map(CaseRecordingFile::getCaseDocument)
             .map(CaseDocument::getBinaryUrl)
             .findFirst()
