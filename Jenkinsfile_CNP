@@ -127,6 +127,7 @@ def vaultOverrides = [
 ]
 
 withPipeline(type, product, component) {
+  enableBuildCache()
   enableDbMigration('em-hrs-api')
   overrideVaultEnvironments(vaultOverrides)
   enablePactAs([AppPipelineDsl.PactRoles.CONSUMER, AppPipelineDsl.PactRoles.PROVIDER])
