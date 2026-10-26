@@ -57,16 +57,6 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
 
         var userInfo = securityService.getUserInfo(token);
 
-        LOGGER.info("********************************");
-        LOGGER.info("SECURITY FILTER");
-        LOGGER.info("********************************");
-        LOGGER.info(
-            "User ({}:{}) with roles ({}) attempting to access recording",
-            userInfo.getUid(),
-            userInfo.getName(),
-            userInfo.getRoles()
-        );
-
         if (!isEmpty(userInfo.getRoles())) {
             Optional<String> userRole = userInfo.getRoles().stream()
                 .filter(role -> allowedRoles.contains(role))
@@ -81,14 +71,9 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
             HearingRecording hr = hrSegment.getHearingRecording();
             UUID recordingId = hr.getId();
             String shareeEmail = securityService.getUserEmail(token);
-            LOGGER.info(
-                "User attempting to access recording ref ({}) with email ({})",
-                hr.getRecordingRef(),
-                shareeEmail
-            );
             List<HearingRecordingSharee> sharedRecordings = shareesRepository.findByShareeEmailIgnoreCase(shareeEmail);
             LOGGER.info(
-                "recordings that are shared with the user: ({}) are ({})", shareeEmail,
+                "recordings that are shared with the user are ({})",
                 sharedRecordings.stream()
                     .map(sharedRecording -> sharedRecording.getHearingRecording().getCaseRef())
                     .toList()
@@ -98,7 +83,6 @@ public class PermissionEvaluatorImpl implements PermissionEvaluator {
                     .filter(sharedRecording -> sharedRecording.getHearingRecording().getId().equals(recordingId))
                     .findFirst();
                 if (hearingRecording.isPresent()) {
-                    LOGGER.info("User granted access through shared email ({})", shareeEmail);
                     return true;
                 }
             }
